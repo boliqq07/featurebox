@@ -1,0 +1,6 @@
+include README.md
+include requirements.txt
+include LICENSE
+include featurebox/data/elemental_MEGNet.json
+include featurebox/data/ie.json
+include featurebox/data/oe.csv
