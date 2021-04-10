@@ -3,7 +3,7 @@
 </div>
 
 [![Python Versions](https://img.shields.io/pypi/pyversions/featurebox.svg)](https://pypi.org/project/featurebox/)
-[![Version](https://img.shields.io/github/tag/MGEdata/featurebox.svg)](https://github.com/boliqq07/MGEdata/releases/latest)
+[![Version](https://img.shields.io/github/tag/boliqq07/featurebox.svg)](https://github.com/boliqq07/releases/latest)
 ![pypi Versions](https://badge.fury.io/py/featurebox.svg)
 
 
