@@ -18,6 +18,11 @@ Featurebox inspired by
   [XenonPy](https://github.com/yoshida-lab/XenonPy),
   [matminer](https://hackingmaterials.github.io/matminer/ ),
   [sympy](https://www.sympy.org/en/index.html)
+  
+  
+Document
+----------------------
+[featurebox document](https://featurebox.readthedocs.io/en/latest/)
 
 Quick Install
 ----------------------
@@ -31,7 +36,7 @@ GNU LGPL-3.0 License
 
 Contact
 ----------------------
-Developer: [Boliqq07](986798607@qq.com)
+Developer: Boliqq07: 986798607@qq.com
 
 
 
