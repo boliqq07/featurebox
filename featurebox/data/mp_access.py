@@ -25,7 +25,7 @@ class MpAccess:
 
     Examples
     --------
-    >>> mpa = MpAccess("Di2IZMunaeR8vr9w")
+    >>> mpa = MpAccess("Di28ZMunseR8vr56")
     >>> ids = mpa.get_ids({"elements": {"$in": ["Al","O"]},'nelements': {"$lt": 2, "$gte": 1}})
     number 29
     >>> df = mpa.data_fetcher(mp_ids=ids, mp_props=['material_id', "cif"])
@@ -35,7 +35,7 @@ class MpAccess:
 
     """
 
-    def __init__(self, api_key: str = "Di2IZMunaeR8vr9w"):
+    def __init__(self, api_key: str = "Di28ZMunseR8vr56"):
         """
 
         Parameters
@@ -195,7 +195,7 @@ class MpAccess:
 if __name__ == "__main__":
     #############
 
-    mpa = MpAccess("Di2IZMunaeR8vr9w")
+    mpa = MpAccess("Di28ZMunseR8vr56")
     ids = mpa.get_ids({"elements": {"$in": ["Al", "O"]}, 'nelements': {"$lt": 2, "$gte": 1}})
 
     df = mpa.data_fetcher(mp_ids=ids, mp_props=['material_id', "cif"])
