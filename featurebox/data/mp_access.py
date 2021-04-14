@@ -44,8 +44,8 @@ class MpAccess:
             pymatgen key.
         """
         self.m = MPRester(api_key)
-        self.dff: pd.DataFrame = None
-        self.ids: List[str] = None
+        self.dff = None
+        self.ids = None
 
     def data_fetcher(self, mp_ids: List[str] = None, mp_props: List[str] = None,
                      elasticity: bool = False) -> pd.DataFrame:

@@ -7,7 +7,7 @@
 # @License: BSD 3-Clause
 
 """
-**This is script, copy for using, rather than call.**
+This is script, copy for using, rather than call.**
 """
 
 import warnings
