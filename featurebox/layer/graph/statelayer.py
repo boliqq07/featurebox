@@ -3,7 +3,8 @@ import torch
 import torch.nn as nn
 from mgetool.tool import tt
 
-from bgnet.layer.graph.baselayer import BaseLayer
+# from bgnet.layer.graph.baselayer import BaseLayer
+from featurebox.layer.graph.baselayer import BaseLayer
 
 
 class StateLayer(BaseLayer):
@@ -83,31 +84,31 @@ class StateLayer(BaseLayer):
         return out
 
 
-if __name__ == "__main__":
-    from bgnet.preprocessing.generator import GraphGenerator, MGEDataLoader
-    from bgnet.layer.graph.test.test_sumlayer import check_get
-
-    check_data = check_get("test/input_data206")
-    data_size = len(check_data[0])
-    gen = GraphGenerator(*check_data, targets=np.arange(data_size))
-    # gen = GraphGenerator(*check_data, targets=None)
-
-    loader = MGEDataLoader(
-        dataset=gen,
-        batch_size=13,
-        shuffle=False,
-        num_workers=0,
-    )
-
-    cl = StateLayer(16, 1,2)
-
-    # loader.to_cuda()
-    # cl.to(torch.device("cuda:0"))
-
-    tt.t
-    for time, ((atom_fea,nbr_fea,state_fea,atom_nbr_idx,sgt,oe,node_atom_idx,node_ele_idx,ele_atom_idx),y) in enumerate(loader):
-        # if time ==30:
-        redata = cl(atom_fea, nbr_fea, atom_nbr_idx, state_fea, node_atom_idx)
-        # redata = cl(i[0])
-    tt.t
-    tt.p
+# if __name__ == "__main__":
+#     from bgnet.preprocessing.generator import GraphGenerator, MGEDataLoader
+#     from bgnet.layer.graph.test.test_sumlayer import check_get
+#
+#     check_data = check_get("test/input_data206")
+#     data_size = len(check_data[0])
+#     gen = GraphGenerator(*check_data, targets=np.arange(data_size))
+#     # gen = GraphGenerator(*check_data, targets=None)
+#
+#     loader = MGEDataLoader(
+#         dataset=gen,
+#         batch_size=13,
+#         shuffle=False,
+#         num_workers=0,
+#     )
+#
+#     cl = StateLayer(16, 1,2)
+#
+#     # loader.to_cuda()
+#     # cl.to(torch.device("cuda:0"))
+#
+#     tt.t
+#     for time, ((atom_fea,nbr_fea,state_fea,atom_nbr_idx,sgt,oe,node_atom_idx,node_ele_idx,ele_atom_idx),y) in enumerate(loader):
+#         # if time ==30:
+#         redata = cl(atom_fea, nbr_fea, atom_nbr_idx, state_fea, node_atom_idx)
+#         # redata = cl(i[0])
+#     tt.t
+#     tt.p

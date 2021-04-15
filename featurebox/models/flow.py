@@ -1,7 +1,7 @@
 import torch
 from torch.nn import Module
 
-from bgnet.preprocessing.generator import MGEDataLoader
+from featurebox.featurizers.generator import MGEDataLoader
 
 
 class BaseLearning:

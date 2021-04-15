@@ -1,9 +1,13 @@
 import torch.nn as nn
 
-from bgnet.layer.graph.atomlayer import AtomLayer
-from bgnet.layer.graph.baselayer import BaseLayer
-from bgnet.layer.graph.bondlayer import BondLayer
-from bgnet.layer.graph.statelayer import StateLayer
+# from bgnet.layer.graph.atomlayer import AtomLayer
+# from bgnet.layer.graph.baselayer import BaseLayer
+# from bgnet.layer.graph.bondlayer import BondLayer
+# from bgnet.layer.graph.statelayer import StateLayer
+from featurebox.layer.graph.atomlayer import AtomLayer
+from featurebox.layer.graph.baselayer import BaseLayer
+from featurebox.layer.graph.bondlayer import BondLayer
+from featurebox.layer.graph.statelayer import StateLayer
 
 
 class Block(nn.Module):
@@ -20,7 +24,7 @@ class Block(nn.Module):
         return atom_fea, nbr_fea, state_fea
 
 
-class MGENet(BaseLayer):
+class MEGNet(BaseLayer):
     def __init__(self, atom_fea_len, nbr_fea_len, state_fea_len=2,
                  inner_atom_fea_len=64, n_conv=2, h_fea_len=128, n_h=1,
                  classification=False, class_number=2):
@@ -80,8 +84,9 @@ class MGENet(BaseLayer):
         if self.classification:
             self.logsoftmax = nn.LogSoftmax(dim=1)
             self.dropout = nn.Dropout()
+        self.relu = nn.ReLU()
 
-    def forward(self, atom_fea, nbr_fea, state_fea, atom_nbr_idx, node_atom_idx):
+    def forward(self, atom_fea, nbr_fea, state_fea, atom_nbr_idx, node_atom_idx, *args,**kwargs):
         """
         Forward pass
         N: Total number of atoms in the batch
@@ -115,8 +120,8 @@ class MGENet(BaseLayer):
             for fc, softplus in zip(self.fcs, self.softpluses):
                 crys_fea = softplus(fc(crys_fea))
         out = self.fc_out(crys_fea)
-        if self.classification:
-            out = self.relu(out)
+        # if not self.classification:
+        #     out = self.relu(out)
         if self.classification:
             out = self.logsoftmax(out)
         return out

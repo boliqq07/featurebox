@@ -52,7 +52,7 @@ class _BaseGraphSingleGenerator(Dataset):
             *args: np.ndarray
     ) -> List:
         """
-        1.add length of node_atom_idx and len of node_ele_idx.
+        1.add length of node_atom_idx and len of node_ele_idx,ele_atom_idx.
         2.transform the preprocessing to numpy with Fixed accuracy float32 and int64 .
         """
 
@@ -78,6 +78,7 @@ class _BaseGraphSingleGenerator(Dataset):
                 inputs.append(np.array(i, dtype=np.float32))
             except ValueError:
                 inputs.append(i)
+
 
         inputs.append(args[0].shape[0])
         inputs.append(np.array(num(args[0])))
@@ -109,7 +110,7 @@ class _BaseGraphSingleGenerator(Dataset):
         raise NotImplemented("This method is deleted in Dataset class.")
 
     @abstractmethod
-    def _generate_inputs(self, batch_idx: int)->Iterable:
+    def _generate_inputs(self, batch_idx: int) -> Iterable:
         """Get the preprocessing by index"""
 
 
@@ -336,7 +337,7 @@ class MGEDataLoader:
         self.loader._iterator = self.loader._get_iterator()
 
     @staticmethod
-    def collate_fn(batch:List, collate_marks:Tuple[str]) -> List[List]:
+    def collate_fn(batch: List, collate_marks: Tuple[str]) -> List[List]:
         """
         User collate function.
 

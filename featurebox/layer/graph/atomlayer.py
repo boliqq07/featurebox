@@ -3,7 +3,8 @@ import torch
 import torch.nn as nn
 from mgetool.tool import tt
 
-from bgnet.layer.graph.baselayer import BaseLayer
+# from bgnet.layer.graph.baselayer import BaseLayer
+from featurebox.layer.graph.baselayer import BaseLayer
 
 
 class AtomLayer(BaseLayer):

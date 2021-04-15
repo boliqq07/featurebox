@@ -8,7 +8,9 @@ from torch.nn.parameter import Parameter
 import torch.nn.functional as F
 
 try:
-    from bgnet.layer.graph._merge_cpp import mod
+    # from bgnet.layer.graph._merge_cpp import mod
+    from featurebox.layer.graph import _merge_cpp
+    mod= _merge_cpp.mod
     me_idx_cpp = mod.merge_idx
     me_idx_mean_cpp = mod.merge_idx_mean
     me_idx_sum_cpp = mod.merge_idx_sum

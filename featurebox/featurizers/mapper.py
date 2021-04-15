@@ -9,7 +9,7 @@ from typing import Any, Dict, List, Union, Optional, Callable
 import pandas as pd
 
 from monty.serialization import loadfn
-from pymatgen import Element, Structure, Lattice
+from pymatgen.core import Element, Structure, Lattice
 
 from featurebox.data.check_data import ALL_ELE_N_MAP, ALL_N_ELE_MAP
 from featurebox.featurizers.base_transform import Converter, BaseFeature
@@ -28,7 +28,7 @@ def get_atom_fea_number(structure: Structure) -> List[int]:
     return [i.specie.Z for i in structure]
 
 
-def get_atom_fea_dict(structure: Structure) -> List[dict]:
+def get_atom_fea_name(structure: Structure) -> List[dict]:
     """
     For a structure return the list of dictionary for the site occupancy
     for example, Fe0.5Ni0.5 site will be returned as {"Fe": 0.5, "Ni": 0.5}

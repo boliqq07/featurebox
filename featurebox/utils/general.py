@@ -70,4 +70,5 @@ def train_test(*arrays, **options):
     """Just return train and test, respectively"""
     train_test_data = train_test_split(*arrays, **options)
     le = len(train_test_data)
-    return [train_test_data[i] for i in range(le) if i % 2 == 0], [train_test_data[i] for i in range(le) if i % 2 == 1]
+    (*X_train, y_train), (*X_test, y_test) = [train_test_data[i] for i in range(le) if i % 2 == 0], [train_test_data[i] for i in range(le) if i % 2 == 1]
+    return  X_train, y_train, X_test, y_test
