@@ -49,7 +49,7 @@ setup(
 
     packages=find_packages(
         exclude=["test", "*.test", "*.*.test", "*.*.*.test",
-                 "tests", "*.tests", "*.*.tests", "*.*.*.tests", "Instances", "Instance*"],
+                 "test*", "*.test*", "*.*.test*", "*.*.*.test*", "Instances", "Instance*"],
     ),
     long_description=long_description,
     long_description_content_type='text/markdown'
