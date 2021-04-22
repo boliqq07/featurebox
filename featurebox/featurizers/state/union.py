@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
 
+from abc import ABC
 # @Time    : 2019/11/1 15:57
 # @Email   : 986798607@qq.ele_ratio
 # @Software: PyCharm
 # @License: BSD 3-Clause
 from collections import Counter
+from itertools import chain, combinations_with_replacement
+from typing import List, Any, Union, Dict
 
 import numpy as np
-
-from featurebox.featurizers.extrastats import PropertyStats
-from abc import ABC
-from itertools import permutations, chain, combinations, combinations_with_replacement, count
-from typing import List, Any, Union, Dict
-from sklearn.utils import check_array
-from sklearn.utils.validation import FLOAT_DTYPES, check_is_fitted
 import pandas as pd
+from sklearn.utils import check_array
+from sklearn.utils.validation import check_is_fitted
+
 from featurebox.featurizers.base_transform import BaseFeature
-from featurebox.featurizers.statistics import DepartElementFeature
+from featurebox.featurizers.extrastats import PropertyStats
+from featurebox.featurizers.state.statistics import DepartElementFeature
 
 
 class UnionFeature(BaseFeature):
@@ -25,7 +25,7 @@ class UnionFeature(BaseFeature):
 
     Examples
     ---------
-    >>> from featurebox.featurizers.mapper import AtomTableMap, AtomJsonMap
+    >>> from featurebox.featurizers.atom.mapper import AtomTableMap, AtomJsonMap
     >>> data_map = AtomJsonMap(search_tp="name", n_jobs=1)
     >>> wa = DepartElementFeature(data_map,n_composition=2, n_jobs=1,return_type="df")
     >>> x3 = [{"H": 2, "Pd": 1},{"He":1,"Al":4}]
@@ -95,8 +95,8 @@ class UnionFeature(BaseFeature):
         return np.array(all_attributes_all)
 
     def transform(self, entries: List = None) -> Any:
-        l = len(self.comp)
-        return super(UnionFeature, self).transform(list(range(l)))
+        ll = len(self.comp)
+        return super(UnionFeature, self).transform(list(range(ll)))
 
     def set_feature_labels(self, self_elem_data_columns_values: List):
         """
@@ -154,6 +154,7 @@ class PolyFeature(BaseFeature, ABC):
         return chain(*[combinations_with_replacement(range(n_features), i) for i in degree])
 
     def fit_transform(self, X: Union[np.ndarray, pd.DataFrame], y=None, **kwargs):
+
         if isinstance(X, pd.DataFrame):
             f_name = list(X.columns)
             s_name = list(X.index)
@@ -214,7 +215,6 @@ class PolyFeature(BaseFeature, ABC):
 
             feature_names.append(names)
         self._feature_labels = feature_names
-
 
 # n = np.array([[0, 1, 2, 3, 4, 5], [0.422068, 0.360958, 0.201433, -0.459164, -0.064783, -0.250939]]).T
 # ps = pd.DataFrame(n, columns=["f1", "f2"], index=["x0", "x1", "x2", "x3", "x4", "x5"])

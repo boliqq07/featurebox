@@ -10,10 +10,10 @@
 Calculate the the correction of columns.
 """
 import copy
-
 from typing import List
 
 import numpy as np
+from mgetool.tool import name_to_name
 from sklearn.base import BaseEstimator, MetaEstimatorMixin
 from sklearn.datasets import load_boston
 from sklearn.feature_selection import SelectorMixin
@@ -21,7 +21,6 @@ from sklearn.utils import check_random_state
 from sklearn.utils.validation import check_is_fitted
 
 from featurebox.selection.mutibase import MutiBase
-from mgetool.tool import name_to_name
 
 
 class Corr(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
@@ -223,7 +222,7 @@ class Corr(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
         index = self.remove_coef(list_count)
         support_ = [self.shrink_list[i] for i in index]
         support_ = self.feature_unfold(support_)
-        self.support_ =  np.array([True if i in support_ else False for i in range(self.data.shape[1])])
+        self.support_ = np.array([True if i in support_ else False for i in range(self.data.shape[1])])
         return support_
 
     @staticmethod
@@ -284,4 +283,3 @@ if __name__ == "__main__":
     co = Corr(threshold=0.5, muti_index=[0, 8], muti_grade=2)
 
     nx = co.fit_transform(x)
-

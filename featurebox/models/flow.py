@@ -45,7 +45,7 @@ class BaseLearning:
         else:
             self.loss_fn = loss_method(reduction="sum")
 
-    def run_train(self, epochs=30,  threshold=230):
+    def run_train(self, epochs=30, threshold=230):
         #############defination###########################
 
         if self.opt is None:
@@ -58,7 +58,7 @@ class BaseLearning:
 
         ##############tarin###########################
         for epochi in range(epochs):
-            
+
             train_loader.reset()
             loss = 0
             for m, (batch_x, batch_y) in enumerate(train_loader):
@@ -68,7 +68,7 @@ class BaseLearning:
                 loss += lossi.item()
                 lossi.backward()
                 self.opt.step()
-            if loss <=threshold:
+            if loss <= threshold:
                 break
             print("Train {} epochi loss:".format(epochi), loss)  #
 
@@ -87,7 +87,6 @@ class BaseLearning:
 
         loss = 0.0
         for m, (batch_x, batch_y) in enumerate(test_loader):
-
             y_pred = self.model(*batch_x)
             lossi = self.loss_fn(y_pred, batch_y)
             loss += lossi.item()

@@ -1,9 +1,10 @@
+"""Base"""
 from multiprocessing import cpu_count
+from typing import List, Tuple, Iterable, Any
+
 import numpy as np
 import pandas as pd
 from mgetool.tool import parallelize
-from abc import abstractmethod
-from typing import List, Tuple, Iterable, Any
 from monty.json import MSONable
 
 
@@ -278,6 +279,9 @@ class BaseFeature(MSONable):
                     return np.array(self._convert(d))
                 else:
                     return np.array([self._convert(i) for i in d])
+            if d.ndim == 3:
+                return np.array([[self._convert(i) for i in di] for di in d])
+
         elif isinstance(d, (list, tuple, int, float)):
             return np.array(self._convert(d))
         raise NotImplementedError("just accept 1d,2d np.array or list")
@@ -371,7 +375,7 @@ class ConverterCat(BaseFeature):
 
     """
 
-    def __init__(self, *args: Converter, n_jobs:int=1, on_errors:str='raise', return_type:str='any'):
+    def __init__(self, *args: Converter, n_jobs: int = 1, on_errors: str = 'raise', return_type: str = 'any'):
         """
 
         Parameters
@@ -384,6 +388,7 @@ class ConverterCat(BaseFeature):
 
     @staticmethod
     def sums(args):
+        """SUM"""
         i = 0
         while i < len(args) - 1:
             try:

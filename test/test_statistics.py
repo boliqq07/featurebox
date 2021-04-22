@@ -1,8 +1,8 @@
 import unittest
 
-from featurebox.featurizers.mapper import AtomTableMap, AtomJsonMap
-from featurebox.featurizers.statistics import WeightedAverage, WeightedSum
-import numpy as np
+from featurebox.featurizers.atom.mapper import AtomTableMap, AtomJsonMap
+from featurebox.featurizers.state.statistics import WeightedAverage, WeightedSum
+
 
 class MyTestCase(unittest.TestCase):
 
@@ -23,7 +23,7 @@ class MyTestCase(unittest.TestCase):
     def test_WeightedSum2(self):
         data_map = AtomJsonMap(search_tp="name", n_jobs=1)
         wa = WeightedSum(data_map, n_jobs=1)
-        x3 = [{"H": 2, "Pd": 1},{"He":1,"Al":4}]
+        x3 = [{"H": 2, "Pd": 1}, {"He": 1, "Al": 4}]
         x4 = wa.fit_transform(x3)
         print(x4)
 

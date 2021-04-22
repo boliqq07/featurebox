@@ -1,7 +1,5 @@
-import numpy as np
 import torch
 import torch.nn as nn
-from mgetool.tool import tt
 
 # from bgnet.layer.graph.baselayer import BaseLayer
 from featurebox.layer.graph.baselayer import BaseLayer
@@ -62,12 +60,12 @@ class StateLayer(BaseLayer):
 
         atom_nbr_fea = torch.sum(atom_nbr_fea, dim=1, keepdim=False)
 
-        node_nbr_fea_summed = self.merge_idx(atom_nbr_fea, node_atom_idx) #
+        node_nbr_fea_summed = self.merge_idx(atom_nbr_fea, node_atom_idx)  #
 
-        node_fea = self.merge_idx(atom_fea, node_atom_idx) #
+        node_fea = self.merge_idx(atom_fea, node_atom_idx)  #
 
         nbr_fea = torch.sum(nbr_fea, dim=1, keepdim=False)
-        node_nbr_fea = self.merge_idx(nbr_fea, node_atom_idx) #
+        node_nbr_fea = self.merge_idx(nbr_fea, node_atom_idx)  #
 
         total_nbr_fea = torch.cat(
             [node_fea,
@@ -82,7 +80,6 @@ class StateLayer(BaseLayer):
 
         out = self.softplus1(state_fea + prop_core)
         return out
-
 
 # if __name__ == "__main__":
 #     from bgnet.preprocessing.generator import GraphGenerator, MGEDataLoader

@@ -79,7 +79,6 @@ class _BaseGraphSingleGenerator(Dataset):
             except ValueError:
                 inputs.append(i)
 
-
         inputs.append(args[0].shape[0])
         inputs.append(np.array(num(args[0])))
         inputs.append(inputs[-1].shape[0])

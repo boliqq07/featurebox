@@ -11,21 +11,23 @@ Featurebox
 ----------------------
 Welcome to Featurebox.
 
-Featurebox is a open Python library that implements a comprehensive set of machine learning tools for materials informatics.
+Featurebox is a open Python library that implements a comprehensive set of machine learning tools for materials
+informatics.
 
 Featurebox inspired by
 
-  [XenonPy](https://github.com/yoshida-lab/XenonPy),
-  [matminer](https://hackingmaterials.github.io/matminer/ ),
-  [sympy](https://www.sympy.org/en/index.html)
-  
-  
+[XenonPy](https://github.com/yoshida-lab/XenonPy),
+[matminer](https://hackingmaterials.github.io/matminer/ ),
+[sympy](https://www.sympy.org/en/index.html)
+
+
 Document
 ----------------------
 [featurebox document](https://featurebox.readthedocs.io/en/latest/)
 
 Quick Install
 ----------------------
+
 ```bash
 pip install featurebox
 ```

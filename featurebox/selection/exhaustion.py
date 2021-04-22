@@ -12,16 +12,15 @@ from itertools import combinations
 from typing import Tuple, List
 
 import numpy as np
+from mgetool.tool import parallelize
 from sklearn.base import BaseEstimator
 from sklearn.base import MetaEstimatorMixin
 from sklearn.base import clone
 from sklearn.feature_selection import SelectorMixin
 from sklearn.model_selection import cross_val_score
-
 from sklearn.utils.metaestimators import if_delegate_has_method
 from sklearn.utils.validation import check_is_fitted, check_X_y
 
-from mgetool.tool import parallelize
 from featurebox.selection.mutibase import MutiBase
 
 warnings.filterwarnings("ignore")
@@ -44,9 +43,9 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
            False,  True, False,  True])
     """
 
-    def __init__(self, estimator:BaseEstimator, n_select:Tuple=(2, 3, 4), muti_grade:int=2,
-                 muti_index:List=None, must_index:List=None, n_jobs:int=1,
-                 refit:bool=False,cv:int=5):
+    def __init__(self, estimator: BaseEstimator, n_select: Tuple = (2, 3, 4), muti_grade: int = 2,
+                 muti_index: List = None, must_index: List = None, n_jobs: int = 1,
+                 refit: bool = False, cv: int = 5):
         """
 
         Parameters
@@ -74,7 +73,7 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
         self.n_jobs = n_jobs
         self.n_select = [n_select, ] if isinstance(n_select, int) else n_select
         self.refit = refit
-        self.cv =cv
+        self.cv = cv
 
     @property
     def _estimator_type(self):
@@ -103,12 +102,12 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
                 slices = self.feature_unfold(slices)
                 data_x0 = x0[:, slices]
 
-                if hasattr(self.estimator,"best_score_"):
+                if hasattr(self.estimator, "best_score_"):
                     self.estimator.fit(data_x0, y0)
                     score0 = np.mean(self.estimator.best_score_)  # score_test
 
                 else:
-                    score0 = cross_val_score(self.estimator,data_x0,y0,cv=self.cv)
+                    score0 = cross_val_score(self.estimator, data_x0, y0, cv=self.cv)
                     score0 = np.mean(score0)
                 # print(slices, score0)
             return score0

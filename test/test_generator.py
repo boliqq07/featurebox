@@ -19,8 +19,7 @@ class Test_CrystalBgGraphDisordered(unittest.TestCase):
         data = gt.transform(self.data0_checked)
 
         gen = GraphGenerator(*data, targets=None)
-        self.gen=gen
-        from sklearn.base import BaseEstimator
+        self.gen = gen
 
     def test_sf(self):
         data0 = self.gen[0]
@@ -32,9 +31,9 @@ class Test_CrystalBgGraphDisordered(unittest.TestCase):
             batch_size=3,  # 最新批数据
             shuffle=False,  # 是否随机打乱数据
             num_workers=0,  # 用于加载数据的子进程
-            collate_marks = ('c', 'c', 's', 'c', 'f', 'c','f')
+            collate_marks=('c', 'c', 's', 'c', 'f', 'c', 'f')
         )
-        for k,i in enumerate(loader):
+        for k, i in enumerate(loader):
             # if k<5:
             print("\n")
             print(k)

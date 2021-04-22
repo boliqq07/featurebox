@@ -1,20 +1,18 @@
-import numpy as np
 import functools
 import os
 from abc import abstractmethod, ABC
-
 from pathlib import Path
-from typing import Any, Dict, List, Union, Optional, Callable
+from typing import Any, Dict, List, Union, Callable
 
+import numpy as np
 import pandas as pd
-
 from monty.serialization import loadfn
 from pymatgen.core import Element, Structure, Lattice
 
 from featurebox.data.check_data import ALL_ELE_N_MAP, ALL_N_ELE_MAP
 from featurebox.featurizers.base_transform import Converter, BaseFeature
 
-MODULE_DIR = Path(__file__).parent.parent.absolute()
+MODULE_DIR = Path(__file__).parent.parent.parent.absolute()
 
 
 def get_atom_fea_number(structure: Structure) -> List[int]:
@@ -55,7 +53,9 @@ class AtomMap(Converter, ABC):
     @staticmethod
     def get_json_embeddings(file_name: str = "elemental_MEGNet.json") -> Dict:
         """get json preprocessing"""
-        return loadfn(MODULE_DIR / "data" / file_name)
+        data = loadfn(MODULE_DIR / "data" / file_name)
+        data = {i: np.array(j) for i, j in data.items()}
+        return data
 
     @staticmethod
     def get_csv_embeddings(data_name: str) -> pd.DataFrame:
@@ -154,7 +154,10 @@ class AtomJsonMap(BinaryMap):
         if isinstance(other, AtomJsonMap):
             for key in other.embedding_dict.keys():
                 if key in self.embedding_dict:
-                    self.embedding_dict[key].extend(other.embedding_dict[key])
+                    if isinstance(self.embedding_dict[key], list):
+                        self.embedding_dict[key].extend(other.embedding_dict[key])
+                    else:
+                        self.embedding_dict[key] = np.append(self.embedding_dict[key], other.embedding_dict[key])
                 else:
                     pass
         else:
@@ -310,7 +313,7 @@ def process_uni(i):
 
     elif isinstance(i, (int, float)):
         dataii.append(i)
-    elif isinstance(i,str):
+    elif isinstance(i, str):
         dataii.append(i)
     elif isinstance(i, np.ndarray):
         dataii.extend(i.tolist())
@@ -320,8 +323,8 @@ def process_uni(i):
         else:
             dataii.extend(list(i.values()))
     elif isinstance(i, pd.DataFrame):
-            dataii.extend(i.values.ravel())
-    elif isinstance(i,np.ndarray):
+        dataii.extend(i.values.ravel())
+    elif isinstance(i, np.ndarray):
         if i is np.NaN or np.isnan(i):
             dataii.append(0.0)
         else:
@@ -456,7 +459,7 @@ class AtomPymatgenPropMap(BinaryMap):
             self.func = [func, ]
 
         if len(self.func) == 1 and len(self.prop_name) > 1:
-            self.func = self.func * len(self.prop_name)
+            self.func *= len(self.prop_name)
 
         assert len(self.prop_name) == len(self.func), "The size of prop and func should be same."
         self.func = [process_uni if i is None else i for i in self.func]
@@ -538,13 +541,15 @@ func_map_structure = {
 }
 
 
-def gett(obj, pi):
+def getter(obj, pi):
+    """get prop.
+    """
     if "." in pi:
         pis = list(pi.split("."))
         pis.reverse()
         while len(pis):
             s = pis.pop()
-            obj = gett(obj, s)
+            obj = getter(obj, s)
         return obj
     elif "()" in pi:
         return getattr(obj, pi[:-2])()
@@ -553,13 +558,13 @@ def gett(obj, pi):
         return getattr(obj, pi)
 
 
-class StructurePymatgenPropMap(BaseFeature):
+class _StructurePymatgenPropMap(BaseFeature):
     """
-    Get pymatgen structure preprocessing.
+    Get property of pymatgen structure preprocessing.
 
     Examples
     -----------
-    >>> tmps = StructurePymatgenPropMap()
+    tmps = StructurePymatgenPropMap()
 
     """
 
@@ -572,7 +577,7 @@ class StructurePymatgenPropMap(BaseFeature):
             func:(callable or list of callable)
                 please make sure the size of it is the same with prop_name.
         """
-        super(StructurePymatgenPropMap, self).__init__(return_type=return_type, **kwargs)
+        super(_StructurePymatgenPropMap, self).__init__(return_type=return_type, **kwargs)
 
         if prop_name is None:
             prop_name = ["density", "volume", "ntypesp"]
@@ -604,7 +609,7 @@ class StructurePymatgenPropMap(BaseFeature):
         data_all = []
         datai = []
         for pi in self.prop_name:
-            datai.append(gett(structure, pi))
+            datai.append(getter(structure, pi))
         datai = [self.func[i](j) for i, j in enumerate(datai)]
         if not self.lengths:
             self.lengths = [len(i) if isinstance(i, (np.ndarray, tuple, list)) else 1 for i in datai]

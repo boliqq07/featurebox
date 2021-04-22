@@ -1,10 +1,9 @@
-
 from typing import List
 
-
+from featurebox.featurizers.atom.mapper import AtomPymatgenPropMap
 from featurebox.featurizers.base_transform import BaseFeature
-from featurebox.featurizers.mapper import StructurePymatgenPropMap, AtomPymatgenPropMap
-from featurebox.featurizers.statistics import WeightedAverage
+from featurebox.featurizers.state.state_mapper import StructurePymatgenPropMap
+from featurebox.featurizers.state.statistics import WeightedAverage
 
 
 class BatchFeature(BaseFeature):
@@ -84,7 +83,7 @@ class BatchFeature(BaseFeature):
                 # "dos":self.dos_dict,
                 # "band_gap":self.band_gap_dict,
             }
-            if not self.data_type in self.maps:
+            if self.data_type not in self.maps:
                 raise TypeError("Undefined name for data_type, if use your self convert, please set 'user_convert'.")
             self.convert_method = self.maps[self.data_type]
 

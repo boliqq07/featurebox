@@ -1,16 +1,17 @@
-import torch.nn as nn
-
 import math
+
 import torch
+import torch.nn as nn
+import torch.nn.functional as F
 from torch import Tensor
 from torch.nn import init
 from torch.nn.parameter import Parameter
-import torch.nn.functional as F
 
 try:
     # from bgnet.layer.graph._merge_cpp import mod
     from featurebox.layer.graph import _merge_cpp
-    mod= _merge_cpp.mod
+
+    mod = _merge_cpp.mod
     me_idx_cpp = mod.merge_idx
     me_idx_mean_cpp = mod.merge_idx_mean
     me_idx_sum_cpp = mod.merge_idx_sum
@@ -24,6 +25,7 @@ try:
     from torch_scatter import scatter_add
     from torch_scatter import scatter_min
     from torch_scatter import scatter_mean
+
     scatter_mod = True
 except ImportError:
     scatter_mod = None
@@ -43,9 +45,8 @@ class BaseLayer(nn.Module):
         else:
             self.merge_idx = self.merge_idx_py
 
-    def merge_idx_methods(self, nbr_fea, node_atom_idx, methods=("mean","max")):
-        return torch.cat([self.merge_idx_py(nbr_fea, node_atom_idx, methodi) for methodi in methods],dim=-1)
-
+    def merge_idx_methods(self, nbr_fea, node_atom_idx, methods=("mean", "max")):
+        return torch.cat([self.merge_idx_py(nbr_fea, node_atom_idx, methodi) for methodi in methods], dim=-1)
 
     @staticmethod
     def merge_idx_py(nbr_fea, node_atom_idx, method="mean"):
@@ -67,9 +68,9 @@ class BaseLayer(nn.Module):
         if method == "sum":
             temp = torch.cat([torch.sum(nbr_fea[i], dim=0, keepdim=True) for i in node_atom_idx])
         elif method == "max":
-            temp = torch.cat([torch.max(nbr_fea[i], dim=0,keepdim=True)[1] for i in node_atom_idx])
+            temp = torch.cat([torch.max(nbr_fea[i], dim=0, keepdim=True)[1] for i in node_atom_idx])
         elif method == "min":
-            temp = torch.cat([torch.min(nbr_fea[i], dim=0,keepdim=True)[1] for i in node_atom_idx])
+            temp = torch.cat([torch.min(nbr_fea[i], dim=0, keepdim=True)[1] for i in node_atom_idx])
         else:
             temp = torch.cat([torch.mean(nbr_fea[i], dim=0, keepdim=True) for i in node_atom_idx])
 
@@ -237,4 +238,3 @@ if __name__ == "__main__":
     li.to(torch.device("cuda:0"))
     resa = li(a)
     li.eval()
-

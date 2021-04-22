@@ -6,14 +6,16 @@ from typing import Union, Dict, List, Any
 
 import numpy as np
 from mgetool.tool import parallelize, batch_parallelize
-
 from pymatgen.analysis.local_env import NearNeighbors
 from pymatgen.core import Structure
 
+from featurebox.featurizers.atom.mapper import AtomPymatgenPropMap, AtomJsonMap, get_atom_fea_number, get_atom_fea_name
 from featurebox.featurizers.base_transform import DummyConverter, BaseFeature, Converter
-from featurebox.featurizers.bond import BaseBondGet, BondGaussianConverter
-from featurebox.featurizers.local_env import get_nn_strategy
-from featurebox.featurizers.mapper import AtomPymatgenPropMap, AtomJsonMap, get_atom_fea_number, get_atom_fea_name
+from featurebox.featurizers.bond.expander import BondGaussianConverter
+from featurebox.featurizers.envir.desc_env import DesDict
+from featurebox.featurizers.envir.environment import BaseNNGet, _BaseEnvGet, BaseDesGet
+from featurebox.featurizers.envir.local_env import NNDict
+from featurebox.utils.look_json import get_marked_class
 
 
 def itemgetter_list(data_list: List, indices: List) -> tuple:
@@ -44,18 +46,47 @@ class _StructureGraph(BaseFeature):
     """
 
     def __init__(self, nn_strategy: Union[str, NearNeighbors] = "MinimumDistanceNNAll",
+                 bond_generator: [_BaseEnvGet, str] = None,
                  atom_converter: Converter = None,
                  bond_converter: Converter = None,
                  state_converter: Converter = None,
+                 return_bonds: str = "all",
                  **kwargs):
         """
-
+        Args:
+            nn_strategy (str): NearNeighbor strategy
+                For bond_converter ="BaseNNGe": ["BrunnerNN_reciprocal","BrunnerNN_real","BrunnerNN_relative",
+                "EconNN", "CrystalNN",]
+                For bond_converter ="BaseDesGet": ["ACSF","BehlerParrinello","EAD","EAMD","SOAP",
+                   "SO3","SO4_Bispectrum","wACSF"]
+            atom_converter (Converter): atom features converter.
+            bond_converter (Converter): bond features converter.
+            state_converter (Converter): state features converter.
+            bond_generator (_BaseEnvGet, str): bond features converter.
+                1, BaseDesGet or 2, BaseDesGet. or there name.
+                if object offered, rather str, the nn_strategy would use the nn_strategy in Converter.
+            cutoff (float): cutoff radius
+                if offered for "BaseNNGet", the nn_strategy would be neglect and find neighbors using
+                ``find_points_in_spheres`` in pymatgen.
+            return_bonds:"all","bonds","bond_state"
+                which bond property return. default "all".
+            **kwargs:
         """
+
         super().__init__(**kwargs)
+        self.return_bonds = return_bonds
 
-        self.nn_strategy = get_nn_strategy(nn_strategy)
-        self.bond_generator = BaseBondGet(self.nn_strategy)
-
+        fuk = {"BaseNNGet": BaseNNGet, "BaseDesGet": BaseDesGet}
+        fuv = {"BaseNNGet": NNDict, "BaseDesGet": DesDict, }
+        if bond_generator is None:
+            self.nn_strategy = get_marked_class(nn_strategy, NNDict)
+            self.bond_generator = BaseNNGet(self.nn_strategy)
+        elif isinstance(bond_generator, str):
+            self.nn_strategy = get_marked_class(nn_strategy, fuv[bond_generator])
+            self.bond_generator = fuk[bond_generator](self.nn_strategy)
+        else:
+            self.bond_generator = bond_generator
+            self.nn_strategy = self.bond_generator.nn_strategy
         self.atom_converter = atom_converter or self._get_dummy_converter()
         self.bond_converter = bond_converter or self._get_dummy_converter()
         self.state_converter = state_converter or self._get_dummy_converter()
@@ -85,11 +116,26 @@ class _StructureGraph(BaseFeature):
         else:
             state_attributes = np.concatenate(
                 (state_attributes, np.array(self.state_converter.convert(structure)).ravel()))
-
-        center_indices, atom_nbr_idx, _, bonds = self.get_bond_fea(structure)
+        center_indices, center_prop, atom_nbr_idx, bond_states, bonds = self.get_bond_fea(structure)
+        if self.return_bonds == "all":
+            bondss = np.concatenate((bond_states, bonds), axis=-1) if bonds is not None else bond_states
+        elif self.return_bonds == "bonds":
+            if bonds is not None:
+                bondss = bonds
+            else:
+                raise TypeError
+        elif self.return_bonds == "bonds_state":
+            bondss = bond_states
+        else:
+            raise NotImplementedError()
         atoms = self.get_atom_fea(structure)
+        atoms = [atoms[int(i)] for i in center_indices]
         atoms = self.atom_converter.convert(atoms)
-        bonds = self.bond_converter.convert(bonds)
+        bonds = self.bond_converter.convert(bondss)
+
+        if center_prop.shape[1] > 1:
+            atoms = np.concatenate((np.array(atoms), center_prop), axis=1)
+
         return {"atom": atoms, "bond": bonds, "state": state_attributes, "atom_nbr_idx": atom_nbr_idx}
 
     @staticmethod
@@ -212,16 +258,25 @@ class _StructureGraphFixedRadius(_StructureGraph):
     def __init__(
             self,
             nn_strategy: Union[str, NearNeighbors] = "MinimumDistanceNNAll",
+            bond_generator: [_BaseEnvGet, str] = None,
             atom_converter: Converter = None,
             bond_converter: Converter = None,
             state_converter: Converter = None,
             cutoff: float = 7.0,
             **kwargs
     ):
-        super(_StructureGraphFixedRadius, self).__init__(nn_strategy, atom_converter, bond_converter, state_converter,
+        super(_StructureGraphFixedRadius, self).__init__(nn_strategy=nn_strategy, bond_generator=bond_generator,
+                                                         atom_converter=atom_converter,
+                                                         bond_converter=bond_converter, state_converter=state_converter,
                                                          **kwargs)
         self.cutoff = cutoff
-        self.bond_generator = BaseBondGet(self.cutoff)
+        if bond_generator is None:
+            self.bond_generator = BaseNNGet(self.nn_strategy, cutoff=cutoff)
+        elif isinstance(bond_generator, str):
+            self.bond_generator = {"BaseNNGet": BaseNNGet, "BaseDesGet": BaseDesGet}[bond_generator](self.nn_strategy,
+                                                                                                     cutoff=cutoff)
+        else:
+            self.bond_generator = bond_generator
 
 
 class CrystalGraph(_StructureGraphFixedRadius):
@@ -259,7 +314,7 @@ class CrystalGraph(_StructureGraphFixedRadius):
         """
         super().__init__(
             nn_strategy=nn_strategy, atom_converter=atom_converter, bond_converter=bond_converter,
-            state_converter=state_converter,cutoff=cutoff,**kwargs)
+            state_converter=state_converter, cutoff=cutoff, **kwargs)
 
 
 class CrystalGraphWithBondTypes(_StructureGraph):
@@ -286,6 +341,7 @@ class CrystalGraphWithBondTypes(_StructureGraph):
             atom_converter: Converter = None,
             bond_converter: Converter = None,
             state_converter: Converter = None,
+            return_bonds="bonds",
             **kwargs
     ):
         """
@@ -299,7 +355,7 @@ class CrystalGraphWithBondTypes(_StructureGraph):
             bond_converter = AtomPymatgenPropMap("is_metal", func=None, search_tp="number")
 
         super().__init__(nn_strategy=nn_strategy, atom_converter=atom_converter, bond_converter=bond_converter,
-                         state_converter=state_converter,
+                         state_converter=state_converter, return_bonds=return_bonds,
                          **kwargs)
 
 

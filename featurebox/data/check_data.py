@@ -1,7 +1,8 @@
 """
-Check the element.
+This part is used to check the element.
 """
-from typing import List, Callable, Text
+from typing import List, Callable
+
 import numpy as np
 
 ALL_ELE_NAME = ("H", "He", "Li", "Be", "B", "C", "N", "O", "F", "Ne", "Na", "Mg", "Al", "Si",
@@ -102,8 +103,18 @@ class CheckElements:
                 structures_t.append(si)
                 self.mark.append(1)
             else:
-                print("The {} (st,ed,th) sample {} is with element out of AVAILABLE_ELE_NAME\n".format(i, str(si)),
-                      "please to check_data.py for more information.")
+                if hasattr(si, "composition"):
+                    print("The {} (st,ed,th) sample {}".format(i, str(si.composition)),
+                          "is with element out of AVAILABLE_ELE_NAME\n"
+                          "please to check_data.py for more information.")
+                elif hasattr(si, "get_chemical_formula"):
+                    print("The {} (st,ed,th) sample {}".format(i, str(si.get_chemical_formula())),
+                          "is with element out of AVAILABLE_ELE_NAME\n"
+                          "please to check_data.py for more information.")
+                else:
+                    print("The {} (st,ed,th) sample {}".format(i, str(si)),
+                          "is with element out of AVAILABLE_ELE_NAME\n"
+                          "please to check_data.py for more information.")
                 self.mark.append(0)
         return structures_t
 

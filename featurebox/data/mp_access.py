@@ -12,11 +12,11 @@
 
 from itertools import zip_longest
 from typing import List, Dict
+
 import pandas as pd
 from pymatgen import Structure
-from tqdm import tqdm
-
 from pymatgen.ext.matproj import MPRester
+from tqdm import tqdm
 
 
 class MpAccess:
@@ -153,16 +153,16 @@ class MpAccess:
 
         Examples:
             criteria = {
-            # 'pretty_formula': {"$in": name_list},
-            # 'nelements': {"$lt": 3, "$gte": 3},
-            # 'spacegroup.number': {"$in": [225]},
-            # 'crystal_system': "cubic",
-            # 'nsites': {"$lt": 20},
-            # 'formation_energy_per_atom': {"$lt": 0},
-            # "elements": {"$all": "O"},
-            # "piezo":{"$ne": None}
-            # "elements": {"$all": "O"},
-            # "elements": {"$in": list(combinations(["Al", "Co", "Cr", "Cu", "Fe", 'Ni'], 5))}
+            'pretty_formula': {"$in": name_list},
+            'nelements': {"$lt": 3, "$gte": 3},
+            'spacegroup.number': {"$in": [225]},
+            'crystal_system': "cubic",
+            'nsites': {"$lt": 20},
+            'formation_energy_per_atom': {"$lt": 0},
+            "elements": {"$all": "O"},
+            "piezo":{"$ne": None}
+            "elements": {"$all": "O"},
+            "elements": {"$in": list(combinations(["Al", "Co", "Cr", "Cu", "Fe", 'Ni'], 5))}
         }
 
         where, $gt	>,  $gte >=,  $lt <,  $lte <=,  $ne !=,  $in,  $nin (not in),

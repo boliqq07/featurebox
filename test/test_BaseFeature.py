@@ -1,5 +1,7 @@
 import unittest
+
 import numpy as np
+
 from featurebox.featurizers.base_transform import BaseFeature, DummyConverter
 
 
@@ -12,11 +14,11 @@ class MyTestCase(unittest.TestCase):
 
     def test_transofrm(self):
         bf = BaseFeature(n_jobs=1)
-        x1 = [1,2,3,4,5,6]
-        x2 = [1,2,3,4,5,6.0]
-        x3 = np.array([[1,2,3,4,5,6.0],[1,2,3,4,5,6.0]])
-        x4 = np.array([[1,2,3,4,5,6.0]])
-        x5 = np.array([1,2,3,4,5,6.0])
+        x1 = [1, 2, 3, 4, 5, 6]
+        x2 = [1, 2, 3, 4, 5, 6.0]
+        x3 = np.array([[1, 2, 3, 4, 5, 6.0], [1, 2, 3, 4, 5, 6.0]])
+        x4 = np.array([[1, 2, 3, 4, 5, 6.0]])
+        x5 = np.array([1, 2, 3, 4, 5, 6.0])
         newx = bf.fit_transform(x1)
         print(newx)
         newx = bf.fit_transform(x2)
@@ -30,11 +32,11 @@ class MyTestCase(unittest.TestCase):
 
     def test_transofrm2(self):
         bf = DummyConverter(n_jobs=1)
-        x1 = [1,2,3,4,5,6]
-        x2 = [1,2,3,4,5,6.0]
-        x3 = np.array([[1,2,3,4,5,6.0],[1,2,3,4,5,6.0]])
-        x4 = np.array([[1,2,3,4,5,6.0]])
-        x5 = np.array([1,2,3,4,5,6.0])
+        x1 = [1, 2, 3, 4, 5, 6]
+        x2 = [1, 2, 3, 4, 5, 6.0]
+        x3 = np.array([[1, 2, 3, 4, 5, 6.0], [1, 2, 3, 4, 5, 6.0]])
+        x4 = np.array([[1, 2, 3, 4, 5, 6.0]])
+        x5 = np.array([1, 2, 3, 4, 5, 6.0])
         newx = bf.fit_transform(x1)
         print(newx)
         newx = bf.fit_transform(x2)

@@ -1,14 +1,11 @@
-import numpy as np
 import torch
 import torch.nn as nn
-from mgetool.tool import tt
 
 # from bgnet.layer.graph.baselayer import BaseLayer
 from featurebox.layer.graph.baselayer import BaseLayer
 
 
 class AtomLayer(BaseLayer):
-
     """
     Convolutional operation on graphs.
 
@@ -80,7 +77,7 @@ class AtomLayer(BaseLayer):
         self.fc_full = nn.Linear(2 * self.atom_fea_len + self.nbr_fea_len + self.state_fea_len,
                                  2 * self.atom_fea_len)
         self.fc_full2 = nn.Linear(2 * self.atom_fea_len,
-                                 2 * self.atom_fea_len)
+                                  2 * self.atom_fea_len)
         self.sigmoid = nn.Sigmoid()
         self.softplus1 = nn.Softplus()
         self.bn1 = nn.BatchNorm1d(2 * self.atom_fea_len)
@@ -106,7 +103,7 @@ class AtomLayer(BaseLayer):
                 state_features.
             node_atom_idx: (list of torch.Tensor)
                 index for preprocessing.
-        Returns
+        Returns:
             atom_out_fea: nn.Variable shape (N, atom_fea_len)
               refreshed atom features.
         """
@@ -129,7 +126,7 @@ class AtomLayer(BaseLayer):
         total_gated_fea = self.fc_full(total_nbr_fea)
         total_gated_fea = self.fc_full2(total_gated_fea)
         total_gated_fea = self.bn1(total_gated_fea.view(
-            -1, self.atom_fea_len*2)).view(N, M, self.atom_fea_len*2)
+            -1, self.atom_fea_len * 2)).view(N, M, self.atom_fea_len * 2)
         prop_filter, prop_core = total_gated_fea.chunk(2, dim=2)
         prop_filter = self.sigmoid(prop_filter)
         prop_core = self.softplus1(prop_core)
@@ -137,7 +134,6 @@ class AtomLayer(BaseLayer):
         prop_core = self.bn2(prop_core)
         out = self.softplus2(atom_fea + prop_core)
         return out
-
 
 # if __name__ == "__main__":
 #     torch.nn.LayerNorm

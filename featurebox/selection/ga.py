@@ -4,19 +4,17 @@ from functools import partial
 
 import numpy as np
 from deap import base
-
 from deap import tools
 from deap.algorithms import varAnd
 from deap.tools import mutShuffleIndexes
 from mgetool.newclass import create
+from mgetool.tool import batch_parallelize, check_random_state
 from sklearn.base import BaseEstimator, MetaEstimatorMixin
 from sklearn.datasets import load_boston
 from sklearn.feature_selection import SelectorMixin
 from sklearn.metrics import r2_score
 from sklearn.model_selection import cross_val_score
 from sklearn.svm import SVR
-from mgetool.tool import batch_parallelize, check_random_state
-from sklearn.utils.metaestimators import if_delegate_has_method
 from sklearn.utils.validation import check_is_fitted
 
 from featurebox.selection.mutibase import MutiBase

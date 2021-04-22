@@ -12,7 +12,8 @@ import numpy as np
 
 class MutiBase(object):
     """Base method for binding"""
-    def __init__(self, muti_grade:int=2, muti_index:List=None, must_index:List=None):
+
+    def __init__(self, muti_grade: int = 2, muti_index: List = None, must_index: List = None):
         """
 
         Parameters

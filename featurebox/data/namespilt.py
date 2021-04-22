@@ -237,7 +237,7 @@ class NameSplit:
         s = [_add_mul(si) for si in s]
         return s
 
-    def transform(self, names: List[str], folds_name: str = 'folds.csv', expands_name:str=r'expands.csv'):
+    def transform(self, names: List[str], folds_name: str = 'folds.csv', expands_name: str = r'expands.csv'):
         """
 
         Parameters

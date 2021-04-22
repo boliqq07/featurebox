@@ -332,7 +332,7 @@ def method_pack(method_all, me="reg", scoreing=None, gd=True, cv=10):
                 scoring2 = scoreing if scoreing else 'balanced_accuracy'
             if me == "reg":
                 scoring2 = scoreing if scoreing else 'r2'
-            cv2  = cv if cv else cv2
+            cv2 = cv if cv else cv2
             gd2 = GridSearchCV(me2, cv=cv2, param_grid=param_grid2, scoring=scoring2, n_jobs=1)
             estimator.append(gd2)
         return estimator
@@ -352,7 +352,6 @@ def method_pack(method_all, me="reg", scoreing=None, gd=True, cv=10):
 
 
 def cv_predict(x, y, s_estimator, kf):
-
     y_test_predict_all = []
     for train, test in kf:
         X_train, X_test, y_train, y_test = x[train], x[test], y[train], y[test]

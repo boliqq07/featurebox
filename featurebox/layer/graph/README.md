@@ -4,40 +4,40 @@ There are 3 length for first dim(axis) of data.
 
 `N_atom` > `N_ele`> `N_node`.
 
-1. `N_node`: This is consistent with the number of target. `N_node`==`N_target`.
-    In brief, The  first dim(axis) of data should be reduced to `N_node` to calculated error in the final network.
+1. `N_node`: This is consistent with the number of target. `N_node`==`N_target`. In brief, The first dim(axis) of data
+   should be reduced to `N_node` to calculated error in the final network.
 
-    `N_node` is the min data number. which can be expand in to `N_atom`, and `N_ele`.
+   `N_node` is the min data number. which can be expand in to `N_atom`, and `N_ele`.
 
-    Examples:
-    
+   Examples:
+
         new_data = self.expand_idx(data, node_atom_idx)
         new_data = self.expand_idx(data, node_ele_idx)
 
 2. `N_ele`: This is the number of type of atomic number.
 
-    This type is not used very much.
+   This type is not used very much.
 
-    `N_node` is the min data number. which can be expand in to and `N_atom` merged to `N_node`.
+   `N_node` is the min data number. which can be expand in to and `N_atom` merged to `N_node`.
 
-    Examples:
-    
+   Examples:
+
         new_data = self.expand_idx(data, ele_atom_idx)
         new_data = self.merge_idx(data, node_ele_idx)
 
 3. `N_atom` (`N`): This is the number of all atom in batch data.
 
-    The data with `N` could be merged in to `N_node` by node_atom_idx.
+   The data with `N` could be merged in to `N_node` by node_atom_idx.
 
-    Examples:
-    
+   Examples:
+
         new_data = self.merge_idx(data, node_atom_idx)
         new_data = self.merge_idx(data, ele_atom_idx)
 
-##### common data:
+##### Common Data:
 
 `atom_fea`:(torch.Tensor) torch.float32, shape (N, atom_fea_len)
-    
+
 `nbr_fea`:(torch.Tensor) torch.float32, shape (N, M, atom_fea_len) M default is 5.
 
 `state_fea`: (torch.Tensor) torch.float32, shape (N_node, state_fea_len)
@@ -46,7 +46,7 @@ There are 3 length for first dim(axis) of data.
 
 `#oe`: (torch.Tensor) torch.float32, shape (N, 17), add in `atom_fea`
 
-`#sgt`: (torch.Tensor) torch.float32, shape (N_node, 6) (N_node, 19), add in `state_fea`
+`#sgt`: (torch.Tensor) torch.float32, shape (N_node, 6) or (N_node, 19), add in `state_fea`
 
 `node_atom_idx`: (list of torch.Tensor) torch.int64, each one shape is different.
 

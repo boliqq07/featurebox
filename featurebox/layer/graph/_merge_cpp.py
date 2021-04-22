@@ -1,8 +1,10 @@
-import torch.utils.cpp_extension
 import imp
 import os
+import platform
 from pathlib import Path
+
 import torch
+import torch.utils.cpp_extension
 
 
 def import_module_from_library(module_name, path, is_python_module):
@@ -111,11 +113,16 @@ torch::Tensor merge_idx(const torch::Tensor &x, const std::vector<torch::Tensor>
 
 name = "segment_method"
 
-name_dir = "cache_"+name
+if platform.system() == "Windows":
+    ext = "dll"
+else:
+    ext = "so"
+
+name_dir = "cache_" + name
 MODULE_DIR = Path(__file__).parent.absolute()
 MODULE_DIR_NAME_DIR = MODULE_DIR / name_dir
 
-if os.path.isdir(MODULE_DIR_NAME_DIR) and os.path.isfile(MODULE_DIR_NAME_DIR / "{}.so".format(name)):
+if os.path.isdir(MODULE_DIR_NAME_DIR) and os.path.isfile(MODULE_DIR_NAME_DIR / "{}.{}".format(name, ext)):
     mod = import_module_from_library(name, MODULE_DIR_NAME_DIR, True)
 
 else:
