@@ -219,9 +219,15 @@ class AtomTableMap(BinaryMap):
     >>> s = [{"H": 2, }, {"Po": 1}]  #[i.species.as_dict() for i in pymatgen.structure.sites]
     >>> a = tmps.convert(s)
     ...
-    >>> tmps = AtomTableMap(search_tp="name")
+    >>> tmps = AtomTableMap(search_tp="name",tablename="oe.csv")
     >>> s = [[{"H": 2, }, {"Po": 1}],[{"H": 2, }, {"Po": 1}]]
     >>> a = tmps.transform(s)
+    ...
+
+    >>> tmps = AtomTableMap(tablename=None) or
+    >>> tmps = AtomTableMap(tablename="element_table.csv")
+    >>> s = [{"H": 2, }, {"Pd": 1}]
+    >>> b = tmps.convert(s)
     ...
 
     """
