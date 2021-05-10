@@ -61,6 +61,7 @@ class AtomMap(Converter, ABC):
     def get_csv_embeddings(data_name: str) -> pd.DataFrame:
         """get CSV preprocessing"""
         oedata = pd.read_csv(os.path.join(MODULE_DIR, "data", data_name), index_col=0)
+        oedata = oedata.apply(pd.to_numeric, errors='ignore')
         oedata = oedata.fillna(0)
         return oedata
 
@@ -194,6 +195,7 @@ class AtomTableMap(BinaryMap):
     Default table is oe.csv.
     you can change the table yourself for different preprocessing.
     The table contains elemental features for 92 U elements at least.
+    Please check all your data is int or float!!!
 
     Such as:
 
@@ -228,17 +230,28 @@ class AtomTableMap(BinaryMap):
                  search_tp: str = "name", **kwargs):
         """
 
-        Args:
-            tablename: (str,np.ndarray, pd.Dateframe)
-                Name of table in bgnet.preprocessing.resources.
-                np.ndarray, search_tp = "number" start from 1
-                pd.dataframe, search_tp = "name"
-            search_tp:(str)
-                Name
+        Parameter
+        ----------
+        tablename: str,np.ndarray, pd.Dateframe
+            1. Name of table in bgnet.preprocessing.resources. if tablename is None,
+            use the embedding "element_table.xlsx".\n
+            2. np.ndarray, search_tp = "number".\n
+            3. pd.dataframe, search_tp = "name"
+
+        search_tp:str
+            Name
         """
 
         super(AtomTableMap, self).__init__(search_tp=search_tp, **kwargs)
-        if isinstance(tablename, str):
+
+        if tablename is None or tablename == "element_table.csv":
+            self.da = self.get_ele_embeddings()
+            self.search_tp = "name"
+            self.d2 = True
+            self.dax = self.da.values
+            self.da_columns = list(self.da.columns)
+
+        elif isinstance(tablename, str):
             self.da = self.get_csv_embeddings(tablename)
             self.dax = self.da.values
             self.da_columns = list(self.da.columns)
@@ -254,9 +267,18 @@ class AtomTableMap(BinaryMap):
             self.d2 = True
             self.da_columns = list(self.da.columns)
         else:
-            raise TypeError("just accept np.array,pd.dataframe, name of csv")
+            raise TypeError("just accept np.array,pd.dataframe, or str name of csv")
         self.dax = np.concatenate((np.zeros((1, self.dax.shape[1])), self.dax), axis=0)  # for index from 1
         self.tablename = tablename
+
+    @staticmethod
+    def get_ele_embeddings() -> pd.DataFrame:
+        """get CSV preprocessing"""
+        oedata = pd.read_csv(os.path.join(MODULE_DIR, "data", "element_table.csv"), index_col=0, header=7, skiprows=0)
+        oedata = oedata.drop(["abbrTex", "abbr"], axis=0)
+        oedata = oedata.fillna(0)
+        oedata = oedata.apply(pd.to_numeric, errors='ignore')
+        return oedata
 
     def convert_dict(self, atoms: List[Dict]) -> np.ndarray:
         """

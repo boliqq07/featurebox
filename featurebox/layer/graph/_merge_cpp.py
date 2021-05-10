@@ -1,8 +1,11 @@
 import imp
 import os
 import platform
+import sys
+from importlib import util
 from pathlib import Path
 
+import importlib
 import torch
 import torch.utils.cpp_extension
 
@@ -15,7 +18,6 @@ def import_module_from_library(module_name, path, is_python_module):
             return imp.load_module(module_name, file, path, description)
         else:
             torch.ops.load_library(path)
-
 
 source = """
 #include <iostream>
@@ -122,7 +124,8 @@ name_dir = "cache_" + name
 MODULE_DIR = Path(__file__).parent.absolute()
 MODULE_DIR_NAME_DIR = MODULE_DIR / name_dir
 
-if os.path.isdir(MODULE_DIR_NAME_DIR) and os.path.isfile(MODULE_DIR_NAME_DIR / "{}.{}".format(name, ext)):
+if os.path.isdir(MODULE_DIR_NAME_DIR) and os.path.isfile(MODULE_DIR_NAME_DIR / "{}.{}".format(name, ext))\
+        :
     mod = import_module_from_library(name, MODULE_DIR_NAME_DIR, True)
 
 else:

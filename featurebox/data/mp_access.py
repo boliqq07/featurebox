@@ -14,7 +14,7 @@ from itertools import zip_longest
 from typing import List, Dict
 
 import pandas as pd
-from pymatgen import Structure
+from pymatgen.core import Structure
 from pymatgen.ext.matproj import MPRester
 from tqdm import tqdm
 

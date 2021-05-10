@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="iap13@192.9.200.238:22 password" remoteFilesAllowedToDisappearOnAutoupload="false">
+  <component name="PublishConfigData" autoUpload="Always" serverName="iap13@192.9.200.239:10002 password" remoteFilesAllowedToDisappearOnAutoupload="false">
     <serverData>
       <paths name="MachineLearning@192.9.200.233:22">
         <serverdata>
@@ -40,7 +40,7 @@
       <paths name="wangchangxin@222.28.70.247:22">
         <serverdata>
           <mappings>
-            <mapping deploy="/tmp/pycharm_project_429" local="$PROJECT_DIR$" />
+            <mapping deploy="/data/home/wangchangxin/gpaw/gpaw-21.1.0" local="$PROJECT_DIR$/../gpaw" />
           </mappings>
         </serverdata>
       </paths>

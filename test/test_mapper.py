@@ -59,6 +59,12 @@ class TestGraph(unittest.TestCase):
             resultt = bag.convert(i)
             print(resultt)
 
+    def test_get9(self):
+        tmps = AtomTableMap(tablename=None)
+        s = [{"H": 2, }, {"Pd": 1}]
+        b = tmps.convert(s)
+        print(b.shape)
+
     def test_cat(self):
         tmps = ConverterCat(AtomTableMap(search_tp="name"), AtomTableMap(search_tp="name"))
         s = [{"H": 2, }, {"Po": 1}]

@@ -1,7 +1,7 @@
 """Use NearNeighbors from pymatgen."""
 from typing import Dict, List
 
-from pymatgen import Element
+from pymatgen.core import Element
 from pymatgen.analysis.local_env import (
     NearNeighbors,
     VoronoiNN,
