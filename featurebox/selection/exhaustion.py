@@ -32,15 +32,30 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
 
     The attribute ``estimator_`` is the model with the best feature rather than all feature combination.
 
+    Examples
+    ----------
     >>> from sklearn.datasets import load_boston
     >>> from sklearn.svm import SVR
     >>> X,y = load_boston(return_X_y=True)
     >>> svr= SVR()
-    >>> bf = Exhaustion(svr,n_select=(2,))
+    >>> bf = Exhaustion(svr,n_select=(2,),refit=True)
     >>> new_x = bf.fit_transform(X,y)
     >>> bf.support_
     array([False, False, False, False, False, False, False, False, False,
            False,  True, False,  True])
+
+    Examples
+    ----------
+    >>> from sklearn.datasets import load_boston
+    >>> from sklearn.svm import SVR
+    >>> X,y = load_boston(return_X_y=True)
+    >>> svr= SVR()
+    >>> from sklearn import model_selection
+    >>> gd = model_selection.GridSearchCV(svr, param_grid=[{"C": [1, 10]}], n_jobs=1, cv=5)
+    >>> bf = Exhaustion(gd,n_select=(2,),refit=True)
+    >>> new_x = bf.fit_transform(X,y)
+    >>> bf.support_
+    ...
     """
 
     def __init__(self, estimator: BaseEstimator, n_select: Tuple = (2, 3, 4), muti_grade: int = 2,
@@ -63,7 +78,7 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
         n_jobs:int
             n_jobs
         refit:bool
-            refit or not
+            refit or not, if refit the model would used all data.
         cv:bool
             if estimator is sklearn model, used cv, else pass
         """
@@ -94,6 +109,8 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
 
     def _fit(self, x, y):
 
+        estimator = clone(self.estimator)
+
         def score_pri(slices, x0, y0):
             slices = list(slices)
             if len(slices) < 1:
@@ -102,12 +119,12 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
                 slices = self.feature_unfold(slices)
                 data_x0 = x0[:, slices]
 
-                if hasattr(self.estimator, "best_score_"):
-                    self.estimator.fit(data_x0, y0)
-                    score0 = np.mean(self.estimator.best_score_)  # score_test
+                if hasattr(estimator, "best_score_"):
+                    estimator.fit(data_x0, y0)
+                    score0 = np.mean(estimator.best_score_)  # score_test
 
                 else:
-                    score0 = cross_val_score(self.estimator, data_x0, y0, cv=self.cv)
+                    score0 = cross_val_score(estimator, data_x0, y0, cv=self.cv)
                     score0 = np.mean(score0)
                 # print(slices, score0)
             return score0
@@ -138,6 +155,15 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
         self.support_ = su
         self.estimator_ = clone(self.estimator)
         if self.refit:
+            if not hasattr(self.estimator_, 'best_score_'):
+                warnings.warn(UserWarning(
+                    "The self.estimator_ :{} used all the X,y data.".format(self.estimator_.__class__.__name__),
+                    "please be careful with the later 'score' and 'predict'."))
+            if hasattr(self.estimator_, 'best_score_') and hasattr(self.estimator_, "refit") \
+                    and self.estimator_.refit is True:
+                warnings.warn(UserWarning(
+                    "The self.estimator_ :{} used all the X,y data.".format(self.estimator_.__class__.__name__),
+                    "please be careful with the later 'score' and 'predict'."))
             self.estimator_.fit(x[:, select_feature], y)
         self.n_feature_ = len(select_feature)
         self.score_ex = list(zip(feature_combination, scores))
@@ -146,9 +172,10 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
 
         return self
 
-    @if_delegate_has_method(delegate='estimator')
+    @if_delegate_has_method(delegate='estimator_')
     def predict(self, X):
         """Reduce X to the selected feature and then Fit using the underlying estimator.
+        Only available ``refit=True``.
 
         Parameters
         ----------
@@ -163,9 +190,10 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
         check_is_fitted(self, 'estimator_')
         return self.estimator_.predict(self.transform(X))
 
-    @if_delegate_has_method(delegate='estimator')
+    @if_delegate_has_method(delegate='estimator_')
     def score(self, X, y):
         """Reduce X to the selected feature and then return the score of the underlying estimator.
+        Only available ``refit=True``.
 
         Parameters
         ----------
@@ -181,3 +209,6 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
     def _get_support_mask(self):
         check_is_fitted(self, 'support_')
         return self.support_
+
+
+ExhaustionCV = Exhaustion

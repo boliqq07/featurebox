@@ -9,6 +9,7 @@
 """Forward_and_back feature elimination for feature ranking"""
 
 import copy
+import warnings
 from functools import partial
 from typing import List
 
@@ -33,6 +34,7 @@ def _baf_single_fit(train, test, baf, estimator, X, y, scorer, random_state):
     X_test, y_test = _safe_split(estimator, X, y, test, train)
     baf_i = clone(baf)
     baf_i.random_state = random_state
+    baf_i.refit = True
     baf_i._fit(X_train, y_train)
     return baf_i.support_, _score(baf_i.estimator_, baf_i.transform(X_test, ), y_test, scorer), baf_i.score_
 
@@ -65,15 +67,44 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
     >>> from sklearn.svm import SVR
     >>> X,y = load_boston(return_X_y=True)
     >>> svr= SVR()
-    >>> bf = BackForward(svr,primary_feature=4,  random_state=1)
+    >>> bf = BackForward(svr,primary_feature=4, random_state=1)
     >>> new_x = bf.fit_transform(X,y)
     >>> bf.support_
     array([False, False, False, False, False, False, False, False, False,
            False,  True, False,  True])
+
+    Examples:
+    -----------
+    if score and predict is used, the refit could be set True and make sure the data is spilted, due to the refit
+     used all data in fit() function.
+
+    >>> from sklearn.datasets import load_boston
+    >>> from sklearn.svm import SVR
+    >>> X,y = load_boston(return_X_y=True)
+    >>> svr= SVR()
+    >>> bf = BackForward(svr,primary_feature=4, random_state=1, refit=True)
+    >>> new_x = bf.fit_transform(X[:50],y[:50])
+    >>> test_score = bf.score(X[50:],y[50:])
+    ...
+
+    Examples:
+    -----------
+    if GridSearchCV, the refit could be set True and return the cv score.
+
+    >>> from sklearn.datasets import load_boston
+    >>> from sklearn.svm import SVR
+    >>> from sklearn import model_selection
+    >>> X,y = load_boston(return_X_y=True)
+    >>> svr= SVR()
+    >>> gd = model_selection.GridSearchCV(svr,param_grid={"C":[1,10]},n_jobs=1,cv=5)
+    >>> bf = BackForward(gd,primary_feature=4, random_state=1, refit=True)
+    >>> new_x = bf.fit_transform(X,y)
+    >>> test_score = bf.score(X,y)
+    ...
     """
 
     def __init__(self, estimator: BaseEstimator, n_type_feature_to_select: int = None, primary_feature: int = None,
-                 muti_grade: int = 2, muti_index: List = None,
+                 muti_grade: int = 2, muti_index: List = None, refit=False,
                  must_index: List = None, tolerant: float = 0.01, verbose: int = 0, random_state: int = None):
         """
 
@@ -97,6 +128,8 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
             print or not
         random_state:int
             random_state
+        refit:refit
+            refit or not. if refit, the model would use all data.
         """
         super().__init__(muti_grade=muti_grade, muti_index=muti_index, must_index=must_index)
         self.estimator = estimator
@@ -106,6 +139,7 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
         self.score_ = []
         self.random_state = random_state
         self.tolerant = tolerant
+        self.refit = refit
 
     @property
     def _estimator_type(self):
@@ -126,6 +160,8 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
         return self._fit(X, y)
 
     def _fit(self, x, y):
+
+        estimator = clone(self.estimator)
 
         def add_slice(slice10, slice20):
             best0 = score(slices=slice10)
@@ -198,11 +234,11 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
                 slices = self.feature_unfold(slices)
                 data_x0 = x0[:, slices]
 
-                self.estimator.fit(data_x0, y0)
-                if hasattr(self.estimator, 'best_score_'):
-                    score0 = np.mean(self.estimator.best_score_)
+                estimator.fit(data_x0, y0)
+                if hasattr(estimator, 'best_score_'):
+                    score0 = np.mean(estimator.best_score_)
                 else:
-                    score0 = np.mean(cross_val_score(self.estimator, data_x0, y0, cv=5))
+                    score0 = np.mean(cross_val_score(estimator, data_x0, y0, cv=5))
             return score0
 
         score = partial(score_pri, x0=x, y0=y)
@@ -238,14 +274,25 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
         su[select_feature] = 1
         self.support_ = su
         self.estimator_ = clone(self.estimator)
-        self.estimator_.fit(x[:, select_feature], y)
+        if self.refit:
+            if not hasattr(self.estimator_, 'best_score_'):
+                warnings.warn(UserWarning(
+                    "The self.estimator_ :{} used all the X,y data.".format(self.estimator_.__class__.__name__),
+                    "please be careful with the later 'score' and 'predict'."))
+            if hasattr(self.estimator_, 'best_score_') and hasattr(self.estimator_, "refit") \
+                    and self.estimator_.refit is True:
+                warnings.warn(UserWarning(
+                    "The self.estimator_ :{} used all the X,y data.".format(self.estimator_.__class__.__name__),
+                    "please be careful with the later 'score' and 'predict'."))
+            self.estimator_.fit(x[:, select_feature], y)
         self.n_feature_ = len(select_feature)
 
         return self
 
-    @if_delegate_has_method(delegate='estimator')
+    @if_delegate_has_method(delegate='estimator_')
     def predict(self, X):
         """Reduce X to the selected feature and then using the underlying estimator to predict.
+         Only available ``refit=True``.
 
         Parameters
         ----------
@@ -260,9 +307,10 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
         check_is_fitted(self, 'estimator_')
         return self.estimator_.predict(self.transform(X))
 
-    @if_delegate_has_method(delegate='estimator')
+    @if_delegate_has_method(delegate='estimator_')
     def score(self, X, y):
         """Reduce X to the selected feature and then return the score of the underlying estimator.
+        Only available ``refit=True``.
 
         Parameters
         ----------
@@ -280,29 +328,24 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
         return self.support_
 
 
-class BackForwardCV(MetaEstimatorMixin, SelectorMixin, BaseEstimator):
+def _multi_time_fit(random_state, baf, X, y, scorer):
+    """"""
+    baf_i = clone(baf)
+    baf_i.random_state = random_state
+    baf_i.refit = True
+    baf_i._fit(X, y)
+    return baf_i.support_, _score(baf_i.estimator_, baf_i.transform(X, ), y, scorer), baf_i.score_
+
+
+class BackForwardStable(MetaEstimatorMixin, SelectorMixin, BaseEstimator):
     """
-    BackForwardCV.
+    BackForwardStable.
+    Run with different order for more Stable (Not guaranteed).
 
     estimator : object
         A supervised learning estimator with a ``_fit`` method that provides
         information about feature importance either through a ``coef_``
         attribute or through a ``feature_importances_`` attribute.
-
-
-    cv : int, cross-validation generator or an iterable, optional
-        Determines the cross-validation splitting strategy.
-        Possible inputs for cv are:
-
-        - None, to use the default 3-fold cross-validation,
-        - integer, to specify the number of folds.
-        - :term:`CV splitter`,
-        - An iterable yielding (train, test) splits as arrays of indices.
-
-        For integer/None inputs, if ``y`` is binary or multiclass,
-        :class:`sklearn.model_selection.StratifiedKFold` is used. If the
-        estimator is a classifier or if ``y`` is neither binary nor multiclass,
-        :class:`sklearn.model_selection.KFold` is used.
 
     scoring : string, callable or None, optional, (default=None)
         A string (see model evaluation documentation) or
@@ -335,20 +378,48 @@ class BackForwardCV(MetaEstimatorMixin, SelectorMixin, BaseEstimator):
     >>> from sklearn.svm import SVR
     >>> X,y = load_boston(return_X_y=True)
     >>> svr= SVR()
-    >>> bf = BackForwardCV(svr,primary_feature=9,  random_state=1,cv=5)
+    >>> bf = BackForwardStable(svr,primary_feature=9,  random_state=1)
     >>> new_x = bf.fit_transform(X,y)
     >>> bf.support_
     array([False, False, False, False, False, False, False, False, False,
            False,  True, False,  True])
     >>> bf.score_
-    0.656494361629943
+    0.642826382278419
 
+    Examples:
+    -----------
+    if score and predict is used, the refit could be set True and make sure the data is spilted, due to the refit
+     used all data in fit() function.
+
+    >>> from sklearn.datasets import load_boston
+    >>> from sklearn.svm import SVR
+    >>> X,y = load_boston(return_X_y=True)
+    >>> svr= SVR()
+    >>> bf = BackForwardStable(svr,primary_feature=4, random_state=1, refit=True)
+    >>> new_x = bf.fit_transform(X[:50],y[:50])
+    >>> test_score = bf.score(X[50:],y[50:])
+    ...
+
+    Examples:
+    -----------
+    if GridSearchCV, the refit could be set True and return the cv score.
+
+    >>> from sklearn.datasets import load_boston
+    >>> from sklearn.svm import SVR
+    >>> from sklearn import model_selection
+    >>> X,y = load_boston(return_X_y=True)
+    >>> svr= SVR()
+    >>> gd = model_selection.GridSearchCV(svr,param_grid={"C":[1,10]},n_jobs=1,cv=5)
+    >>> bf = BackForward(gd,primary_feature=4, random_state=1, refit=True)
+    >>> new_x = bf.fit_transform(X,y)
+    >>> test_score = bf.score(X,y)
+    ...
     """
 
     def __init__(self, estimator: BaseEstimator, n_type_feature_to_select: int = None,
                  primary_feature: int = None, muti_grade: int = 2, muti_index: List = None,
                  must_index: List = None, verbose: int = 0, random_state: int = None,
-                 cv: int = 5, scoring: str = "r2", n_jobs: int = None, refit=False):
+                 times: int = 5, scoring: str = "r2", n_jobs: int = None, refit=False):
         """
 
         Parameters
@@ -367,19 +438,6 @@ class BackForwardCV(MetaEstimatorMixin, SelectorMixin, BaseEstimator):
             must selection index
         random_state:int
             random_state
-        cv : int, cross-validation generator or an iterable, optional
-            Determines the cross-validation splitting strategy.
-            Possible inputs for cv are:
-
-            - None, to use the default 3-fold cross-validation,
-            - integer, to specify the number of folds.
-            - CV splitter,
-            - An iterable yielding (train, test) splits as arrays of indices.
-
-            For integer/None inputs, if ``y`` is binary or multiclass,
-            :class:`sklearn.model_selection.StratifiedKFold` is used. If the
-            estimator is a classifier or if ``y`` is neither binary nor multiclass,
-            :class:`sklearn.model_selection.KFold` is used.
 
         scoring : string, callable or None, optional, (default=None)
             A string (see model evaluation documentation) or
@@ -395,11 +453,11 @@ class BackForwardCV(MetaEstimatorMixin, SelectorMixin, BaseEstimator):
             ``-1`` means using all processors.
             for more details.
         refit:
-            False
+            False, with refit, the model would used all data.
         """
 
         self.estimator = estimator
-        self.cv = cv
+        self.times = times
         self.scoring = scoring
         self.verbose = verbose
         self.n_jobs = n_jobs
@@ -411,12 +469,6 @@ class BackForwardCV(MetaEstimatorMixin, SelectorMixin, BaseEstimator):
         self.score_ = []
         self.random_state = random_state
         self.refit = refit
-        # spath.support_cv = ""
-        # spath.score_cv = ""
-        # spath.support_ = ""
-        # spath.score_ = ""
-        # spath.estimator_ = ""
-        # spath.n_feature_ = ""
 
     def fit(self, X, y, groups=None):
         """Fit the baf model and automatically tune the number of selected feature.
@@ -437,19 +489,20 @@ class BackForwardCV(MetaEstimatorMixin, SelectorMixin, BaseEstimator):
         """
         X, y = check_X_y(X, y, "csr")
         # Initialization
-        cv = check_cv(self.cv, y, is_classifier(self.estimator))
-        scorer = check_scoring(self.estimator, scoring=self.scoring)
+        estimator = clone(self.estimator)
+        scorer = check_scoring(estimator, scoring=self.scoring)
         ran = check_random_state(self.random_state)
 
-        baf = BackForward(estimator=self.estimator,
+        baf = BackForward(estimator=estimator,
                           n_type_feature_to_select=self.n_type_feature_to_select,
                           verbose=self.verbose, primary_feature=self.primary_feature,
                           muti_grade=self.muti_grade, muti_index=self.muti_index,
                           must_index=self.must_index, random_state=ran)
+        rans = ran.randint(0, 1000, self.times)
 
-        func = partial(_baf_single_fit, baf=baf, estimator=self.estimator, X=X, y=y, scorer=scorer, random_state=ran)
+        func = partial(_multi_time_fit, baf=baf, X=X, y=y, scorer=scorer)
 
-        scores = parallelize(n_jobs=self.n_jobs, func=func, iterable=cv.split(X, y, groups), respective=True)
+        scores = parallelize(n_jobs=self.n_jobs, func=func, iterable=rans, respective=False)
 
         support, scores, score_step = zip(*scores)
         best_support = support[np.argmax(scores)]
@@ -458,19 +511,27 @@ class BackForwardCV(MetaEstimatorMixin, SelectorMixin, BaseEstimator):
 
         # Set final attributes
         self.support_step = score_step
-        self.support_cv = support
         self.support_ = best_support
-        self.score_cv = scores
         self.score_ = best_score
         self.estimator_ = clone(self.estimator)
         if self.refit:
+            if not hasattr(self.estimator_, 'best_score_'):
+                warnings.warn(UserWarning(
+                    "The self.estimator_ :{} used all the X,y data.".format(self.estimator_.__class__.__name__),
+                    "please be careful with the later 'score' and 'predict'."))
+            if hasattr(self.estimator_, 'best_score_') and hasattr(self.estimator_, "refit") \
+                    and self.estimator_.refit is True:
+                warnings.warn(UserWarning(
+                    "The self.estimator_ :{} used all the X,y data.".format(self.estimator_.__class__.__name__),
+                    "please be careful with the later 'score' and 'predict'."))
             self.estimator_.fit(X[:, self.support_], y)
         self.n_feature_ = np.count_nonzero(support)
         return self
 
-    @if_delegate_has_method(delegate='estimator')
+    @if_delegate_has_method(delegate='estimator_')
     def predict(self, X):
-        """Reduce X to the selected feature and then Fit using the underlying estimator.
+        """Reduce X to the selected feature and then Fit using the underlying estimator, only with refit.
+        Only available ``refit=True``.
 
         Parameters
         ----------
@@ -485,9 +546,10 @@ class BackForwardCV(MetaEstimatorMixin, SelectorMixin, BaseEstimator):
         check_is_fitted(self, 'estimator_')
         return self.estimator_.predict(self.transform(X))
 
-    @if_delegate_has_method(delegate='estimator')
+    @if_delegate_has_method(delegate='estimator_')
     def score(self, X, y):
-        """Reduce X to the selected feature and then return the score of the underlying estimator.
+        """Reduce X to the selected feature and then return the score of the underlying estimator, only with refit.
+        Only available ``refit=True``.
 
         Parameters
         ----------
@@ -508,6 +570,6 @@ class BackForwardCV(MetaEstimatorMixin, SelectorMixin, BaseEstimator):
 # from sklearn.svm import SVR
 # X,y = load_boston(return_X_y=True)
 # svr= SVR()
-# bf = BackForwardCV(svr, primary_feature=9,  random_state=1, cv =5)
+# bf = BackForwardCV(svr, primary_feature=9,  random_state=1)
 # new_x = bf.fit_transform(X,y)
 # bf.support_

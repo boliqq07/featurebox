@@ -136,22 +136,22 @@ def filt(ind, min_=2, max_=None):
 
 class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
     """
-    GA with binding.
+    GA with binding. Please just passing training data.
 
     Examples
     ---------
     >>> from sklearn.datasets import load_boston
     >>> from sklearn.svm import SVR
     >>> data = load_boston()
-    >>> x = data.data
-    >>> y = data.target
+    >>> x = data.data[:50]
+    >>> y = data.target[:50]
     >>> svr = SVR(gamma="scale", C=100)
     >>> ga = GA(estimator=svr, n_jobs=2, pop_n=50, hof_n=1, cxpb=0.8, mutpb=0.4, ngen=3, max_or_min="max", mut_indpb=0.1, min_=2, muti_index=[0, 5],random_state=0)
 
     Then
     ::
 
-        ga = ga.fit(x, y)
+        ga.score(x_test, y_test)
         ga.score_cv(x, y)
 
     """
