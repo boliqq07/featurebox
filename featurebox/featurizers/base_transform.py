@@ -394,7 +394,7 @@ class ConverterCat(BaseFeature):
             try:
                 args[i] = args[i] + args[i + 1]
                 del args[i + 1]
-            except (AssertionError, TypeError, IndexError):
+            except (AssertionError, TypeError, IndexError, NotImplementedError):
                 i += 1
         return args
 
@@ -403,7 +403,8 @@ class ConverterCat(BaseFeature):
         data = []
         for ci in self.args:
             data.append(ci.convert(d))
-        try:
-            return np.concatenate(data, axis=-1)
-        except ValueError:
-            return data
+        else:
+            try:
+                return np.concatenate(data, axis=-1)
+            except ValueError:
+                return data

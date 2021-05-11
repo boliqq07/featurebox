@@ -166,7 +166,7 @@ def mark_classes(classes: List):
     return NNDict
 
 
-def get_marked_class(nn_strategy, NNDict: Dict, instantiation: bool = True):
+def get_marked_class(nn_strategy, NNDict: Dict =None, instantiation: bool = True):
     """
     Just call values in NNict by,consider multiple cases at the same time.
     ["VoronoiNN",
@@ -206,13 +206,20 @@ def get_marked_class(nn_strategy, NNDict: Dict, instantiation: bool = True):
 
     """
     try:
+        ######old type for compatibility ####
         if nn_strategy is None:
+            return nn_strategy
+        if nn_strategy == "find_points_in_spheres":
             return nn_strategy
         if isinstance(nn_strategy, (float, int)):
             return nn_strategy
+
+        ############restore##################
+
         if isinstance(nn_strategy, dict):
             return NNDict[nn_strategy["tp_na"]](**nn_strategy['all_args_kwargs'])
 
+        ############by str name##############
         if isinstance(nn_strategy, str):
             if "_D" in nn_strategy:
                 Nei = NNDict[nn_strategy]()

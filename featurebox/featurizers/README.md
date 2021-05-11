@@ -16,9 +16,7 @@
 
 ###### Transform parallel
 
-    gt = GraphsTool(graph_object=CrystalBgGraph, n_jobs=2, 
-                    batch_calculate=True, batch_size=10)
-                    
+    gt = CrystalBgGraph(n_jobs=2)
     in_data = gt.transform(checked_data)
     
     """you can save the in_data to the local disk to prevent double counting."""

@@ -104,7 +104,8 @@ def universe_refine_des(d: Dict, fill_size=10, **kwargs):
     return np.array(range(atom_len)), center, seq_new, dxdr_new, None
 
 
-def universe_refine_nn(center_indices, neighbor_indices, distances, vectors=None, center_prop=None, fill_size=5,
+def universe_refine_nn(center_indices, neighbor_indices, distances, vectors=None, center_prop=None, ele_numbers=None,
+                       fill_size=5,
                        dis_sort=False,
                        **kwargs):
     """
@@ -131,6 +132,7 @@ def universe_refine_nn(center_indices, neighbor_indices, distances, vectors=None
 
     where l, and l_c >= 1
     """
+    _ = ele_numbers
 
     neis = []
     diss = []
@@ -181,9 +183,39 @@ def universe_refine_nn(center_indices, neighbor_indices, distances, vectors=None
         return np.array(cen).ravel(), center_prop, np.array(neis), vecs, np.array(diss)[..., np.newaxis]
 
 
-refine_method_des = {"universe_refine": universe_refine_des}
+def perovskite_refine_nn(center_indices, neighbor_indices, distances, vectors=None, center_prop=None,
+                         ele_numbers=None, fill_size=5, dis_sort=False, **kwargs):
+    """
+    Change each center atoms has fill_size neighbors.
+    More neighbors would be abandoned.
+    Insufficient neighbors would be duplicated.
 
-refine_method_nn = {"universe_refine": universe_refine_nn}
+    Args:
+        center_indices: np.ndarray 1d
+        neighbor_indices: np.ndarray 1d
+        distances: np.ndarray 1d
+        vectors: np.ndarray 2d
+        fill_size: float
+        dis_sort:bool
+            sort neighbors with distance.
+
+    Returns:
+        (center_indices,center_indices,  neighbor_indices, images, distances)\n
+        center_indices: np.ndarray 1d(N,1).\n
+        center_prop: np.ndarray 1d(N,l_c).\n
+        neighbor_indices: np.ndarray 2d(N,fill_size).\n
+        images: np.ndarray 2d(N,fill_size,l).\n
+        distance: np.ndarray 2d(N,fill_size,1).
+
+    where l, and l_c >= 1
+    """
+    # assert center_prop == None
+    #
+    # # todo
+    #
+    # return np.array(cen).ravel(), np.array(cen).reshape(-1, 1), np.array(neis), vecs, np.array(diss)[
+    #         ..., np.newaxis]
+    return
 
 
 class _BaseEnvGet(BaseFeature):
@@ -362,7 +394,7 @@ class BaseNNGet(BaseFeature):
 
     def __init__(self, nn_strategy: Union[NearNeighbors] = "UserVoronoiNN", refine: str = None,
                  refined_strategy_param: Dict = None,
-                 numerical_tol=1e-8, pbc: List[int] = None, cutoff=None):
+                 numerical_tol=1e-8, pbc: List[int] = None, cutoff=5.0):
         """
 
         Parameters
@@ -376,8 +408,12 @@ class BaseNNGet(BaseFeature):
         numerical_tol:float
             numerical_tol
         pbc:list
+            only for find "find_points_in_spheres".
             periodicity in 3 direction
             3-length list,each one is 1 or 0. such as [0,0,0],The 1 mean in this direction is with periodicity.
+        cutoff:
+            if offered, the nn_strategy would be neglect and find neighbors using
+                ``find_points_in_spheres`` in pymatgen.
         """
 
         super().__init__(n_jobs=1, on_errors='raise', return_type='any')
@@ -401,8 +437,7 @@ class BaseNNGet(BaseFeature):
         Returns:
             center_indices,center_prop,neighbor_indices,images,distances
         """
-
-        if isinstance(self.cutoff, float):
+        if self.nn_strategy == "find_points_in_spheres":
             return self.get_graphs_within_cutoff_merge_sort(structure)
         else:
             return self.get_graphs_with_strategy_merge_sort(structure)
@@ -451,11 +486,14 @@ class BaseNNGet(BaseFeature):
         numerical_tol = self.numerical_tol
         center_indices, neighbor_indices, images, distances = self._within_cutoff(structure, cutoff,
                                                                                   numerical_tol)
-
+        ele_numbers = np.array(structure.atomic_numbers)
         center_indices, center_prop, neighbor_indices, images, distances = self.refine(center_indices, neighbor_indices,
                                                                                        distances,
                                                                                        images,
-                                                                                       **self.refined_strategy_param)
+                                                                                       center_prop=None,
+                                                                                       ele_numbers=ele_numbers,
+                                                                                       **self.refined_strategy_param,
+                                                                                       )
 
         if len(center_indices.tolist()) == len(structure.species):
             return center_indices, center_prop, neighbor_indices, images, distances
@@ -489,14 +527,16 @@ class BaseNNGet(BaseFeature):
             bonds.extend(bondsi)
             center_prop.append(center_propi)
 
-        if None in center_prop[0]:
+        if None in center_prop[0] or [] in center_prop:
             center_prop = None
         else:
             center_prop = np.array(center_prop)
 
+        ele_numbers = np.array(structure.atomic_numbers)
         center_indices, cen_prop, neighbor_indices, images, distances = self.refine(np.array(index1), np.array(index2),
                                                                                     np.array(bonds), np.array(image),
                                                                                     center_prop=center_prop,
+                                                                                    ele_numbers=ele_numbers,
                                                                                     **self.refined_strategy_param)
 
         if len(center_indices.tolist()) == len(structure.species):
@@ -518,3 +558,16 @@ class BaseNNGet(BaseFeature):
                 structure)
 
             return center_indices, cen_prop, neighbor_indices, images, distances
+
+
+#####################################################################################################################
+refine_method_des = {"universe_refine": universe_refine_des}
+
+refine_method_nn = {"universe_refine": universe_refine_nn, "perovskite_refine_nn": perovskite_refine_nn}
+# class
+env_names = {"BaseNNGet": BaseNNGet, "BaseDesGet": BaseDesGet}
+# local env method
+env_method = {"BaseNNGet": NNDict, "BaseDesGet": DesDict, }
+# after treatment
+env_treatment = {"BaseNNGet": refine_method_nn, "BaseDesGet": refine_method_des, }
+#####################################################################################################################

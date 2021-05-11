@@ -15,12 +15,11 @@ from typing import List
 
 import numpy as np
 from mgetool.tool import parallelize
-from sklearn.base import BaseEstimator, is_classifier
+from sklearn.base import BaseEstimator
 from sklearn.base import MetaEstimatorMixin
 from sklearn.base import clone
 from sklearn.feature_selection import SelectorMixin
 from sklearn.metrics import check_scoring
-from sklearn.model_selection import check_cv
 from sklearn.model_selection._validation import _score, cross_val_score
 from sklearn.utils.metaestimators import if_delegate_has_method, _safe_split
 from sklearn.utils.validation import check_is_fitted, check_X_y, check_random_state

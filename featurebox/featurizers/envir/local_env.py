@@ -93,7 +93,7 @@ class MinimumDistanceNNAll(NearNeighbors):
                     "site": nn,
                     "image": self._get_image(structure, nn),
                     "weight": nn.nn_distance,
-                    "site_idx": self._get_original_site(structure, nn),
+                    "site_index": self._get_original_site(structure, nn),
                 }
             )
         return siw
@@ -118,7 +118,7 @@ class AllAtomPairs(NearNeighbors):
         siw = []
         for i, s in enumerate(molecule):
             if i != n:
-                siw.append({"site": s, "image": None, "weight": site.distance(s), "site_idx": i})
+                siw.append({"site": s, "image": None, "weight": site.distance(s), "site_index": i})
         return siw
 
 
