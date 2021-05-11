@@ -169,6 +169,8 @@ class AtomJsonMap(BinaryMap):
         """
         Convert atom {symbol: fraction} list to numeric features
         """
+        if isinstance(atoms, dict):
+            atoms = [{k: v} for k, v in atoms.items()]
 
         features = []
         for atom in atoms:
@@ -179,14 +181,20 @@ class AtomJsonMap(BinaryMap):
                 else:
                     emb += np.array(self.embedding_dict[k])
             features.append(emb)
-        return np.array(features).reshape((len(atoms), -1))
+        if len(atoms) ==1:
+            return np.array(features).ravel()
+        else:
+            return np.array(features).reshape((len(atoms), -1))
 
     def convert_number(self, atoms: List[int]) -> np.ndarray:
 
         atoms_name = [ALL_N_ELE_MAP[i] for i in atoms]
         features = [self.embedding_dict[i] for i in atoms_name]
 
-        return np.array(features).reshape((len(atoms), -1))
+        if len(atoms) == 1:
+            return np.array(features).ravel()
+        else:
+            return np.array(features).reshape((len(atoms), -1))
 
 
 class AtomTableMap(BinaryMap):
@@ -290,6 +298,8 @@ class AtomTableMap(BinaryMap):
         """
         Convert atom {symbol: fraction} list to numeric features
         """
+        if isinstance(atoms, dict):
+            atoms = [{k: v} for k, v in atoms.items()]
 
         features = []
         for atom in atoms:
@@ -300,7 +310,10 @@ class AtomTableMap(BinaryMap):
                 else:
                     emb += self.da.loc[k, :].values
             features.append(emb)
-        return np.array(features).reshape((len(atoms), -1))
+        if len(atoms) == 1:
+            return np.array(features).ravel()
+        else:
+            return np.array(features).reshape((len(atoms), -1))
 
     def convert_number(self, atoms: List[int]) -> np.ndarray:
         """
@@ -503,6 +516,8 @@ class AtomPymatgenPropMap(BinaryMap):
         """
         Convert atom {symbol: fraction} list to numeric features
         """
+        if isinstance(atoms, dict):
+            atoms = [{k: v} for k, v in atoms.items()]
 
         features = []
         for atom in atoms:
@@ -530,7 +545,10 @@ class AtomPymatgenPropMap(BinaryMap):
         if len(set([i.shape for i in features])) != 1:
             print("The preprocessing after func are with different size.",
                   "please check you func, which keep the number of results consistent.")
-        return np.array(features).reshape((len(atoms), -1))
+        if len(atoms) == 1:
+            return np.array(features).ravel()
+        else:
+            return np.array(features).reshape((len(atoms), -1))
 
     def convert_number(self, atoms: List[int]) -> np.ndarray:
         """
@@ -547,7 +565,10 @@ class AtomPymatgenPropMap(BinaryMap):
         if len(set([i.shape for i in features])) != 1:
             print("The preprocessing after func are with different size.",
                   "please check you func, which keep the number of results consistent.")
-        return np.array(features).reshape((len(atoms), -1))
+        if len(atoms) == 1:
+            return np.array(features).ravel()
+        else:
+            return np.array(features).reshape((len(atoms), -1))
 
     def __add__(self, other):
         if isinstance(other, AtomPymatgenPropMap):

@@ -10,7 +10,7 @@ class MyTestCase(unittest.TestCase):
         X, y = load_boston(return_X_y=True)
         svr = SVR()
         bf = BackForward(svr, primary_feature=4, random_state=1)
-        new_x = bf.fit_transform(X, y)
+        new_x = bf.fit_transform(X[:,:6], y)
         bf.support_
         print(bf)
         
@@ -18,6 +18,7 @@ class MyTestCase(unittest.TestCase):
         from sklearn.datasets import load_boston
         from sklearn.svm import SVR
         X, y = load_boston(return_X_y=True)
+        X=X[:,:6]
         svr = SVR()
         bf = BackForward(svr, primary_feature=4, random_state=1, refit=True)
         new_x = bf.fit_transform(X[:50], y[:50])
@@ -30,6 +31,7 @@ class MyTestCase(unittest.TestCase):
         from sklearn.svm import SVR
         from sklearn import model_selection
         X, y = load_boston(return_X_y=True)
+        X=X[:,:6]
         svr = SVR()
         gd = model_selection.GridSearchCV(svr, param_grid=[{"C": [1, 10]}], n_jobs=1, cv=5)
         bf = BackForwardStable(gd, primary_feature=4, random_state=1, refit=True)
@@ -43,6 +45,7 @@ class MyTestCase(unittest.TestCase):
         from sklearn.svm import SVR
         from sklearn import model_selection
         X, y = load_boston(return_X_y=True)
+        X=X[:, :6]
         svr = SVR()
         bf = BackForward(svr, primary_feature=4, random_state=1, refit=True)
         new_x = bf.fit_transform(X, y)
@@ -51,11 +54,11 @@ class MyTestCase(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-    from sklearn.datasets import load_boston
-    from sklearn.svm import SVR
-
-    X, y = load_boston(return_X_y=True)
-    svr = SVR()
-    bf = BackForward(svr, primary_feature=4, random_state=1, refit=True)
-    new_x = bf.fit_transform(X[:50], y[:50])
-    test_score = bf.score(X[50:], y[50:])
+    # from sklearn.datasets import load_boston
+    # from sklearn.svm import SVR
+    #
+    # X, y = load_boston(return_X_y=True)
+    # svr = SVR()
+    # bf = BackForward(svr, primary_feature=4, random_state=1, refit=True)
+    # new_x = bf.fit_transform(X[:50], y[:50])
+    # test_score = bf.score(X[50:], y[50:])

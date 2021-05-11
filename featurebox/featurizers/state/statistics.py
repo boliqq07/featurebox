@@ -54,7 +54,10 @@ class BaseCompositionFeature(BaseFeature):
             atoms = [{k: v} for k, v in atoms.items()]
 
         numbers = np.array([list(ai.values())[0] for ai in atoms])
+
         ele = self.data_map.convert(atoms)
+        if len(atoms)==1:
+            ele = np.array(ele).reshape((len(atoms), -1))
         return self.mix_function(ele, numbers)
 
     @abstractmethod
