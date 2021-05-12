@@ -304,7 +304,7 @@ class BaseDesGet(_BaseEnvGet):
         if refine is None:
             self.refine = universe_refine_des
         else:
-            self.refine = refine_method_des[refine]
+            self.refine = after_treatment_func_map_des[refine]
         self.refined_strategy_param = refined_strategy_param if isinstance(refined_strategy_param, dict) else {}
 
         if cut_off_name:
@@ -421,7 +421,7 @@ class BaseNNGet(BaseFeature):
         if refine is None:
             self.refine = universe_refine_nn
         else:
-            self.refine = refine_method_nn[refine]
+            self.refine = after_treatment_func_map_nn[refine]
         self.refined_strategy_param = refined_strategy_param if isinstance(refined_strategy_param, dict) else {}
         self.cutoff = cutoff
         self.numerical_tol = numerical_tol
@@ -561,13 +561,13 @@ class BaseNNGet(BaseFeature):
 
 
 #####################################################################################################################
-refine_method_des = {"universe_refine": universe_refine_des}
+after_treatment_func_map_des = {"universe_refine": universe_refine_des}
 
-refine_method_nn = {"universe_refine": universe_refine_nn, "perovskite_refine_nn": perovskite_refine_nn}
+after_treatment_func_map_nn = {"universe_refine": universe_refine_nn, "perovskite_refine_nn": perovskite_refine_nn}
 # class
 env_names = {"BaseNNGet": BaseNNGet, "BaseDesGet": BaseDesGet}
 # local env method
 env_method = {"BaseNNGet": NNDict, "BaseDesGet": DesDict, }
 # after treatment
-env_treatment = {"BaseNNGet": refine_method_nn, "BaseDesGet": refine_method_des, }
+env_after_treatment_func_map = {"BaseNNGet": after_treatment_func_map_nn, "BaseDesGet": after_treatment_func_map_des, }
 #####################################################################################################################

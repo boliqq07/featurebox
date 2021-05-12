@@ -303,7 +303,7 @@ class CrystalGraph(_StructureGraphFixedRadius):
 
     def __init__(
             self,
-            nn_strategy: Union[str, NearNeighbors] = "MinimumDistanceNNAll",
+            nn_strategy: Union[str, NearNeighbors] = "find_points_in_spheres",
             atom_converter: Converter = None,
             bond_converter: Converter = None,
             state_converter: Converter = None,

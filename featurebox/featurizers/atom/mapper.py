@@ -248,7 +248,7 @@ class AtomTableMap(BinaryMap):
         ----------
         tablename: str,np.ndarray, pd.Dateframe
             1. Name of table in bgnet.preprocessing.resources. if tablename is None,
-            use the embedding "element_table.xlsx".\n
+            use the embedding "element_table.csv".\n
             2. np.ndarray, search_tp = "number".\n
             3. pd.dataframe, search_tp = "name"
 
@@ -260,7 +260,6 @@ class AtomTableMap(BinaryMap):
 
         if tablename is None or tablename == "element_table.csv":
             self.da = self.get_ele_embeddings()
-            self.search_tp = "name"
             self.d2 = True
             self.dax = self.da.values
             self.da_columns = list(self.da.columns)
@@ -273,11 +272,9 @@ class AtomTableMap(BinaryMap):
         elif isinstance(tablename, np.ndarray):
             self.da_columns = None
             self.dax = tablename
-            self.search_tp = "number"
             self.d2 = False
         elif isinstance(tablename, pd.DataFrame):
             self.da = tablename
-            self.search_tp = "name"
             self.d2 = True
             self.da_columns = list(self.da.columns)
         else:
@@ -411,7 +408,7 @@ def process_bool_transition_metal(tm):
         return [0, ]
 
 
-func_map_ele = {
+after_treatment_func_map_ele = {
     "atomic_orbitals": process_atomic_orbitals,
     "atomic_radius": process_uni,
     "atomic_mass": process_uni,
@@ -457,6 +454,23 @@ func_map_ele = {
 class AtomPymatgenPropMap(BinaryMap):
     """
     Get pymatgen element preprocessing.
+    prop_name = [
+    "atomic_radius",
+    "atomic_mass",
+    "number",
+    "max_oxidation_state",
+    "min_oxidation_state",
+    "row",
+    "group",
+    "atomic_radius_calculated",
+
+    "mendeleev_no",
+    "critical_temperature",
+    "density_of_solid",
+    "average_ionic_radius",
+    "average_cationic_radius",
+    "average_anionic_radius",
+]
 
     Examples
     -----------
@@ -506,9 +520,10 @@ class AtomPymatgenPropMap(BinaryMap):
         self.func = [process_uni if i is None else i for i in self.func]
 
         for i, j in enumerate(self.prop_name):
-            if j in func_map_ele:
-                self.func[i] = func_map_ele[j]
+            if j in after_treatment_func_map_ele:
+                self.func[i] = after_treatment_func_map_ele[j]
         self.da = [Element.from_Z(i) for i in range(1, 119)]
+        self.da.insert(0, None) #for start from 1
         self.ele_map = []
         self.d2 = False
 
@@ -584,7 +599,7 @@ class AtomPymatgenPropMap(BinaryMap):
         return self.prop_name
 
 
-func_map_structure = {
+after_treatment_func_map_structure = {
     "atomic_orbitals": process_atomic_orbitals,
     "density": process_uni,
 }
@@ -623,6 +638,7 @@ class _StructurePymatgenPropMap(BaseFeature):
         Args:
             prop_name:(str,list of str)
                 prop name or list of prop name
+                default ["density", "volume", "ntypesp"]
             func:(callable or list of callable)
                 please make sure the size of it is the same with prop_name.
         """
@@ -649,8 +665,8 @@ class _StructurePymatgenPropMap(BaseFeature):
         self.func = [process_uni if i is None else i for i in self.func]
 
         for i, j in enumerate(self.prop_name):
-            if j in func_map_structure:
-                self.func[i] = func_map_structure[j]
+            if j in after_treatment_func_map_structure:
+                self.func[i] = after_treatment_func_map_structure[j]
         self.d2 = False
         self.lengths = []
 

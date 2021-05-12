@@ -7,6 +7,7 @@ from featurebox.featurizers.atom.mapper import _StructurePymatgenPropMap
 class StructurePymatgenPropMap(_StructurePymatgenPropMap):
     """
     Get property of pymatgen structure preprocessing.
+    default ["density", "volume", "ntypesp"]
 
     Examples
     -----------
@@ -19,6 +20,7 @@ class StructurePymatgenPropMap(_StructurePymatgenPropMap):
         Args:
             prop_name:(str,list of str)
                 prop name or list of prop name
+                default ["density", "volume", "ntypesp"]
             func:(callable or list of callable)
                 please make sure the size of it is the same with prop_name.
         """
