@@ -139,7 +139,7 @@ class _StructureGraph(BaseFeature):
             raise NotImplementedError()
 
         atoms = self.get_atom_fea(structure)
-        atoms = [atoms[int(i)] for i in center_indices]
+        atoms = [atoms[round(i)] for i in center_indices]
         atoms = self.atom_converter.convert(atoms)
         bonds = self.bond_converter.convert(bondss)
 
