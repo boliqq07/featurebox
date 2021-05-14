@@ -369,7 +369,7 @@ def pack_score(y_test_true_all, y_test_predict_all, scoring):
     if isinstance(y_test_true_all, np.ndarray) and isinstance(y_test_predict_all, np.ndarray):
         y_test_true_all = [y_test_true_all, ]
         y_test_predict_all = [y_test_predict_all, ]
-    if scoring is "rmse":
+    if scoring == "rmse":
         scoring2 = 'neg_mean_squared_error'
     else:
         scoring2 = scoring
@@ -380,7 +380,7 @@ def pack_score(y_test_true_all, y_test_predict_all, scoring):
 
     score = [scorer_func(i, j) for i, j in zip(y_test_true_all, y_test_predict_all)]
 
-    if scoring is "rmse":
+    if scoring == "rmse":
         score = np.sqrt(score)
     score_mean = np.mean(score)
     return score_mean

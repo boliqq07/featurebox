@@ -8,9 +8,8 @@ from torch.nn import init
 from torch.nn.parameter import Parameter
 
 try:
-    # from bgnet.layer.graph._merge_cpp import mod
-    from featurebox.layer.graph import _merge_cpp
 
+    from featurebox.layer.graph import _merge_cpp
     mod = _merge_cpp.mod
     me_idx_cpp = mod.merge_idx
     me_idx_mean_cpp = mod.merge_idx_mean
@@ -33,7 +32,7 @@ except ImportError:
 
 class BaseLayer(nn.Module):
     """
-    base operation
+    Base operation.
     """
 
     def __init__(self):
@@ -78,7 +77,7 @@ class BaseLayer(nn.Module):
 
     @staticmethod
     def merge_idx_cpp(nbr_fea, node_atom_idx, method="mean"):
-        """cpp realization,The first import is quite time consuming,
+        """Cpp realization,The first import is quite time consuming,
         but faster than *py realization in later call."""
 
         # assert sum([len(idx_map) for idx_map in node_atom_idx]) == nbr_fea.data.shape[0]
@@ -86,7 +85,7 @@ class BaseLayer(nn.Module):
 
     @staticmethod
     def merge_idx_cpp2(nbr_fea, node_atom_idx, method="mean"):
-        """cpp realization,the same with merge_idx_cpp,The first import is quite time consuming,
+        """Cpp realization,the same with merge_idx_cpp,The first import is quite time consuming,
         but faster than *py realization in later call."""
         if method == "sum":
             temp = me_idx_sum_cpp(nbr_fea, node_atom_idx)
@@ -133,9 +132,10 @@ class MergeLayer(nn.Module):
 
     def pooling(self, atom_fea, node_atom_idx):
         """
-        Pooling the atom features to crystal features
-        N: Total number of atoms in the batch
-        N0: Total number of crystals in the batch
+        Pooling the atom features to crystal features.\n
+        N: Total number of atoms in the batch.\n
+        N0: Total number of crystals in the batch.
+
         Parameters
         ----------
         atom_fea: Variable(torch.Tensor) shape (N, atom_fea_len)

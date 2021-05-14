@@ -127,9 +127,7 @@ class GraphGenerator(_BaseGraphSingleGenerator):
     ...
     "node_atom_idx",
     "node_ele_idx"
-    "ele_atom_idx"
-     ]
-
+    "ele_atom_idx"]
     """
 
     def __init__(
@@ -250,13 +248,13 @@ class MGEDataLoader:
 
     CrystalGraphDisordered,CrystalGraph,SingleMoleculeGraph in crystal, return 7 features.
     Return:
-        ["atom_feature", "nbr_feature", "state_feature", 'atom_nbr_idx',
-        "node_atom_idx", "node_ele_idx","ele_atom_idx"]
+    ["atom_feature", "nbr_feature", "state_feature", 'atom_nbr_idx',
+    "node_atom_idx", "node_ele_idx","ele_atom_idx"]
 
     other Graph self-defined, Return:
-        ["atom_feature", "nbr_feature", "state_feature", 'atom_nbr_idx',
-        ...
-        "node_atom_idx", "node_ele_idx","ele_atom_idx"]
+    ["atom_feature", "nbr_feature", "state_feature", 'atom_nbr_idx',
+    ...
+    "node_atom_idx", "node_ele_idx","ele_atom_idx"]
 
     """
 

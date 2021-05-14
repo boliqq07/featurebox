@@ -30,7 +30,7 @@ Features:
 Links
 >>>>>>>
 
-`Featurebox source code <https://github.com/featurebox/featurebox>`_
+`Featurebox source code <https://github.com/boliqq07/featurebox>`_
 
 Index
 >>>>>>>

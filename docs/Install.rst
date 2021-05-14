@@ -54,14 +54,11 @@ Reference: https://github.com/DEAP/deap
 
 Reference: https://github.com/materialsproject/pymatgen
 
-Note::
+:Note:
 
-If ``spblib`` needed, which need C++ to compiled, please download and pip install locally :
-
-`spblib python 3.9 <https://download.lfd.uci.edu/pythonlibs/q4trcu4l/spglib-1.16.1-cp39-cp39-win_amd64.whl>`_
-`spblib python 3.8 <https://download.lfd.uci.edu/pythonlibs/q4trcu4l/spglib-1.16.1-cp38-cp38-win_amd64.whl>`_
-`spblib python 3.7 <https://download.lfd.uci.edu/pythonlibs/q4trcu4l/spglib-1.16.1-cp37-cp37m-win_amd64.whl>`_
-`spblib python 3.6 <https://download.lfd.uci.edu/pythonlibs/q4trcu4l/cp36/spglib-1.16.0-cp36-cp36m-win_amd64.whl>`_
+    If ``Spblib`` needed, which need C++ to compiled, please
+    download `Python Extension Packages <https://www.lfd.uci.edu/~gohlke/pythonlibs/>`_
+    and pip install locally.
 
 Such as ::
 

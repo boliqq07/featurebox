@@ -11,7 +11,7 @@ class BehlerParrinello:
     
     The forms of the functions are consistent with the 
     functions presented in:
-        Behler, J. (2011). The Journal of Chemical Physics, 134(7), 074106.
+    Behler, J. (2011). The Journal of Chemical Physics, 134(7), 074106.
         
     Parameters
     ----------
@@ -101,7 +101,6 @@ class BehlerParrinello:
         -------
         all_G: dict
             The user-defined symmetry functions that represent the crystal.
-            
             Currently, there are 3 types of symmetry functions implemented. 
             Here are the order of the descriptors are printed out based on
             their symmetry parameters:

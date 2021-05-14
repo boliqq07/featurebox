@@ -56,20 +56,30 @@ class _StructureGraph(BaseFeature):
         """
         Args:
             nn_strategy (str): NearNeighbor strategy
-                For bond_converter ="BaseNNGet": ["BrunnerNN_reciprocal","BrunnerNN_real","BrunnerNN_relative",
-                "EconNN", "CrystalNN","MinimumDistanceNNAll","find_points_in_spheres"]
-                For bond_converter ="BaseDesGet": ["ACSF","BehlerParrinello","EAD","EAMD","SOAP",
-                   "SO3","SO4_Bispectrum","wACSF"]
+                For bond_converter ="BaseNNGet": ["BrunnerNN_reciprocal", "BrunnerNN_real", "BrunnerNN_relative",
+                "EconNN", "CrystalNN", "MinimumDistanceNNAll", "find_points_in_spheres"]
+                For bond_converter ="BaseDesGet": ["ACSF","BehlerParrinello","EAD","EAMD","SOAP","SO3","SO4_Bispectrum","wACSF"]
+                See Also:
+                :class:`BaseNNGet` : :class:`CrystalNN` , :class:`MinimumDistanceNNAll` :class:`EconNN` .\n
+                :class:`BaseDesGet` : :class:`ACSF` , :class:`SOAP` , :class:`EAMD`
             atom_converter (Converter): atom features converter.
-            bond_converter (Converter): bond features converter.
+                See Also:
+                :class:`AtomTableMap` , :class:`AtomJsonMap` ,
+                :class:`AtomPymatgenPropMap`, :class:`AtomTableMap`
+            bond_converter (Converter): bond features converter, default=None.
             state_converter (Converter): state features converter.
+                See Also:
+                :class:`AtomPymatgenStrutureMap`
             bond_generator (_BaseEnvGet, str): bond features converter.
                 The function of this, is to convert data format to a fixed format.
                 "BaseNNGet" or "BaseDesGet" or defined BaseNNGet,BaseDesGet object, default "BaseNNGet".
                 1, BaseDesGet or 2, BaseDesGet. or there name.
                 if object offered, rather str, the nn_strategy would use the nn_strategy in Converter.
+                See Also:
+                :class:`BaseNNGet` , :class:`BaseDesGet`
             return_bonds:"all","bonds","bond_state"
                 which bond property return. default "all".
+                ``"bonds_state"`` : bond properties and ``"bonds"`` : atoms number near this center atom.
             cutoff: float
                 Whether to use depends on the ``nn_strategy``.
             **kwargs:
@@ -270,15 +280,6 @@ class _StructureGraphFixedRadius(_StructureGraph):
             cutoff: float = 7.0,
             **kwargs
     ):
-        """
-        Convert the structure into crystal graph.
-
-        Args:
-            nn_strategy (str): NearNeighbor strategy
-            atom_converter (Converter): atom features converter
-            bond_converter (Converter): bond features converter
-            cutoff (float): cutoff radius
-        """
         if cutoff is None:
             warnings.warn(UserWarning("A phase radius is recommended: cutoff."))
         super().__init__(
@@ -291,13 +292,12 @@ class CrystalGraph(_StructureGraphFixedRadius):
     CrystalGraph.
 
     Examples
-    ----------
-    cg1 = CrystalGraph()
-    d = cg1(structure)
-    d = cg1(structure, state_attributes=np.array([2,3.0]))
-    d = cg1.convert(structure, state_attributes=np.array([2,3.0]))
-    or
-    ds = cg1.fit_transform(structures)
+    --------
+    >>> cg1 = CrystalGraph()
+    >>> d = cg1(structure)
+    >>> d = cg1(structure, state_attributes=np.array([2,3.0]))
+    >>> d = cg1.convert(structure, state_attributes=np.array([2,3.0]))
+    >>> ds = cg1.fit_transform(structures)
 
     """
 
@@ -310,15 +310,6 @@ class CrystalGraph(_StructureGraphFixedRadius):
             cutoff: float = 7.0,
             **kwargs
     ):
-        """
-        Convert the structure into crystal graph.
-
-        Args:
-            nn_strategy (str): NearNeighbor strategy
-            atom_converter (Converter): atom features converter
-            bond_converter (Converter): bond features converter
-            cutoff (float): cutoff radius
-        """
         super().__init__(
             nn_strategy=nn_strategy, atom_converter=atom_converter, bond_converter=bond_converter,
             state_converter=state_converter, cutoff=cutoff, **kwargs)
@@ -332,13 +323,12 @@ class CrystalGraphWithBondTypes(_StructureGraph):
     metal-metal (type 2)
 
     Examples
-    ----------
-    cg1 = CrystalGraphWithBondTypes()
-    d = cg1(structure)
-    d = cg1(structure, state_attributes=np.array([2,3.0]))
-    d = cg1.convert(structure, state_attributes=np.array([2,3.0]))
-    # or
-    ds = cg1.fit_transform(structures)
+    --------
+    >>> cg1 = CrystalGraphWithBondTypes()
+    >>> d = cg1(structure)
+    >>> d = cg1(structure, state_attributes=np.array([2,3.0]))
+    >>> d = cg1.convert(structure, state_attributes=np.array([2,3.0]))
+    >>> ds = cg1.fit_transform(structures)
 
     """
 
@@ -351,13 +341,6 @@ class CrystalGraphWithBondTypes(_StructureGraph):
             return_bonds="bonds",
             **kwargs
     ):
-        """
-
-        Args:
-            nn_strategy (str): NearNeighbor strategy
-            atom_converter (Converter): atom features converter
-            bond_converter (Converter): bond features converter
-        """
         if bond_converter is None:
             bond_converter = AtomPymatgenPropMap("is_metal", func=None, search_tp="number")
 
@@ -371,13 +354,12 @@ class CrystalGraphDisordered(_StructureGraphFixedRadius):
     Enable disordered site predictions
 
     Examples
-    ---------
-    cg1 = CrystalGraphDisordered()
-    d = cg1(structure)
-    d = cg1(structure, state_attributes=np.array([2,3.0]))
-    d = cg1.convert(structure, state_attributes=np.array([2,3.0]))
-     #or
-    ds = cg1.fit_transform(structures)
+    --------
+    >>> cg1 = CrystalGraphDisordered()
+    >>> d = cg1(structure)
+    >>> d = cg1(structure, state_attributes=np.array([2,3.0]))
+    >>> d = cg1.convert(structure, state_attributes=np.array([2,3.0]))
+    >>> ds = cg1.fit_transform(structures)
 
 
     """
@@ -391,15 +373,6 @@ class CrystalGraphDisordered(_StructureGraphFixedRadius):
             cutoff: float = 7.0,
             **kwargs
     ):
-        """
-        Convert the structure into crystal graph.
-
-        Args:
-            nn_strategy (str): NearNeighbor strategy
-            atom_converter (Converter): atom features converter
-            bond_converter (Converter): bond features converter
-            cutoff (float): cutoff radius
-        """
         self.cutoff = cutoff
         super().__init__(
             nn_strategy=nn_strategy, atom_converter=atom_converter, bond_converter=bond_converter, cutoff=self.cutoff,
@@ -428,14 +401,12 @@ class SimpleMolGraph(_StructureGraphFixedRadius):
     expansion with centers at np.linspace(0, 4, 20) and width of 0.5
 
     Examples
-    ----------
-    cg1 = SimpleMolGraph()
-    d = cg1(structure)
-    d = cg1(structure, state_attributes=np.array([2,3.0]))
-    d = cg1.convert(structure, state_attributes=np.array([2,3.0]))
-    or
-    ds = cg1.fit_transform(structures)
-
+    --------
+    >>> cg1 = SimpleMolGraph()
+    >>> d = cg1(structure)
+    >>> d = cg1(structure, state_attributes=np.array([2,3.0]))
+    >>> d = cg1.convert(structure, state_attributes=np.array([2,3.0]))
+    >>> ds = cg1.fit_transform(structures)
     """
 
     def __init__(
@@ -445,12 +416,7 @@ class SimpleMolGraph(_StructureGraphFixedRadius):
             bond_converter: Converter = None,
             state_converter: Converter = None,
             **kwargs):
-        """
-        Args:
-            nn_strategy (str): NearNeighbor strategy
-            atom_converter (Converter): atomic features converter object
-            bond_converter (Converter): bond features converter object
-        """
+
         if bond_converter is None:
             bond_converter = BondGaussianConverter(np.linspace(0, 4, 20), 0.5)
         super().__init__(nn_strategy=nn_strategy, atom_converter=atom_converter, bond_converter=bond_converter,

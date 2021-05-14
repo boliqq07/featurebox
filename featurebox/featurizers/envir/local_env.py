@@ -1,4 +1,4 @@
-"""Use NearNeighbors from pymatgen."""
+"""Use NearNeighbors from ``pymatgen``."""
 from typing import Dict, List
 
 from pymatgen.core import Element
@@ -74,12 +74,12 @@ class MinimumDistanceNNAll(NearNeighbors):
 
         Args:
             structure (Structure): input structure.
-            n (integer): index of site for which to determine near
+            n (int): index of site for which to determine near
                 neighbors.
 
         Returns:
-            siw (list of tuples (Site, array, float)): tuples, each one
-                of which represents a neighbor site, its image location,
+            (list of tuples (Site, array, float)):
+            tuples, each one of which represents a neighbor site, its image location,
                 and its weight.
         """
 

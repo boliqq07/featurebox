@@ -46,8 +46,9 @@ class CheckElements:
         func: callable
             Processing for elements.
             such as for element in pymatgen:
-                func=lambda x: [x.Z, ]
-                func=lambda x: [x.name, ]
+
+            >>> func = lambda x: [x.Z, ]
+            >>> func2 = lambda x: [x.name, ]
 
         Examples
         ---------

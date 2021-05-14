@@ -10,7 +10,7 @@ class wACSF:
     """A class for calculating weighted atom-centered symmetry functions (wACSFs).
     
     The forms of the functions are consistent with the functions presented in:
-        Gastegger, M., et. al. (2018). The Journal of chemical physics, 148(24), 241709.
+    Gastegger, M., et. al. (2018). The Journal of chemical physics, 148(24), 241709.
 
     Note that this code does not implement Rs in the angular wACSF.
         
@@ -93,7 +93,6 @@ class wACSF:
         -------
         all_G: dict
             The user-defined symmetry functions that represent the crystal.
-            
             Currently, there are 3 types of symmetry functions implemented. 
             Here are the order of the descriptors are printed out based on
             their symmetry parameters:

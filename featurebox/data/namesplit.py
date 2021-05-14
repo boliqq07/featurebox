@@ -94,7 +94,7 @@ def _init_dict(element_n=None):
     return dict0
 
 
-def fea_dict(ele, element_n=None):
+def _fea_dict(ele, element_n=None):
     dict0 = _init_dict(element_n=element_n)
     dicti = copy.copy(dict0)
     num = ele.num
@@ -107,7 +107,7 @@ def fea_dict(ele, element_n=None):
     return dicti
 
 
-def transform(names, folds_name='folds.csv', expands_name=r'expands.csv'):
+def _transform(names, folds_name='folds.csv', expands_name=r'expands.csv'):
     c = []
     for j, i in enumerate(names):
         try:
@@ -117,7 +117,7 @@ def transform(names, folds_name='folds.csv', expands_name=r'expands.csv'):
             com = Ele(i)
         c.append(com)
     folds = pd.DataFrame([_i.to_item for _i in c], [str(_) for _ in c])
-    expands = pd.DataFrame([fea_dict(_i) for _i in c], [str(_) for _ in c])
+    expands = pd.DataFrame([_fea_dict(_i) for _i in c], [str(_) for _ in c])
     folds.to_csv(folds_name)
     expands.to_csv(expands_name)
 
@@ -205,14 +205,15 @@ def _substitued(s):
 
 class NameSplit:
     """
-    Spilt the name to table, return expand.csv and folds.csv.
+    Split the name to table, return expand.csv and folds.csv.
 
     Notes
-    -------
+    -----
         Make sure the number below the element or (),
         For situation that the number of () before the (), such as "0.9(BaZr)+0.1(BaZrO3)".
-        please set the bracket_follow=True,
-        and for this situation make sure the first number below ")" have "+" !!!.
+
+        Please set the bracket_follow=True,
+        and for this situation make sure the first number below ``)`` have ``+`` !!!.
 
     Examples
     --------
@@ -252,10 +253,10 @@ class NameSplit:
         Returns
         -------
         None
-            return tables.
+            return tables.csv.
         """
         names = self._substitute(names)
-        transform(names, folds_name, expands_name)
+        _transform(names, folds_name, expands_name)
 
 
 if __name__ == '__main__':

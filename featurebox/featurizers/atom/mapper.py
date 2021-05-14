@@ -1,3 +1,6 @@
+"""Get pure atom properties.\n
+Available_data: "element_table.csv", "elemental_MEGNet.json", "ie.json", "oe.csv"
+"""
 import functools
 import os
 from abc import abstractmethod, ABC
@@ -17,7 +20,8 @@ MODULE_DIR = Path(__file__).parent.parent.parent.absolute()
 
 def get_atom_fea_number(structure: Structure) -> List[int]:
     """
-    Get atom features from structure, may be overwritten
+    Get atom features from structure, may be overwritten.
+
     Args:
         structure: (Pymatgen.Structure) pymatgen structure
     Returns:
@@ -67,7 +71,7 @@ class AtomMap(Converter, ABC):
 
 
 class BinaryMap(AtomMap):
-    """Base converter with 2 different search_tp"""
+    """Base converter with 2 different search_tp."""
 
     def __init__(self, search_tp: str = "number", weight: bool = True, **kwargs):
         super(BinaryMap, self).__init__(**kwargs)
@@ -86,6 +90,8 @@ class BinaryMap(AtomMap):
 
     @abstractmethod
     def convert_dict(self, d: List[Dict]):
+        """convert list of dict to data"""
+
         """the subclass must del all the following code and write yourself"""
 
         # atoms_name = [ALL_ELE_N_MAP[list(i.keys())[0]] for i in d]
@@ -93,7 +99,8 @@ class BinaryMap(AtomMap):
 
     @abstractmethod
     def convert_number(self, d: List[int]):
-        """the subclass must del all the following code and write yourself"""
+        """convert list of number to data"""
+        """The subclass must del all the following code and write yourself"""
 
         # atoms_name = [{ALL_N_ELE_MAP[i]: 1} for i in d]
         # return self.convert_dict(atoms_name)
@@ -132,9 +139,6 @@ class AtomJsonMap(BinaryMap):
                 which can be used to speed up the training of other models. The embeddings
                 are also extremely useful elemental descriptors that encode chemical
                 similarity that may be used in other ways.
-
-        Returns:
-            Dict of elemental embeddings as {symbol: length 16 string}
         """
 
         super(AtomJsonMap, self).__init__(**kwargs)
@@ -218,7 +222,7 @@ class AtomTableMap(BinaryMap):
     ===== ===== ===== =====
 
     Examples
-    -----------
+    --------
     >>> tmps = AtomTableMap(search_tp="number")
     >>> s = [1,76]
     >>> a = tmps.convert(s)
@@ -244,7 +248,7 @@ class AtomTableMap(BinaryMap):
                  search_tp: str = "name", **kwargs):
         """
 
-        Parameter
+        Parameters
         ----------
         tablename: str,np.ndarray, pd.Dateframe
             1. Name of table in bgnet.preprocessing.resources. if tablename is None,
@@ -338,6 +342,7 @@ class AtomTableMap(BinaryMap):
 
 
 def process_uni(i):
+    """Post-processing for bool preprocessing General properties."""
     dataii = []
 
     if i is None:
@@ -374,7 +379,7 @@ def process_uni(i):
 
 
 def process_atomic_orbitals(o):
-    """for dict preprocessing with "1s", "2p"..."""
+    """Post-processing for dict preprocessing with "1s", "2p", ..."""
     if o is None or {}:
         return [0.0] * 18
     orb = ("1s", "2p", "2s", "3d", "3p", "3s", "4d", "4f", "4p", "4s", "5d", "5f", "5p", "5s", "6d", "6p", "6s", "7s")
@@ -382,7 +387,7 @@ def process_atomic_orbitals(o):
 
 
 def process_tuple_oxidation_states(ox, size=10):
-    """for tuple of float preprocessing"""
+    """Post-processing for tuple of float preprocessing."""
     if ox is None or ():
         return [0.0] * size
     ox = list(ox)
@@ -391,7 +396,7 @@ def process_tuple_oxidation_states(ox, size=10):
 
 
 def process_tuple_full_electronic_structure(full_e):
-    """for electronic_structure preprocessing ( (1,"s",2),...   )"""
+    """Post-processing for electronic_structure preprocessing ( (1,"s",2),...   )"""
     if full_e is None or ():
         return [0.0] * 18
     dic_all = {"{}{}".format(i, j): k for i, j, k in full_e}
@@ -399,7 +404,7 @@ def process_tuple_full_electronic_structure(full_e):
 
 
 def process_bool_transition_metal(tm):
-    """for bool preprocessing"""
+    """Post-processing for bool preprocessing"""
     if tm is None:
         return [-1, ]
     elif tm is True:
@@ -463,17 +468,15 @@ class AtomPymatgenPropMap(BinaryMap):
     "row",
     "group",
     "atomic_radius_calculated",
-
     "mendeleev_no",
     "critical_temperature",
     "density_of_solid",
     "average_ionic_radius",
     "average_cationic_radius",
-    "average_anionic_radius",
-]
+    "average_anionic_radius",]
 
     Examples
-    -----------
+    --------
     >>> tmps = AtomPymatgenPropMap(search_tp="number",prop_name=["X"])
     >>> s = [1,76]
     >>> a = tmps.convert(s)
@@ -605,15 +608,15 @@ after_treatment_func_map_structure = {
 }
 
 
-def getter(obj, pi):
-    """get prop.
+def _getter_arr(obj, pi):
+    """Get prop.
     """
     if "." in pi:
         pis = list(pi.split("."))
         pis.reverse()
         while len(pis):
             s = pis.pop()
-            obj = getter(obj, s)
+            obj = _getter_arr(obj, s)
         return obj
     elif "()" in pi:
         return getattr(obj, pi[:-2])()
@@ -674,7 +677,7 @@ class _StructurePymatgenPropMap(BaseFeature):
         data_all = []
         datai = []
         for pi in self.prop_name:
-            datai.append(getter(structure, pi))
+            datai.append(_getter_arr(structure, pi))
         datai = [self.func[i](j) for i, j in enumerate(datai)]
         if not self.lengths:
             self.lengths = [len(i) if isinstance(i, (np.ndarray, tuple, list)) else 1 for i in datai]

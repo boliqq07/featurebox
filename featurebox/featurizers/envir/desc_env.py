@@ -1,4 +1,4 @@
-"""Use descriptors form pyXtal_FF"""
+"""Use descriptors form ``pyXtal_FF``"""
 from featurebox.featurizers.descriptors.ACSF import ACSF
 from featurebox.featurizers.descriptors.EAD import EAD
 from featurebox.featurizers.descriptors.EAMD import EAMD

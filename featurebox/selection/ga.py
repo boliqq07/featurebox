@@ -147,11 +147,11 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
     >>> y = data.target[:50]
     >>> svr = SVR(gamma="scale", C=100)
     >>> ga = GA(estimator=svr, n_jobs=2, pop_n=50, hof_n=1, cxpb=0.8, mutpb=0.4, ngen=3, max_or_min="max", mut_indpb=0.1, min_=2, muti_index=[0, 5],random_state=0)
+    >>> ga.fit(x_test, y_test)
 
     Then
     ::
 
-        ga.score(x_test, y_test)
         ga.score_cv(x, y)
 
     """

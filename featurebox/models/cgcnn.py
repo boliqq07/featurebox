@@ -71,8 +71,8 @@ class CrystalGraphConvNet(BaseLayer):
     def forward(self, atom_fea, nbr_fea, state_fea, atom_nbr_idx, node_atom_idx, *args, **kwargs):
         """
         Forward pass
-        N: Total number of atoms in the batch
-        M: Max number of neighbors
+        N: Total number of atoms in the batch.\n
+        M: Max number of neighbors.\n
         N0: Total number of crystals in the batch
 
         Parameters

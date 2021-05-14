@@ -1,4 +1,4 @@
-Json data
+Json Data
 ==============
 
 The key json must be element name, such as {"H": ... ,"He": ... }, and The structures is pymatgen ``Structure`` list.

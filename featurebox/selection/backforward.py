@@ -59,8 +59,8 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
     estimator_: object
         The external estimator _fit on the reduced dataset.
 
-    Examples:
-    -----------
+    Examples
+    --------
 
     >>> from sklearn.datasets import load_boston
     >>> from sklearn.svm import SVR
@@ -72,8 +72,8 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
     array([False, False, False, False, False, False, False, False, False,
            False,  True, False,  True])
 
-    Examples:
-    -----------
+    Examples
+    --------
     if score and predict is used, the refit could be set True and make sure the data is spilted, due to the refit
      used all data in fit() function.
 
@@ -86,8 +86,8 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
     >>> test_score = bf.score(X[50:],y[50:])
     ...
 
-    Examples:
-    -----------
+    Examples
+    --------
     if GridSearchCV, the refit could be set True and return the cv score.
 
     >>> from sklearn.datasets import load_boston
@@ -369,9 +369,13 @@ class BackForwardStable(MetaEstimatorMixin, SelectorMixin, BaseEstimator):
     estimator_ : object
         The external estimator _fit on the reduced dataset.
 
+    n_jobs : int or None
+        Number of cores to run in parallel while fitting across folds.
+        ``None`` means 1 and ``-1`` means using all processors.
 
-    Examples:
-    -----------
+
+    Examples
+    --------
 
     >>> from sklearn.datasets import load_boston
     >>> from sklearn.svm import SVR
@@ -385,10 +389,11 @@ class BackForwardStable(MetaEstimatorMixin, SelectorMixin, BaseEstimator):
     >>> bf.score_
     0.642826382278419
 
-    Examples:
-    -----------
+    Examples
+    --------
+
     if score and predict is used, the refit could be set True and make sure the data is spilted, due to the refit
-     used all data in fit() function.
+    used all data in fit() function.
 
     >>> from sklearn.datasets import load_boston
     >>> from sklearn.svm import SVR
@@ -399,8 +404,9 @@ class BackForwardStable(MetaEstimatorMixin, SelectorMixin, BaseEstimator):
     >>> test_score = bf.score(X[50:],y[50:])
     ...
 
-    Examples:
-    -----------
+    Examples
+    --------
+
     if GridSearchCV, the refit could be set True and return the cv score.
 
     >>> from sklearn.datasets import load_boston
@@ -437,20 +443,15 @@ class BackForwardStable(MetaEstimatorMixin, SelectorMixin, BaseEstimator):
             must selection index
         random_state:int
             random_state
-
         scoring : string, callable or None, optional, (default=None)
             A string (see model evaluation documentation) or
             a scorer callable object / function with signature
             ``scorer(estimator, X, y)``.
-
         verbose : int, (default=0)
             Controls verbosity of output.
-
-        n_jobs : int or None, optional (default=None)
+        n_jobs : int or None
             Number of cores to run in parallel while fitting across folds.
-            ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
-            ``-1`` means using all processors.
-            for more details.
+            ``None`` means 1 and ``-1`` means using all processors.
         refit:
             False, with refit, the model would used all data.
         """

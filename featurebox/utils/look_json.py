@@ -5,16 +5,15 @@ This is a dynamic approach, For a small amount of work, we don't recommend it.
 
 Examples
 ---------
-    # In definition code.
-    #
-    NNDict = mark_classes([VoronoiNN,CutOffDictNN])
+#In definition code.
 
-    for i, j in NNDict.items():
-        locals()[i] = j
+>>> NNDict = mark_classes([VoronoiNN,CutOffDictNN])
+>>> for i, j in NNDict.items():
+...    locals()[i] = j
 
-    # Usage code
-    #
-    vor = get_marked_class("VoronoiNN", NNDict)
+# Usage code
+
+>>> vor = get_marked_class("VoronoiNN", NNDict)
 
 The new class are marked with "_D"
 """
@@ -79,7 +78,7 @@ def as_dict(self) -> dict:
 
 
 @classmethod
-def from_dict(cls, d):
+def _from_dict(cls, d):
     modname = d["tp_mo"]
     classname = d["tp_na"]
 
@@ -160,7 +159,7 @@ def mark_classes(classes: List):
     """
 
     NNDict = {i.__name__ + "_D": type(i.__name__ + "_D", (i,), {"as_dict": as_dict, "to_json": to_json,
-                                                                "from_dict": from_dict, "tp_na": True})
+                                                                "from_dict": _from_dict, "tp_na": True})
               for i in classes}
 
     return NNDict

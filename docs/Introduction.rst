@@ -3,7 +3,7 @@ Introduction
 
 .. image:: img.jpg
 
-Featurebox is one tool for material data **Generation** and **Selection**.
+Featurebox is one tool for material data with feature **Generation** and **Selection**.
 
 The main feature tools are:
 
@@ -34,7 +34,7 @@ The main binding selection tools are:
  ga           Genetic algorithm selection.
 ============= =========================================
 
-All the selection tools are ``sklearn-like``, with ``fit``, ``fit_transform`` methods .etc.
+All the selection tools are ``sklearn-type``, with ``fit``, ``fit_transform`` methods .etc.
 
 Note
 ::
@@ -49,10 +49,10 @@ The main Graph neural network tools are:
 ============= =========================================
  Name         Application
 ------------- -----------------------------------------
- CGCNN        Traditional graph neural network.
+ cgcnn        Traditional graph neural network.
  megnet       Graph neural network with state features.
  generator    Torch-like dataloader for data data in a non-uniform format.
  BaseLearning Simple flow for training model.
 ============= =========================================
 
-The **Graph neural network** employ **base_graph** and **bond**, **atom** .etc to build input data.
+The **Graph neural network** employ **base_graph**, **bond** and **atom** .etc to build input data.

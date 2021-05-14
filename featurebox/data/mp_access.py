@@ -7,7 +7,7 @@
 # !/usr/bin/python3.7
 
 """
-# Just a copy from xenonpy
+API for pymatgen database. Just a copy from xenonpy
 """
 
 from itertools import zip_longest
@@ -25,7 +25,7 @@ class MpAccess:
 
     Examples
     --------
-    >>> mpa = MpAccess("Di28ZMunseR8vr56")
+    >>> mpa = MpAccess("Di28ZMunseR8vr57")
     >>> ids = mpa.get_ids({"elements": {"$in": ["Al","O"]},'nelements': {"$lt": 2, "$gte": 1}})
     number 29
     >>> df = mpa.data_fetcher(mp_ids=ids, mp_props=['material_id', "cif"])
@@ -68,7 +68,7 @@ class MpAccess:
 
         Returns
         -------
-        df:pandas.DataFrame
+        pandas.DataFrame
             Table of preprocessing.
         """
 
@@ -146,27 +146,30 @@ class MpAccess:
 
     def get_ids(self, criteria: Dict = None):
         """
+        search id by criteria.
+
         support_property = ['energy', 'energy_per_atom', 'volume', 'formation_energy_per_atom', 'nsites',
         'unit_cell_formula','pretty_formula', 'is_hubbard', 'elements', 'nelements', 'e_above_hull', 'hubbards',
         'is_compatible', 'spacegroup', 'task_ids',  'band_gap', 'density', 'icsd_id', 'icsd_ids', 'cif',
         'total_magnetization','material_id', 'oxide_type', 'tags', 'elasticity']
 
         Examples:
-            criteria = {
-            'pretty_formula': {"$in": name_list},
-            'nelements': {"$lt": 3, "$gte": 3},
-            'spacegroup.number': {"$in": [225]},
-            'crystal_system': "cubic",
-            'nsites': {"$lt": 20},
-            'formation_energy_per_atom': {"$lt": 0},
-            "elements": {"$all": "O"},
-            "piezo":{"$ne": None}
-            "elements": {"$all": "O"},
-            "elements": {"$in": list(combinations(["Al", "Co", "Cr", "Cu", "Fe", 'Ni'], 5))}
-        }
+        >>> from itertools import combinations
+        >>> name_list = ["NaCl","CaCo3"]
+        >>> criteria = {
+        ... 'pretty_formula': {"$in": name_list},
+        ... 'nelements': {"$lt": 3, "$gte": 3},
+        ... 'spacegroup.number': {"$in": [225]},
+        ... 'crystal_system': "cubic",
+        ... 'nsites': {"$lt": 20},
+        ... 'formation_energy_per_atom': {"$lt": 0},
+        ... "elements": {"$all": "O"},
+        ... "piezo":{"$ne": None}
+        ... "elements": {"$all": "O"},
+        ... "elements": {"$in": list(combinations(["Al", "Co", "Cr", "Cu", "Fe", 'Ni'], 5))}}
 
-        where, $gt	>,  $gte >=,  $lt <,  $lte <=,  $ne !=,  $in,  $nin (not in),
-        $or,  $and,  $not,  $nor ,  $all
+        where, ``"$gt"`` >,  ``"$gte"`` >=,  ``"$lt"`` <,  ``"$lte"`` <=,  ``"$ne"`` !=,  ``"$in"``,  ``"$nin"`` (not in),
+        ``"$or"``,  ``"$and"``,  ``"$not"``,  ``"$nor"`` ,  ``"$all"``
         """
 
         if criteria is None:

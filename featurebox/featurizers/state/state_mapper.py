@@ -11,7 +11,8 @@ class StructurePymatgenPropMap(_StructurePymatgenPropMap):
 
     Examples
     -----------
-    tmps = StructurePymatgenPropMap()
+    >>> tmps = StructurePymatgenPropMap()
+    >>> tmps.fit_transform()
 
     """
 

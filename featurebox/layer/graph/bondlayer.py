@@ -7,14 +7,15 @@ from featurebox.layer.graph.baselayer import BaseLayer
 
 class BondLayer(BaseLayer):
     """
-    Convolutional operation on graphs
+    Convolutional operation on graphs.
     """
 
     def __init__(self, atom_fea_len, nbr_fea_len, state_fea_len=0):
         """
         Notes:
-            N: Total number of atoms in the batch or can be called N_atom.
+            N: Total number of atoms in the batch or can be called N_atom.\n
             M: Max number of neighbors (fixed).
+
         Args:
             atom_fea_len: (int) default 1.
             nbr_fea_len: (int) default 1.
@@ -38,11 +39,12 @@ class BondLayer(BaseLayer):
     def forward(self, atom_fea, nbr_fea, state_fea, atom_nbr_idx, node_atom_idx=None):
         """
         Notes:
-            N: Total number of atoms in the batch or can be called N_atom.
-            M: Max number of neighbors (fixed).
-            atom_fea_len: default 1.
-            nbr_fea_len: default 1.
+            N: Total number of atoms in the batch or can be called N_atom.\n
+            M: Max number of neighbors (fixed).\n
+            atom_fea_len: default 1.\n
+            nbr_fea_len: default 1.\n
             state_fea_len: default 2.
+
         Args:
             atom_fea: (torch.Tensor) shape (N, atom_fea_len)
                 Atom features.

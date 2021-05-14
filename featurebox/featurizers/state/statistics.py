@@ -70,6 +70,7 @@ class BaseCompositionFeature(BaseFeature):
             Elements in compound.
         nums: list
             Number of each element.
+
         Returns
         -------
         descriptor: numpy.ndarray

@@ -183,39 +183,39 @@ def universe_refine_nn(center_indices, neighbor_indices, distances, vectors=None
         return np.array(cen).ravel(), center_prop, np.array(neis), vecs, np.array(diss)[..., np.newaxis]
 
 
-def perovskite_refine_nn(center_indices, neighbor_indices, distances, vectors=None, center_prop=None,
-                         ele_numbers=None, fill_size=5, dis_sort=False, **kwargs):
-    """
-    Change each center atoms has fill_size neighbors.
-    More neighbors would be abandoned.
-    Insufficient neighbors would be duplicated.
-
-    Args:
-        center_indices: np.ndarray 1d
-        neighbor_indices: np.ndarray 1d
-        distances: np.ndarray 1d
-        vectors: np.ndarray 2d
-        fill_size: float
-        dis_sort:bool
-            sort neighbors with distance.
-
-    Returns:
-        (center_indices,center_indices,  neighbor_indices, images, distances)\n
-        center_indices: np.ndarray 1d(N,1).\n
-        center_prop: np.ndarray 1d(N,l_c).\n
-        neighbor_indices: np.ndarray 2d(N,fill_size).\n
-        images: np.ndarray 2d(N,fill_size,l).\n
-        distance: np.ndarray 2d(N,fill_size,1).
-
-    where l, and l_c >= 1
-    """
-    # assert center_prop == None
-    #
-    # # todo
-    #
-    # return np.array(cen).ravel(), np.array(cen).reshape(-1, 1), np.array(neis), vecs, np.array(diss)[
-    #         ..., np.newaxis]
-    return
+# def perovskite_refine_nn(center_indices, neighbor_indices, distances, vectors=None, center_prop=None,
+#                          ele_numbers=None, fill_size=5, dis_sort=False, **kwargs):
+#     """
+#     Change each center atoms has fill_size neighbors.
+#     More neighbors would be abandoned.
+#     Insufficient neighbors would be duplicated.
+#
+#     Args:
+#         center_indices: np.ndarray 1d
+#         neighbor_indices: np.ndarray 1d
+#         distances: np.ndarray 1d
+#         vectors: np.ndarray 2d
+#         fill_size: float
+#         dis_sort:bool
+#             sort neighbors with distance.
+#
+#     Returns:
+#         (center_indices,center_indices,  neighbor_indices, images, distances)\n
+#         center_indices: np.ndarray 1d(N,1).\n
+#         center_prop: np.ndarray 1d(N,l_c).\n
+#         neighbor_indices: np.ndarray 2d(N,fill_size).\n
+#         images: np.ndarray 2d(N,fill_size,l).\n
+#         distance: np.ndarray 2d(N,fill_size,1).
+#
+#     where l, and l_c >= 1
+#     """
+#     # assert center_prop == None
+#     #
+#     # # todo
+#     #
+#     # return np.array(cen).ravel(), np.array(cen).reshape(-1, 1), np.array(neis), vecs, np.array(diss)[
+#     #         ..., np.newaxis]
+#     return
 
 
 class _BaseEnvGet(BaseFeature):
@@ -283,8 +283,10 @@ class BaseDesGet(_BaseEnvGet):
         nn_strategy:
             pyXtelff descriptors, which has calculate method.
         refine:str
-            sort method for neighbors of each atom. The key in ``refine_method``
+            sort method for neighbors of each atom.
             all the refine_method should return 5 result.
+            See Also:
+                :func:`refine_method_nn`
         refined_strategy_param:dict
             parameters for refine
         numerical_tol:float
@@ -402,7 +404,9 @@ class BaseNNGet(BaseFeature):
         nn_strategy: Union[NearNeighbors]
             search method for local_env for each atom.
         refine:str
-            sort method for neighbors of each atom. The key in ``bond.refine_method``
+            sort method for neighbors of each atom.
+            See Also:
+                :func:`refine_method_nn`
         refined_strategy_param:dict
             parameters for refine
         numerical_tol:float
@@ -563,7 +567,7 @@ class BaseNNGet(BaseFeature):
 #####################################################################################################################
 after_treatment_func_map_des = {"universe_refine": universe_refine_des}
 
-after_treatment_func_map_nn = {"universe_refine": universe_refine_nn, "perovskite_refine_nn": perovskite_refine_nn}
+after_treatment_func_map_nn = {"universe_refine": universe_refine_nn}
 # class
 env_names = {"BaseNNGet": BaseNNGet, "BaseDesGet": BaseDesGet}
 # local env method

@@ -77,16 +77,16 @@ class BaseFeature(MSONable):
         n_jobs: int
             Parallel number.
         on_errors: str
-            How to handle the exceptions in a feature calculations. Can be 'nan', 'keep', 'raise'.
-            When 'nan', return a column with ``np.nan``. The length of column corresponding to the number of feature
+            How to handle the exceptions in a feature calculations. Can be ``nan``, ``keep``, ``raise``.
+            When 'nan', return a column with np.nan. The length of column corresponding to the number of feature
             labs.
             The default is 'raise' which will raise up the exception.
         return_type: str
             Specific the return type.
             Can be ``any``, ``array`` and ``df``.
-            ``array`` and ``df`` force return type to ``np.ndarray`` and ``pd.DataFrame`` respectively.
-            If ``any``, without type conversion .
-            Default is ``any``
+            'array' and 'df' force return type to np.ndarray and pd.DataFrame respectively.
+            If 'any', without type conversion .
+            Default is 'any'
         """
         self.return_type = return_type
         self.n_jobs = n_jobs
@@ -369,11 +369,11 @@ class ConverterCat(BaseFeature):
 
     Examples
     ----------
-        tmps = ConverterCat(
-            AtomEmbeddingMap(),
-            AtomEmbeddingMap("ie.json")
-            AtomTableMap(search_tp="name"))
-        tmp.convert(x)
+    >>> tmps = ConverterCat(
+    ...    AtomEmbeddingMap(),
+    ...    AtomEmbeddingMap("ie.json")
+    ...    AtomTableMap(search_tp="name"))
+    >>> tmp.convert(x)
 
     """
 
