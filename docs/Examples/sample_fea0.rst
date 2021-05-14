@@ -31,7 +31,8 @@ Transform element list.
     [aa.extend(i) for i in aas]
     data = sppm.fit_transform([aa])
 
-Note::
+Note
+::
 
     It is highly recommended that using this function as a beginner,
     Because we can customize more and more powerful converters.
