@@ -1,4 +1,5 @@
-## Input Note
+Input Note
+------------
 
 There are 3 length for first dim(axis) of data.
 
@@ -34,7 +35,8 @@ There are 3 length for first dim(axis) of data.
         new_data = self.merge_idx(data, node_atom_idx)
         new_data = self.merge_idx(data, ele_atom_idx)
 
-##### common data:
+Common data
+--------------
 
 `atom_fea`:(torch.Tensor) torch.float32, shape (N, atom_fea_len)
 
@@ -42,11 +44,7 @@ There are 3 length for first dim(axis) of data.
 
 `state_fea`: (torch.Tensor) torch.float32, shape (N_node, state_fea_len)
 
-`atom_nbr_idx`: (torch.Tensor) torch.int64, shape (N, M) M default is 5.
-
-`#oe`: (torch.Tensor) torch.float32, shape (N, 17), add in `atom_fea`
-
-`#sgt`: (torch.Tensor) torch.float32, shape (N_node, 6) (N_node, 19), add in `state_fea`
+`atom_nbr_idx`: (torch.Tensor) torch.int64, shape (N, M) ,M default is 5.
 
 `node_atom_idx`: (list of torch.Tensor) torch.int64, each one shape is different.
 
@@ -54,6 +52,3 @@ There are 3 length for first dim(axis) of data.
 
 `ele_atom_idx`: (list of torch.Tensor) torch.int64, each one shape is different.
 
-Theoretically "oe" it should belong to atom_fea,
-
-Theoretically "sgt" it should belong to state_fea,

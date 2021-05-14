@@ -240,11 +240,11 @@ class MGEDataLoader:
     Notes:
         we replace the last 2 features in primary features to index list feature and add 1 features.
 
-        len_node_atom -> node_atom_idx_idx
+        len_node_atom -> node_atom_idx
 
-        len_node_ele -> node_ele_idx_idx
+        len_node_ele -> node_ele_idx
 
-        ele_atom_idx -> node_ele_idx_idx
+        ele_atom_idx -> node_ele_idx
 
     Thus the number of final features are add 1 to input dataset.
 

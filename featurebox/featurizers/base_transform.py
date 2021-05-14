@@ -124,6 +124,8 @@ class BaseFeature(MSONable):
 
     def fit_transform(self, X: List, y=None, **kwargs) -> Any:
         """
+        If `convert` takes multiple inputs, supply inputs as a list of tuples.
+
         Copy from Mixin class for all transformers in scikit-learn. TransformerMixin
 
         Fit to data, then transform it.
@@ -157,7 +159,7 @@ class BaseFeature(MSONable):
     def transform(self, entries: List) -> Any:
         """
         transform a list of entries.
-        If `feature` takes multiple inputs, supply inputs as a list of tuples.
+        If `convert` takes multiple inputs, supply inputs as a list of tuples.
 
         Parameters
         ----------
