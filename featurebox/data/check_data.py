@@ -31,13 +31,13 @@ AVAILABLE_ELE_NUMBER = tuple(list((range(1, 84))) + [89, 90, 91, 92])
 
 
 class CheckElements:
-    """Check the element in available element or not.
+    """Check the element in available elements or not.
 
     AVAILABLE_ELE_NUMBER:
         (1~84) + (89, 90, 91, 92).
 
     AVAILABLE_ELE_NAME:
-        (H~Bi) + ('Ac', 'Th', 'Pa', 'U').
+        ('H'~'Bi') + ('Ac', 'Th', 'Pa', 'U').
 
     """
 
