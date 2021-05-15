@@ -1,4 +1,9 @@
-"""Use NearNeighbors from ``pymatgen``."""
+"""Use NearNeighbors from ``pymatgen``.
+
+Most in :mod:`pymatgen.analysis.local_env` or
+in :func:`pymatgen.optimization.neighbors.find_points_in_spheres`
+The costumed as following:
+"""
 from typing import Dict, List
 
 from pymatgen.core import Element
@@ -40,10 +45,8 @@ def _get_elements(site):
     """
     Get the list of elements for a Site
 
-    Args:
-         site (Site): Site to assess
-    Returns:
-        [Element]: List of elements
+    Args: site (Site): Site to assess
+    Returns: [Element]: List of elements
     """
     try:
         if isinstance(site.specie, Element):

@@ -14,7 +14,7 @@ from typing import List
 import pandas as pd
 
 
-class Ele:
+class _Ele:
     """Element type."""
 
     def __init__(self, name):
@@ -46,7 +46,7 @@ class Ele:
         if isinstance(other, (float, int)):
             raise TypeError("can not add {} and number {}".format(self.__str__, other))
             pass
-        elif isinstance(other, Ele):
+        elif isinstance(other, _Ele):
             self_new = copy.deepcopy(self)
             for i, j in zip(other.name, other.num):
                 if i in self.name:
@@ -81,7 +81,7 @@ name_ele = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'A
             'Pu']
 
 for ele_i in name_ele:
-    locals()[ele_i] = Ele(ele_i)
+    locals()[ele_i] = _Ele(ele_i)
 
 
 def _init_dict(element_n=None):
@@ -114,7 +114,7 @@ def _transform(names, folds_name='folds.csv', expands_name=r'expands.csv'):
             com = eval(i)
         except (NameError, SyntaxError) as e:
             print("{}, at {}, which is  {} ".format(e, j, i))
-            com = Ele(i)
+            com = _Ele(i)
         c.append(com)
     folds = pd.DataFrame([_i.to_item for _i in c], [str(_) for _ in c])
     expands = pd.DataFrame([_fea_dict(_i) for _i in c], [str(_) for _ in c])
@@ -205,10 +205,10 @@ def _substitued(s):
 
 class NameSplit:
     """
-    Split the name to table, return expand.csv and folds.csv.
+    Split the name to table, return ``expand.csv`` and ``folds.csv``.
 
-    Notes
-    -----
+    .. note::
+
         Make sure the number below the element or (),
         For situation that the number of () before the (), such as "0.9(BaZr)+0.1(BaZrO3)".
 
@@ -217,7 +217,7 @@ class NameSplit:
 
     Examples
     --------
-    >>> from featurebox.data.namespilt import NameSplit
+    >>> from featurebox.data.namesplit import NameSplit
     >>> import os
     >>> os.chdir(r'.')
     >>> name = ['(Ti1.24La3)2',"((Ti1.24)2P2)1H0.2", "((Ti1.24)2)1H0.2",

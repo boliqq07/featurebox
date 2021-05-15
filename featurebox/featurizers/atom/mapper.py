@@ -1,5 +1,7 @@
-"""Get pure atom properties.\n
-Available_data: "element_table.csv", "elemental_MEGNet.json", "ie.json", "oe.csv"
+"""Get pure atom properties.
+
+Embedded data: "element_table.csv", "elemental_MEGNet.json", "ie.json", "oe.csv"
+
 """
 import functools
 import os
@@ -63,7 +65,7 @@ class AtomMap(Converter, ABC):
 
     @staticmethod
     def get_csv_embeddings(data_name: str) -> pd.DataFrame:
-        """get CSV preprocessing"""
+        """get csv preprocessing"""
         oedata = pd.read_csv(os.path.join(MODULE_DIR, "data", data_name), index_col=0)
         oedata = oedata.apply(pd.to_numeric, errors='ignore')
         oedata = oedata.fillna(0)

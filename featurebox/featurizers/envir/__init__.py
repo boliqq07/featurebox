@@ -1,2 +1,2 @@
-"""This part is for environment features, contains bond and atom features."""
+"""This part is for local environment features, mainly contains bond and state features."""
 __all__ = ["environment"]

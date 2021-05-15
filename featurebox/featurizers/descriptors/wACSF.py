@@ -96,9 +96,9 @@ class wACSF:
             Currently, there are 3 types of symmetry functions implemented. 
             Here are the order of the descriptors are printed out based on
             their symmetry parameters:
-                - G2: ["Rs", "eta"]
-                - G4: ["eta", "lambda", "zeta"]
-                - G5: ["eta", "lambda", "zeta"]
+            - G2: ["Rs", "eta"]
+            - G4: ["eta", "lambda", "zeta"]
+            - G5: ["eta", "lambda", "zeta"]
         """
         self.crystal, self.total_atoms = crystal, len(crystal)
         atomic_numbers = np.array(crystal.get_atomic_numbers())

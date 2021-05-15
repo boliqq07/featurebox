@@ -1,5 +1,22 @@
 """Abstract classes and utility operations for building graph representations and
-preprocessing loaders."""
+preprocessing loaders.
+
+All the Graph should return data as following:
+
+Each Graph data (for each structure):
+
+``atom_fea``: np.ndarray, shape (N, atom_fea_len)
+    center properties.
+``nbr_fea``: np.ndarray, shape (N, fill_size, atom_fea_len).
+    neighbor_indexes for each center_index.
+    `fill_size` default = 5.
+``state_fea``: np.ndarray, shape (state_fea_len,)
+    state feature.
+``atom_nbr_idx``: np.ndarray, shape (N, fill_size)
+    neighbor for each center, fill_size default is 5.
+
+where N is number of atoms.
+"""
 
 import warnings
 from operator import itemgetter
@@ -54,35 +71,49 @@ class _StructureGraph(BaseFeature):
                  cutoff: float = 5.0,
                  **kwargs):
         """
-        Args:
-            nn_strategy (str): NearNeighbor strategy
-                For bond_converter ="BaseNNGet": ["BrunnerNN_reciprocal", "BrunnerNN_real", "BrunnerNN_relative",
-                "EconNN", "CrystalNN", "MinimumDistanceNNAll", "find_points_in_spheres"]
-                For bond_converter ="BaseDesGet": ["ACSF","BehlerParrinello","EAD","EAMD","SOAP","SO3","SO4_Bispectrum","wACSF"]
-                See Also:
-                :class:`BaseNNGet` : :class:`CrystalNN` , :class:`MinimumDistanceNNAll` :class:`EconNN` .\n
-                :class:`BaseDesGet` : :class:`ACSF` , :class:`SOAP` , :class:`EAMD`
-            atom_converter (Converter): atom features converter.
-                See Also:
-                :class:`AtomTableMap` , :class:`AtomJsonMap` ,
-                :class:`AtomPymatgenPropMap`, :class:`AtomTableMap`
-            bond_converter (Converter): bond features converter, default=None.
-            state_converter (Converter): state features converter.
-                See Also:
-                :class:`AtomPymatgenStrutureMap`
-            bond_generator (_BaseEnvGet, str): bond features converter.
-                The function of this, is to convert data format to a fixed format.
-                "BaseNNGet" or "BaseDesGet" or defined BaseNNGet,BaseDesGet object, default "BaseNNGet".
-                1, BaseDesGet or 2, BaseDesGet. or there name.
-                if object offered, rather str, the nn_strategy would use the nn_strategy in Converter.
-                See Also:
-                :class:`BaseNNGet` , :class:`BaseDesGet`
-            return_bonds:"all","bonds","bond_state"
-                which bond property return. default "all".
-                ``"bonds_state"`` : bond properties and ``"bonds"`` : atoms number near this center atom.
-            cutoff: float
-                Whether to use depends on the ``nn_strategy``.
-            **kwargs:
+        Parameters
+        ----------
+        nn_strategy : str
+            NearNeighbor strategy
+            For bond_converter ="BaseNNGet": ["BrunnerNN_reciprocal", "BrunnerNN_real", "BrunnerNN_relative",
+            "EconNN", "CrystalNN", "MinimumDistanceNNAll", "find_points_in_spheres"]
+            For bond_converter ="BaseDesGet": ["ACSF","BehlerParrinello","EAD","EAMD","SOAP","SO3","SO4_Bispectrum","wACSF"]
+            See Also:
+            ``BaseNNGet`` :
+            :class:`featurebox.featurizers.envir.local_env.MinimumDistanceNNAll`,
+            ``BaseDesGet`` :
+            :mod:`featurebox.featurizers.descriptors`,
+            :class:`featurebox.featurizers.descriptors.SOAP.SOAP`,
+
+        atom_converter: Converter
+            atom features converter.
+            See Also:
+            :class:`featurebox.featurizers.atom.mapper.AtomTableMap` , :class:`featurebox.featurizers.atom.mapper.AtomJsonMap` ,
+            :class:`featurebox.featurizers.atom.mapper.AtomPymatgenPropMap`, :class:`featurebox.featurizers.atom.mapper.AtomTableMap`
+        bond_converter : Converter
+            bond features converter, default=None.
+        state_converter : Converter
+            state features converter.
+            See Also:
+            :class:`featurebox.featurizers.state.state_mapper.StructurePymatgenPropMap`
+            :mod:`featurebox.featurizers.state.statistics`
+            :mod:`featurebox.featurizers.state.union`
+        bond_generator : _BaseEnvGet, str
+            bond features converter.
+            The function of this, is to convert data format to a fixed format.
+            "BaseNNGet" or "BaseDesGet" or defined BaseNNGet,BaseDesGet object, default "BaseNNGet".
+            1, BaseDesGet or 2, BaseDesGet. or there name.
+            if object offered, rather str, the nn_strategy would use the nn_strategy in Converter.
+            See Also:
+            :class:`featurebox.featurizers.envir.environment.BaseNNGet` ,
+            :class:`featurebox.featurizers.envir.environment.BaseDesGet`
+        return_bonds: "all","bonds","bond_state"
+            which bond property return. default "all".
+            ``"bonds_state"`` : bond properties and ``"bonds"`` : atoms number near this center atom.
+        cutoff: float
+            Whether to use depends on the ``nn_strategy``.
+        **kwargs:
+
         """
 
         super().__init__(**kwargs)
@@ -121,10 +152,23 @@ class _StructureGraph(BaseFeature):
         For state attributes, you can set structure.state = [[xx, xx]] beforehand or the algorithm would
         take default [[0, 0]]
 
-        Args:
-            state_attributes: (list) state attributes
-            structure: (pymatgen structure)
-            (dictionary)
+        Parameters
+        ----------
+        state_attributes: list
+            state attributes
+        structure: Structure
+
+        Returns
+        -------
+        ``atom_fea``: np.ndarray, shape (N, atom_fea_len)
+            center properties.
+        ``nbr_fea``: np.ndarray, shape (N, fill_size, atom_fea_len).
+            neighbor_indexes for each center_index.
+            `fill_size` default = 5.
+        ``state_fea``: np.ndarray, shape (state_fea_len,)
+             state feature.
+        ``atom_nbr_idx``: np.ndarray, shape (N, fill_size)
+            neighbor for each center, fill_size default is 5.
         """
         if state_attributes is not None:
             state_attributes = np.array(state_attributes)
@@ -161,37 +205,17 @@ class _StructureGraph(BaseFeature):
     @staticmethod
     def get_atom_fea(structure: Structure) -> List[Any]:
         """
-        Get atom features from structure, may be overwritten for you self
-        # todo ding yi zi ji de yuan zi
-
-        Args:
-            structure: (Pymatgen.Structure) pymatgen structure
-
-        Returns:
-            List of atomic numbers
+        Get atom features from structure, may be overwritten for you self.
         """
         return get_atom_fea_number(structure)
 
     def get_bond_fea(self, structure: Structure):
         """
-        Get atom features from structure, may be overwritten
-        # todo ding yi zi ji de jian.
-
-        Args:
-            structure: (Pymatgen.Structure) pymatgen structure
+        Get atom features from structure, may be overwritten.
         """
         return self.bond_generator.convert(structure)
 
     def __call__(self, structure: Structure, *args, **kwargs) -> Dict:
-        """
-        Directly apply the converter to structure, alias to convert.
-
-        Args:
-            structure (Structure): input structure
-
-        Returns (dict): graph dictionary
-
-        """
         return self.convert(structure, *args, **kwargs)
 
     @staticmethod
@@ -201,14 +225,17 @@ class _StructureGraph(BaseFeature):
     def _transform(self, structures: List[Structure], state_attributes: List = None):
         """
 
-        Args:
-            structures:list
-                preprocessing of samples need to transform to Graph.
-            state_attributes
-                preprocessing of samples need to add to Graph.
+        Parameters
+        ----------
+        structures:list
+            preprocessing of samples need to transform to Graph.
+        state_attributes:List
+            preprocessing of samples need to add to Graph.
 
-        Returns:
-            list of graphs: List of dict
+        Returns
+        -------
+        list of graphs:
+            List of dict
 
         """
 
@@ -234,10 +261,13 @@ class _StructureGraph(BaseFeature):
         This is useful when the model is trained on assembled graphs on the fly.
         Aim to get input for GraphGenerator.
 
-        Args:
-            graphs: (list of dictionary) list of graph dictionary for each structure
+        Parameters
+        ----------
+        graphs: list of dict
+            list of graph dictionary for each structure
 
-        Returns:
+        Returns
+        -------
             tuple(node_features, edges_features, stats_values, atom_nbr_idx , ***)
         """
         output = []  # Will be a list of arrays

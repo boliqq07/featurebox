@@ -4,11 +4,6 @@
 # @Email   : 986798607@qq.com
 # @Software: PyCharm
 # @License: BSD 3-Clause
-# !/usr/bin/python3.7
-
-"""
-API for pymatgen database. Just a copy from xenonpy
-"""
 
 from itertools import zip_longest
 from typing import List, Dict
@@ -21,7 +16,7 @@ from tqdm import tqdm
 
 class MpAccess:
     """
-    Access pymatgen to get data.
+    API for pymatgen database, access pymatgen to get data.
 
     Examples
     --------
@@ -52,10 +47,9 @@ class MpAccess:
         """
         Fetch file from pymatgen.
 
-        prop_name=
-            ['band_gap','density',"icsd_ids"'volume','material_id','pretty_formula','elements',"energy",
-            'efermi','e_above_hull','formation_energy_per_atom','final_energy_per_atom','unit_cell_formula',
-            'spacegroup','nelements'"nsites","final_structure","cif","piezo","diel"]
+        prop_name=['band_gap','density',"icsd_ids"'volume','material_id','pretty_formula','elements',"energy",
+        'efermi','e_above_hull','formation_energy_per_atom','final_energy_per_atom','unit_cell_formula',
+        'spacegroup','nelements'"nsites","final_structure","cif","piezo","diel"]
 
         Parameters
         ----------
@@ -69,14 +63,14 @@ class MpAccess:
         Returns
         -------
         pandas.DataFrame
-            Table of preprocessing.
+            properties Table.
         """
 
         print('Will fetch %s inorganic compounds from Materials Project' % len(mp_ids))
 
         def grouper(iterable, n, fillvalue=None):
             """"
-            split requests into fixed number groups
+            Split requests into fixed number groups
             eg: grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx
             Collect data_cluster into fixed-length chunks or blocks"""
             args = [iter(iterable)] * n
@@ -146,14 +140,15 @@ class MpAccess:
 
     def get_ids(self, criteria: Dict = None):
         """
-        search id by criteria.
+        Search id by criteria.
 
         support_property = ['energy', 'energy_per_atom', 'volume', 'formation_energy_per_atom', 'nsites',
         'unit_cell_formula','pretty_formula', 'is_hubbard', 'elements', 'nelements', 'e_above_hull', 'hubbards',
         'is_compatible', 'spacegroup', 'task_ids',  'band_gap', 'density', 'icsd_id', 'icsd_ids', 'cif',
         'total_magnetization','material_id', 'oxide_type', 'tags', 'elasticity']
 
-        Examples:
+        Examples
+        --------
         >>> from itertools import combinations
         >>> name_list = ["NaCl","CaCo3"]
         >>> criteria = {

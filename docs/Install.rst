@@ -25,7 +25,7 @@ Install with pip ::
 
     pip install featurebox
 
-:Note:
+.. note::
 
     If VC++ needed for windows, Please download the dependent packages from
     `Python Extension Packages <https://www.lfd.uci.edu/~gohlke/pythonlibs/>`_ and install offline.
@@ -54,7 +54,7 @@ Reference: https://github.com/DEAP/deap
 
 Reference: https://github.com/materialsproject/pymatgen
 
-:Note:
+.. note::
 
     If ``Spblib`` needed, which need C++ to compiled, please
     download `Python Extension Packages <https://www.lfd.uci.edu/~gohlke/pythonlibs/>`_

@@ -16,7 +16,6 @@ class CrystalGraphConvNet(BaseLayer):
                  inner_atom_fea_len=64, n_conv=3, h_fea_len=128, n_h=1,
                  classification=False, class_number=2):
         """
-        Initialize CrystalGraphConvNet.
 
         Parameters
         ----------

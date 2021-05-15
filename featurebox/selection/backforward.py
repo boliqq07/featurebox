@@ -42,21 +42,21 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
     """
     BackForward method to selected features.
 
-    estimator:
+    ``estimator``:
         A supervised sklearn learning estimator with a ``_fit`` method that provides
         information about feature importance either through a ``coef_``
         attribute or through a ``feature_importances_`` attribute.
 
-    n_type_feature_to_select: int or None (default=None)
+    ``n_type_feature_to_select``: int or None (default=None)
         The number of feature to selection. If `None`, selection the features with best score.
 
-    n_feature_: int
+    ``n_feature_``: int
         The number of selected feature.
 
-    support_: array of shape [n_feature]
+    ``support_``: array of shape [n_feature]
         The mask of selected feature.
 
-    estimator_: object
+    ``estimator_``: object
         The external estimator _fit on the reduced dataset.
 
     Examples
@@ -74,7 +74,7 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
 
     Examples
     --------
-    if score and predict is used, the refit could be set True and make sure the data is spilted, due to the refit
+    If score and predict is used, the refit could be set True and make sure the data is splited, due to the refit
      used all data in fit() function.
 
     >>> from sklearn.datasets import load_boston
@@ -88,7 +88,7 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
 
     Examples
     --------
-    if GridSearchCV, the refit could be set True and return the cv score.
+    If GridSearchCV, the refit could be set True and return the cv score.
 
     >>> from sklearn.datasets import load_boston
     >>> from sklearn.svm import SVR
@@ -341,41 +341,31 @@ class BackForwardStable(MetaEstimatorMixin, SelectorMixin, BaseEstimator):
     BackForwardStable.
     Run with different order for more Stable (Not guaranteed).
 
-    estimator : object
+    ``estimator`` : object
         A supervised learning estimator with a ``_fit`` method that provides
         information about feature importance either through a ``coef_``
         attribute or through a ``feature_importances_`` attribute.
 
-    scoring : string, callable or None, optional, (default=None)
+    ``scoring`` : string, callable or None, optional, (default=None)
         A string (see model evaluation documentation) or
         a scorer callable object / function with signature
         ``scorer(estimator, X, y)``.
 
-    verbose : int, (default=0)
+    ``verbose`` : int, (default=0)
         Controls verbosity of output.
 
-    n_jobs : int or None, optional (default=None)
-        Number of cores to run in parallel while fitting across folds.
-        ``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.
-        ``-1`` means using all processors. See :term:`Glossary <n_jobs>`
-        for more details.
-
-    n_feature_ : int
+    ``n_feature_`` : int
         The number of selected feature with cross-validation.
 
-    support_ : array of shape [n_feature]
+    ``support_`` : array of shape [n_feature]
         The mask of selected feature.
 
-    estimator_ : object
+    ``estimator_`` : object
         The external estimator _fit on the reduced dataset.
 
-    n_jobs : int or None
+   ``n_jobs`` : int or None
         Number of cores to run in parallel while fitting across folds.
         ``None`` means 1 and ``-1`` means using all processors.
-
-
-    Examples
-    --------
 
     >>> from sklearn.datasets import load_boston
     >>> from sklearn.svm import SVR
@@ -389,10 +379,7 @@ class BackForwardStable(MetaEstimatorMixin, SelectorMixin, BaseEstimator):
     >>> bf.score_
     0.642826382278419
 
-    Examples
-    --------
-
-    if score and predict is used, the refit could be set True and make sure the data is spilted, due to the refit
+    If score and predict is used, the refit could be set True and make sure the data is splited, due to the refit
     used all data in fit() function.
 
     >>> from sklearn.datasets import load_boston
@@ -404,10 +391,7 @@ class BackForwardStable(MetaEstimatorMixin, SelectorMixin, BaseEstimator):
     >>> test_score = bf.score(X[50:],y[50:])
     ...
 
-    Examples
-    --------
-
-    if GridSearchCV, the refit could be set True and return the cv score.
+    If GridSearchCV, the refit could be set True and return the cv score.
 
     >>> from sklearn.datasets import load_boston
     >>> from sklearn.svm import SVR

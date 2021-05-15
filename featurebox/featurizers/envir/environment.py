@@ -220,7 +220,21 @@ def universe_refine_nn(center_indices, neighbor_indices, distances, vectors=None
 
 class _BaseEnvGet(BaseFeature):
     """
-    Base class return features of each atoms, meanwhile it re-back bond feature.
+    Get properties from Pymatgen.Structure.
+    And each structure is convert to data as following :
+
+    ``center_indices``:np.ndarray of shape(n,)
+        center indexes.
+    ``center_indices``:np.ndarray of shape(n,l_c)
+        center properties.
+    ``neighbor_indices``:np.ndarray of shape(n,fill_size)
+        neighbor_indexes for each center_index.
+        `fill_size` is the parameter of `refine` function.
+    ``images``:np.ndarray of shape(n,lb>=3)
+        offset vector in 3 orientations or more bond properties.
+    ``distances``:np.ndarray of shape(n,fill_size)
+        distance of neighbor_indexes for each center_index.
+
     """
 
     def __init__(self, n_jobs: int, on_errors: str = 'raise', return_type: str = 'any',
@@ -255,10 +269,9 @@ class _BaseEnvGet(BaseFeature):
 
 class BaseDesGet(_BaseEnvGet):
     """
-    Get atoms features from Pymatgen.structure.
-    Though, the class return features of each atoms, meanwhile it re-back bond feature.
-
-    And get following :
+    Get properties from Pymatgen.Structure.
+    Where the nn_strategy is from ``pyXtal_FF``.
+    And each structure is convert to data as following :
 
     ``center_indices``:np.ndarray of shape(n,)
         center indexes.
@@ -271,8 +284,8 @@ class BaseDesGet(_BaseEnvGet):
         offset vector in 3 orientations or more bond properties.
     ``distances``:np.ndarray of shape(n,fill_size)
         distance of neighbor_indexes for each center_index.
-    """
 
+    """
     def __init__(self, nn_strategy="SOAP", refine: str = None,
                  refined_strategy_param: Dict = None,
                  numerical_tol=1e-8, pbc: List[int] = None, cutoff=None, cut_off_name=None):
@@ -282,11 +295,14 @@ class BaseDesGet(_BaseEnvGet):
         ----------
         nn_strategy:
             pyXtelff descriptors, which has calculate method.
+            See Also:
+            :mod:`featurebox.featurizers.descriptors`,
+            :class:`featurebox.featurizers.descriptors.SOAP.SOAP`,
         refine:str
             sort method for neighbors of each atom.
             all the refine_method should return 5 result.
             See Also:
-                :func:`refine_method_nn`
+            :func:`universe_refine_des`
         refined_strategy_param:dict
             parameters for refine
         numerical_tol:float
@@ -375,10 +391,11 @@ class BaseDesGet(_BaseEnvGet):
         return result
 
 
-class BaseNNGet(BaseFeature):
+class BaseNNGet(_BaseEnvGet):
     """
-    Get properties from Pymatgen.structure.
-    And get following :
+    Get properties from Pymatgen.Structure.
+    Where the nn_strategy is from ``Pymatgen``.
+    And each structure is convert to data as following :
 
     ``center_indices``:np.ndarray of shape(n,)
         center indexes.
@@ -403,10 +420,12 @@ class BaseNNGet(BaseFeature):
         ----------
         nn_strategy: Union[NearNeighbors]
             search method for local_env for each atom.
+            See Also:
+            :class:`featurebox.featurizers.envir.local_env.MinimumDistanceNNAll`,
         refine:str
             sort method for neighbors of each atom.
             See Also:
-                :func:`refine_method_nn`
+            :func:`universe_refine_nn`
         refined_strategy_param:dict
             parameters for refine
         numerical_tol:float

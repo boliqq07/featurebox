@@ -5,7 +5,7 @@
 [![Python Versions](https://img.shields.io/pypi/pyversions/featurebox.svg)](https://pypi.org/project/featurebox/)
 [![Version](https://img.shields.io/github/tag/boliqq07/featurebox.svg)](https://github.com/boliqq07/releases/latest)
 ![pypi Versions](https://badge.fury.io/py/featurebox.svg)
-
+[![Documentation Status](https://readthedocs.org/projects/featurebox/badge/?version=latest)](https://featurebox.readthedocs.io/en/latest/?badge=latest)
 
 Featurebox
 ----------------------

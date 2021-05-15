@@ -104,9 +104,9 @@ class BehlerParrinello:
             Currently, there are 3 types of symmetry functions implemented. 
             Here are the order of the descriptors are printed out based on
             their symmetry parameters:
-                - G2: ["element", "Rs", "eta"]
-                - G4: ["pair_elements", "eta", "lambda", "zeta"]
-                - G5: ["pair_elements", "eta", "lambda", "zeta"]
+            - G2: ["element", "Rs", "eta"]
+            - G4: ["pair_elements", "eta", "lambda", "zeta"]
+            - G5: ["pair_elements", "eta", "lambda", "zeta"]
         """
         self.crystal = crystal
         atomic_numbers = np.array(crystal.get_atomic_numbers())

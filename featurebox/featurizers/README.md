@@ -1,26 +1,26 @@
 Structure Graph Processing
----------------------------
+--------------------------
 
 Get structure data
---------------------
+------------------
     >>> data = pd.read_pickle("pymatgen_structures_list.pkl_pd")
     >>> y = ...
     >>> # using your self pymatgen.structure List
 
 Check structure elements in scope
------------------------------------
+---------------------------------
     >>> ce = CheckElements.from_pymatgen_structures()
     >>> checked_data = ce.check(data)
     >>> y = np.array(y)[ce.passed_idx()]
 
 Transform parallel
-----------------------------
+------------------
     >>> gt = CrystalBgGraph(n_jobs=2)
     >>> in_data = gt.transform(checked_data)
     >>> """you can save the in_data to the local disk to prevent double counting."""
 
 Using data
--------------------------
+----------
 
     >>> gen = GraphGenerator(*data, targets=y)
     >>> loader = MGEDataLoader(
@@ -32,7 +32,7 @@ Using data
 
 =====================  ====
  data                  y
----------------------  ====
+---------------------  ----
  s1:[[1],...,[a]]      y1
  s1:[[1],...,[o]]
  s1:[[1],...,[e]]
@@ -46,7 +46,7 @@ Using data
 =====================  ====
 
 Note
-----------------
+----
     The size of transformed data and y are different. but the first of graph is "node_atom_idx" to appoint the sample index.
     Thus, in network, there must be one step to stack the data with same "node_atom_idx"
     This is the critical point of graph network, such as CGCNN, and MGENet and so on!!!!!

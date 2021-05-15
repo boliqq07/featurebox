@@ -1,3 +1,9 @@
+from os import path
+
+this_directory = path.abspath(path.dirname(__file__))
+with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
+    __doc__ = f.read()
+
 from abc import abstractmethod
 from itertools import zip_longest
 from pathlib import Path
@@ -10,7 +16,6 @@ from torch.utils.data import Dataset, DataLoader
 from torch.utils.data._utils.collate import default_convert
 
 MODULE_DIR = Path(__file__).parent.absolute()
-
 
 class _BaseGraphSingleGenerator(Dataset):
 
@@ -118,16 +123,13 @@ class GraphGenerator(_BaseGraphSingleGenerator):
     A generator class that assembles several structures (indicated by
     batch_size) and form (x, y) pairs for model training.
 
-    return
-    [
-    "atom_fea",
-    "nbr_fea",
-    "state_fea",
-    "atom_nbr_idx",
-    ...
-    "node_atom_idx",
-    "node_ele_idx"
-    "ele_atom_idx"]
+    .. note:
+        Add ["len_node_atom", "len_node_ele" "ele_atom_idx"]
+        to distinguish the relationship between atoms and compounds.
+
+    Returns:
+        ["atom_fea","nbr_fea", "state_fea", "atom_nbr_idx",
+        "len_node_atom", "len_node_ele" "ele_atom_idx"]
     """
 
     def __init__(
@@ -152,7 +154,7 @@ class GraphGenerator(_BaseGraphSingleGenerator):
             nbr_fea: (list of np.array) list of bond features matrix
             state_fea: (list of np.array) list of [1, G] state features,
                 where G is the global state feature dimension
-            M is different for different structures
+                M is different for different structures
             atom_nbr_idx: (list of integer) list of (M, ) the other side atomic
                 index of the bond, M is different for different structures,
                 but it has to be the same as the corresponding index1.
@@ -226,32 +228,43 @@ def add_mark(data):
 class MGEDataLoader:
     """
     This loader:
-        1.add the ability to collate preprocessing.
-        2.Process and add the necessary indexes list.
+        1.Add or transform the necessary indexes to declare the relationship between atoms and compounds.\n
+        1.Transform data to torch.Tensor.\n
+        2.Stack or cat the data belong the first axis(dim).\n
 
-    Notes:
+    If there are **N_node** samples.
+
+    ===================  ==========================================   ============================
+    Name                 N_node Graph data (Input)                    Batch graph data (Output)
+    -------------------  ------------------------------------------   ----------------------------
+    ``atom_fea``         (N, atom_fea_len)  * **N_node**              (N', atom_fea_len)
+    ``nbr_fea``          (N, fill_size, atom_fea_len) * ***N_node**   (N', fill_size, atom_fea_len).
+    ``state_fea``        (state_fea_len,)  * **N_node**               (N_node, state_fea_len,)
+    ``atom_nbr_idx``     (N, fill_size) * **N_node**                  (N', fill_size)
+    ===================  ==========================================   ============================
+
+    Notes
+    -----
         Though, the collate_fn parameter in torch.DataLoader could be used to collate preprocessing,
         but when we try to use it, we find it make the code difficult to read and maintain.
         thus, we just use "collate_fn=default_convert" to transform the preprocessing from numpy to tensor,
         and collate preprocessing outer of the torch.DataLoader
 
-    Notes:
-        we replace the last 2 features in primary features to index list feature and add 1 features.
-
-        len_node_atom -> node_atom_idx
-
-        len_node_ele -> node_ele_idx
-
-        ele_atom_idx -> node_ele_idx
-
-    Thus the number of final features are add 1 to input dataset.
+    Notes
+    -----
+        We replace the last 2 features in primary features to index list feature and add 1 features.\n
+        len_node_atom -> node_atom_idx\n
+        len_node_ele -> node_ele_idx\n
+        ele_atom_idx -> node_ele_idx\n
 
     CrystalGraphDisordered,CrystalGraph,SingleMoleculeGraph in crystal, return 7 features.
+
     Return:
     ["atom_feature", "nbr_feature", "state_feature", 'atom_nbr_idx',
     "node_atom_idx", "node_ele_idx","ele_atom_idx"]
 
-    other Graph self-defined, Return:
+    other Graph self-defined.
+    Return:
     ["atom_feature", "nbr_feature", "state_feature", 'atom_nbr_idx',
     ...
     "node_atom_idx", "node_ele_idx","ele_atom_idx"]
@@ -420,3 +433,7 @@ class MGEDataLoader:
             data[1] = data[1].unsqueeze(2)  # nbr_fea
 
         return data
+
+
+MEGDataLoader = MGEDataLoader
+"""old name of MGEDataLoader"""

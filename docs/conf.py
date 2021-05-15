@@ -23,7 +23,7 @@ copyright = '2021, boliqq07'
 author = 'boliqq07'
 
 # The full version, including alpha/beta/rc tags
-release = '0.0.911'
+release = '0.0.938'
 
 # -- General configuration ---------------------------------------------------
 
@@ -55,3 +55,8 @@ html_theme = "sphinx_rtd_theme"
 html_static_path = ['_static']
 
 autoclass_content = 'both'
+
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.md': 'markdown',
+}

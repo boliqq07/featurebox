@@ -1,6 +1,3 @@
-"""
-This part is used to check the element.
-"""
 from typing import List, Callable
 
 import numpy as np
@@ -34,7 +31,15 @@ AVAILABLE_ELE_NUMBER = tuple(list((range(1, 84))) + [89, 90, 91, 92])
 
 
 class CheckElements:
-    """Check the element in preprocessing."""
+    """Check the element in available element or not.
+
+    AVAILABLE_ELE_NUMBER:
+        (1~84) + (89, 90, 91, 92).
+
+    AVAILABLE_ELE_NAME:
+        (H~Bi) + ('Ac', 'Th', 'Pa', 'U').
+
+    """
 
     def __init__(self, check_method: str = "name", func: Callable = lambda x: x):
         """
@@ -42,10 +47,10 @@ class CheckElements:
         Parameters
         ----------
         check_method: str
-            Check by number or name of element.
+            Check by number or name of element. Optional ("name","number")
         func: callable
             Processing for elements.
-            such as for element in pymatgen:
+            Such as for element in pymatgen:
 
             >>> func = lambda x: [x.Z, ]
             >>> func2 = lambda x: [x.name, ]
@@ -77,7 +82,7 @@ class CheckElements:
         elif check_method == "number":
             check_method = AVAILABLE_ELE_NUMBER
         else:
-            raise TypeError("check_method='name' or 'name'")
+            raise TypeError("check_method='name' or 'number'")
         self.check_method = check_method
         self.func = func
         self.mark = []
@@ -88,12 +93,12 @@ class CheckElements:
         Parameters
         ----------
         samples: list
-            names or numbers, or pymatgen.structures
+            Names or numbers, or list of pymatgen.Structure
 
         Returns
         -------
         result: list
-            list of filtered structure.
+            List of filtered structures.
         """
 
         self.mark = []
@@ -120,12 +125,12 @@ class CheckElements:
         return structures_t
 
     def passed_idx(self) -> np.ndarray:
-        """The mark for all structures, return np.ndarray index"""
+        """The mark for all structures, return np.ndarray index."""
         return np.where(np.array(self.mark) == 1)[0]
 
     @classmethod
     def from_list(cls, check_method="name", grouped="False"):
-        """Get checker for list"""
+        """Get checker for list of name or number."""
         if grouped:
             func = lambda x: x
         else:
@@ -134,6 +139,6 @@ class CheckElements:
 
     @classmethod
     def from_pymatgen_structures(cls):
-        """Get checker for pymatgen.Structure"""
+        """Get checker for list of pymatgen.Structure."""
         func = lambda x: x.atomic_numbers
         return cls(check_method="number", func=func)
