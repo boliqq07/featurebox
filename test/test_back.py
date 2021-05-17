@@ -31,10 +31,10 @@ class MyTestCase(unittest.TestCase):
         from sklearn.svm import SVR
         from sklearn import model_selection
         X, y = load_boston(return_X_y=True)
-        X=X[:,:6]
+        X=X[:,:3]
         svr = SVR()
-        gd = model_selection.GridSearchCV(svr, param_grid=[{"C": [1, 10]}], n_jobs=1, cv=5)
-        bf = BackForwardStable(gd, primary_feature=4, random_state=1, refit=True)
+
+        bf = BackForwardStable(svr, primary_feature=2, random_state=1, refit=True,n_jobs=4,times=4)
         new_x = bf.fit(X, y)
         test_score = bf.score(X, y)
         print(test_score)
@@ -45,11 +45,25 @@ class MyTestCase(unittest.TestCase):
         from sklearn.svm import SVR
         from sklearn import model_selection
         X, y = load_boston(return_X_y=True)
-        X=X[:, :6]
+        X=X[:, :4]
         svr = SVR()
-        bf = BackForward(svr, primary_feature=4, random_state=1, refit=True)
+        bf = BackForward(svr, primary_feature=2, random_state=1, refit=True)
         new_x = bf.fit_transform(X, y)
         test_score = bf.score(X, y)
+
+    def test_something5(self):
+
+        from sklearn.datasets import load_boston
+        from sklearn.svm import SVR
+        from sklearn import model_selection
+        X, y = load_boston(return_X_y=True)
+        X=X[:,:4]
+        svr = SVR()
+        gd = model_selection.GridSearchCV(svr, param_grid=[{"C": [1, 10]}], n_jobs=1, cv=3)
+        bf = BackForward(gd, primary_feature=2, random_state=1, refit=True)
+        new_x = bf.fit(X, y)
+        test_score = bf.score(X, y)
+        print(test_score)
 
 
 if __name__ == '__main__':

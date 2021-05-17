@@ -29,7 +29,7 @@ def universe_refine_des(d: Dict, fill_size=10, **kwargs):
 
     Returns:
         (center_indices,center_prop, neighbor_indices, images, distances)\n
-        center_indices: np.ndarray 1d(N,1).\n
+        center_indices: np.ndarray 1d(N,).\n
         center_prop: np.ndarray 1d(N,l_c).\n
         neighbor_indices: np.ndarray 2d(N,fill_size).\n
         images: np.ndarray 2d(N,fill_size,l).\n
@@ -124,7 +124,7 @@ def universe_refine_nn(center_indices, neighbor_indices, distances, vectors=None
 
     Returns:
         (center_indices,center_indices,  neighbor_indices, images, distances)\n
-        center_indices: np.ndarray 1d(N,1).\n
+        center_indices: np.ndarray 1d(N,).\n
         center_prop: np.ndarray 1d(N,l_c).\n
         neighbor_indices: np.ndarray 2d(N,fill_size).\n
         images: np.ndarray 2d(N,fill_size,l).\n

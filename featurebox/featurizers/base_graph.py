@@ -197,8 +197,16 @@ class _StructureGraph(BaseFeature):
         atoms = self.atom_converter.convert(atoms)
         bonds = self.bond_converter.convert(bondss)
 
-        if center_prop.shape[1] > 1:
-            atoms = np.concatenate((np.array(atoms), center_prop), axis=1)
+        # atoms number in the first column.
+        if atoms.shape[1] == 1:
+            if center_prop.shape[1] > 1:
+                atoms = np.concatenate((np.array(atoms), center_prop), axis=1)
+        else:
+            atoms_numbers = np.array(structure.atomic_numbers)[center_indices].reshape(-1, 1)
+            if center_prop.shape[1] > 1:
+                atoms = np.concatenate((atoms_numbers, np.array(atoms), center_prop), axis=1)
+            else:
+                atoms = np.concatenate((atoms_numbers,np.array(atoms)), axis=1)
 
         return {"atom": atoms, "bond": bonds, "state": state_attributes, "atom_nbr_idx": atom_nbr_idx}
 

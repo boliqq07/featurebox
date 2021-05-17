@@ -15,7 +15,7 @@ Check structure elements in scope::
 
 Transform parallel::
 
-    >>> gt = CrystalBgGraph(n_jobs=4)
+    >>> gt = CrystalGraph(n_jobs=4)
     >>> in_data = gt.transform(checked_data)
     >>> pd.to_pickle((in_data, y), "in_data_no_sgt.pkl_pd")
     >>> """you can save the in_data to the local disk to prevent double counting."""

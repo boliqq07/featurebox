@@ -1,5 +1,9 @@
 from os import path
 
+from mgetool.tool import tt
+
+from featurebox.utils._calculate_length import cal_length
+
 this_directory = path.abspath(path.dirname(__file__))
 with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
     __doc__ = f.read()
@@ -53,6 +57,7 @@ class _BaseGraphSingleGenerator(Dataset):
             yield item
 
     @staticmethod
+
     def _reform_data(
             *args: np.ndarray
     ) -> List:
@@ -61,32 +66,11 @@ class _BaseGraphSingleGenerator(Dataset):
         2.transform the preprocessing to numpy with Fixed accuracy float32 and int64 .
         """
 
-        def num(ax):
-            ls = []
-            temp = ax[0]
-            li = -1
-            for ai in range(ax.shape[0]):
-                if np.all(np.equal(temp, ax[ai])):
-                    li += 1
-                else:
-                    temp = ax[ai]
-                    li += 1
-                    ls.append(li)
-                    li = 0
-            ls.append(li + 1)
-            return ls
-
-        inputs = []
-
-        for i in args:
-            try:
-                inputs.append(np.array(i, dtype=np.float32))
-            except ValueError:
-                inputs.append(i)
-
+        inputs = list(args)
         inputs.append(args[0].shape[0])
-        inputs.append(np.array(num(args[0])))
+        inputs.append(np.array(cal_length(args[0][:,0].astype(int))))
         inputs.append(inputs[-1].shape[0])
+        # assert len(inputs[-2])>1
         return inputs
 
     def __getitem__(self, index: int) -> tuple:
@@ -209,8 +193,11 @@ def add_mark(data):
         data = data.numpy()
     if isinstance(data, list):
         data = np.array(data)
+
     a = np.cumsum(data)
+
     b = np.insert(a, 0, 0)[:-1]
+
     return [torch.arange(k, v) for k, v in zip(b, a)]
 
 
@@ -324,6 +311,7 @@ class MGEDataLoader:
         """move data to cuda"""
         ba = []
         for i in batch:
+
             if isinstance(i, Tensor):
                 ba.append(i.to(self.device))
             elif isinstance(i, Sequence):
@@ -334,10 +322,15 @@ class MGEDataLoader:
 
     def __next__(self):
         if self._number_yield < self.loader.__len__():
+
             batch = next(self.loader.__iter__())
+
             batch = self.collate_fn(batch, self.collate_marks)
+
             batch[0] = self.index_transform(batch[0])
+
             batch = self.move(batch)
+
             self._number_yield += 1
             return batch
         raise StopIteration
@@ -387,9 +380,12 @@ class MGEDataLoader:
                     a = torch.stack(a, 0)
                     return torch.reshape(a, (-1, 1)) if len(a.shape) == 1 else a
                 if di in ["c", "cat"]:
+
                     a = torch.cat(a, 0)
+
                     return torch.reshape(a, (-1, 1)) if len(a.shape) == 1 else a
                 elif di in ["s", "stack"]:
+
                     a = torch.stack(a, 0)
                     return torch.reshape(a, (-1, 1)) if len(a.shape) == 1 else a
                 else:
@@ -403,9 +399,12 @@ class MGEDataLoader:
                                 "such as feature = [f1,f2,f3,f4,f5,f6,f7,f8,f9], without target" \
                                 "The collate_marks = ('c', 'c', 's', 'c', 'f', 'c','f')\n" \
                                 "'s' is torch.stack, 'c' is torch.cat, 'f' do noting but just return the list"
+
         transposed = list(zip(*batch))
+
         return [[_deal_func(si, di) for si, di in zip_longest(zip(*samples), collate_marks, fillvalue="f")]
                 if i == 0 else _deal_func(samples, "c") for i, samples in enumerate(transposed)]
+
 
     @staticmethod
     def index_transform(data):
@@ -428,9 +427,14 @@ class MGEDataLoader:
         data[-2] = add_mark(data[-2])  # node_ele_idx
         data[-1] = add_mark(data[-1])  # ele_atom_idx
 
+        data[0] = data[0].to(torch.float32)  # atom
+        data[1] = data[1].to(torch.float32)  # bond
+        data[2] = data[2].to(torch.float32)  # state
         data[3] = data[3].to(torch.int64)  # atom_nbr_idx
         if len(data[1].shape) == 2:
             data[1] = data[1].unsqueeze(2)  # nbr_fea
+        if len(data[0].shape) == 1:
+            data[0] = data[0].unsqueeze(1)  # nbr_fea
 
         return data
 
