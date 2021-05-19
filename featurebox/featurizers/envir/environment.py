@@ -23,9 +23,11 @@ def universe_refine_des(d: Dict, fill_size=10, **kwargs):
     More neighbors would be abandoned.
     Insufficient neighbors would be duplicated.
 
+    # todo There is a problem with deleting atoms
+
     Args:
         d: dict, dict of descriptor. at lest contain "x" and "dxdr"
-        fill_size: int
+        fill_size: int, unstable.
 
     Returns:
         (center_indices,center_prop, neighbor_indices, images, distances)\n
@@ -41,6 +43,13 @@ def universe_refine_des(d: Dict, fill_size=10, **kwargs):
     dxdr_len = dxdr.shape[0]
 
     if dxdr.ndim == 3:
+        # please no cut
+        # ACSF no
+        # BehlerParrinello no
+        #EAD no
+        #EMAD
+        #wACSF
+
         seq0 = seq[:, 0]
 
         uni = [len(seq[np.where(seq0 == i)]) for i in range(np.max(seq0) + 1)]
@@ -84,6 +93,9 @@ def universe_refine_des(d: Dict, fill_size=10, **kwargs):
             dxdr_new = np.array(dxdr_new)
 
     elif dxdr.ndim == 4:
+        # please no cut
+        # soap
+        # wACSF
         dxdr_new = np.reshape(dxdr, (dxdr.shape[0], dxdr.shape[1], -1))
         seq_new = np.repeat(np.arange(atom_len).reshape(-1, 1), dxdr.shape[1], axis=1).T
         left = fill_size - atom_len
@@ -245,6 +257,7 @@ class _BaseEnvGet(BaseFeature):
                          batch_size=batch_size)
         self.adaptor_dict = {}  # Dynamic assignment
         self.adaptor = AseAtomsAdaptor()
+        self.pbc = None
 
     def ase_to_pymatgen(self, atom: Atoms, prop_dict=None):
         """ase_to_pymatgen"""
@@ -265,6 +278,43 @@ class _BaseEnvGet(BaseFeature):
         if prop_dict != {}:
             [atoms.__setattr__(k, v) for k, v in prop_dict.items()]
         return atoms
+
+    def _within_cutoff(self,
+                       structure: StructureOrMolecule, cutoff: float = 5.0, numerical_tol: float = 1e-8
+                       ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        """
+        Get graph representations from structure within cutoff.
+
+        Args:
+            structure (pymatgen Structure or molecule)
+            cutoff (float): cutoff radius
+            numerical_tol (float): numerical tolerance
+
+        Returns:
+            center_indices, neighbor_indices, images, distances
+        """
+        if isinstance(structure, Structure):
+            lattice_matrix = np.ascontiguousarray(np.array(structure.lattice.matrix), dtype=float)
+            pbc = np.array([1, 1, 1], dtype=int)
+        elif isinstance(structure, Molecule):
+            lattice_matrix = np.array([[1000.0, 0.0, 0.0], [0.0, 1000.0, 0.0], [0.0, 0.0, 1000.0]], dtype=float)
+            pbc = np.array([0, 0, 0], dtype=int)
+        else:
+            raise ValueError("structure type not supported")
+        if self.pbc is not None:
+            pbc = np.array(self.pbc, dtype=int)
+        r = float(cutoff)
+        cart_coords = np.ascontiguousarray(np.array(structure.cart_coords), dtype=float)
+        center_indices, neighbor_indices, images, distances = find_points_in_spheres(
+            cart_coords, cart_coords, r=r, pbc=pbc, lattice=lattice_matrix, tol=numerical_tol
+        )
+        center_indices = center_indices.astype(np.int)
+        neighbor_indices = neighbor_indices.astype(np.int)
+        images = images.astype(np.int)
+        distances = distances.astype(np.float32)
+        exclude_self = (center_indices != neighbor_indices) | (distances > numerical_tol)
+        return center_indices[exclude_self], neighbor_indices[exclude_self], images[exclude_self], distances[
+            exclude_self]
 
 
 class BaseDesGet(_BaseEnvGet):
@@ -377,6 +427,9 @@ class BaseDesGet(_BaseEnvGet):
 
         try:
             result_dict = self._calculate(structure)
+            # todo add to refine
+            # center_indices, neighbor_indices, images, distances = self._within_cutoff(structure, self.cutoff,
+            #                                                                           self.numerical_tol)
             result = self.refine(result_dict)
         except ValueError as e:
             print(e)
@@ -464,43 +517,6 @@ class BaseNNGet(_BaseEnvGet):
             return self.get_graphs_within_cutoff_merge_sort(structure)
         else:
             return self.get_graphs_with_strategy_merge_sort(structure)
-
-    def _within_cutoff(self,
-                       structure: StructureOrMolecule, cutoff: float = 5.0, numerical_tol: float = 1e-8
-                       ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-        """
-        Get graph representations from structure within cutoff.
-
-        Args:
-            structure (pymatgen Structure or molecule)
-            cutoff (float): cutoff radius
-            numerical_tol (float): numerical tolerance
-
-        Returns:
-            center_indices, neighbor_indices, images, distances
-        """
-        if isinstance(structure, Structure):
-            lattice_matrix = np.ascontiguousarray(np.array(structure.lattice.matrix), dtype=float)
-            pbc = np.array([1, 1, 1], dtype=int)
-        elif isinstance(structure, Molecule):
-            lattice_matrix = np.array([[1000.0, 0.0, 0.0], [0.0, 1000.0, 0.0], [0.0, 0.0, 1000.0]], dtype=float)
-            pbc = np.array([0, 0, 0], dtype=int)
-        else:
-            raise ValueError("structure type not supported")
-        if self.pbc is not None:
-            pbc = np.array(self.pbc, dtype=int)
-        r = float(cutoff)
-        cart_coords = np.ascontiguousarray(np.array(structure.cart_coords), dtype=float)
-        center_indices, neighbor_indices, images, distances = find_points_in_spheres(
-            cart_coords, cart_coords, r=r, pbc=pbc, lattice=lattice_matrix, tol=numerical_tol
-        )
-        center_indices = center_indices.astype(np.int)
-        neighbor_indices = neighbor_indices.astype(np.int)
-        images = images.astype(np.int)
-        distances = distances.astype(np.float32)
-        exclude_self = (center_indices != neighbor_indices) | (distances > numerical_tol)
-        return center_indices[exclude_self], neighbor_indices[exclude_self], images[exclude_self], distances[
-            exclude_self]
 
     def get_graphs_within_cutoff_merge_sort(self, structure: StructureOrMolecule
                                             ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:

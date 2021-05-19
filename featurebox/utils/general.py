@@ -5,6 +5,7 @@ from collections import Iterable
 from typing import Union, List, Sequence, Optional
 
 import numpy as np
+from sklearn import metrics
 from sklearn.model_selection import train_test_split
 
 
@@ -136,22 +137,3 @@ def train_test(*arrays, **options):
                                                                                                      for i in range(le)
                                                                                                      if i % 2 == 1]
     return X_train, y_train, X_test, y_test
-
-
-class AverageMeter(object):
-    """Computes and stores the average and current value"""
-
-    def __init__(self):
-        self.reset()
-
-    def reset(self):
-        self.val = 0
-        self.avg = 0
-        self.sum = 0
-        self.count = 0
-
-    def update(self, val, n=1):
-        self.val = val
-        self.sum += val * n
-        self.count += n
-        self.avg = self.sum / self.count
