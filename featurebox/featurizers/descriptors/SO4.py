@@ -1783,7 +1783,7 @@ if __name__ == "__main__":
     stress = options.stress
 
     # import time
-    f = SO4_Bispectrum(lmax, rcut, derivative=False, stress=False, normalize_U=False, cutoff_function='tanh')
+    f = SO4_Bispectrum(lmax, rcut, derivative=True, stress=True, normalize_U=False, cutoff_function='tanh')
     x = f.calculate(test)
     # start2 = time.time()
     # for key, item in x.items():

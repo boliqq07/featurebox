@@ -1180,8 +1180,8 @@ if __name__ == "__main__":
     import time
 
     start1 = time.time()
-    f = SO3(nmax, lmax, rcut, alpha, derivative=der, stress=stress)
-    x = f.calculate(test, atom_ids=[0, 1])
+    f = SO3(nmax, lmax, rcut, alpha, derivative=True, stress=False)
+    x = f.calculate(test, atom_ids=[0, 1,])
     print(x['dxdr'])
     start2 = time.time()
     '''

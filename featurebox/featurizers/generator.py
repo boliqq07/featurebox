@@ -1,8 +1,7 @@
-import itertools
 from os import path
 
-
 from sklearn.utils import check_random_state, shuffle
+
 from featurebox.utils.fast._calculate_length import cal_length_numba
 from featurebox.utils.fast._calculate_subp import subp_numba2d
 from featurebox.utils.general import train_test
@@ -122,10 +121,10 @@ class GraphGenerator(_BaseGraphSingleGenerator):
 
     def __init__(
             self,
-            atom_fea: List[np.ndarray],
-            nbr_fea: List[np.ndarray],
-            state_fea: List[np.ndarray],
-            atom_nbr_idx: List[np.ndarray],
+            atom_fea: [List[np.ndarray], np.ndarray],
+            nbr_fea: [List[np.ndarray], np.ndarray],
+            state_fea: [List[np.ndarray], np.ndarray],
+            atom_nbr_idx: [List[np.ndarray], np.ndarray],
             *args,
             targets: np.ndarray = None,
             sample_weights: np.ndarray = None,
@@ -195,10 +194,10 @@ class GraphGenerator(_BaseGraphSingleGenerator):
 class DuplicateGraphGenerator(_BaseGraphSingleGenerator):
     def __init__(
             self,
-            atom_fea: List[np.ndarray],
-            nbr_fea: List[np.ndarray],
-            state_fea: List[np.ndarray],
-            atom_nbr_idx: List[np.ndarray],
+            atom_fea: [List[np.ndarray], np.ndarray],
+            nbr_fea: [List[np.ndarray], np.ndarray],
+            state_fea: [List[np.ndarray], np.ndarray],
+            atom_nbr_idx: [List[np.ndarray], np.ndarray],
             targets: np.ndarray = None,
             sample_weights: np.ndarray = None,
             duplicate: int = 5,
@@ -233,6 +232,7 @@ class DuplicateGraphGenerator(_BaseGraphSingleGenerator):
             len(atom_fea) * duplicate, targets, sample_weights=sample_weights,
         )
         self.duplicate = duplicate
+        assert 0 <= noise <= 0.05
         self.noise = noise
         self.shuffle = shuffle
         self.random_state = check_random_state(random_state)
@@ -244,13 +244,17 @@ class DuplicateGraphGenerator(_BaseGraphSingleGenerator):
                                 "node_atom_idx", "node_ele_idx", "ele_atom_idx"]
         self.add_prop = []
 
+    def _noi(self, array):
+        return (np.random.random(array.shape) * self.noise + (
+                1 - 0.5 * self.noise)) * array if self.noise != 0 else array
+
     def _repeat(self, atom_fea, nbr_fea, state_fea, atom_nbr_idx):
         index = [np.arange(i.shape[0]) for i in atom_fea]
         if self.shuffle:
             indexes = [[shuffle(i, random_state=self.random_state) for i in index] for _ in range(self.duplicate - 1)]
             atom_fea_ = [a[i] for indexi in indexes for a, i in zip(atom_fea, indexi)]
-            nbr_fea_ = [b[i] for indexi in indexes for b, i in zip(nbr_fea, indexi)]
-            state_fea_ = [i for i in state_fea for _ in range(self.duplicate)]
+            nbr_fea_ = [self._noi(b[i]) for indexi in indexes for b, i in zip(nbr_fea, indexi)]
+            state_fea_ = [self._noi(i) for i in state_fea for _ in range(self.duplicate)]
 
             atom_nbr_idx_ = [subp_numba2d(a[i], i) for indexi in indexes for a, i in zip(atom_nbr_idx, indexi)]
 
@@ -260,8 +264,8 @@ class DuplicateGraphGenerator(_BaseGraphSingleGenerator):
             return atom_fea_, nbr_fea_, state_fea_, atom_nbr_idx_
         else:
             atom_fea_ = [i for i in atom_fea for _ in range(self.duplicate)]
-            nbr_fea_ = [i for i in nbr_fea for _ in range(self.duplicate)]
-            state_fea_ = [i for i in state_fea for _ in range(self.duplicate)]
+            nbr_fea_ = [self._noi(i) for i in nbr_fea for _ in range(self.duplicate)]
+            state_fea_ = [self._noi(i) for i in state_fea for _ in range(self.duplicate)]
             atom_nbr_idx_ = [i for i in atom_nbr_idx for _ in range(self.duplicate)]
             return atom_fea_, nbr_fea_, state_fea_, atom_nbr_idx_
 
@@ -380,11 +384,18 @@ class MGEDataLoader:
         self.loader = DataLoader(
             dataset=dataset, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers,
             collate_fn=default_convert, **kwargs)
+        self.kwargs = kwargs
         if collate_marks is None:
             collate_marks = ('c', 'c', 's', 'c', 'f', 'c', 'f')
         self.collate_marks = tuple(collate_marks)
         self._number_yield = 0
         self.device = torch.device('cpu')
+
+    def reset_shuffle(self, shuffle=True):
+        self.loader = DataLoader(
+            dataset=self.loader.dataset, batch_size=self.loader.batch_size, shuffle=shuffle,
+            num_workers=self.loader.num_workers,
+            collate_fn=default_convert, **self.kwargs)
 
     def __iter__(self):
         return self
@@ -532,16 +543,16 @@ MEGDataLoader = MGEDataLoader
 
 def get_train_test_loader(*data_X, data_y, train_size=None, test_size=0.25,
                           shuffle=False, random_state=0, stratify=None,
-                          batch_size=50, dataLoader_shuffle=False,generator_type="GraphGenerator",
+                          batch_size=50, dataLoader_shuffle=False, generator_type="GraphGenerator",
                           **kwargs):
     """Script to get train_loader and test_loader.You can customize and rewrite it.\n
     The parameters are from ``train_test`` and :class:`MGEDataLoader`
     """
 
-    if generator_type=="GraphGenerator":
-        generator_type=GraphGenerator
+    if generator_type == "GraphGenerator":
+        generator_type = GraphGenerator
     else:
-        generator_type=DuplicateGraphGenerator
+        generator_type = DuplicateGraphGenerator
 
     X_train_test, y_train_test, X_test, y_test = train_test(*data_X, data_y,
                                                             train_size=train_size,

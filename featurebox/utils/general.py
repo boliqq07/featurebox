@@ -98,8 +98,6 @@ def train_test(*arrays, **options):
     random_state : int or RandomState instance, default=None
         Controls the shuffling applied to the data before applying the split.
         Pass an int for reproducible output across multiple function calls.
-        See :term:`Glossary <random_state>`.
-
 
     shuffle : bool, default=True
         Whether or not to shuffle the data before splitting. If shuffle=False

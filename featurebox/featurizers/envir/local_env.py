@@ -126,6 +126,7 @@ class AllAtomPairs(NearNeighbors):
 
 
 class UserVoronoiNN(VoronoiNN):
+    """Not for all structure."""
 
     def _extract_nn_info(self, structure, nns):
         """Given Voronoi NNs, extract the NN info in the form needed by NearestNeighbors

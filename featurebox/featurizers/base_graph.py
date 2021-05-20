@@ -76,7 +76,7 @@ class _StructureGraph(BaseFeature):
         nn_strategy : str
             NearNeighbor strategy
             For bond_converter ="BaseNNGet": ["BrunnerNN_reciprocal", "BrunnerNN_real", "BrunnerNN_relative",
-            "EconNN", "CrystalNN", "MinimumDistanceNNAll", "find_points_in_spheres"]
+            "EconNN", "CrystalNN", "MinimumDistanceNNAll", "find_points_in_spheres","UserVoronoiNN"]
             For bond_converter ="BaseDesGet": ["ACSF","BehlerParrinello","EAD","EAMD","SOAP","SO3","SO4_Bispectrum","wACSF"]
             See Also:
             ``BaseNNGet`` :

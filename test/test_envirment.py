@@ -10,8 +10,9 @@ class TestGraph(unittest.TestCase):
     def setUp(self) -> None:
         ce = CheckElements.from_pymatgen_structures()
         self.data = pd.read_pickle("data_structure.pkl_pd")
+        self.data2 = pd.read_pickle("data_structure2.pkl_pd")
         self.data0 = self.data[0]
-        self.data0_3 = ce.check(self.data)[:3]
+        self.data0_3 = ce.check(self.data)[:10]
         self.data0_checked = ce.check(self.data)[:10]
 
     def test_get(self):
@@ -26,12 +27,6 @@ class TestGraph(unittest.TestCase):
             resultt = bag.convert(i)
             print(resultt)
 
-    # def test_get3(self):
-    #     bag = BaseNNGet(nn_strategy="JmolNN")
-    #     for i in self.data0_3:
-    #         resultt = bag.convert(i)
-    #         print(resultt)
-
     def test_get4(self):
         bag = BaseNNGet(nn_strategy="MinimumDistanceNN")
         for i in self.data0_3:
@@ -39,28 +34,10 @@ class TestGraph(unittest.TestCase):
             print(resultt)
 
     def test_get19(self):
-        bag = BaseNNGet(cutoff=5.0)
+        bag = BaseNNGet(cutoff=5.0,nn_strategy="find_points_in_spheres")
         for i in self.data0_3:
             resultt = bag.convert(i)
             print(resultt)
-
-    # def test_get5(self):
-    #     bag = BaseNNGet(nn_strategy="OpenBabelNN")
-    #     for i in self.data0_checked:
-    #         resultt = bag.convert(i)
-    #         print(resultt)
-
-    # def test_get6(self):
-    #     bag = BaseNNGet(nn_strategy="CovalentBondNN")
-    #     for i in self.data0_3:
-    #         resultt = bag.convert(i)
-    #         print(resultt)
-
-    # def test_get8(self):
-    #     bag = BaseNNGet(nn_strategy="MinimumOKeeffeNN")
-    #     for i in self.data0_3:
-    #         resultt = bag.convert(i)
-    #         print(resultt)
 
     def test_get9(self):
         bag = BaseNNGet(nn_strategy="BrunnerNN_reciprocal")
@@ -86,11 +63,41 @@ class TestGraph(unittest.TestCase):
             resultt = bag.convert(i)
             print(resultt)
 
-    # def test_get13(self):
-    #     bag = BaseNNGet(nn_strategy="Critic2NN")
-    #     for i in self.data0_3:
-    #         resultt = bag.convert(i)
-    #         print(resultt)
+    def test_get44(self):
+        bag = BaseNNGet(nn_strategy="MinimumDistanceNN")
+        for i in self.data0_checked:
+            resultt = bag.convert(i)
+            print(resultt)
+
+    def test_get199(self):
+        bag = BaseNNGet(cutoff=5.0,nn_strategy="find_points_in_spheres")
+        for i in self.data0_checked:
+            resultt = bag.convert(i)
+            print(resultt)
+
+    def test_get111(self):
+        bag = BaseNNGet(nn_strategy="BrunnerNN_reciprocal")
+        for i in self.data0_checked:
+            resultt = bag.convert(i)
+            print(resultt)
+
+    def test_get911(self):
+        bag = BaseNNGet(nn_strategy="BrunnerNN_real")
+        for i in self.data0_checked:
+            resultt = bag.convert(i)
+            print(resultt)
+
+    def test_get110(self):
+        bag = BaseNNGet(nn_strategy="EconNN")
+        for i in self.data0_checked:
+            resultt = bag.convert(i)
+            print(resultt)
+
+    def test_get1111(self):
+        bag = BaseNNGet(nn_strategy="CrystalNN")
+        for i in self.data0_checked:
+            resultt = bag.convert(i)
+            print(resultt)
 
 
 if __name__ == '__main__':

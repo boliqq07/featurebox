@@ -548,7 +548,7 @@ class BaseNNGet(_BaseEnvGet):
                                             ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """For get bond distance with different strategy, for different nn_staagy could be rewrite."""
         # assert hasattr(self.nn_strategy, "cutoff")
-
+        self.nn_strategy.cutoff = self.cutoff
         index1 = []
         index2 = []
         bonds = []

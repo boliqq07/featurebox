@@ -6,4 +6,4 @@ __all__  =["ACSF", "behlerparrinello",
                         "SOAP",
                         "SO3",
                         "SO4",
-                        "wACSF"]
+                        "wACSF","cutoff"]

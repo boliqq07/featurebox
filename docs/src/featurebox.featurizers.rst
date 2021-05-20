@@ -1,0 +1,62 @@
+featurebox.featurizers package
+==============================
+
+.. automodule:: featurebox.featurizers
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   featurebox.featurizers.atom
+   featurebox.featurizers.bond
+   featurebox.featurizers.descriptors
+   featurebox.featurizers.envir
+   featurebox.featurizers.state
+
+Submodules
+----------
+
+featurebox.featurizers.base\_graph module
+-----------------------------------------
+
+.. automodule:: featurebox.featurizers.base_graph
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+featurebox.featurizers.base\_transform module
+---------------------------------------------
+
+.. automodule:: featurebox.featurizers.base_transform
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+featurebox.featurizers.batch\_feature module
+--------------------------------------------
+
+.. automodule:: featurebox.featurizers.batch_feature
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+featurebox.featurizers.extrastats module
+----------------------------------------
+
+.. automodule:: featurebox.featurizers.extrastats
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+featurebox.featurizers.generator module
+---------------------------------------
+
+.. automodule:: featurebox.featurizers.generator
+   :members:
+   :undoc-members:
+   :show-inheritance:

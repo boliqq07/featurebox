@@ -138,7 +138,7 @@ class BaseLearning:
             self.loss_method = loss_method()
         if self.milestones is None:
             self.milestones = [30, 50, 80]
-        self.scheduler = MultiStepLR(self.optimizer, gamma=0.1, milestones=self.milestones)
+        self.scheduler = MultiStepLR(self.optimizer, gamma=0.15, milestones=self.milestones)
         self.best_error = 1000000.0
         self.threshold = loss_threshold
         self.resume = None
@@ -147,6 +147,7 @@ class BaseLearning:
         self.print_what =print_what
 
     def run(self, epoch=50, warm_start=False):
+
         resume = warm_start if warm_start is not False else self.resume
         start_epoch = 0
         if resume:
@@ -197,6 +198,7 @@ class BaseLearning:
                 break
 
     def _train(self, epochi):
+        self.model.train()
         batch_time = AverageMeter()
         losses = AverageMeter()
         if self.clf is False:
@@ -261,6 +263,7 @@ class BaseLearning:
                         auc=auc_scores))
 
     def _validate(self, epochi):
+        self.model.eval()
         mae_errors = AverageMeter()
         if self.clf is False:
 

@@ -10,7 +10,8 @@ from featurebox.featurizers.descriptors.behlerparrinello import BehlerParrinello
 from featurebox.featurizers.descriptors.wACSF import wACSF
 from featurebox.utils.look_json import mark_classes
 
-DesDict = mark_classes([ACSF,
+DesDict = mark_classes([
+                        ACSF,
                         BehlerParrinello,
                         EAD,
                         EAMD,
