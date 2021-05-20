@@ -25,14 +25,14 @@ and ``fit_transform`` methods for case list.
 
 The main binding selection tools are:
 
-====================================================== =========================================
- Name                                                  Application
------------------------------------------------------- -----------------------------------------
- :class:`featurebox.selection.backforward.Backforward` Backforward selection
- :class:`featurebox.selection.corr.Corr`               Correlation selection.
- :class:`featurebox.selection.exhaustion.Exhaustion`   Exhaustion selection.
- :class:`featurebox.selection.ga.GA`                   Genetic algorithm selection.
-====================================================== =========================================
+======================================================= =========================================
+ Name                                                   Application
+------------------------------------------------------- -----------------------------------------
+ :class:`featurebox.selection.backforward.BackForward`  Backforward selection
+ :class:`featurebox.selection.corr.Corr`                Correlation selection.
+ :class:`featurebox.selection.exhaustion.Exhaustion`    Exhaustion selection.
+ :class:`featurebox.selection.ga.GA`                    Genetic algorithm selection.
+======================================================= =========================================
 
 All the selection tools are ``sklearn-type``, with ``fit``, ``fit_transform`` methods .etc.
 
