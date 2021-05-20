@@ -37,7 +37,4 @@ Training and test::
     >>> bl = BaseLearning(model, loader1,test_loader=loader2, device="cuda:1",
     ...                  opt=None, clf=False)
     >>> torch.save(bl.model.state_dict(), './parameter_n_sgt.pkl')
-    >>> bl.run_train(500)
-    >>> bl.eval()
-    >>> bl.run_test()
-
+    >>> bl.run(500)

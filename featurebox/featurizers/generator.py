@@ -1,7 +1,7 @@
 from os import path
 
 from sklearn.utils import check_random_state, shuffle
-
+from typing import Union
 from featurebox.utils.fast._calculate_length import cal_length_numba
 from featurebox.utils.fast._calculate_subp import subp_numba2d
 from featurebox.utils.general import train_test
@@ -121,10 +121,10 @@ class GraphGenerator(_BaseGraphSingleGenerator):
 
     def __init__(
             self,
-            atom_fea: [List[np.ndarray], np.ndarray],
-            nbr_fea: [List[np.ndarray], np.ndarray],
-            state_fea: [List[np.ndarray], np.ndarray],
-            atom_nbr_idx: [List[np.ndarray], np.ndarray],
+            atom_fea: Union[List[np.ndarray], np.ndarray],
+            nbr_fea: Union[List[np.ndarray], np.ndarray],
+            state_fea: Union[List[np.ndarray], np.ndarray],
+            atom_nbr_idx: Union[List[np.ndarray], np.ndarray],
             *args,
             targets: np.ndarray = None,
             sample_weights: np.ndarray = None,
@@ -190,14 +190,14 @@ class GraphGenerator(_BaseGraphSingleGenerator):
                 raise TypeError("The {} is can not iterable".format(i))
         return return_list
 
-
+import typing
 class DuplicateGraphGenerator(_BaseGraphSingleGenerator):
     def __init__(
             self,
-            atom_fea: [List[np.ndarray], np.ndarray],
-            nbr_fea: [List[np.ndarray], np.ndarray],
-            state_fea: [List[np.ndarray], np.ndarray],
-            atom_nbr_idx: [List[np.ndarray], np.ndarray],
+            atom_fea: Union[List[np.ndarray], np.ndarray],
+            nbr_fea: Union[List[np.ndarray], np.ndarray],
+            state_fea: Union[List[np.ndarray], np.ndarray],
+            atom_nbr_idx: Union[List[np.ndarray], np.ndarray],
             targets: np.ndarray = None,
             sample_weights: np.ndarray = None,
             duplicate: int = 5,
