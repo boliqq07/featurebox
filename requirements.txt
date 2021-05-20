@@ -19,3 +19,5 @@ featurebox~=0.0.852
 matplotlib~=3.2.2
 networkx~=2.4
 monty~=4.0.2
+ase
+numba
