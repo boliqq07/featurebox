@@ -12,6 +12,9 @@
     <option name="myDocStringFormat" value="NumPy" />
     <option name="renderExternalDocumentation" value="true" />
   </component>
+  <component name="ReSTService">
+    <option name="DOC_DIR" value="E:\featurebox\docs" />
+  </component>
   <component name="TestRunnerService">
     <option name="PROJECT_TEST_RUNNER" value="pytest" />
   </component>

@@ -206,7 +206,7 @@ class _StructureGraph(BaseFeature):
             if center_prop.shape[1] > 1:
                 atoms = np.concatenate((atoms_numbers, np.array(atoms), center_prop), axis=1)
             else:
-                atoms = np.concatenate((atoms_numbers,np.array(atoms)), axis=1)
+                atoms = np.concatenate((atoms_numbers, np.array(atoms)), axis=1)
 
         return {"atom": atoms, "bond": bonds, "state": state_attributes, "atom_nbr_idx": atom_nbr_idx}
 
@@ -298,7 +298,15 @@ class _StructureGraph(BaseFeature):
 
         Returns
         -------
-        list of graphs: List of preprocessing
+        ``atom_fea``: list of np.ndarray, shape (N, atom_fea_len)
+            center properties.
+        ``nbr_fea``: list of np.ndarray, shape (N, fill_size, atom_fea_len).
+            neighbor_indexes for each center_index.
+            `fill_size` default = 5.
+        ``state_fea``: list of np.ndarray, shape (state_fea_len,)
+             state feature.
+        ``atom_nbr_idx``: list of np.ndarray, shape (N, fill_size)
+            neighbor for each center, fill_size default is 5.
         """
         return self.get_flat_data(self._transform(structures, state_attributes))
 
@@ -454,7 +462,6 @@ class SimpleMolGraph(_StructureGraphFixedRadius):
             bond_converter: Converter = None,
             state_converter: Converter = None,
             **kwargs):
-
         if bond_converter is None:
             bond_converter = BondGaussianConverter(np.linspace(0, 4, 20), 0.5)
         super().__init__(nn_strategy=nn_strategy, atom_converter=atom_converter, bond_converter=bond_converter,
