@@ -1,8 +1,8 @@
 import numba
 import numpy as np
 
-def cal_length_py(ax):
 
+def cal_length_py(ax):
     # ax is list of int
     ls = []
     temp = ax[0]
@@ -20,9 +20,9 @@ def cal_length_py(ax):
     ls = np.array(ls)
     return ls
 
-@numba.jit(nopython=True,signature_or_function="int64[:](int64[:])")
-def cal_length_numba(ax):
 
+@numba.jit(nopython=True, signature_or_function=["int64[:](int64[:])", "int32[:](int32[:])"])
+def cal_length_numba(ax):
     # ax is list of int
     ls = []
     temp = ax[0]

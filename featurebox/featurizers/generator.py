@@ -70,7 +70,7 @@ class _BaseGraphSingleGenerator(Dataset):
 
         inputs = list(args)
         inputs.append(args[0].shape[0])
-        inputs.append(np.array(cal_length_numba(args[0][:, 0].astype(int))))
+        inputs.append(np.array(cal_length_numba(args[0][:, 0].astype(np.int64))))
         inputs.append(inputs[-1].shape[0])
         # assert len(inputs[-2])>1
 
