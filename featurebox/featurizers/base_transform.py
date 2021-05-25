@@ -285,9 +285,11 @@ class BaseFeature(MSONable):
             if d.ndim == 3:
                 return np.array([[self._convert(i) for i in di] for di in d])
 
-        elif isinstance(d, (list, tuple, int, float, dict)):
+        try:
             return np.array(self._convert(d))
-        raise NotImplementedError("just accept 1d,2d np.array or list, dict")
+        except BaseException as e:
+            print(e)
+            raise ValueError("Error when try to convert \n {}".format(str(d)))
 
     @property
     def feature_labels(self):

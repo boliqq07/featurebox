@@ -27,7 +27,8 @@ from mgetool.tool import parallelize, batch_parallelize
 from pymatgen.analysis.local_env import NearNeighbors
 from pymatgen.core import Structure
 
-from featurebox.featurizers.atom.mapper import AtomPymatgenPropMap, AtomJsonMap, get_atom_fea_number, get_atom_fea_name
+from featurebox.featurizers.atom.mapper import AtomPymatgenPropMap, AtomJsonMap, get_atom_fea_number, get_atom_fea_name, \
+    BinaryMap
 from featurebox.featurizers.base_transform import DummyConverter, BaseFeature, Converter
 from featurebox.featurizers.bond.expander import BondGaussianConverter
 from featurebox.featurizers.envir.environment import BaseNNGet, BaseDesGet, env_method, env_names
@@ -85,7 +86,7 @@ class _StructureGraph(BaseFeature):
             :mod:`featurebox.featurizers.descriptors`,
             :class:`featurebox.featurizers.descriptors.SOAP.SOAP`,
 
-        atom_converter: Converter
+        atom_converter: BinaryMap
             atom features converter.
             See Also:
             :class:`featurebox.featurizers.atom.mapper.AtomTableMap` , :class:`featurebox.featurizers.atom.mapper.AtomJsonMap` ,
@@ -133,6 +134,7 @@ class _StructureGraph(BaseFeature):
         else:  # defined BaseDesGet or BaseNNGet
             self.bond_generator = bond_generator
             self.nn_strategy = self.bond_generator.nn_strategy
+
         self.atom_converter = atom_converter or self._get_dummy_converter()
         self.bond_converter = bond_converter or self._get_dummy_converter()
         self.state_converter = state_converter or self._get_dummy_converter()
@@ -192,9 +194,16 @@ class _StructureGraph(BaseFeature):
         else:
             raise NotImplementedError()
 
-        atoms = self.get_atom_fea(structure)
-        atoms = [atoms[round(i)] for i in center_indices]
-        atoms = self.atom_converter.convert(atoms)
+        if isinstance(self.atom_converter, DummyConverter):
+            atoms_numbers = np.array(structure.atomic_numbers)[center_indices].reshape(-1, 1)
+            atoms = self.atom_converter.convert(atoms_numbers)
+        elif isinstance(self.atom_converter, BinaryMap) or hasattr(self.atom_converter, "convert_structure"):
+            atoms = self.atom_converter.convert(structure)
+            atoms = np.array([atoms[round(i)] for i in center_indices])
+        else:
+            raise TypeError("atom_converter just accept None,DummyConverter, "
+                            "or Converter with ``convert_structure`` method.")
+
         bonds = self.bond_converter.convert(bondss)
 
         # atoms number in the first column.
@@ -210,17 +219,11 @@ class _StructureGraph(BaseFeature):
 
         return {"atom": atoms, "bond": bonds, "state": state_attributes, "atom_nbr_idx": atom_nbr_idx}
 
-    @staticmethod
-    def get_atom_fea(structure: Structure) -> List[Any]:
-        """
-        Get atom features from structure, may be overwritten for you self.
-        """
-        return get_atom_fea_number(structure)
-
     def get_bond_fea(self, structure: Structure):
         """
         Get atom features from structure, may be overwritten.
         """
+        # assert hasattr(self.bond_generator, "convert")
         return self.bond_generator.convert(structure)
 
     def __call__(self, structure: Structure, *args, **kwargs) -> Dict:
@@ -393,51 +396,6 @@ class CrystalGraphWithBondTypes(_StructureGraph):
         super().__init__(nn_strategy=nn_strategy, atom_converter=atom_converter, bond_converter=bond_converter,
                          state_converter=state_converter, return_bonds=return_bonds,
                          **kwargs)
-
-
-class CrystalGraphDisordered(_StructureGraphFixedRadius):
-    """
-    Enable disordered site predictions
-
-    Examples
-    --------
-    >>> cg1 = CrystalGraphDisordered()
-    >>> d = cg1(structure)
-    >>> d = cg1(structure, state_attributes=np.array([2,3.0]))
-    >>> d = cg1.convert(structure, state_attributes=np.array([2,3.0]))
-    >>> ds = cg1.fit_transform(structures)
-
-
-    """
-
-    def __init__(
-            self,
-            nn_strategy: Union[str, NearNeighbors] = "VoronoiNN",
-            atom_converter: Converter = AtomJsonMap(),
-            bond_converter: Converter = None,
-            state_converter: Converter = None,
-            cutoff: float = 7.0,
-            **kwargs
-    ):
-        self.cutoff = cutoff
-        super().__init__(
-            nn_strategy=nn_strategy, atom_converter=atom_converter, bond_converter=bond_converter, cutoff=self.cutoff,
-            state_converter=state_converter,
-            **kwargs)
-
-    @staticmethod
-    def get_atom_fea(structure) -> List[dict]:
-        """
-        For a structure return the list of dictionary for the site occupancy
-        for example, Fe0.5Ni0.5 site will be returned as {"Fe": 0.5, "Ni": 0.5}
-
-        Args:
-            structure (Structure): pymatgen Structure with potential site disorder
-
-        Returns:
-            a list of site fraction description
-        """
-        return get_atom_fea_name(structure)
 
 
 class SimpleMolGraph(_StructureGraphFixedRadius):

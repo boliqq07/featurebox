@@ -43,6 +43,7 @@ def get_atom_fea_name(structure: Structure) -> List[dict]:
     Returns:
         a list of site fraction description
     """
+    # name = [i.species.as_dict() for i in structure.sites]
     return [i.species.as_dict() for i in structure.sites]
 
 
@@ -72,6 +73,7 @@ class AtomMap(Converter, ABC):
         return oedata
 
 
+
 class BinaryMap(AtomMap):
     """Base converter with 2 different search_tp."""
 
@@ -86,9 +88,19 @@ class BinaryMap(AtomMap):
 
     def _convert(self, d: Any) -> Any:
         if self.search_tp == "name":
+            if isinstance(d, Structure):
+                d = self.convert(get_atom_fea_name(d))
             return self.convert_dict(d)
         else:
+            if isinstance(d, Structure):
+                d = self.convert(get_atom_fea_number(d))
             return self.convert_number(d)
+
+    def convert_structure(self, st):
+        if self.search_tp == "name":
+            return self.convert(get_atom_fea_name(st))
+        else:
+            return self.convert(get_atom_fea_number(st))
 
     @abstractmethod
     def convert_dict(self, d: List[Dict]):
@@ -271,7 +283,10 @@ class AtomTableMap(BinaryMap):
             self.da_columns = list(self.da.columns)
 
         elif isinstance(tablename, str):
-            self.da = self.get_csv_embeddings(tablename)
+            if tablename == "element_table.csv":
+                self.da = self.get_ele_embeddings()
+            else:
+                self.da = self.get_csv_embeddings(tablename)
             self.dax = self.da.values
             self.da_columns = list(self.da.columns)
 
