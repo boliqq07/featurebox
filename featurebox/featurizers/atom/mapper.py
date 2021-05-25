@@ -121,7 +121,7 @@ class AtomJsonMap(BinaryMap):
     >>> s = [1,76]                   #[i.specie.Z for i in structure]
     >>> a = tmps.convert(s)
     >>> tmps = AtomJsonMap(search_tp="name")
-    >>> s = [{"H": 2, }, {"Al": 1}]  #[i.species.as_dict() for i in pymatgen.structure.sites]
+    >>> s = [{"H": 2, }, {"Al": 1}]  #[i.species.as_dict() for i in pymatgen_structure.sites]
     >>> a = tmps.convert(s)
     >>>
     >>> tmps = AtomJsonMap(search_tp="name")
@@ -264,7 +264,7 @@ class AtomTableMap(BinaryMap):
 
         super(AtomTableMap, self).__init__(search_tp=search_tp, **kwargs)
 
-        if tablename is None or tablename == "element_table.csv":
+        if tablename is None:
             self.da = self.get_ele_embeddings()
             self.d2 = True
             self.dax = self.da.values
@@ -281,6 +281,7 @@ class AtomTableMap(BinaryMap):
             self.d2 = False
         elif isinstance(tablename, pd.DataFrame):
             self.da = tablename
+            self.dax = self.da.values
             self.d2 = True
             self.da_columns = list(self.da.columns)
         else:

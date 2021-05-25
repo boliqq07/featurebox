@@ -15,7 +15,7 @@ Each Graph data (for each structure):
 ``atom_nbr_idx``: np.ndarray, shape (N, fill_size)
     neighbor for each center, fill_size default is 5.
 
-where N is number of atoms.
+where N is number of atoms. fill size is the neighbor numbers.
 """
 
 import warnings

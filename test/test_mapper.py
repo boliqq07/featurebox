@@ -17,51 +17,15 @@ class TestGraph(unittest.TestCase):
         self.data0_3 = ce.check(self.data)[:10]
         self.data0_checked = ce.check(self.data)[:10]
 
-    def test_get(self):
-        bag = BaseDesGet()
-        for i in self.data0_3:
-            resultt = bag.convert(i)
-            print(resultt)
-
-    def test_get2(self):
-        bag = BaseDesGet(nn_strategy="wACSF")
-        for i in self.data0_3:
-            resultt = bag.convert(i)
-            print(resultt)
-
-    def test_get3(self):
-        bag = BaseDesGet(nn_strategy="SO4_Bispectrum")
-        for i in self.data0_3:
-            resultt = bag.convert(i)
-            print(resultt)
-
-    def test_get4(self):
-        bag = BaseDesGet(nn_strategy="SO3")
-        for i in self.data0_3:
-            resultt = bag.convert(i)
-            print(resultt)
-
-    def test_get5(self):
-        bag = BaseDesGet(nn_strategy="EAMD")
-        for i in self.data0_checked:
-            resultt = bag.convert(i)
-            print(resultt)
-
-    def test_get6(self):
-        bag = BaseDesGet(nn_strategy="BehlerParrinello")
-        for i in self.data0_3:
-            resultt = bag.convert(i)
-            print(resultt)
-
-    def test_get7(self):
-        bag = BaseDesGet(nn_strategy="EAD")
-        for i in self.data0_3:
-            resultt = bag.convert(i)
-            print(resultt)
-
     def test_get9(self):
         tmps = AtomTableMap(tablename=None)
         s = [{"H": 2, }, {"Pd": 1}]
+        b = tmps.convert(s)
+        print(b.shape)
+
+    def test_get66(self):
+        tmps = AtomTableMap(tablename=None)
+        s = [i.species.as_dict() for i in self.data0_3[0].sites]
         b = tmps.convert(s)
         print(b.shape)
 

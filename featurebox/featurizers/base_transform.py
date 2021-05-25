@@ -236,7 +236,8 @@ class BaseFeature(MSONable):
                     con = self.convert(x)
                 except TypeError as e:
                     print(e)
-                    raise TypeError("If the parameters should be unpack, please change the case to tuple, "
+                    raise TypeError("Please check the above errors ,"
+                                    "If the parameters should be unpack, please change the case to tuple, "
                                     "the other type(like list) would just pass to the first parameter integrally")
 
             if isinstance(con, (List, Tuple)):
