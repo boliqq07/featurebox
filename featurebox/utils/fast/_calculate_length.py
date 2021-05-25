@@ -21,7 +21,7 @@ def cal_length_py(ax):
     return ls
 
 
-@numba.jit(nopython=True, signature_or_function=["int64[:](int64[:])", "int32[:](int32[:])"])
+@numba.jit(nopython=True, signature_or_function="int64[:](int64[:])")
 def cal_length_numba(ax):
     # ax is list of int
     ls = []
