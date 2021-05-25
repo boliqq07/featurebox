@@ -21,6 +21,7 @@ Index by dict data
     tmps = AtomJsonMap(search_tp="name")
     s = [{"H": 2, }, {"Al": 1}]
     # could from [i.species.as_dict() for i in pymatgen.structure.sites]
+    or [{i.element.symbol:1} for i in structure.species]
     a = tmps.convert(s)
 
 .. image:: 1_3.png

@@ -289,7 +289,7 @@ class BaseFeature(MSONable):
             return np.array(self._convert(d))
         except BaseException as e:
             print(e)
-            raise ValueError("Error when try to convert \n {}".format(str(d)))
+            raise ValueError("Error when try to convert: \n {}".format(str(d)))
 
     @property
     def feature_labels(self):

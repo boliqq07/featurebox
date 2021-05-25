@@ -17,8 +17,8 @@ Then run the code.
 ::
 
     >>> tmps = AtomTableMap(search_tp="name")
-    >>> s = [{"H": 2, }, {"Po": 1}, {"C": 2}] # [i.species.as_dict() for i in pymatgen.structure.sites]
-    >>> a = tmps.convert(s)
+    >>> com = [{"H": 2, }, {"Po": 1}, {"C": 2}]
+    >>> a = tmps.convert(com)
 
 .. image:: 2_1.png
 
@@ -26,7 +26,17 @@ In default, the proportion would be multiplied in data, also you can neglect wei
 ::
 
     >>> tmps = AtomTableMap(search_tp="name", weight=False)
-    >>> s = [{"H": 2, }, {"Po": 1}, {"C": 2}] # [i.species.as_dict() for i in pymatgen.structure.sites]
-    >>> a2 = tmps.convert(s)
+    >>> com = [{"H": 2, }, {"Po": 1}, {"C": 2}]
+    >>> a2 = tmps.convert(com)
 
 .. image:: 2_2.png
+
+
+Note
+::
+
+    com = [i.species.as_dict() for i in pymatgen.structure.sites]
+
+    or
+
+    com =  [{i.element.symbol:1} for i in structure.species]

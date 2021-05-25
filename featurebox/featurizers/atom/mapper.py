@@ -43,8 +43,8 @@ def get_atom_fea_name(structure: Structure) -> List[dict]:
     Returns:
         a list of site fraction description
     """
-    # name = [i.species.as_dict() for i in structure.sites]
-    return [i.species.as_dict() for i in structure.sites]
+    return [{i.element.symbol:1} for i in structure.species]
+    # return [i.species.to_dict() for i in structure.sites]
 
 
 ##############################################################
@@ -89,18 +89,18 @@ class BinaryMap(AtomMap):
     def _convert(self, d: Any) -> Any:
         if self.search_tp == "name":
             if isinstance(d, Structure):
-                d = self.convert(get_atom_fea_name(d))
+                d = get_atom_fea_name(d)
             return self.convert_dict(d)
         else:
             if isinstance(d, Structure):
-                d = self.convert(get_atom_fea_number(d))
+                d = get_atom_fea_number(d)
             return self.convert_number(d)
 
     def convert_structure(self, st):
         if self.search_tp == "name":
-            return self.convert(get_atom_fea_name(st))
+            return self.convert_dict(get_atom_fea_name(st))
         else:
-            return self.convert(get_atom_fea_number(st))
+            return self.convert_number(get_atom_fea_number(st))
 
     @abstractmethod
     def convert_dict(self, d: List[Dict]):
@@ -195,14 +195,14 @@ class AtomJsonMap(BinaryMap):
             emb = 0
             for k, v in atom.items():
                 if self.weight:
-                    emb += np.array(self.embedding_dict[k]) * v
+                    emb += np.array(self.embedding_dict[k]).astype(np.float32) * v
                 else:
-                    emb += np.array(self.embedding_dict[k])
+                    emb += np.array(self.embedding_dict[k]).astype(np.float32)
             features.append(emb)
         if len(atoms) ==1:
-            return np.array(features).ravel()
+            return np.array(features).ravel().astype(np.float32)
         else:
-            return np.array(features).reshape((len(atoms), -1))
+            return np.array(features).reshape((len(atoms), -1)).astype(np.float32)
 
     def convert_number(self, atoms: List[int]) -> np.ndarray:
 
@@ -210,9 +210,9 @@ class AtomJsonMap(BinaryMap):
         features = [self.embedding_dict[i] for i in atoms_name]
 
         if len(atoms) == 1:
-            return np.array(features).ravel()
+            return np.array(features).astype(np.float32).ravel()
         else:
-            return np.array(features).reshape((len(atoms), -1))
+            return np.array(features).astype(np.float32).reshape((len(atoms), -1))
 
 
 class AtomTableMap(BinaryMap):
@@ -292,9 +292,11 @@ class AtomTableMap(BinaryMap):
 
         elif isinstance(tablename, np.ndarray):
             self.da_columns = None
-            self.dax = tablename
+            self.dax = tablename.astype(np.float32)
             self.d2 = False
+
         elif isinstance(tablename, pd.DataFrame):
+            tablename = tablename.apply(pd.to_numeric)
             self.da = tablename
             self.dax = self.da.values
             self.d2 = True
