@@ -135,7 +135,7 @@ class BaseLearning:
                 self.loss_method = torch.nn.MSELoss()
 
         else:
-            self.loss_method = loss_method()
+            self.loss_method = loss_method
         if self.milestones is None:
             self.milestones = [30, 50, 80]
         self.scheduler = MultiStepLR(self.optimizer, gamma=0.15, milestones=self.milestones)
@@ -222,11 +222,11 @@ class BaseLearning:
 
             losses.update(lossi.cpu().item(), batch_y.size(0))
             if self.clf is False:
-                mae_error = mae((y_pred.data.cpu()), batch_y)
+                mae_error = mae((y_pred.data.cpu()), batch_y.cpu())
                 mae_errors.update(mae_error, batch_y.size(0))
             else:
                 accuracy, precision, recall, fscore, auc_score = \
-                    class_eval(y_pred.data.cpu(), batch_y)
+                    class_eval(y_pred.data.cpu(), batch_y.cpu())
 
                 accuracies.update(accuracy, batch_y.size(0))
                 precisions.update(precision, batch_y.size(0))
@@ -240,7 +240,7 @@ class BaseLearning:
 
             if m % self.print_freq == 0 and self.print_what in ["all","train"]:
                 if self.clf is False:
-                    print('Epoch: [{0}][{1}/{2}]\t'
+                    print('Train: [{0}][{1}/{2}]\t'
                           'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
                           'MAE {mae_errors.val:.3f} ({mae_errors.avg:.3f})'
                           'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
@@ -248,7 +248,7 @@ class BaseLearning:
                         epochi, m, len(self.train_loader), loss=losses,
                         batch_time=batch_time, mae_errors=mae_errors))
                 else:
-                    print('Epoch: [{0}][{1}/{2}]\t'
+                    print('Train: [{0}][{1}/{2}]\t'
                           'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
                           'Accu {accu.val:.3f} ({accu.avg:.3f})\t'
                           'Precision {prec.val:.3f} ({prec.avg:.3f})\t'
@@ -287,11 +287,11 @@ class BaseLearning:
             losses.update(lossi.cpu().item(), batch_y.size(0))
             if self.clf is False:
 
-                mae_error = mae((y_pred.data.cpu()), batch_y)
+                mae_error = mae((y_pred.data.cpu()), batch_y.cpu())
                 mae_errors.update(mae_error, batch_y.size(0))
             else:
                 accuracy, precision, recall, fscore, auc_score = \
-                    class_eval(y_pred.data.cpu(), batch_y)
+                    class_eval(y_pred.data.cpu(), batch_y.cpu())
 
                 accuracies.update(accuracy, batch_y.size(0))
                 precisions.update(precision, batch_y.size(0))

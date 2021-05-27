@@ -13,6 +13,8 @@ from featurebox.featurizers.envir.desc_env import DesDict
 from featurebox.featurizers.envir.local_env import NNDict
 from featurebox.utils.look_json import get_marked_class
 from featurebox.utils.predefined_typing import StructureOrMolecule, StructureOrMoleculeOrAtoms
+from featurizers.envir._get_radius_in_spheres import get_radius_in_spheres
+from featurizers.envir._get_xyz_in_spheres import get_xyz_in_spheres
 
 MODULE_DIR = Path(__file__).parent.parent.parent.absolute()
 
@@ -161,7 +163,7 @@ def universe_refine_nn(center_indices, neighbor_indices, distances, vectors=None
             vec = None
 
         if dis_sort:
-            neidx = np.argsort(disi)
+            neidx = np.argsort(disi) #todo
             nei = nei[neidx]
             disi = disi[neidx]
             if vec is not None:
@@ -169,7 +171,7 @@ def universe_refine_nn(center_indices, neighbor_indices, distances, vectors=None
 
         if len(disi) >= fill_size:
             nei = nei[:fill_size]
-            disi = disi[:fill_size]
+            disi = disi[:fill_size] #todo
             if vec is not None:
                 vec = vec[:fill_size, :]
         else:
@@ -258,6 +260,7 @@ class _BaseEnvGet(BaseFeature):
         self.adaptor_dict = {}  # Dynamic assignment
         self.adaptor = AseAtomsAdaptor()
         self.pbc = None
+        self.cutoff = 5.0
 
     def ase_to_pymatgen(self, atom: Atoms, prop_dict=None):
         """ase_to_pymatgen"""
@@ -279,7 +282,7 @@ class _BaseEnvGet(BaseFeature):
             [atoms.__setattr__(k, v) for k, v in prop_dict.items()]
         return atoms
 
-    def _within_cutoff(self,
+    def get_radius_in_spheres(self,
                        structure: StructureOrMolecule, cutoff: float = 5.0, numerical_tol: float = 1e-8
                        ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """
@@ -293,29 +296,28 @@ class _BaseEnvGet(BaseFeature):
         Returns:
             center_indices, neighbor_indices, images, distances
         """
-        if isinstance(structure, Structure):
-            lattice_matrix = np.ascontiguousarray(np.array(structure.lattice.matrix), dtype=float)
-            pbc = np.array([1, 1, 1], dtype=int)
-        elif isinstance(structure, Molecule):
-            lattice_matrix = np.array([[1000.0, 0.0, 0.0], [0.0, 1000.0, 0.0], [0.0, 0.0, 1000.0]], dtype=float)
-            pbc = np.array([0, 0, 0], dtype=int)
-        else:
-            raise ValueError("structure type not supported")
-        if self.pbc is not None:
-            pbc = np.array(self.pbc, dtype=int)
-        r = float(cutoff)
-        cart_coords = np.ascontiguousarray(np.array(structure.cart_coords), dtype=float)
-        center_indices, neighbor_indices, images, distances = find_points_in_spheres(
-            cart_coords, cart_coords, r=r, pbc=pbc, lattice=lattice_matrix, tol=numerical_tol
-        )
-        center_indices = center_indices.astype(np.int)
-        neighbor_indices = neighbor_indices.astype(np.int)
-        images = images.astype(np.int)
-        distances = distances.astype(np.float32)
-        exclude_self = (center_indices != neighbor_indices) | (distances > numerical_tol)
-        return center_indices[exclude_self], neighbor_indices[exclude_self], images[exclude_self], distances[
-            exclude_self]
+        return get_radius_in_spheres(structure,cutoff=cutoff, numerical_tol=numerical_tol)
 
+    def get_xyz_in_spheres(self,
+                       structure: StructureOrMolecule, cutoff: float = 5.0, numerical_tol: float = 1e-8
+                       ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        """
+        Get graph representations from structure within cutoff.
+
+        Args:
+            structure (pymatgen Structure or molecule)
+            cutoff (float): cutoff radius
+            numerical_tol (float): numerical tolerance
+
+        Returns:
+            center_indices, neighbor_indices, images, distances
+        """
+        return get_xyz_in_spheres(structure.cart_coords,
+                                  reciprocal_lattice_abc =structure.lattice.reciprocal_lattice.abc,
+                                  matrix=structure.lattice.matrix,
+                                  inv_matrix=structure.lattice.inv_matrix,
+                                  pbc=self.pbc,
+                                  cutoff=cutoff, numerical_tol=numerical_tol)
 
 class BaseDesGet(_BaseEnvGet):
     """
@@ -514,16 +516,18 @@ class BaseNNGet(_BaseEnvGet):
             center_indices,center_prop,neighbor_indices,images,distances
         """
         if self.nn_strategy == "find_points_in_spheres":
-            return self.get_graphs_within_cutoff_merge_sort(structure)
+            return self.get_graphs_within_cutoff_merge_sort_radius(structure)
+        if self.nn_strategy == "get_xyz_in_spheres":
+            return self.get_graphs_within_cutoff_merge_sort_xyz(structure)
         else:
             return self.get_graphs_with_strategy_merge_sort(structure)
 
-    def get_graphs_within_cutoff_merge_sort(self, structure: StructureOrMolecule
-                                            ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    def get_graphs_within_cutoff_merge_sort_xyz(self, structure: StructureOrMolecule
+                                                   ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """For quick get bond distance"""
         cutoff = self.cutoff
         numerical_tol = self.numerical_tol
-        center_indices, neighbor_indices, images, distances = self._within_cutoff(structure, cutoff,
+        center_indices, neighbor_indices, images, distances = self.get_xyz_in_spheres(structure, cutoff,
                                                                                   numerical_tol)
         ele_numbers = np.array(structure.atomic_numbers)
         center_indices, center_prop, neighbor_indices, images, distances = self.refine(center_indices, neighbor_indices,
@@ -540,7 +544,33 @@ class BaseNNGet(_BaseEnvGet):
             print("For {}, There is no neighbor in cutoff {} A, try with cutoff {} A for this structure.".format(
                 str(structure.composition), cutoff, cutoff + 2)
             )
-            center_indices, center_prop, neighbor_indices, images, distances = self.get_graphs_within_cutoff_merge_sort(
+            center_indices, center_prop, neighbor_indices, images, distances = self.get_graphs_within_cutoff_merge_sort_radius(
+                structure)
+            return center_indices, center_prop, neighbor_indices, images, distances
+
+    def get_graphs_within_cutoff_merge_sort_radius(self, structure: StructureOrMolecule
+                                                   ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        """For quick get bond distance"""
+        cutoff = self.cutoff
+        numerical_tol = self.numerical_tol
+        center_indices, neighbor_indices, images, distances = self.get_radius_in_spheres(structure, cutoff,
+                                                                                  numerical_tol)
+        ele_numbers = np.array(structure.atomic_numbers)
+        center_indices, center_prop, neighbor_indices, images, distances = self.refine(center_indices, neighbor_indices,
+                                                                                       distances,
+                                                                                       images,
+                                                                                       center_prop=None,
+                                                                                       ele_numbers=ele_numbers,
+                                                                                       **self.refined_strategy_param,
+                                                                                       )
+
+        if len(center_indices.tolist()) == len(structure.species):
+            return center_indices, center_prop, neighbor_indices, images, distances
+        else:
+            print("For {}, There is no neighbor in cutoff {} A, try with cutoff {} A for this structure.".format(
+                str(structure.composition), cutoff, cutoff + 2)
+            )
+            center_indices, center_prop, neighbor_indices, images, distances = self.get_graphs_within_cutoff_merge_sort_radius(
                 structure)
             return center_indices, center_prop, neighbor_indices, images, distances
 

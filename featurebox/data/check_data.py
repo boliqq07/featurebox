@@ -104,24 +104,30 @@ class CheckElements:
         self.mark = []
         structures_t = []
         for i, si in enumerate(samples):
-            si_ = self.func(si)
-            if np.all([True if ei in self.check_method else False for ei in si_]):
-                structures_t.append(si)
-                self.mark.append(1)
-            else:
-                if hasattr(si, "composition"):
-                    print("The {} (st,ed,th) sample {}".format(i, str(si.composition)),
-                          "is with element out of AVAILABLE_ELE_NAME\n"
-                          "please to check_data.py for more information.")
-                elif hasattr(si, "get_chemical_formula"):
-                    print("The {} (st,ed,th) sample {}".format(i, str(si.get_chemical_formula())),
-                          "is with element out of AVAILABLE_ELE_NAME\n"
-                          "please to check_data.py for more information.")
-                else:
-                    print("The {} (st,ed,th) sample {}".format(i, str(si)),
-                          "is with element out of AVAILABLE_ELE_NAME\n"
-                          "please to check_data.py for more information.")
+            try:
+                si_ = self.func(si)
+            except AttributeError:
+                print("The func can't convert {} (st,ed,th) sample {}".format(i, str(si.composition)),
+                      "which could be a bad structure, please your data source or change your `func`.")
                 self.mark.append(0)
+            else:
+                if np.all([True if ei in self.check_method else False for ei in si_]):
+                    structures_t.append(si)
+                    self.mark.append(1)
+                else:
+                    if hasattr(si, "composition"):
+                        print("The {} (st,ed,th) sample {}".format(i, str(si.composition)),
+                              "is with element out of AVAILABLE_ELE_NAME\n"
+                              "please to check_data.py for more information.")
+                    elif hasattr(si, "get_chemical_formula"):
+                        print("The {} (st,ed,th) sample {}".format(i, str(si.get_chemical_formula())),
+                              "is with element out of AVAILABLE_ELE_NAME\n"
+                              "please to check_data.py for more information.")
+                    else:
+                        print("The {} (st,ed,th) sample {}".format(i, str(si)),
+                              "is with element out of AVAILABLE_ELE_NAME\n"
+                              "please to check_data.py for more information.")
+                    self.mark.append(0)
         return structures_t
 
     def passed_idx(self) -> np.ndarray:

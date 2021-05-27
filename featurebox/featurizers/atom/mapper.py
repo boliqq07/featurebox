@@ -595,7 +595,7 @@ class AtomPymatgenPropMap(BinaryMap):
         features = []
         for atom in atoms:
             data_all = []
-            datai = [getattr(self.da[round(atom)], pi) for pi in self.prop_name]
+            datai = [getattr(self.da[int(round(atom))], pi) for pi in self.prop_name]
             datai = [self.func[i](j) for i, j in enumerate(datai)]
             [data_all.extend(i) for i in datai]
             emb = np.array(data_all)

@@ -128,6 +128,7 @@ class GraphGenerator(_BaseGraphSingleGenerator):
             *args,
             targets: np.ndarray = None,
             sample_weights: np.ndarray = None,
+            print_data_size=False,
             **kwargs,
     ):
         """
@@ -146,6 +147,7 @@ class GraphGenerator(_BaseGraphSingleGenerator):
                 index of the bond, M is different for different structures,
                 but it has to be the same as the corresponding index1.
             targets: (numpy array), N*1, where N is the number of structures
+            print_data_size: bool, print data of size or not.
             sample_weights: (numpy array), N*1, where N is the number of structures
         """
 
@@ -173,6 +175,18 @@ class GraphGenerator(_BaseGraphSingleGenerator):
             self.__setattr__(name, j)
             self.final_data_name.append(name)
             self.add_prop.append(name)
+
+        def get_size(data):
+            if isinstance(data,np.ndarray):
+                return data.shape
+            elif isinstance(data,list) and isinstance(data[0],np.ndarray):
+                return data[0].shape
+            else:
+                return "Not confirmed"
+        if print_data_size:
+            print("atom_fea","(Size):",get_size(self.atom_fea))
+            print("nbr_fea","(Size):",get_size(self.nbr_fea))
+            print("state_fea","(Size):",get_size(self.state_fea))
 
     def _generate_inputs(self, index: int):
         # Get the features and connectivity lists for this batch

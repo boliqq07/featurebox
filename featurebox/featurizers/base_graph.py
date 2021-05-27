@@ -19,6 +19,7 @@ where N is number of atoms. fill size is the neighbor numbers.
 """
 
 import warnings
+from collections import Iterable
 from operator import itemgetter
 from typing import Union, Dict, List, Any
 
@@ -252,6 +253,9 @@ class _StructureGraph(BaseFeature):
 
         if state_attributes is None:
             state_attributes = [None] * len(structures)
+        assert isinstance(structures, Iterable)
+        if hasattr(structures, "__len__"):
+            assert len(structures)>0, "Empty input data!"
         iterables = zip(structures, state_attributes)
 
         if not self.batch_calculate:

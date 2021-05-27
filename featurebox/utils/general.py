@@ -1,7 +1,7 @@
 """
 Operation utilities on lists and arrays
 """
-from collections import Iterable
+from collections import abc
 from typing import Union, List, Sequence, Optional
 
 import numpy as np
@@ -9,11 +9,11 @@ from sklearn import metrics
 from sklearn.model_selection import train_test_split
 
 
-def to_list(x: Union[Iterable, np.ndarray]) -> List:
+def to_list(x: Union[abc.Iterable, np.ndarray]) -> List:
     """
     If x is not a list, convert it to list
     """
-    if isinstance(x, Iterable):
+    if isinstance(x, abc.Iterable):
         return list(x)
     if isinstance(x, np.ndarray):
         return x.tolist()  # noqa
