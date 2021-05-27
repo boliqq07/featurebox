@@ -36,7 +36,6 @@ class Smooth(BaseFeature):
         """
         d = np.array(d)
         d = d.astype(np.float32)
-
         return smooth_func(d, self.r_c, self.r_cs)
 
 

@@ -208,7 +208,7 @@ def get_marked_class(nn_strategy, NNDict: Dict =None, instantiation: bool = True
         ######old type for compatibility ####
         if nn_strategy is None:
             return nn_strategy
-        if nn_strategy == "find_points_in_spheres":
+        if isinstance(nn_strategy, str) and nn_strategy in ["find_points_in_spheres", "find_xyz_in_spheres"]:
             return nn_strategy
         if isinstance(nn_strategy, (float, int)):
             return nn_strategy

@@ -1,15 +1,19 @@
-from typing import Tuple
+from collections import Iterable
+from typing import Tuple, Union, List
 
 import numpy as np
 from pymatgen.core import Structure, Molecule
 from pymatgen.optimization.neighbors import find_points_in_spheres
 
 from featurebox.utils.predefined_typing import StructureOrMolecule
+from utils.general import re_pbc
 
 
 def get_radius_in_spheres(
-                   structure: StructureOrMolecule, cutoff: float = 5.0, numerical_tol: float = 1e-8
-                   ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        structure: StructureOrMolecule, nn_strategy=None, cutoff: float = 5.0,
+        numerical_tol: float = 1e-8,
+        pbc=True,
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
     Get graph representations from structure within cutoff.
 
@@ -17,20 +21,26 @@ def get_radius_in_spheres(
         structure (pymatgen Structure or molecule)
         cutoff (float): cutoff radius
         numerical_tol (float): numerical tolerance
-        pbc:None
+        nn_strategy(str):not used
     Returns:
-        center_indices, neighbor_indices, images, distances
+        center_indices, neighbor_indices, images, distances, center_prop
+
+
     """
+    _ = nn_strategy
+
     if isinstance(structure, Structure):
         lattice_matrix = np.ascontiguousarray(np.array(structure.lattice.matrix), dtype=float)
-        pbc = np.array([1, 1, 1], dtype=int)
+        if pbc is not False:
+            pbc = re_pbc(pbc, return_type="int")
+        else:
+            pbc = np.array([0, 0, 0])
     elif isinstance(structure, Molecule):
         lattice_matrix = np.array([[1000.0, 0.0, 0.0], [0.0, 1000.0, 0.0], [0.0, 0.0, 1000.0]], dtype=float)
-        pbc = np.array([0, 0, 0], dtype=int)
+        pbc = np.array([0, 0, 0])
     else:
         raise ValueError("structure type not supported")
-    if pbc is not None:
-        pbc = np.array(pbc, dtype=int)
+
     r = float(cutoff)
     cart_coords = np.ascontiguousarray(np.array(structure.cart_coords), dtype=float)
     center_indices, neighbor_indices, images, distances = find_points_in_spheres(
@@ -41,5 +51,5 @@ def get_radius_in_spheres(
     images = images.astype(np.int)
     distances = distances.astype(np.float32)
     exclude_self = (center_indices != neighbor_indices) | (distances > numerical_tol)
-    return center_indices[exclude_self], neighbor_indices[exclude_self], images[exclude_self], distances[
-        exclude_self]
+    return center_indices[exclude_self], neighbor_indices[exclude_self], images[exclude_self], \
+           distances[exclude_self], None

@@ -4,232 +4,18 @@ from typing import Tuple, Union, Dict, List
 import numpy as np
 from ase import Atoms
 from pymatgen.analysis.local_env import NearNeighbors
-from pymatgen.core import Structure, Molecule
+from pymatgen.core import Structure
 from pymatgen.io.ase import AseAtomsAdaptor
-from pymatgen.optimization.neighbors import find_points_in_spheres
 
 from featurebox.featurizers.base_transform import BaseFeature
-from featurebox.featurizers.envir.desc_env import DesDict
-from featurebox.featurizers.envir.local_env import NNDict
+from featurebox.featurizers.envir._get_radius_in_spheres import get_radius_in_spheres
+from featurebox.featurizers.envir._get_xyz_in_spheres import get_xyz_in_spheres
+from featurebox.featurizers.envir.desc_env import DesDict, universe_refine_des
+from featurebox.featurizers.envir.local_env import NNDict, get_strategy_in_spheres, universe_refine_nn
 from featurebox.utils.look_json import get_marked_class
 from featurebox.utils.predefined_typing import StructureOrMolecule, StructureOrMoleculeOrAtoms
-from featurizers.envir._get_radius_in_spheres import get_radius_in_spheres
-from featurizers.envir._get_xyz_in_spheres import get_xyz_in_spheres
 
 MODULE_DIR = Path(__file__).parent.parent.parent.absolute()
-
-
-def universe_refine_des(d: Dict, fill_size=10, **kwargs):
-    """
-    Change each center atoms has fill_size neighbors.
-    More neighbors would be abandoned.
-    Insufficient neighbors would be duplicated.
-
-    # todo There is a problem with deleting atoms
-
-    Args:
-        d: dict, dict of descriptor. at lest contain "x" and "dxdr"
-        fill_size: int, unstable.
-
-    Returns:
-        (center_indices,center_prop, neighbor_indices, images, distances)\n
-        center_indices: np.ndarray 1d(N,).\n
-        center_prop: np.ndarray 1d(N,l_c).\n
-        neighbor_indices: np.ndarray 2d(N,fill_size).\n
-        images: np.ndarray 2d(N,fill_size,l).\n
-        distance: np.ndarray 2d(N,fill_size).
-
-    """
-    center, dxdr, seq = d["x"], d["dxdr"], d.get("seq")
-    atom_len = center.shape[0]
-    dxdr_len = dxdr.shape[0]
-
-    if dxdr.ndim == 3:
-        # please no cut
-        # ACSF no
-        # BehlerParrinello no
-        #EAD no
-        #EMAD
-        #wACSF
-
-        seq0 = seq[:, 0]
-
-        uni = [len(seq[np.where(seq0 == i)]) for i in range(np.max(seq0) + 1)]
-        if len(set(uni)) == 1:
-            fill_size1 = int(dxdr_len / atom_len)
-            dxdr_new = np.reshape(dxdr, (atom_len, fill_size1, -1))
-            seq_len = seq.shape[0]
-            fill_size2 = int(seq_len / atom_len)
-            # assert fill_size2==fill_size1
-            seq_new = np.reshape(seq[:, 1], (atom_len, fill_size2))
-            left = fill_size - uni[0]
-            if left == 0:
-                pass
-            elif left > 0:
-                seq_new = np.concatenate((seq_new, np.array([seq_new[:, -1]] * left).T), axis=1)
-                dxdr_new = np.concatenate((dxdr_new, np.array([dxdr_new[:, -1]] * left).transpose(1, 0, 2)), axis=1)
-
-            else:
-                seq_new = seq_new[:, :fill_size]
-                dxdr_new = dxdr_new[:, :fill_size]
-
-        else:
-            seq_split = [list(seq[:, 1][np.where(seq0 == i)]) for i in range(np.max(seq0) + 1)]
-
-            left = [fill_size - i for i in uni]
-            seq_new = []
-            dxdr_new = []
-            for lefti, seqsi in zip(left, seq_split):
-                if lefti == 0:
-                    dxdri = dxdr[seqsi]
-                elif lefti > 0:
-                    seqsi.extend([seqsi[-1]] * lefti)
-                    dxdri = dxdr[seqsi]
-                else:
-                    seqsi = seqsi[:fill_size]  # ? it is not loosely
-                    dxdri = dxdr[:fill_size]
-
-                seq_new.append(seqsi)
-                dxdr_new.append(dxdri)
-            seq_new = np.array(seq_new)
-            dxdr_new = np.array(dxdr_new)
-
-    elif dxdr.ndim == 4:
-        # please no cut
-        # soap
-        # wACSF
-        dxdr_new = np.reshape(dxdr, (dxdr.shape[0], dxdr.shape[1], -1))
-        seq_new = np.repeat(np.arange(atom_len).reshape(-1, 1), dxdr.shape[1], axis=1).T
-        left = fill_size - atom_len
-        if left == 0:
-            pass
-        elif left > 0:
-            seq_new = np.concatenate((seq_new, np.array([seq_new[:, -1]] * left).T), axis=1)
-            dxdr_new = np.concatenate((dxdr_new, np.array([dxdr_new[:, -1]] * left).transpose(1, 0, 2)), axis=1)
-
-        else:
-            seq_new = seq_new[:, :fill_size]
-            dxdr_new = dxdr_new[:, :fill_size]
-    else:
-        raise NotImplementedError("Unrecognized data format")
-
-    assert seq_new.shape[0] == center.shape[0]
-    assert seq_new.shape[1] == dxdr_new.shape[1]
-    return np.array(range(atom_len)), center, seq_new, dxdr_new, None
-
-
-def universe_refine_nn(center_indices, neighbor_indices, distances, vectors=None, center_prop=None, ele_numbers=None,
-                       fill_size=5,
-                       dis_sort=False,
-                       **kwargs):
-    """
-    Change each center atoms has fill_size neighbors.
-    More neighbors would be abandoned.
-    Insufficient neighbors would be duplicated.
-
-    Args:
-        center_indices: np.ndarray 1d
-        neighbor_indices: np.ndarray 1d
-        distances: np.ndarray 1d
-        vectors: np.ndarray 2d
-        fill_size: float
-        dis_sort:bool
-            sort neighbors with distance.
-
-    Returns:
-        (center_indices,center_indices,  neighbor_indices, images, distances)\n
-        center_indices: np.ndarray 1d(N,).\n
-        center_prop: np.ndarray 1d(N,l_c).\n
-        neighbor_indices: np.ndarray 2d(N,fill_size).\n
-        images: np.ndarray 2d(N,fill_size,l).\n
-        distance: np.ndarray 2d(N,fill_size,1).
-
-    where l, and l_c >= 1
-    """
-    _ = ele_numbers
-
-    neis = []
-    diss = []
-    vecs = []
-    cen = np.array(sorted(set(center_indices.tolist())))
-    for i in cen:
-        # try:
-        cidx = np.where(center_indices == i)[0]
-        nei = neighbor_indices[cidx]
-        disi = distances[cidx]
-        if vectors is not None:
-            vec = vectors[cidx, :]
-        else:
-            vec = None
-
-        if dis_sort:
-            neidx = np.argsort(disi) #todo
-            nei = nei[neidx]
-            disi = disi[neidx]
-            if vec is not None:
-                vec = vec[neidx, :]
-
-        if len(disi) >= fill_size:
-            nei = nei[:fill_size]
-            disi = disi[:fill_size] #todo
-            if vec is not None:
-                vec = vec[:fill_size, :]
-        else:
-            while len(disi) < fill_size:
-                nei = np.append(nei, nei[-1])
-                disi = np.append(disi, disi[-1])
-                if vec is not None:
-                    vec = np.concatenate((vec, vec[-1, :].reshape(1, -1)), axis=0)
-
-        neis.append(nei)
-        diss.append(disi)
-
-        if vectors is not None:
-            vecs.append(vec)
-    if vectors is not None:
-        vecs = np.array(vecs)
-    else:
-        vecs = []
-    if center_prop is None:
-        return np.array(cen).ravel(), np.array(cen).reshape(-1, 1), np.array(neis), vecs, np.array(diss)[
-            ..., np.newaxis]
-    else:
-        return np.array(cen).ravel(), center_prop, np.array(neis), vecs, np.array(diss)[..., np.newaxis]
-
-
-# def perovskite_refine_nn(center_indices, neighbor_indices, distances, vectors=None, center_prop=None,
-#                          ele_numbers=None, fill_size=5, dis_sort=False, **kwargs):
-#     """
-#     Change each center atoms has fill_size neighbors.
-#     More neighbors would be abandoned.
-#     Insufficient neighbors would be duplicated.
-#
-#     Args:
-#         center_indices: np.ndarray 1d
-#         neighbor_indices: np.ndarray 1d
-#         distances: np.ndarray 1d
-#         vectors: np.ndarray 2d
-#         fill_size: float
-#         dis_sort:bool
-#             sort neighbors with distance.
-#
-#     Returns:
-#         (center_indices,center_indices,  neighbor_indices, images, distances)\n
-#         center_indices: np.ndarray 1d(N,1).\n
-#         center_prop: np.ndarray 1d(N,l_c).\n
-#         neighbor_indices: np.ndarray 2d(N,fill_size).\n
-#         images: np.ndarray 2d(N,fill_size,l).\n
-#         distance: np.ndarray 2d(N,fill_size,1).
-#
-#     where l, and l_c >= 1
-#     """
-#     # assert center_prop == None
-#     #
-#     # # todo
-#     #
-#     # return np.array(cen).ravel(), np.array(cen).reshape(-1, 1), np.array(neis), vecs, np.array(diss)[
-#     #         ..., np.newaxis]
-#     return
 
 
 class _BaseEnvGet(BaseFeature):
@@ -239,8 +25,6 @@ class _BaseEnvGet(BaseFeature):
 
     ``center_indices``:np.ndarray of shape(n,)
         center indexes.
-    ``center_indices``:np.ndarray of shape(n,l_c)
-        center properties.
     ``neighbor_indices``:np.ndarray of shape(n,fill_size)
         neighbor_indexes for each center_index.
         `fill_size` is the parameter of `refine` function.
@@ -248,7 +32,8 @@ class _BaseEnvGet(BaseFeature):
         offset vector in 3 orientations or more bond properties.
     ``distances``:np.ndarray of shape(n,fill_size)
         distance of neighbor_indexes for each center_index.
-
+    ``center_indices``:np.ndarray of shape(n,l_c)
+        center properties.
     """
 
     def __init__(self, n_jobs: int, on_errors: str = 'raise', return_type: str = 'any',
@@ -259,7 +44,7 @@ class _BaseEnvGet(BaseFeature):
                          batch_size=batch_size)
         self.adaptor_dict = {}  # Dynamic assignment
         self.adaptor = AseAtomsAdaptor()
-        self.pbc = None
+        self.pbc = True
         self.cutoff = 5.0
 
     def ase_to_pymatgen(self, atom: Atoms, prop_dict=None):
@@ -282,9 +67,11 @@ class _BaseEnvGet(BaseFeature):
             [atoms.__setattr__(k, v) for k, v in prop_dict.items()]
         return atoms
 
-    def get_radius_in_spheres(self,
-                       structure: StructureOrMolecule, cutoff: float = 5.0, numerical_tol: float = 1e-8
-                       ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    @staticmethod
+    def get_radius_in_spheres(
+            structure: StructureOrMolecule, cutoff: float = 5.0,
+            numerical_tol: float = 1e-8, pbc=True,
+    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """
         Get graph representations from structure within cutoff.
 
@@ -292,15 +79,18 @@ class _BaseEnvGet(BaseFeature):
             structure (pymatgen Structure or molecule)
             cutoff (float): cutoff radius
             numerical_tol (float): numerical tolerance
+            pbc (bool):True
 
         Returns:
             center_indices, neighbor_indices, images, distances
         """
-        return get_radius_in_spheres(structure,cutoff=cutoff, numerical_tol=numerical_tol)
+        return get_radius_in_spheres(structure, cutoff=cutoff, numerical_tol=numerical_tol, pbc=pbc)
 
-    def get_xyz_in_spheres(self,
-                       structure: StructureOrMolecule, cutoff: float = 5.0, numerical_tol: float = 1e-8
-                       ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    @staticmethod
+    def get_xyz_in_spheres(
+            structure: StructureOrMolecule, cutoff: float = 5.0,
+            numerical_tol: float = 1e-8, pbc=True,
+    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """
         Get graph representations from structure within cutoff.
 
@@ -308,16 +98,12 @@ class _BaseEnvGet(BaseFeature):
             structure (pymatgen Structure or molecule)
             cutoff (float): cutoff radius
             numerical_tol (float): numerical tolerance
-
+            pbc (bool):True
         Returns:
             center_indices, neighbor_indices, images, distances
         """
-        return get_xyz_in_spheres(structure.cart_coords,
-                                  reciprocal_lattice_abc =structure.lattice.reciprocal_lattice.abc,
-                                  matrix=structure.lattice.matrix,
-                                  inv_matrix=structure.lattice.inv_matrix,
-                                  pbc=self.pbc,
-                                  cutoff=cutoff, numerical_tol=numerical_tol)
+        return get_xyz_in_spheres(structure, cutoff=cutoff, numerical_tol=numerical_tol, pbc=pbc)
+
 
 class BaseDesGet(_BaseEnvGet):
     """
@@ -327,8 +113,6 @@ class BaseDesGet(_BaseEnvGet):
 
     ``center_indices``:np.ndarray of shape(n,)
         center indexes.
-    ``center_indices``:np.ndarray of shape(n,l_c)
-        center properties.
     ``neighbor_indices``:np.ndarray of shape(n,fill_size)
         neighbor_indexes for each center_index.
         `fill_size` is the parameter of `refine` function.
@@ -336,11 +120,13 @@ class BaseDesGet(_BaseEnvGet):
         offset vector in 3 orientations or more bond properties.
     ``distances``:np.ndarray of shape(n,fill_size)
         distance of neighbor_indexes for each center_index.
-
+    ``center_indices``:np.ndarray of shape(n,l_c)
+        center properties.
     """
+
     def __init__(self, nn_strategy="SOAP", refine: str = None,
                  refined_strategy_param: Dict = None,
-                 numerical_tol=1e-8, pbc: List[int] = None, cutoff=None, cut_off_name=None):
+                 numerical_tol=1e-8, pbc: List[int] = None, cutoff=None, cut_off_name=None, check_align=True):
         """
 
         Parameters
@@ -403,6 +189,7 @@ class BaseDesGet(_BaseEnvGet):
         self.cutoff = cutoff
         self.numerical_tol = numerical_tol
         self.pbc = pbc
+        self.check_align = check_align
 
     def convert(self, structure):
         """
@@ -414,21 +201,21 @@ class BaseDesGet(_BaseEnvGet):
             center_indices,center_prop,neighbor_indices,images,distances
         """
 
-        return self.get_graphs_with_strategy_merge_sort(structure)
+        return self.get_strategy(structure)
 
-    def _calculate(self, d):
+    def get_calculate_in_spheres(self, d):
         if isinstance(d, Structure):
             d = self.pymatgen_to_ase(d)
 
         d = self.nn_strategy.calculate(d)
         return d
 
-    def get_graphs_with_strategy_merge_sort(self, structure: StructureOrMoleculeOrAtoms
-                                            ) -> Tuple[np.ndarray]:
+    def get_strategy(self, structure: StructureOrMoleculeOrAtoms
+                     ) -> Tuple[np.ndarray,np.ndarray,np.ndarray,np.ndarray,np.ndarray]:
         """For get bond distance with different strategy, for different nn_stagy could be rewrite"""
 
         try:
-            result_dict = self._calculate(structure)
+            result_dict = self.get_calculate_in_spheres(structure)
             # todo add to refine
             # center_indices, neighbor_indices, images, distances = self._within_cutoff(structure, self.cutoff,
             #                                                                           self.numerical_tol)
@@ -440,7 +227,7 @@ class BaseDesGet(_BaseEnvGet):
                 getattr(self.nn_strategy, self.cut_off_name) + 2)
             )
             setattr(self.nn_strategy, self.cut_off_name, getattr(self.nn_strategy, self.cut_off_name) + 2)
-            result_dict = self._calculate(structure)
+            result_dict = self.get_calculate_in_spheres(structure)
             result = self.refine(result_dict)
 
         return result
@@ -454,8 +241,6 @@ class BaseNNGet(_BaseEnvGet):
 
     ``center_indices``:np.ndarray of shape(n,)
         center indexes.
-    ``center_indices``:np.ndarray of shape(n,l_c)
-        center properties.
     ``neighbor_indices``:np.ndarray of shape(n,fill_size)
         neighbor_indexes for each center_index.
         `fill_size` is the parameter of `refine` function.
@@ -463,12 +248,13 @@ class BaseNNGet(_BaseEnvGet):
         offset vector in 3 orientations or more bond properties.
     ``distances``:np.ndarray of shape(n,fill_size)
         distance of neighbor_indexes for each center_index.
-
+    ``center_indices``:np.ndarray of shape(n,l_c)
+        center properties.
     """
 
     def __init__(self, nn_strategy: Union[NearNeighbors] = "UserVoronoiNN", refine: str = None,
                  refined_strategy_param: Dict = None,
-                 numerical_tol=1e-8, pbc: List[int] = None, cutoff=5.0):
+                 numerical_tol=1e-8, pbc: List[int] = None, cutoff=5.0, check_align=True):
         """
 
         Parameters
@@ -500,10 +286,12 @@ class BaseNNGet(_BaseEnvGet):
             self.refine = universe_refine_nn
         else:
             self.refine = after_treatment_func_map_nn[refine]
-        self.refined_strategy_param = refined_strategy_param if isinstance(refined_strategy_param, dict) else {}
+        self.refined_strategy_param = refined_strategy_param \
+            if isinstance(refined_strategy_param, dict) else {}
         self.cutoff = cutoff
         self.numerical_tol = numerical_tol
         self.pbc = pbc
+        self.check_align = check_align
 
     def convert(self, structure: StructureOrMolecule) -> Tuple[
         np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
@@ -516,102 +304,67 @@ class BaseNNGet(_BaseEnvGet):
             center_indices,center_prop,neighbor_indices,images,distances
         """
         if self.nn_strategy == "find_points_in_spheres":
-            return self.get_graphs_within_cutoff_merge_sort_radius(structure)
-        if self.nn_strategy == "get_xyz_in_spheres":
-            return self.get_graphs_within_cutoff_merge_sort_xyz(structure)
+            return self.get_radius(structure)
+        if self.nn_strategy == "find_xyz_in_spheres":
+            return self.get_xyz(structure)
         else:
-            return self.get_graphs_with_strategy_merge_sort(structure)
+            return self.get_strategy(structure)
 
-    def get_graphs_within_cutoff_merge_sort_xyz(self, structure: StructureOrMolecule
-                                                   ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    def get_xyz(self, structure: StructureOrMolecule
+                ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """For quick get bond distance"""
+
         cutoff = self.cutoff
         numerical_tol = self.numerical_tol
-        center_indices, neighbor_indices, images, distances = self.get_xyz_in_spheres(structure, cutoff,
-                                                                                  numerical_tol)
-        ele_numbers = np.array(structure.atomic_numbers)
-        center_indices, center_prop, neighbor_indices, images, distances = self.refine(center_indices, neighbor_indices,
-                                                                                       distances,
-                                                                                       images,
-                                                                                       center_prop=None,
-                                                                                       ele_numbers=ele_numbers,
-                                                                                       **self.refined_strategy_param,
-                                                                                       )
 
-        if len(center_indices.tolist()) == len(structure.species):
-            return center_indices, center_prop, neighbor_indices, images, distances
+        result = self.get_xyz_in_spheres(structure, cutoff, numerical_tol)
+        # Result: center_indices, neighbor_indices, images, distances, center_prop
+        ele_numbers = np.array(structure.atomic_numbers)
+        result = self.refine(*result, ele_numbers=ele_numbers, **self.refined_strategy_param, )
+
+        # Return: center_indices, neighbor_indices, images, distances, center_prop
+        if len(result[0].tolist()) == len(structure.species) or not self.check_align:
+            return result
         else:
             print("For {}, There is no neighbor in cutoff {} A, try with cutoff {} A for this structure.".format(
-                str(structure.composition), cutoff, cutoff + 2)
-            )
-            center_indices, center_prop, neighbor_indices, images, distances = self.get_graphs_within_cutoff_merge_sort_radius(
-                structure)
-            return center_indices, center_prop, neighbor_indices, images, distances
+                str(structure.composition), cutoff, cutoff + 2))
+            return self.get_xyz(structure)
 
-    def get_graphs_within_cutoff_merge_sort_radius(self, structure: StructureOrMolecule
-                                                   ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    def get_radius(self, structure: StructureOrMolecule
+                   ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """For quick get bond distance"""
+
         cutoff = self.cutoff
         numerical_tol = self.numerical_tol
-        center_indices, neighbor_indices, images, distances = self.get_radius_in_spheres(structure, cutoff,
-                                                                                  numerical_tol)
-        ele_numbers = np.array(structure.atomic_numbers)
-        center_indices, center_prop, neighbor_indices, images, distances = self.refine(center_indices, neighbor_indices,
-                                                                                       distances,
-                                                                                       images,
-                                                                                       center_prop=None,
-                                                                                       ele_numbers=ele_numbers,
-                                                                                       **self.refined_strategy_param,
-                                                                                       )
 
-        if len(center_indices.tolist()) == len(structure.species):
-            return center_indices, center_prop, neighbor_indices, images, distances
+        result = self.get_radius_in_spheres(structure, cutoff, numerical_tol)
+        # Result: center_indices, neighbor_indices, images, distances, center_prop
+        ele_numbers = np.array(structure.atomic_numbers)
+        result = self.refine(*result, ele_numbers=ele_numbers, **self.refined_strategy_param, )
+
+        # Return: center_indices, neighbor_indices, images, distances, center_prop
+        if len(result[0].tolist()) == len(structure.species) or not self.check_align:
+            return result
         else:
             print("For {}, There is no neighbor in cutoff {} A, try with cutoff {} A for this structure.".format(
-                str(structure.composition), cutoff, cutoff + 2)
-            )
-            center_indices, center_prop, neighbor_indices, images, distances = self.get_graphs_within_cutoff_merge_sort_radius(
-                structure)
-            return center_indices, center_prop, neighbor_indices, images, distances
+                str(structure.composition), cutoff, cutoff + 2))
+            return self.get_radius(structure)
 
-    def get_graphs_with_strategy_merge_sort(self, structure: StructureOrMolecule
-                                            ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    def get_strategy(self, structure: StructureOrMolecule
+                     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """For get bond distance with different strategy, for different nn_staagy could be rewrite."""
         # assert hasattr(self.nn_strategy, "cutoff")
-        self.nn_strategy.cutoff = self.cutoff
-        index1 = []
-        index2 = []
-        bonds = []
-        center_prop = []
+        cutoff = self.cutoff
+        numerical_tol = self.numerical_tol
 
-        image = []
-        for n, neighbors in enumerate(self.nn_strategy.get_all_nn_info(structure)):
-            index1.extend([n] * len(neighbors))
-            index2i = [neighbor["site_index"] for neighbor in neighbors]
-            bondsi = [neighbor["weight"] for neighbor in neighbors]
-            imagei = [list(neighbor["image"]) + list(neighbor.get("add_image", (0,))) for neighbor in neighbors]
-            center_propi = [neighbor.get("add_atom_prop", None) for neighbor in neighbors]
-            index2.extend(index2i)
-            image.extend(imagei)
-            bonds.extend(bondsi)
-            center_prop.append(center_propi)
-
-        if None in center_prop[0] or [] in center_prop:
-            center_prop = None
-        else:
-            center_prop = np.array(center_prop)
+        result = get_strategy_in_spheres(structure,self.nn_strategy, cutoff, numerical_tol)
 
         ele_numbers = np.array(structure.atomic_numbers)
-        center_indices, cen_prop, neighbor_indices, images, distances = self.refine(np.array(index1), np.array(index2),
-                                                                                    np.array(bonds), np.array(image),
-                                                                                    center_prop=center_prop,
-                                                                                    ele_numbers=ele_numbers,
-                                                                                    **self.refined_strategy_param)
+        result = self.refine(*result, ele_numbers=ele_numbers, **self.refined_strategy_param)
 
-        if len(center_indices.tolist()) == len(structure.species):
-            return center_indices, cen_prop, neighbor_indices, images, distances
+        if len(result[0].tolist()) == len(structure.species) or not self.check_align:
+            return result
         else:
-
             if hasattr(self.nn_strategy, "min_bond_distance"):
                 print("For {}, There is no neighbor in cutoff {} A, try with cutoff {} A for this structure.".format(
                     str(structure.composition), self.nn_strategy.min_bond_distance,
@@ -623,10 +376,10 @@ class BaseNNGet(_BaseEnvGet):
                     str(structure.composition), self.nn_strategy.cutoff, self.nn_strategy.cutoff + 2)
                 )
             self.nn_strategy.cutoff += 2
-            center_indices, center_prop, neighbor_indices, images, distances = self.get_graphs_with_strategy_merge_sort(
-                structure)
+            self.cutoff += 2
+            return self.get_strategy(structure)
 
-            return center_indices, cen_prop, neighbor_indices, images, distances
+
 
 
 #####################################################################################################################

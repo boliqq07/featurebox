@@ -182,7 +182,7 @@ class _StructureGraph(BaseFeature):
         else:
             state_attributes = np.concatenate(
                 (state_attributes, np.array(self.state_converter.convert(structure)).ravel()))
-        center_indices, center_prop, atom_nbr_idx, bond_states, bonds = self.get_bond_fea(structure)
+        center_indices, atom_nbr_idx, bond_states, bonds, center_prop = self.get_bond_fea(structure)
         if self.return_bonds == "all":
             bondss = np.concatenate((bond_states, bonds), axis=-1) if bonds is not None else bond_states
         elif self.return_bonds == "bonds":
@@ -211,12 +211,16 @@ class _StructureGraph(BaseFeature):
         if atoms.shape[1] == 1:
             if center_prop.shape[1] > 1:
                 atoms = np.concatenate((np.array(atoms), center_prop), axis=1)
-        else:
+            else:
+                pass
+        elif atoms.shape[1]>1:
             atoms_numbers = np.array(structure.atomic_numbers)[center_indices].reshape(-1, 1)
             if center_prop.shape[1] > 1:
                 atoms = np.concatenate((atoms_numbers, np.array(atoms), center_prop), axis=1)
             else:
                 atoms = np.concatenate((atoms_numbers, np.array(atoms)), axis=1)
+        else:
+            raise TypeError("Bad Converter for: atoms = self.atom_converter.convert(atoms_numbers)")
 
         return {"atom": atoms, "bond": bonds, "state": state_attributes, "atom_nbr_idx": atom_nbr_idx}
 

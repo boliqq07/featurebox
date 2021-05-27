@@ -1,13 +1,40 @@
 import itertools
 import math
-from typing import Union, List
+from typing import Union, List, Tuple
 
 import numpy as np
+from featurebox.utils.predefined_typing import StructureOrMolecule
 from mgetool.tool import tt
 from pymatgen.core import Structure
 
+from utils.general import re_pbc
 
-def get_xyz_in_spheres(
+
+def get_xyz_in_spheres(structure: StructureOrMolecule, nn_strategy=None,cutoff: float = 5.0, numerical_tol: float = 1e-8,
+                       pbc=False,
+                       ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray,np.ndarray]:
+    """
+    Get graph representations from structure within cutoff.
+
+    Args:
+        structure (pymatgen Structure or molecule)
+        cutoff (float): cutoff radius
+        pbc:bool or list of bool
+        numerical_tol (float): numerical tolerance
+        nn_strategy(str):not used
+    Returns:
+        center_indices, neighbor_indices, images, distances,center_prop
+    """
+    _ = nn_strategy
+    pbc = re_pbc(pbc, return_type="bool")
+    return not_structure_get_xyz_in_spheres(structure.cart_coords,
+                              reciprocal_lattice_abc=structure.lattice.reciprocal_lattice.abc,
+                              matrix=structure.lattice.matrix,
+                              inv_matrix=structure.lattice.inv_matrix,
+                              pbc=pbc,
+                              cutoff=cutoff, numerical_tol=numerical_tol)
+
+def not_structure_get_xyz_in_spheres(
         all_coords: np.ndarray,
         reciprocal_lattice_abc,
         matrix,
@@ -29,10 +56,11 @@ def get_xyz_in_spheres(
         matrix:lattice.matrix
         inv_matrix；lattice.inv_matrix
         reciprocal_lattice_abc:lattice.reciprocal_lattice.abc
+    Returns:
+        center_indices, neighbor_indices, images, distances,center_prop
 
     """
-    if isinstance(pbc, bool):
-        pbc = [pbc] * 3
+
     center_coords = all_coords
     pbc = np.array(pbc, dtype=np.bool_)  # type: ignore
     center_coords_min = np.min(center_coords, axis=0)
@@ -91,46 +119,46 @@ def get_xyz_in_spheres(
         valid_images = np.array([[0, 0, 0]] * len(valid_coords))
         valid_indices = np.arange(len(valid_coords))
 
-    center=[]
-    neighbor =[]
-    images=[]
-    coords= []
+    center = []
+    neighbor = []
+    images = []
+    coords = []
     lc = center_coords.shape[0]
     lv = valid_coords.shape[0]
     for i in range(lc):
         ci = center_coords[i]
         v = valid_coords - ci
-        rs = (v[:,0]**2+v[:,1]**2+v[:,2]**2)**0.5
+        rs = (v[:, 0] ** 2 + v[:, 1] ** 2 + v[:, 2] ** 2) ** 0.5
         index = rs <= cutoff
 
-        center.append(np.full(lv,i)[index])
+        center.append(np.full(lv, i)[index])
         neighbor.append(valid_indices[index])
-        images.append(valid_images[index,:])
-        coords.append(v[index,:])
+        images.append(valid_images[index, :])
+        coords.append(v[index, :])
 
-    center = np.concatenate(center,axis=0)
-    neighbor = np.concatenate(neighbor,axis=0)
-    images = np.concatenate(images,axis=0)
-    coords = np.concatenate(coords,axis=0)
-    coords = np.concatenate((((coords[:,0]**2+coords[:,1]**2+coords[:,2]**2)**0.5).reshape(-1,1),coords),axis=1)
+    center_indices = np.concatenate(center, axis=0)
+    neighbor_indices = np.concatenate(neighbor, axis=0)
+    images = np.concatenate(images, axis=0)
+    coords = np.concatenate(coords, axis=0)
+    distances = np.concatenate(
+        (((coords[:, 0] ** 2 + coords[:, 1] ** 2 + coords[:, 2] ** 2) ** 0.5).reshape(-1, 1), coords), axis=1)
 
-    return center,neighbor,images,coords
+    exclude_self = (center_indices != neighbor_indices) | (distances[:,0] > numerical_tol)
+
+    return center_indices[exclude_self], neighbor_indices[exclude_self], images[exclude_self], distances[
+        exclude_self], None
 
 
-# structure = Structure.from_file("S2-CONTCAR")
-# tt.t
-# get_points_ = get_xyz_inspheres(structure.cart_coords,
-#                                     reciprocal_lattice_abc=structure.lattice.reciprocal_lattice.abc,
-#                                     matrix=structure.lattice.matrix,
-#                                     inv_matrix=structure.lattice.inv_matrix,
-#                                     r=5.0, pbc=True,
-#                                     )
-# tt.t#tt.t
-# get_points_ = get_xyz_inspheres(structure.cart_coords,
-#                                     reciprocal_lattice_abc=structure.lattice.reciprocal_lattice.abc,
-#                                     matrix=structure.lattice.matrix,
-#                                     inv_matrix=structure.lattice.inv_matrix,
-#                                     r=5.0, pbc=True,
-#                                     )
-# tt.t#
-# tt.p
+
+if __name__ =="__main__":
+    structure = Structure.from_file("S2-CONTCAR")
+    tt.t
+    get_points_ = get_xyz_in_spheres(structure,
+                                        cutoff=5.0, pbc=True,
+                                        )
+    tt.t#tt.t
+    get_points_ = get_xyz_in_spheres(structure.cart_coords,
+                                        cutoff=5.0, pbc=True,
+                                        )
+    tt.t#
+    tt.p

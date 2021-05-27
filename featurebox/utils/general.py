@@ -5,7 +5,6 @@ from collections import abc
 from typing import Union, List, Sequence, Optional
 
 import numpy as np
-from sklearn import metrics
 from sklearn.model_selection import train_test_split
 
 
@@ -68,7 +67,6 @@ def check_shape(array: Optional[np.ndarray], shape: Sequence) -> bool:
 
 
 def train_test(*arrays, **options):
-
     """Split arrays or matrices into random train and test subsets
 
     Quick utility that wraps input validation and
@@ -131,3 +129,22 @@ def train_test(*arrays, **options):
                                                                                                      for i in range(le)
                                                                                                      if i % 2 == 1]
     return X_train, y_train, X_test, y_test
+
+
+def re_pbc(pbc: Union[bool, List[bool], np.ndarray], return_type="bool"):
+    if pbc is True:
+        pbc = [1, 1, 1]
+    elif pbc is False:
+        pbc = [0, 0, 0]
+    elif isinstance(pbc, abc.Iterable):
+        pbc = [1 if i == True or i == 1 else 0 for i in pbc]
+    else:
+        raise TypeError("Can't accept {}".format(pbc))
+    if return_type == "bool":
+        pbc = np.array(pbc) == 1
+    else:
+        pbc = np.array(pbc)
+    return pbc
+
+
+# a = re_pbc(np.array([True,True,False]), return_type="int")

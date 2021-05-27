@@ -4,9 +4,9 @@ Most in :mod:`pymatgen.analysis.local_env` or
 in :func:`pymatgen.optimization.neighbors.find_points_in_spheres`
 The costumed as following:
 """
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
-from pymatgen.core import Element
+import numpy as np
 from pymatgen.analysis.local_env import (
     NearNeighbors,
     VoronoiNN,
@@ -18,10 +18,12 @@ from pymatgen.analysis.local_env import (
     EconNN,
     CrystalNN,
 )
+from pymatgen.core import Element
 from pymatgen.core import Molecule
 from pymatgen.core.structure import Structure
 
 from featurebox.utils.look_json import mark_classes
+from featurebox.utils.predefined_typing import StructureOrMolecule
 
 
 def _is_in_targets(site, targets):
@@ -192,3 +194,142 @@ NNDict = mark_classes([
 
 for i, j in NNDict.items():
     locals()[i] = j
+
+
+def get_strategy_in_spheres(structure: StructureOrMolecule, nn_strategy: NearNeighbors,
+                            cutoff: float = 5.0, numerical_tol: float = 1e-8,
+                            pbc=True,
+                            ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    nn_strategy.cutoff = cutoff
+    nn_strategy.tol = numerical_tol
+    _ = pbc  # Force True
+    structure.pbc = np.array([True, True, True])
+
+    center_indices = []
+    neighbor_indices = []
+    distances = []
+    center_prop = []
+    images = []
+    for n, neighbors in enumerate(nn_strategy.get_all_nn_info(structure)):
+        index2i = [neighbor["site_index"] for neighbor in neighbors]
+        bondsi = [neighbor["weight"] for neighbor in neighbors]
+        imagei = [list(neighbor["image"]) + list(neighbor.get("add_image", (0,))) if hasattr(neighbor, "add_image")
+                  else list(neighbor["image"]) for neighbor in neighbors]
+        center_propi = [neighbor.get("add_atom_prop", None) for neighbor in neighbors]
+
+        center_indices.extend([n] * len(neighbors))
+        neighbor_indices.extend(index2i)
+        images.extend(imagei)
+        distances.extend(bondsi)
+        center_prop.append(center_propi)
+
+    if None in center_prop[0] or [] in center_prop:
+        center_prop = None
+    else:
+        center_prop = np.array(center_prop)
+
+    return np.array(center_indices), np.array(neighbor_indices), np.array(images), np.array(distances), \
+           np.array(center_prop)
+
+
+def universe_refine_nn(center_indices, neighbor_indices, vectors, distances,
+                       center_prop=None, ele_numbers=None,
+                       fill_size=5,
+                       dis_sort=True,
+                       **kwargs):
+    """
+    Change each center atoms has fill_size neighbors.
+    More neighbors would be abandoned.
+    Insufficient neighbors would be duplicated.
+
+    Args:
+        center_indices: np.ndarray 1d
+        neighbor_indices: np.ndarray 1d
+        distances: np.ndarray 1d
+        vectors: np.ndarray 2d
+        center_prop:np.ndarray 2d
+        ele_numbers:np.ndarray 1d
+        fill_size: float
+        dis_sort:bool
+            sort neighbors with distance.
+
+    Returns:
+        (center_indices,center_indices,  neighbor_indices, images, distances)\n
+        center_indices: np.ndarray 1d(N,).\n
+        neighbor_indices: np.ndarray 2d(N,fill_size).\n
+        images: np.ndarray 2d(N,fill_size,l).\n
+        distance: np.ndarray 2d(N,fill_size,1).
+        center_prop: np.ndarray 1d(N,l_c).\n
+
+    where l, and l_c >= 1
+    """
+    _ = ele_numbers
+
+    neis = []
+    diss = []
+    vecs = []
+    cen = np.array(sorted(set(center_indices.tolist())))
+    for i in cen:
+        # try:
+        cidx = np.where(center_indices == i)[0]
+        nei = neighbor_indices[cidx]
+        disi = distances[cidx]
+        if vectors is not None:
+            vec = vectors[cidx, :]
+        else:
+            vec = None
+
+        if dis_sort:
+            if disi.ndim==2:
+                neidx = np.argsort(disi[:,0])
+            else:
+                neidx = np.argsort(disi)
+            nei = nei[neidx]
+            disi = disi[neidx]
+            if vec is not None:
+                vec = vec[neidx, :]
+
+        if disi.shape[0] >= fill_size:
+            nei = nei[:fill_size]
+            disi = disi[:fill_size]  # todo
+            if vec is not None:
+                vec = vec[:fill_size, :]
+        else:
+            while len(disi) < fill_size:
+                nei = np.append(nei, nei[-1])
+                disi = np.append(disi, disi[-1])
+                if vec is not None:
+                    vec = np.concatenate((vec, vec[-1, :].reshape(1, -1)), axis=0)
+
+        neis.append(nei)
+        diss.append(disi)
+
+        if vectors is not None:
+            vecs.append(vec)
+    if vectors is not None:
+        vecs = np.array(vecs)
+    else:
+        vecs = np.array([])
+
+    cen = np.array(cen).ravel()
+    neis = np.array(neis)
+    diss = np.array(diss)
+
+    if diss.ndim == 3:
+        pass
+    else:
+        diss = np.array(diss)[..., np.newaxis]
+
+    if center_prop is None:
+        return cen, neis, vecs, diss, np.array(cen).reshape(-1, 1),
+    else:
+        if center_prop.ndim == 1:
+            try:
+                center_prop = center_prop.reshape((cen.shape[0], -1))
+            except ValueError:
+                center_prop = cen.reshape(-1, 1)
+        elif center_prop.ndim == 2 and center_prop.shape[0] == cen.shape[0]:
+            pass
+        else:
+            center_prop = cen.reshape(-1, 1)
+        return cen, neis, vecs, diss, center_prop
