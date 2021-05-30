@@ -43,8 +43,9 @@ def get_atom_fea_name(structure: Structure) -> List[dict]:
     Returns:
         a list of site fraction description
     """
-    # return [{i.element.symbol: 1} for i in structure.species]
+
     return [{str(i.symbol): 1} for i in structure.species]
+    # return [{i.element.symbol: 1} for i in structure.species]
     # return [i.species.to_dict() for i in structure.sites]
 
 

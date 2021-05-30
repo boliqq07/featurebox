@@ -17,7 +17,7 @@ Transform structure list.
 Transform composition list.
 ::
 
-    composition = [i.composition.to_reduced_dict for i in structure_list]
+    composition = [[{str(i.symbol): 1} for i in structure.species]  for structure in sturctures]
     data = sppm.fit_transform(composition)
 
 .. image:: composition0.gif
@@ -27,7 +27,7 @@ Transform element list.
 
     sppm = BatchFeature(data_type="elements")
     aa =[]
-    aas = [[i.species.as_dict() for i in structure.sites] for structure in sturctures]
+    aas = [[{str(i.symbol): 1} for i in structure.species] for structure in sturctures]
     [aa.extend(i) for i in aas]
     data = sppm.fit_transform([aa])
 

@@ -37,13 +37,13 @@ class BaseLayer(nn.Module):
 
     def __init__(self):
         super(BaseLayer, self).__init__()
-        # self.merge_idx = self.merge_idx_py
-        if mod is not None:
-            self.merge_idx = self.merge_idx_cpp
-        # elif scatter_mod is not None: # not very fast
-        #     self.merge_idx = self.merge_idx_scatter
-        else:
-            self.merge_idx = self.merge_idx_py
+        self.merge_idx = self.merge_idx_py
+        # if mod is not None:
+        #     self.merge_idx = self.merge_idx_cpp
+        # # elif scatter_mod is not None: # not very fast
+        # #     self.merge_idx = self.merge_idx_scatter
+        # else:
+        #     self.merge_idx = self.merge_idx_py
 
     def merge_idx_methods(self, nbr_fea, node_atom_idx, methods=("mean", "max")):
         return torch.cat([self.merge_idx_py(nbr_fea, node_atom_idx, methodi) for methodi in methods], dim=-1)

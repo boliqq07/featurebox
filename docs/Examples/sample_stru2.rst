@@ -34,7 +34,7 @@ which depend on the :class:`CrystalBgGraph` and so on.
 
 Training and test::
 
-    >>> bl = BaseLearning(model, loader1,test_loader=loader2, device="cuda:1",
+    >>> bl = BaseLearning(model, loader1,test_loader=loader2, device="cuda:0",
     ...                  opt=None, clf=False)
     >>> torch.save(bl.model.state_dict(), './parameter_n_sgt.pkl')
     >>> bl.run(500)

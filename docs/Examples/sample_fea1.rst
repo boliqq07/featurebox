@@ -3,6 +3,14 @@ Json Data
 
 The key json must be element name, such as {"H": ... ,"He": ... }, and The structures is pymatgen ``Structure`` list.
 
+Index by structure
+::
+
+    tmps = AtomJsonMap(search_tp="number",embedding_dict="elemental_MEGNet.json")
+    a = tmps.convert(structure)
+
+The return data are properties of 1, 76 elements.
+
 Index by number, with your-self json
 ::
 

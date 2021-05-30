@@ -25,11 +25,18 @@ Then run the code.
 In default, the proportion would be multiplied in data, also you can neglect weight.
 ::
 
-    >>> tmps = AtomTableMap(search_tp="name", weight=False)
+    >>> tmps = AtomTableMap(search_tp="name", weight=False,tablename=your_pd_dataframe)
     >>> com = [{"H": 2, }, {"Po": 1}, {"C": 2}]
     >>> a2 = tmps.convert(com)
 
 .. image:: 2_2.png
+
+
+Index by structure
+::
+
+    tmps = AtomTableMap(search_tp="number"，tablename="aa.csv")
+    a = tmps.convert(structure)
 
 
 Note
@@ -39,4 +46,4 @@ Note
 
     or
 
-    com =  [{i.element.symbol:1} for i in structure.species]
+    com =  [{str(i.symbol): 1} for i in structure.species]

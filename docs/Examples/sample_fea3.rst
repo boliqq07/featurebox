@@ -1,12 +1,14 @@
 Pymatgen Data
 =============
 
+
 The data are using the inner periodical_data.json in pymatgen elemental data.
 ::
 
     >>> tmps = AtomPymatgenPropMap(search_tp="name")
     >>> s = [{"H": 2, }, {"Po": 1}, {"C": 2}] # [i.species.as_dict() for i in pymatgen.structure.sites]
-
+    >>> a2 = tmps.convert(s) # or
+    >>> a2 = tmps.convert(structurei)
 
 In addition, we could get structure state data by structure.
 ::
@@ -14,4 +16,8 @@ In addition, we could get structure state data by structure.
     >>> tmps = StructurePymatgenPropMap(prop_name = ["density", "volume", "ntypesp"])
     >>> a2 = tmps.convert(structurei)
 
-This class is for structure but for atoms.
+This second class is for structure but for atoms, and the first one return the each atom features
+and the second return the whole feature of structure.
+
+
+

@@ -1,4 +1,4 @@
-__all__ = ["cgcnn", "flow", "megnet"]
+__all__ = ["cgcnn", "flow", "megnet","symnet"]
 
 __doc__ = """
 Input Note/ Read Me First

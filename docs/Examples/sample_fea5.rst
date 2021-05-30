@@ -8,7 +8,8 @@ Combination to composition data from element data.
     data_map = AtomJsonMap(search_tp="name", n_jobs=1)
     wa = WeightedAverage(data_map, n_jobs=1,return_type="df")
     x3 = [{"H": 2, "Pd": 1},{"He":1,"Al":4}]
-    wa.fit_transform(x3)
+    wa.fit_transform(x3) # or
+    wa.fit_transform(structure)
 
              0         1         2   ...        13        14        15
     0  0.422068  0.360958  0.201433  ... -0.459164 -0.064783 -0.250939
