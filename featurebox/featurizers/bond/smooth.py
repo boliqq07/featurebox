@@ -19,27 +19,28 @@ class Smooth(BaseFeature):
 
     def __init__(self, r_c=5, r_cs=3):
         """
-
         Args:
             r_cs: float, strat of decrease cutoff radius.
             r_c: (float) cutoff radius.
         """
+        super(Smooth, self).__init__()
         self.r_c = r_c
         self.r_cs = r_cs
+        self.ndim = 2
 
-        super(Smooth, self).__init__()
-
-    def _convert(self, d: np.ndarray) -> np.ndarray:
+    def convert(self, d: np.ndarray) -> np.ndarray:
         """
         d: np.ndarray, shape (N, fill_size, atom_fea_len).
             ``nbr_fea`` neighbor features for each center_index.
         """
+        assert d.ndim == 2 or d.ndim == 3, "Just accept 2D or 1D array,d.shape={}".format(d.shape)
         d = np.array(d)
-        d = d.astype(np.float32)
+        d = d.astype(np.float64)
+
         return smooth_func(d, self.r_c, self.r_cs)
 
 
-@numba.jit("float32[:](float32[:],float32,float32)")
+@numba.jit("float64[:](float64[:],float64,float64)")
 def _smooth_func(rs, r_c, r_cs):
     ks = []
     for r in rs:
@@ -56,10 +57,14 @@ def smooth_func(d, r_c, r_cs):
     if d.ndim == 3:
         r = (d[:, :, 1] ** 2 + d[:, :, 2] ** 2 + d[:, :, 3] ** 2) ** 0.5
         k = np.array([_smooth_func(ri, r_c, r_cs) for ri in r])
+        k = k[...,np.newaxis]
+        r = r[...,np.newaxis]
 
     elif d.ndim == 2:
         r = (d[:, 1] ** 2 + d[:, 2] ** 2 + d[:, 3] ** 2) ** 0.5
         k = _smooth_func(r, r_c, r_cs)
+        k = k[...,np.newaxis]
+        r = r[...,np.newaxis]
     else:
         r = (d[1] ** 2 + d[2] ** 2 + d[3] ** 2) ** 0.5
         if r <= r_cs:

@@ -21,16 +21,15 @@ where N is number of atoms. fill size is the neighbor numbers.
 import warnings
 from collections import Iterable
 from operator import itemgetter
-from typing import Union, Dict, List, Any
+from typing import Union, Dict, List
 
 import numpy as np
 from mgetool.tool import parallelize, batch_parallelize
 from pymatgen.analysis.local_env import NearNeighbors
 from pymatgen.core import Structure
 
-from featurebox.featurizers.atom.mapper import AtomPymatgenPropMap, AtomJsonMap, get_atom_fea_number, get_atom_fea_name, \
-    BinaryMap
-from featurebox.featurizers.base_transform import DummyConverter, BaseFeature, Converter
+from featurebox.featurizers.atom.mapper import AtomPymatgenPropMap, BinaryMap
+from featurebox.featurizers.base_transform import DummyConverter, BaseFeature, Converter, ConverterCat
 from featurebox.featurizers.bond.expander import BondGaussianConverter
 from featurebox.featurizers.envir.environment import BaseNNGet, BaseDesGet, env_method, env_names
 from featurebox.featurizers.envir.local_env import NNDict
@@ -184,7 +183,7 @@ class _StructureGraph(BaseFeature):
                 (state_attributes, np.array(self.state_converter.convert(structure)).ravel()))
         center_indices, atom_nbr_idx, bond_states, bonds, center_prop = self.get_bond_fea(structure)
         if self.return_bonds == "all":
-            bondss = np.concatenate((bond_states, bonds), axis=-1) if bonds is not None else bond_states
+            bondss = np.concatenate((bonds, bond_states), axis=-1) if bonds is not None else bond_states
         elif self.return_bonds == "bonds":
             if bonds is not None:
                 bondss = bonds
@@ -198,7 +197,11 @@ class _StructureGraph(BaseFeature):
         if isinstance(self.atom_converter, DummyConverter):
             atoms_numbers = np.array(structure.atomic_numbers)[center_indices].reshape(-1, 1)
             atoms = self.atom_converter.convert(atoms_numbers)
-        elif isinstance(self.atom_converter, BinaryMap) or hasattr(self.atom_converter, "convert_structure"):
+        elif isinstance(self.atom_converter, BinaryMap):
+            atoms = self.atom_converter.convert(structure)
+            atoms = np.array([atoms[round(i)] for i in center_indices])
+        elif isinstance(self.atom_converter, ConverterCat):
+            self.atom_converter.force_concatenate=True # just accept the data could be concatenate as one array.
             atoms = self.atom_converter.convert(structure)
             atoms = np.array([atoms[round(i)] for i in center_indices])
         else:
@@ -213,7 +216,7 @@ class _StructureGraph(BaseFeature):
                 atoms = np.concatenate((np.array(atoms), center_prop), axis=1)
             else:
                 pass
-        elif atoms.shape[1]>1:
+        elif atoms.shape[1] > 1:
             atoms_numbers = np.array(structure.atomic_numbers)[center_indices].reshape(-1, 1)
             if center_prop.shape[1] > 1:
                 atoms = np.concatenate((atoms_numbers, np.array(atoms), center_prop), axis=1)
@@ -259,7 +262,7 @@ class _StructureGraph(BaseFeature):
             state_attributes = [None] * len(structures)
         assert isinstance(structures, Iterable)
         if hasattr(structures, "__len__"):
-            assert len(structures)>0, "Empty input data!"
+            assert len(structures) > 0, "Empty input data!"
         iterables = zip(structures, state_attributes)
 
         if not self.batch_calculate:

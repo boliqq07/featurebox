@@ -14,11 +14,10 @@ from pymatgen.core.periodic_table import get_el_sp
 from pymatgen.util.string import formula_double_format
 
 from featurebox.featurizers.atom.mapper import AtomTableMap, BinaryMap
-from featurebox.featurizers.base_transform import BaseFeature
 from featurebox.featurizers.extrastats import PropertyStats
 
 
-class BaseCompositionFeature(BaseFeature):
+class BaseCompositionFeature(BinaryMap):
     """
     BaseCompositionFeature is the basis for composition data.
     the subclass should be re-implemented, such as:
@@ -41,10 +40,8 @@ class BaseCompositionFeature(BaseFeature):
         # change
         self.data_map.weight = False
         self.data_map.n_jobs = 1
-        self.data_map.search_tp = "name"
 
-        self.search_tp = "name"
-        self.convert = self.convert_dict
+        self.search_tp = self.data_map.search_tp
 
     def convert_dict(self, atoms: dict) -> np.ndarray:
         """
@@ -56,7 +53,18 @@ class BaseCompositionFeature(BaseFeature):
         numbers = np.array([list(ai.values())[0] for ai in atoms])
 
         ele = self.data_map.convert(atoms)
-        if len(atoms)==1:
+        if len(atoms) == 1:
+            ele = np.array(ele).reshape((len(atoms), -1))
+        return self.mix_function(ele, numbers)
+
+    def convert_number(self, atoms: List) -> np.ndarray:
+        """
+        Convert atom {symbol: fraction} list to numeric features
+        """
+        numbers = np.ones(len(atoms))
+
+        ele = self.data_map.convert(atoms)
+        if len(atoms) == 1:
             ele = np.array(ele).reshape((len(atoms), -1))
         return self.mix_function(ele, numbers)
 

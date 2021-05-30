@@ -1,5 +1,6 @@
 from os import path
 
+from mgetool.tool import tt
 from sklearn.utils import check_random_state, shuffle
 from typing import Union
 from featurebox.utils.fast._calculate_length import cal_length_numba
@@ -128,7 +129,7 @@ class GraphGenerator(_BaseGraphSingleGenerator):
             *args,
             targets: np.ndarray = None,
             sample_weights: np.ndarray = None,
-            print_data_size=False,
+            print_data_size=True,
             **kwargs,
     ):
         """
@@ -217,7 +218,8 @@ class DuplicateGraphGenerator(_BaseGraphSingleGenerator):
             duplicate: int = 5,
             noise: float = 0,
             shuffle: bool = 0,
-            random_state: bool = 0
+            random_state: bool = 0,
+            print_data_size=True,
     ):
         """
         The data are duplicated n times. Advise shuffle after processing.
@@ -258,6 +260,18 @@ class DuplicateGraphGenerator(_BaseGraphSingleGenerator):
                                 "node_atom_idx", "node_ele_idx", "ele_atom_idx"]
         self.add_prop = []
 
+        def get_size(data):
+            if isinstance(data,np.ndarray):
+                return data.shape
+            elif isinstance(data,list) and isinstance(data[0],np.ndarray):
+                return data[0].shape
+            else:
+                return "Not confirmed"
+        if print_data_size:
+            print("atom_fea","(Size):",get_size(self.atom_fea))
+            print("nbr_fea","(Size):",get_size(self.nbr_fea))
+            print("state_fea","(Size):",get_size(self.state_fea))
+
     def _noi(self, array):
         return (np.random.random(array.shape) * self.noise + (
                 1 - 0.5 * self.noise)) * array if self.noise != 0 else array
@@ -294,20 +308,6 @@ class DuplicateGraphGenerator(_BaseGraphSingleGenerator):
         return return_list
 
 
-def add_mark(data):
-    """Change length to rank"""
-    if isinstance(data, Tensor):
-        data = data.numpy()
-    if isinstance(data, list):
-        data = np.array(data)
-
-    a = np.cumsum(data)
-
-    b = np.insert(a, 0, 0)[:-1]
-
-    return [torch.arange(k, v) for k, v in zip(b, a)]
-
-
 # def get_bond_node_idx(node_ele_idx, index1: Tensor):
 #     spil = [index1[i] for i in node_ele_idx]
 #     res = []
@@ -317,6 +317,9 @@ def add_mark(data):
 #         st += len(si)
 #     res = [i.to(torch.int64) for i in res]
 #     return res
+
+
+# def
 
 
 class MGEDataLoader:
@@ -421,17 +424,24 @@ class MGEDataLoader:
         """Change the data to cuda"""
         self.device = torch.device(device)
 
+    # def move(self, batch):
+    #     """move data to cuda"""
+    #     ba = []
+    #     for i in batch:
+    #
+    #         if isinstance(i, Tensor):
+    #             ba.append(i.to(self.device))
+    #         elif isinstance(i, Sequence):
+    #             ba.append(self.move(i))
+    #         else:
+    #             raise TypeError("just accept list tuple of tensors or tensor")
+    #     return ba
+
     def move(self, batch):
         """move data to cuda"""
         ba = []
-        for i in batch:
+        [ba.append(self.move(i)) if isinstance(i, Sequence) else ba.append(i.to(self.device)) for i in batch]
 
-            if isinstance(i, Tensor):
-                ba.append(i.to(self.device))
-            elif isinstance(i, Sequence):
-                ba.append(self.move(i))
-            else:
-                raise TypeError("just accept list tuple of tensors or tensor")
         return ba
 
     def __next__(self):
@@ -440,9 +450,11 @@ class MGEDataLoader:
 
             batch = self.collate_fn(batch, self.collate_marks)
 
-            batch[0] = self.index_transform(batch[0])
-
             batch = self.move(batch)
+
+            batch[0] = self.index_transform(batch[0])
+            # the transformed data are generator to device there rather than ``move``
+            # due to there are too many sequence, and time time-consuming, there we generate on the device directly.
 
             self._number_yield += 1
             return batch
@@ -518,8 +530,20 @@ class MGEDataLoader:
         return [[_deal_func(si, di) for si, di in zip_longest(zip(*samples), collate_marks, fillvalue="f")]
                 if i == 0 else _deal_func(samples, "c") for i, samples in enumerate(transposed)]
 
-    @staticmethod
-    def index_transform(data):
+    def add_mark(self, data):
+        """Change length to rank"""
+        if isinstance(data, Tensor):
+            data = data.cpu().numpy()
+        if isinstance(data, list):
+            data = np.array(data)
+
+        a = np.cumsum(data)
+
+        b = np.insert(a, 0, 0)[:-1]
+
+        return [torch.arange(k, v, device=self.device) for k, v in zip(b, a)]
+
+    def index_transform(self,data):
         """
         Transform the length of node_atom_idx and node_ele_idx to list of index.
         and add new node_bond_idx.
@@ -535,9 +559,9 @@ class MGEDataLoader:
 
         """
 
-        data[-3] = add_mark(data[-3])  # node_atom_idx
-        data[-2] = add_mark(data[-2])  # node_ele_idx
-        data[-1] = add_mark(data[-1])  # ele_atom_idx
+        data[-3] = self.add_mark(data[-3])  # node_atom_idx
+        data[-2] = self.add_mark(data[-2])  # node_ele_idx
+        data[-1] = self.add_mark(data[-1])  # ele_atom_idx
 
         data[0] = data[0].to(torch.float32)  # atom_fea
         data[1] = data[1].to(torch.float32)  # nbr_fea

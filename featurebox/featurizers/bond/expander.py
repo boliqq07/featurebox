@@ -15,18 +15,19 @@ class BondGaussianConverter(BaseFeature):
     Expand distance with Gaussian basis sit at centers and with width 0.5.
     """
 
-    def __init__(self, centers: np.ndarray = None, width=0.5):
+    def __init__(self, centers: np.ndarray = None, width=0.5, ndim=1):
         """
 
         Args:
             centers: (np.array) centers for the Gaussian basis
+            width: (float) width of Gaussian basis
             width: (float) width of Gaussian basis
         """
         if centers is None:
             centers = np.linspace(0, 5, 100)
         self.centers = centers
         self.width = width
-        self.d2 = False
+        self.ndim = ndim
         super(BondGaussianConverter, self).__init__()
 
     def _convert(self, d: np.ndarray) -> np.ndarray:

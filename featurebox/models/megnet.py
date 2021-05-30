@@ -1,9 +1,5 @@
 import torch.nn as nn
 
-# from bgnet.layer.graph.atomlayer import AtomLayer
-# from bgnet.layer.graph.baselayer import BaseLayer
-# from bgnet.layer.graph.bondlayer import BondLayer
-# from bgnet.layer.graph.statelayer import StateLayer
 from featurebox.layer.graph.atomlayer import AtomLayer
 from featurebox.layer.graph.baselayer import BaseLayer
 from featurebox.layer.graph.bondlayer import BondLayer
@@ -11,11 +7,13 @@ from featurebox.layer.graph.statelayer import StateLayer
 
 
 class Block(nn.Module):
-    def __init__(self, atom_fea_len, nbr_fea_len, state_fea_len=0):
+    def __init__(self, atom_fea_len, nbr_fea_len, state_fea_len=0, out_state_fea_len=None):
+        if out_state_fea_len is None:
+            out_state_fea_len = state_fea_len
         super().__init__()
         self.atomlayer = AtomLayer(atom_fea_len, nbr_fea_len, state_fea_len)
         self.bondlayer = BondLayer(atom_fea_len, nbr_fea_len, state_fea_len)
-        self.statelayer = StateLayer(atom_fea_len, nbr_fea_len, state_fea_len)
+        self.statelayer = StateLayer(atom_fea_len, nbr_fea_len, state_fea_len, out_state_fea_len)
 
     def forward(self, atom_fea, nbr_fea, state_fea, atom_nbr_idx, node_atom_idx):
         atom_fea = self.atomlayer(atom_fea, nbr_fea, state_fea, atom_nbr_idx, node_atom_idx)
@@ -55,10 +53,20 @@ class MEGNet(BaseLayer):
         # change feature length
         self.embedding = nn.Linear(atom_fea_len, inner_atom_fea_len)
         # conv
-        self.convs = nn.ModuleList([AtomLayer(atom_fea_len=inner_atom_fea_len,
-                                              nbr_fea_len=nbr_fea_len)
-                                    for _ in range(n_conv)])
+        if isinstance(state_fea_len, int):
+            state_fea_len = tuple([state_fea_len for _ in range(n_conv+1)])
+        else:
+            assert len(state_fea_len) == n_conv + 1, "len(state_fea_len) == n_conv+1"
 
+        cov = []
+        for i in range(n_conv):
+            cov.append(Block(atom_fea_len=inner_atom_fea_len,
+                             nbr_fea_len=nbr_fea_len,
+                             state_fea_len=state_fea_len[i],
+                             out_state_fea_len=state_fea_len[i + 1]
+                             ))
+
+        self.convs = nn.ModuleList(cov)
         # self.merge_idx_methods expand self.mes times
 
         # conv to linear
@@ -107,7 +115,11 @@ class MEGNet(BaseLayer):
         """
         atom_fea = self.embedding(atom_fea)
         for conv_func in self.convs:
-            atom_fea = conv_func(atom_fea, nbr_fea, state_fea=state_fea, atom_nbr_idx=atom_nbr_idx)
+            atom_fea, nbr_fea, state_fea = conv_func(atom_fea, nbr_fea,
+                                                     state_fea=state_fea,
+                                                     atom_nbr_idx=atom_nbr_idx,
+                                                    node_atom_idx=node_atom_idx
+                                                     )
         crys_fea = self.merge_idx_methods(atom_fea, node_atom_idx, methods=self.mes)
         crys_fea = self.conv_to_fc(crys_fea)
         crys_fea = self.conv_to_fc_softplus(crys_fea)

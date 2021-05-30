@@ -110,3 +110,6 @@ class CrystalGraphConvNet(BaseLayer):
         if self.classification:
             out = self.logsoftmax(out)
         return out
+
+
+CGCNN = CrystalGraphConvNet  # alias

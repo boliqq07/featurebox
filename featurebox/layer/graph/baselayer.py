@@ -19,15 +19,15 @@ try:
 except BaseException:
     mod = None
 
-try:
-    from torch_scatter import scatter_max
-    from torch_scatter import scatter_add
-    from torch_scatter import scatter_min
-    from torch_scatter import scatter_mean
-
-    scatter_mod = True
-except ImportError:
-    scatter_mod = None
+# try:
+#     from torch_scatter import scatter_max
+#     from torch_scatter import scatter_add
+#     from torch_scatter import scatter_min
+#     from torch_scatter import scatter_mean
+#
+#     scatter_mod = True
+# except ImportError:
+#     scatter_mod = None
 
 
 class BaseLayer(nn.Module):
@@ -37,6 +37,7 @@ class BaseLayer(nn.Module):
 
     def __init__(self):
         super(BaseLayer, self).__init__()
+        # self.merge_idx = self.merge_idx_py
         if mod is not None:
             self.merge_idx = self.merge_idx_cpp
         # elif scatter_mod is not None: # not very fast
@@ -98,23 +99,23 @@ class BaseLayer(nn.Module):
 
         return temp
 
-    @staticmethod
-    def merge_idx_scatter(nbr_fea, node_atom_idx, method="mean"):
-        """torch-scatter realization,need torch-scatter model, it is useful in out-of-order index,
-         but Not very fast in this part"""
-
-        assert sum([len(idx_map) for idx_map in node_atom_idx]) == nbr_fea.data.shape[0]
-        groups = torch.cat([torch.full((len(i),), n) for n, i in enumerate(node_atom_idx)])
-
-        if method == "sum":
-            temp = scatter_add(nbr_fea, groups, dim=0)
-        elif method == "max":
-            temp = scatter_max(nbr_fea, groups, dim=0)
-        elif method == "min":
-            temp = scatter_min(nbr_fea, groups, dim=0)
-        else:
-            temp = scatter_mean(nbr_fea, groups, dim=0)
-        return temp
+    # @staticmethod
+    # def merge_idx_scatter(nbr_fea, node_atom_idx, method="mean"):
+    #     """torch-scatter realization,need torch-scatter model, it is useful in out-of-order index,
+    #      but Not very fast in this part"""
+    #
+    #     assert sum([len(idx_map) for idx_map in node_atom_idx]) == nbr_fea.data.shape[0]
+    #     groups = torch.cat([torch.full((len(i),), n) for n, i in enumerate(node_atom_idx)])
+    #
+    #     if method == "sum":
+    #         temp = scatter_add(nbr_fea, groups, dim=0)
+    #     elif method == "max":
+    #         temp = scatter_max(nbr_fea, groups, dim=0)
+    #     elif method == "min":
+    #         temp = scatter_min(nbr_fea, groups, dim=0)
+    #     else:
+    #         temp = scatter_mean(nbr_fea, groups, dim=0)
+    #     return temp
 
     @staticmethod
     def expand_idx(a, node_atom_idx):

@@ -4,6 +4,7 @@ import pandas as pd
 
 from featurebox.data.check_data import CheckElements
 from featurebox.featurizers.base_graph import CrystalGraph
+from featurizers.bond.smooth import Smooth
 
 
 class TestGraph2(unittest.TestCase):
@@ -32,6 +33,20 @@ class TestGraph2(unittest.TestCase):
             # print(s12)
             print(s12["bond"].shape[-2])
             print(s12["bond"].shape[-1])
+
+    def test_CrystalGraphsmooth(self):
+        for i in self.data0_checked:
+            sg1 = CrystalGraph(nn_strategy="find_xyz_in_spheres",
+                               return_bonds="bonds",
+                               cutoff=5.0,
+                               bond_converter=Smooth(r_c=5.0, r_cs=3.0)
+                               )
+            s12 = sg1(i)
+            # print(s12)
+            print(s12["bond"].shape[-2])
+            print(s12["bond"].shape[-1])
+
+
 
 
 if __name__ == '__main__':

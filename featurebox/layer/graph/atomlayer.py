@@ -22,7 +22,7 @@ class AtomLayer(BaseLayer):
         self.atom_fea_len = atom_fea_len
         self.nbr_fea_len = nbr_fea_len
         self.state_fea_len = state_fea_len
-        self.fc_full = nn.Linear(2 * self.atom_fea_len + self.nbr_fea_len + self.state_fea_len,
+        self.fc_full = nn.Linear(1 * self.atom_fea_len + self.nbr_fea_len + self.state_fea_len,
                                  2 * self.atom_fea_len)
         self.fc_full2 = nn.Linear(2 * self.atom_fea_len,
                                   2 * self.atom_fea_len)
@@ -63,12 +63,11 @@ class AtomLayer(BaseLayer):
         if state_fea is not None and self.state_fea_len:
             state_atom_ed = self.expand_idx(state_fea, node_atom_idx)
             total_nbr_fea = torch.cat(
-                [atom_fea.unsqueeze(1).expand(N, M, self.atom_fea_len),
-                 state_atom_ed.unsqueeze(1).expand(N, M, self.state_fea_len),
+                [state_atom_ed.unsqueeze(1).expand(N, M, self.state_fea_len),
                  atom_nbr_fea, nbr_fea], dim=2)
         else:
             total_nbr_fea = torch.cat(
-                [atom_fea.unsqueeze(1).expand(N, M, self.atom_fea_len),
+                [
                  atom_nbr_fea, nbr_fea], dim=2)
 
         total_gated_fea = self.fc_full(total_nbr_fea)

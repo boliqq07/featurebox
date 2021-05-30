@@ -5,6 +5,7 @@ import time
 
 import numpy as np
 import torch
+from mgetool.tool import tt
 from sklearn import metrics
 from torch.nn import Module
 from torch.optim.lr_scheduler import MultiStepLR
@@ -170,6 +171,7 @@ class BaseLearning:
             epoch += start_epoch
             print("Try to run start from 'resumed epoch' {} to 'epoch' {}".format(start_epoch, epoch))
         for epochi in range(start_epoch, epoch):
+
             train_loader.reset()
 
             self._train(epochi)
@@ -218,11 +220,13 @@ class BaseLearning:
             self.optimizer.zero_grad()
 
             y_pred = self.model(*batch_x)
+
             lossi = self.loss_method(y_pred, batch_y)
 
-            losses.update(lossi.cpu().item(), batch_y.size(0))
+            losses.update(float(lossi.cpu().item()), batch_y.size(0))
+
             if self.clf is False:
-                mae_error = mae((y_pred.data.cpu()), batch_y.cpu())
+                mae_error = mae(y_pred.data.cpu(), batch_y.cpu())
                 mae_errors.update(mae_error, batch_y.size(0))
             else:
                 accuracy, precision, recall, fscore, auc_score = \
@@ -234,9 +238,12 @@ class BaseLearning:
                 fscores.update(fscore, batch_y.size(0))
                 auc_scores.update(auc_score, batch_y.size(0))
 
+
             lossi.backward()
+
             self.optimizer.step()
             point = time.time()
+
 
             if m % self.print_freq == 0 and self.print_what in ["all","train"]:
                 if self.clf is False:

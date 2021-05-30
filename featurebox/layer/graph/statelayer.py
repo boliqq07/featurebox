@@ -10,7 +10,7 @@ class StateLayer(BaseLayer):
     Convolutional operation on graphs
     """
 
-    def __init__(self, atom_fea_len, nbr_fea_len, state_fea_len=0):
+    def __init__(self, atom_fea_len, nbr_fea_len, state_fea_len, out_state_fea_len):
         """
         Notes:
             N: Total number of atoms in the batch or can be called N_atom.\n
@@ -26,8 +26,9 @@ class StateLayer(BaseLayer):
         self.atom_fea_len = atom_fea_len
         self.nbr_fea_len = nbr_fea_len
         self.state_fea_len = state_fea_len
+        self.out_state_fea_len = out_state_fea_len
         self.fc_full = nn.Linear(2 * self.atom_fea_len + self.nbr_fea_len + self.state_fea_len,
-                                 2 * self.state_fea_len)
+                                 2 * self.out_state_fea_len)
         self.sigmoid = nn.Sigmoid()
 
         self.softplus1 = nn.Softplus()

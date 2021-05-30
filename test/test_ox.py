@@ -17,7 +17,8 @@ class TestGraph(unittest.TestCase):
 
     def test_convert(self):
         atm = AtomTableMap()
-        atm.convert_structure(self.st)
+        a = atm.convert(self.st)
+        print(a)
 
     def test_convert2(self):
         atm = AtomJsonMap(search_tp="name")

@@ -234,7 +234,7 @@ def get_strategy_in_spheres(structure: StructureOrMolecule, nn_strategy: NearNei
 
 def universe_refine_nn(center_indices, neighbor_indices, vectors, distances,
                        center_prop=None, ele_numbers=None,
-                       fill_size=5,
+                       fill_size=10,
                        dis_sort=True,
                        **kwargs):
     """
@@ -245,7 +245,7 @@ def universe_refine_nn(center_indices, neighbor_indices, vectors, distances,
     Args:
         center_indices: np.ndarray 1d
         neighbor_indices: np.ndarray 1d
-        distances: np.ndarray 1d
+        distances: np.ndarray 1d or np.ndarray 2d
         vectors: np.ndarray 2d
         center_prop:np.ndarray 2d
         ele_numbers:np.ndarray 1d
@@ -274,14 +274,16 @@ def universe_refine_nn(center_indices, neighbor_indices, vectors, distances,
         cidx = np.where(center_indices == i)[0]
         nei = neighbor_indices[cidx]
         disi = distances[cidx]
+        if disi.ndim == 1:
+            print(disi)
         if vectors is not None:
             vec = vectors[cidx, :]
         else:
             vec = None
 
         if dis_sort:
-            if disi.ndim==2:
-                neidx = np.argsort(disi[:,0])
+            if disi.ndim == 2:
+                neidx = np.argsort(disi[:, 0])
             else:
                 neidx = np.argsort(disi)
             nei = nei[neidx]
@@ -297,7 +299,10 @@ def universe_refine_nn(center_indices, neighbor_indices, vectors, distances,
         else:
             while len(disi) < fill_size:
                 nei = np.append(nei, nei[-1])
-                disi = np.append(disi, disi[-1])
+                if disi.ndim == 2:
+                    disi = np.concatenate((disi, disi[-1].reshape(1, -1)), axis=0)
+                else:
+                    disi = np.append(disi, disi[-1])
                 if vec is not None:
                     vec = np.concatenate((vec, vec[-1, :].reshape(1, -1)), axis=0)
 
@@ -317,8 +322,11 @@ def universe_refine_nn(center_indices, neighbor_indices, vectors, distances,
 
     if diss.ndim == 3:
         pass
-    else:
+    elif diss.ndim == 2:
         diss = np.array(diss)[..., np.newaxis]
+    else:
+        diss = np.array(diss)
+        diss = np.array(diss)
 
     if center_prop is None:
         return cen, neis, vecs, diss, np.array(cen).reshape(-1, 1),

@@ -43,7 +43,8 @@ def get_atom_fea_name(structure: Structure) -> List[dict]:
     Returns:
         a list of site fraction description
     """
-    return [{i.element.symbol:1} for i in structure.species]
+    # return [{i.element.symbol: 1} for i in structure.species]
+    return [{str(i.symbol): 1} for i in structure.species]
     # return [i.species.to_dict() for i in structure.sites]
 
 
@@ -73,7 +74,6 @@ class AtomMap(Converter, ABC):
         return oedata
 
 
-
 class BinaryMap(AtomMap):
     """Base converter with 2 different search_tp."""
 
@@ -81,10 +81,7 @@ class BinaryMap(AtomMap):
         super(BinaryMap, self).__init__(**kwargs)
         self.search_tp = search_tp
         self.weight = weight
-        if self.search_tp == "number":
-            self.d2 = True
-        else:
-            self.d2 = False
+        self.ndim = 1
 
     def _convert(self, d: Any) -> Any:
         if self.search_tp == "name":
@@ -95,12 +92,6 @@ class BinaryMap(AtomMap):
             if isinstance(d, Structure):
                 d = get_atom_fea_number(d)
             return self.convert_number(d)
-
-    def convert_structure(self, st):
-        if self.search_tp == "name":
-            return self.convert_dict(get_atom_fea_name(st))
-        else:
-            return self.convert_number(get_atom_fea_number(st))
 
     @abstractmethod
     def convert_dict(self, d: List[Dict]):
@@ -166,8 +157,8 @@ class AtomJsonMap(BinaryMap):
             "which contains elemental features for 89 elements (up to Z=94, excluding Po, At, Rn, Fr, Ra) "
 
         self.embedding_dict = embedding_dict
-        self.d2 = False
         self.search_tp = search_tp
+        self.ndim = 1
 
     def __add__(self, other):
         if isinstance(other, AtomJsonMap):
@@ -199,7 +190,7 @@ class AtomJsonMap(BinaryMap):
                 else:
                     emb += np.array(self.embedding_dict[k]).astype(np.float32)
             features.append(emb)
-        if len(atoms) ==1:
+        if len(atoms) == 1:
             return np.array(features).ravel().astype(np.float32)
         else:
             return np.array(features).reshape((len(atoms), -1)).astype(np.float32)
@@ -278,7 +269,6 @@ class AtomTableMap(BinaryMap):
 
         if tablename is None:
             self.da = self.get_ele_embeddings()
-            self.d2 = True
             self.dax = self.da.values
             self.da_columns = list(self.da.columns)
 
@@ -293,18 +283,21 @@ class AtomTableMap(BinaryMap):
         elif isinstance(tablename, np.ndarray):
             self.da_columns = None
             self.dax = tablename.astype(np.float32)
-            self.d2 = False
 
         elif isinstance(tablename, pd.DataFrame):
             tablename = tablename.apply(pd.to_numeric)
             self.da = tablename
             self.dax = self.da.values
-            self.d2 = True
             self.da_columns = list(self.da.columns)
         else:
             raise TypeError("just accept np.array,pd.dataframe, or str name of csv")
         self.dax = np.concatenate((np.zeros((1, self.dax.shape[1])), self.dax), axis=0)  # for index from 1
         self.tablename = tablename
+
+        if search_tp == "number":
+            self.ndim = None
+        else:
+            self.ndim = 1
 
     @staticmethod
     def get_ele_embeddings() -> pd.DataFrame:
@@ -546,9 +539,8 @@ class AtomPymatgenPropMap(BinaryMap):
             if j in after_treatment_func_map_ele:
                 self.func[i] = after_treatment_func_map_ele[j]
         self.da = [Element.from_Z(i) for i in range(1, 119)]
-        self.da.insert(0, None) #for start from 1
+        self.da.insert(0, None)  # for start from 1
         self.ele_map = []
-        self.d2 = False
 
     def convert_dict(self, atoms: List[Dict]) -> np.ndarray:
         """
@@ -690,7 +682,6 @@ class _StructurePymatgenPropMap(BaseFeature):
         for i, j in enumerate(self.prop_name):
             if j in after_treatment_func_map_structure:
                 self.func[i] = after_treatment_func_map_structure[j]
-        self.d2 = False
         self.lengths = []
 
     def convert(self, structure: [Structure, Lattice]) -> np.ndarray:
