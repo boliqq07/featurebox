@@ -635,6 +635,15 @@ MEGDataLoader = MGEDataLoader
 
 class MGEWholeDataLoader(MGEDataLoader):
     """
+    This is one DataLoader for small data, due it transfer all data in device in advance.
+    Please make sure Your graphics card memory has enough capacity before using device="cuda:0".
+
+    This also works as a data viewer which is not in :class:`MGEDataLoader`.
+
+    The whole data in attribute ``data_x`` and ``data_y``.
+
+    This DataLoader not support adding user-defined data.
+
     This loader:
         1.Add or transform the necessary indexes to declare the relationship between atoms and compounds.\n
         1.Transform data to torch.Tensor.\n
@@ -669,12 +678,6 @@ class MGEWholeDataLoader(MGEDataLoader):
 
     Return:
     ["atom_feature", "nbr_feature", "state_feature", 'atom_nbr_idx',
-    "node_atom_idx", "node_ele_idx","ele_atom_idx"]
-
-    other Graph self-defined.
-    Return:
-    ["atom_feature", "nbr_feature", "state_feature", 'atom_nbr_idx',
-    ...
     "node_atom_idx", "node_ele_idx","ele_atom_idx"]
 
     """
@@ -723,7 +726,7 @@ class MGEWholeDataLoader(MGEDataLoader):
         return ba
 
     def convert(self):
-        """not in loop"""
+        """Make sure this func not in loop"""
         if self._number_yield < self._loader.__len__():
             batch = next(self._loader.__iter__())
 
