@@ -1,3 +1,4 @@
+"""This is one general script. For different data, you should re-write this and tune."""
 import torch
 from torch import nn
 
@@ -8,11 +9,11 @@ from featurebox.layer.graph.baselayer import BaseLayer
 class Embed2(nn.Module):
     def __init__(self, nbr_fea_len=4, m1=None, m2=None):
         super(Embed2, self).__init__()
-        if m1 is None:
-            m1 = 5 * nbr_fea_len
-        if m2 is None:
-            m2 = int(m1 / 5)
-        self.nbr_fea_len = 4
+        # if m1 is None:
+        #     m1 = 5 * nbr_fea_len
+        # if m2 is None:
+        #     m2 = int(m1 / 5)
+        self.nbr_fea_len = nbr_fea_len
         self.linear = nn.Linear(nbr_fea_len, m1)
         self.relu = nn.ReLU()
         self.m2 = m2
@@ -110,7 +111,7 @@ class FeatureSymLayer(BaseLayer):
         prop_filter = self.sigmoid(prop_filter)
         prop_core = prop_filter * prop_core
 
-        out = self.softplus1(state_fea + prop_core)
+        out = self.softplus1(prop_core)
         return out
 
 
@@ -170,7 +171,7 @@ class SymNet(BaseLayer):
                               nbr_fea_len=nbr_fea_len,
                               state_fea_len=state_fea_len[i],
                               out_state_fea_len=state_fea_len[i + 1],
-                              m1 = 5 * nbr_fea_len,
+                              m1 = 10 * nbr_fea_len,
                               m2 = nbr_fea_len,
                               ))
 

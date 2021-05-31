@@ -1,3 +1,4 @@
+"""This is one general script. For different data, you should re-write this and tune."""
 import torch.nn as nn
 
 from featurebox.layer.graph.atomlayer import AtomLayer
@@ -54,7 +55,7 @@ class MEGNet(BaseLayer):
         self.embedding = nn.Linear(atom_fea_len, inner_atom_fea_len)
         # conv
         if isinstance(state_fea_len, int):
-            state_fea_len = tuple([state_fea_len for _ in range(n_conv+1)])
+            state_fea_len = tuple([state_fea_len for _ in range(n_conv + 1)])
         else:
             assert len(state_fea_len) == n_conv + 1, "len(state_fea_len) == n_conv+1"
 
@@ -68,7 +69,6 @@ class MEGNet(BaseLayer):
 
         self.convs = nn.ModuleList(cov)
         # self.merge_idx_methods expand self.mes times
-
         # conv to linear
         self.conv_to_fc = nn.Linear(le * inner_atom_fea_len, h_fea_len[0])
         self.conv_to_fc_softplus = nn.Softplus()
@@ -118,10 +118,12 @@ class MEGNet(BaseLayer):
             atom_fea, nbr_fea, state_fea = conv_func(atom_fea, nbr_fea,
                                                      state_fea=state_fea,
                                                      atom_nbr_idx=atom_nbr_idx,
-                                                    node_atom_idx=node_atom_idx
+                                                     node_atom_idx=node_atom_idx
                                                      )
+
         crys_fea = self.merge_idx_methods(atom_fea, node_atom_idx, methods=self.mes)
         crys_fea = self.conv_to_fc(crys_fea)
+
         crys_fea = self.conv_to_fc_softplus(crys_fea)
 
         if self.classification:

@@ -1,3 +1,4 @@
+"""This is one general script. For different data, you should re-write this and tune."""
 from __future__ import print_function, division
 
 import torch.nn as nn

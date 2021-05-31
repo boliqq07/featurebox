@@ -1,8 +1,8 @@
 from os import path
-
-from mgetool.tool import tt
-from sklearn.utils import check_random_state, shuffle
 from typing import Union
+
+from sklearn.utils import check_random_state, shuffle
+
 from featurebox.utils.fast._calculate_length import cal_length_numba
 from featurebox.utils.fast._calculate_subp import subp_numba2d
 from featurebox.utils.general import train_test
@@ -25,27 +25,100 @@ from torch.utils.data._utils.collate import default_convert
 MODULE_DIR = Path(__file__).parent.absolute()
 
 
+def collate_fn(batch: List, collate_marks: Tuple[str]) -> List[List]:
+    """
+    User collate function.
+
+    Args:
+        collate_marks: (tuple of str)
+            the same size with features
+        batch: (list)
+            shape N_sample.
+            Each one is a list or tuple,
+            such as [[f1i,f2i],] or [[f1i,f2i], yi_value ] or [[f1i,f2i],yi_value, weight_i]
+
+    Returns:
+        such as [[f1,f2],] or [[f1,f2],y] or [[f1,f2],y,w]
+    """
+
+    def _deal_func(a, di="c"):
+        """
+
+        Args:
+            a: (float,int,Tensor)
+                one feature with list format.
+            di: str
+                collate type
+
+        Returns:
+            Tensor or list
+        """
+        elem = a[0]
+        if isinstance(elem, float):
+            a = torch.tensor(a, dtype=torch.float32)
+            return torch.reshape(a, (-1, 1))
+        elif isinstance(elem, int):
+            a = torch.tensor(a, dtype=torch.int64)
+            return torch.reshape(a, (-1, 1))
+        elif isinstance(elem, Tensor):
+            if elem.shape == ():
+                a = torch.stack(a, 0)
+                return torch.reshape(a, (-1, 1)) if len(a.shape) == 1 else a
+            if di in ["c", "cat"]:
+
+                a = torch.cat(a, 0)
+
+                return torch.reshape(a, (-1, 1)) if len(a.shape) == 1 else a
+            elif di in ["s", "stack"]:
+
+                a = torch.stack(a, 0)
+                return torch.reshape(a, (-1, 1)) if len(a.shape) == 1 else a
+            else:
+                return a
+        else:
+            raise TypeError("just accept: Tensor, int, float")
+
+    assert len(batch[0][0]) == len(
+        collate_marks) or len(batch[0][0]) == len(
+        collate_marks) + 3, "Must give one 'collate_marks' parameter and the shape is same with features.\n" \
+                            "such as feature = [f1,f2,f3,f4,f5,f6,f7,f8,f9], without target" \
+                            "The collate_marks = ('c', 'c', 's', 'c', 'f', 'c','f')\n" \
+                            "'s' is torch.stack, 'c' is torch.cat, 'f' do noting but just return the list"
+
+    transposed = list(zip(*batch))
+
+    return [[_deal_func(si, di) for si, di in zip_longest(zip(*samples), collate_marks, fillvalue="f")]
+            if i == 0 else _deal_func(samples, "c") for i, samples in enumerate(transposed)]
+
+
 class _BaseGraphSingleGenerator(Dataset):
 
     def __init__(
             self,
             dataset_size: int,
-            targets: np.ndarray,
-            sample_weights: np.ndarray = None,
+            targets: Union[np.ndarray,torch.Tensor],
+            sample_weights: [np.ndarray,torch.Tensor] = None,
     ):
         """
         Args:
             dataset_size (int): Number of entries in dataset
-            targets (ndarray): Feature to be predicted for each network
-            sample_weights (npdarray): sample weights
+            targets (ndarray,Tensor): Feature to be predicted for each network
+            sample_weights (npdarray,Tensor): sample weights
         """
+
         if targets is not None:
-            self.targets = np.array(targets).reshape((dataset_size, -1))
+            if isinstance(targets, np.ndarray):
+                self.targets = torch.from_numpy(targets).resize((dataset_size, -1))
+            else:
+                self.targets = targets
         else:
             self.targets = None
 
         if sample_weights is not None:
-            self.sample_weights = np.array(sample_weights)
+            if isinstance(sample_weights, np.ndarray):
+                self.sample_weights = torch.from_numpy(sample_weights).resize((dataset_size, -1))
+            else:
+                self.sample_weights = sample_weights
         else:
             self.sample_weights = None
 
@@ -89,7 +162,7 @@ class _BaseGraphSingleGenerator(Dataset):
 
         # Return the batch
         if self.targets is None:
-            return inputs,
+            return inputs,  # , make output is the tuple, the same with others
         # get targets
         target_temp = self.targets[index]
         if self.sample_weights is None:
@@ -104,6 +177,63 @@ class _BaseGraphSingleGenerator(Dataset):
     @abstractmethod
     def _generate_inputs(self, batch_idx: int) -> Iterable:
         """Get the preprocessing by index"""
+
+
+class GraphWholeGenerator(_BaseGraphSingleGenerator):
+    def __init__(
+            self,
+            atom_fea: torch.tensor,
+            nbr_fea: torch.tensor,
+            state_fea: torch.tensor,
+            atom_nbr_idx: torch.tensor,
+            node_atom_idx: List[torch.tensor],
+            node_ele_idx: List[torch.tensor],
+            ele_atom_idx: List[torch.tensor],
+            targets: torch.tensor = None,
+            sample_weights: torch.tensor = None,
+    ):
+        super().__init__(
+            len(node_atom_idx), targets, sample_weights=sample_weights, )
+
+        self.atom_fea = atom_fea
+        self.nbr_fea = nbr_fea
+        self.state_fea = state_fea
+        self.atom_nbr_idx = atom_nbr_idx
+        self.node_atom_idx = node_atom_idx
+        self.node_ele_idx = node_ele_idx
+        self.ele_atom_idx = ele_atom_idx
+
+    def _generate_inputs(self, index: int):
+        # Get the features and connectivity lists for this batch
+        feature_list_temp = self.atom_fea[index]
+        connection_list_temp = self.nbr_fea[index]
+        global_list_temp = self.state_fea[index]
+        atom_nbr_idx = self.atom_nbr_idx[index]
+        node_atom_idx = self.node_atom_idx[index]
+        node_ele_idx = self.node_ele_idx[index]
+        ele_atom_idx = self.ele_atom_idx[index]
+
+        return_list = [feature_list_temp, connection_list_temp, global_list_temp, atom_nbr_idx,
+                       node_atom_idx, node_ele_idx, ele_atom_idx]
+        return return_list
+
+    def __getitem__(self, index: int) -> tuple:
+        """please make sure always return a tuple!"""
+        # Get the indices for this batch
+
+        # Get the inputs for each batch
+        inputs = self._generate_inputs(index)
+
+        # Return the batch
+        if self.targets is None:
+            return inputs,  # , make output is the tuple, the same with others
+        # get targets
+        target_temp = self.targets[index]
+        if self.sample_weights is None:
+            return inputs, target_temp
+        sample_weights_temp = self.sample_weights[index]
+
+        return inputs, target_temp, sample_weights_temp
 
 
 class GraphGenerator(_BaseGraphSingleGenerator):
@@ -178,16 +308,17 @@ class GraphGenerator(_BaseGraphSingleGenerator):
             self.add_prop.append(name)
 
         def get_size(data):
-            if isinstance(data,np.ndarray):
+            if isinstance(data, np.ndarray):
                 return data.shape
-            elif isinstance(data,list) and isinstance(data[0],np.ndarray):
+            elif isinstance(data, list) and isinstance(data[0], np.ndarray):
                 return data[0].shape
             else:
                 return "Not confirmed"
+
         if print_data_size:
-            print("atom_fea","(Size):",get_size(self.atom_fea))
-            print("nbr_fea","(Size):",get_size(self.nbr_fea))
-            print("state_fea","(Size):",get_size(self.state_fea))
+            print("atom_fea", "(Size):", get_size(self.atom_fea))
+            print("nbr_fea", "(Size):", get_size(self.nbr_fea))
+            print("state_fea", "(Size):", get_size(self.state_fea))
 
     def _generate_inputs(self, index: int):
         # Get the features and connectivity lists for this batch
@@ -205,7 +336,7 @@ class GraphGenerator(_BaseGraphSingleGenerator):
                 raise TypeError("The {} is can not iterable".format(i))
         return return_list
 
-import typing
+
 class DuplicateGraphGenerator(_BaseGraphSingleGenerator):
     def __init__(
             self,
@@ -261,16 +392,17 @@ class DuplicateGraphGenerator(_BaseGraphSingleGenerator):
         self.add_prop = []
 
         def get_size(data):
-            if isinstance(data,np.ndarray):
+            if isinstance(data, np.ndarray):
                 return data.shape
-            elif isinstance(data,list) and isinstance(data[0],np.ndarray):
+            elif isinstance(data, list) and isinstance(data[0], np.ndarray):
                 return data[0].shape
             else:
                 return "Not confirmed"
+
         if print_data_size:
-            print("atom_fea","(Size):",get_size(self.atom_fea))
-            print("nbr_fea","(Size):",get_size(self.nbr_fea))
-            print("state_fea","(Size):",get_size(self.state_fea))
+            print("atom_fea", "(Size):", get_size(self.atom_fea))
+            print("nbr_fea", "(Size):", get_size(self.nbr_fea))
+            print("state_fea", "(Size):", get_size(self.state_fea))
 
     def _noi(self, array):
         return (np.random.random(array.shape) * self.noise + (
@@ -397,6 +529,7 @@ class MGEDataLoader:
             collate_marks:(tuple,list)
 
         """
+        assert batch_size >= 2, "The batch size must large or equal than 2."
 
         self.loader = DataLoader(
             dataset=dataset, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers,
@@ -424,19 +557,6 @@ class MGEDataLoader:
         """Change the data to cuda"""
         self.device = torch.device(device)
 
-    # def move(self, batch):
-    #     """move data to cuda"""
-    #     ba = []
-    #     for i in batch:
-    #
-    #         if isinstance(i, Tensor):
-    #             ba.append(i.to(self.device))
-    #         elif isinstance(i, Sequence):
-    #             ba.append(self.move(i))
-    #         else:
-    #             raise TypeError("just accept list tuple of tensors or tensor")
-    #     return ba
-
     def move(self, batch):
         """move data to cuda"""
         ba = []
@@ -448,7 +568,7 @@ class MGEDataLoader:
         if self._number_yield < self.loader.__len__():
             batch = next(self.loader.__iter__())
 
-            batch = self.collate_fn(batch, self.collate_marks)
+            batch = collate_fn(batch, self.collate_marks)
 
             batch = self.move(batch)
 
@@ -464,72 +584,6 @@ class MGEDataLoader:
         self._number_yield = 0
         self.loader._iterator = self.loader._get_iterator()
 
-    @staticmethod
-    def collate_fn(batch: List, collate_marks: Tuple[str]) -> List[List]:
-        """
-        User collate function.
-
-        Args:
-            collate_marks: (tuple of str)
-                the same size with features
-            batch: (list)
-                shape N_sample.
-                Each one is a list or tuple,
-                such as [[f1i,f2i],] or [[f1i,f2i], yi_value ] or [[f1i,f2i],yi_value, weight_i]
-
-        Returns:
-            such as [[f1,f2],] or [[f1,f2],y] or [[f1,f2],y,w]
-        """
-
-        def _deal_func(a, di="c"):
-            """
-
-            Args:
-                a: (float,int,Tensor)
-                    one feature with list format.
-                di: str
-                    collate type
-
-            Returns:
-                Tensor or list
-            """
-            elem = a[0]
-            if isinstance(elem, float):
-                a = torch.tensor(a, dtype=torch.float32)
-                return torch.reshape(a, (-1, 1))
-            elif isinstance(elem, int):
-                a = torch.tensor(a, dtype=torch.int64)
-                return torch.reshape(a, (-1, 1))
-            elif isinstance(elem, Tensor):
-                if elem.shape == ():
-                    a = torch.stack(a, 0)
-                    return torch.reshape(a, (-1, 1)) if len(a.shape) == 1 else a
-                if di in ["c", "cat"]:
-
-                    a = torch.cat(a, 0)
-
-                    return torch.reshape(a, (-1, 1)) if len(a.shape) == 1 else a
-                elif di in ["s", "stack"]:
-
-                    a = torch.stack(a, 0)
-                    return torch.reshape(a, (-1, 1)) if len(a.shape) == 1 else a
-                else:
-                    return a
-            else:
-                raise TypeError("just accept: Tensor, int, float")
-
-        assert len(batch[0][0]) == len(
-            collate_marks) or len(batch[0][0]) == len(
-            collate_marks) + 3, "Must give one 'collate_marks' parameter and the shape is same with features.\n" \
-                                "such as feature = [f1,f2,f3,f4,f5,f6,f7,f8,f9], without target" \
-                                "The collate_marks = ('c', 'c', 's', 'c', 'f', 'c','f')\n" \
-                                "'s' is torch.stack, 'c' is torch.cat, 'f' do noting but just return the list"
-
-        transposed = list(zip(*batch))
-
-        return [[_deal_func(si, di) for si, di in zip_longest(zip(*samples), collate_marks, fillvalue="f")]
-                if i == 0 else _deal_func(samples, "c") for i, samples in enumerate(transposed)]
-
     def add_mark(self, data):
         """Change length to rank"""
         if isinstance(data, Tensor):
@@ -543,7 +597,7 @@ class MGEDataLoader:
 
         return [torch.arange(k, v, device=self.device) for k, v in zip(b, a)]
 
-    def index_transform(self,data):
+    def index_transform(self, data):
         """
         Transform the length of node_atom_idx and node_ele_idx to list of index.
         and add new node_bond_idx.
@@ -579,11 +633,156 @@ MEGDataLoader = MGEDataLoader
 """old name of MGEDataLoader"""
 
 
+class MGEWholeDataLoader(MGEDataLoader):
+    """
+    This loader:
+        1.Add or transform the necessary indexes to declare the relationship between atoms and compounds.\n
+        1.Transform data to torch.Tensor.\n
+        2.Stack or cat the data belong the first axis(dim).\n
+
+    If there are **N_node** samples.
+
+    ===================  ==========================================   ============================
+    Name                 N_node Graph data (Input)                    Batch graph data (Output)
+    -------------------  ------------------------------------------   ----------------------------
+    ``atom_fea``         (N, atom_fea_len)  * **N_node**              (N', atom_fea_len)
+    ``nbr_fea``          (N, fill_size, atom_fea_len) * ***N_node**   (N', fill_size, atom_fea_len).
+    ``state_fea``        (state_fea_len,)  * **N_node**               (N_node, state_fea_len,)
+    ``atom_nbr_idx``     (N, fill_size) * **N_node**                  (N', fill_size)
+    ===================  ==========================================   ============================
+
+    Notes
+    -----
+        Though, the collate_fn parameter in torch.DataLoader could be used to collate preprocessing,
+        but when we try to use it, we find it make the code difficult to read and maintain.
+        thus, we just use "collate_fn=default_convert" to transform the preprocessing from numpy to tensor,
+        and collate preprocessing outer of the torch.DataLoader
+
+    Notes
+    -----
+        We replace the last 2 features in primary features to index list feature and add 1 features.\n
+        len_node_atom -> node_atom_idx\n
+        len_node_ele -> node_ele_idx\n
+        ele_atom_idx -> ele_atom_idx\n
+
+    CrystalGraphDisordered,CrystalGraph,SingleMoleculeGraph in crystal, return 7 features.
+
+    Return:
+    ["atom_feature", "nbr_feature", "state_feature", 'atom_nbr_idx',
+    "node_atom_idx", "node_ele_idx","ele_atom_idx"]
+
+    other Graph self-defined.
+    Return:
+    ["atom_feature", "nbr_feature", "state_feature", 'atom_nbr_idx',
+    ...
+    "node_atom_idx", "node_ele_idx","ele_atom_idx"]
+
+    """
+
+    def __init__(self, dataset: GraphGenerator, batch_size=10, shuffle=False, num_workers=0, device="cpu", **kwargs):
+        """
+        Args:
+            dataset:(GraphGenerator)
+            batch_size:(int)
+            shuffle:(bool)
+            num_workers:(int)
+            kwargs:(Any) parameter for torch.DataLoader
+
+        """
+        assert batch_size >= 2, "The batch size must large or equal than 2."
+        super().__init__(dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers, **kwargs)
+        self._loader = DataLoader(
+            dataset=dataset, batch_size=dataset.total_n, shuffle=False, num_workers=num_workers,
+            collate_fn=default_convert, **kwargs)
+
+        del self.loader
+
+        collate_marks2 = ('s', 's', 's', 's', 'f', 'f', 'f')
+
+        self.collate_marks2 = tuple(collate_marks2)
+
+        self.device = torch.device(device)
+
+        self.data_x, self.data_y = self.convert()
+
+        self.loader = DataLoader(
+            dataset=GraphWholeGenerator(*self.data_x, targets=self.data_y),
+            batch_size=batch_size, shuffle=shuffle, num_workers=num_workers,
+            collate_fn=default_convert, **kwargs)
+        # del self._loader
+
+    def to_cuda(self, device='cuda:0'):
+        """Change the data to cuda"""
+        print("Nothing to do, this class not support to_cuda dynamically, please set it in init.")
+
+    def move(self, batch):
+        """move data to cuda"""
+        ba = []
+        [ba.append(self.move(i)) if isinstance(i, Sequence) else ba.append(i.to(self.device)) for i in batch]
+
+        return ba
+
+    def convert(self):
+        """not in loop"""
+        if self._number_yield < self._loader.__len__():
+            batch = next(self._loader.__iter__())
+
+            batch = collate_fn(batch, self.collate_marks)
+
+            batch = self.move(batch)
+
+            batch[0] = self.index_transform(batch[0])
+            # the transformed data are generator to device there rather than ``move``
+            # due to there are too many sequence, and time time-consuming, there we generate on the device directly.
+
+            self._number_yield += 1
+
+            return batch
+        raise StopIteration
+
+    def __next__(self):
+        if self._number_yield < self.loader.__len__():
+            batch = next(self.loader.__iter__())
+
+            batch = collate_fn(batch, self.collate_marks2)
+
+            batch[0] = self.index_transform2(batch[0])
+            # the transformed data are generator to device there rather than ``move``
+            # due to there are too many sequence, and time time-consuming, there we generate on the device directly.
+
+            self._number_yield += 1
+            return batch
+        raise StopIteration
+
+    def index_transform2(self, data):
+        """
+        Transform the length of node_atom_idx and node_ele_idx to list of index.
+        and add new node_bond_idx.
+
+        [1,3,7,...] to  [[0,], [1,2,3], [4,5,6,7,8,9,10],...]
+
+        Args:
+            data: (List)
+                batch preprocessing without collate.
+
+        Returns:
+            batch preprocessing with collate
+
+        """
+        if len(data[1].shape) == 2:
+            data[1] = data[1].unsqueeze(2)  # nbr_fea
+        if len(data[0].shape) == 1:
+            data[0] = data[0].unsqueeze(1)  # atom_fea
+
+        return data
+
+
 def get_train_test_loader(*data_X, data_y, train_size=None, test_size=0.25,
                           shuffle=False, random_state=0, stratify=None,
-                          batch_size=50, dataLoader_shuffle=False, generator_type="GraphGenerator",
+                          batch_size=50, dataLoader_shuffle=True, generator_type="GraphGenerator",
                           **kwargs):
-    """Script to get train_loader and test_loader.You can customize and rewrite it.\n
+    """Script to get train_loader and test_loader.
+    You can customize and rewrite it.\n
     The parameters are from ``train_test`` and :class:`MGEDataLoader`
     """
 
@@ -614,3 +813,25 @@ def get_train_test_loader(*data_X, data_y, train_size=None, test_size=0.25,
         **kwargs
     )
     return train_loader, test_loader
+
+
+def get_dataloader(*data_X, data_y=None,
+                   batch_size=50, dataLoader_shuffle=False,
+                   **kwargs):
+    """Script to get data_loader.
+    You can customize and rewrite it.\n
+    The parameters are from ``train_test`` and :class:`MGEDataLoader`
+    """
+
+    generator_type = GraphGenerator
+
+    data_generator = generator_type(*data_X, targets=data_y)
+
+    train_loader = MGEDataLoader(
+        dataset=data_generator,
+        batch_size=batch_size,
+        shuffle=dataLoader_shuffle,
+        **kwargs
+    )
+
+    return train_loader

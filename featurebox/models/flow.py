@@ -5,7 +5,6 @@ import time
 
 import numpy as np
 import torch
-from mgetool.tool import tt
 from sklearn import metrics
 from torch.nn import Module
 from torch.optim.lr_scheduler import MultiStepLR
@@ -47,7 +46,7 @@ class AverageMeter(object):
 
     def update(self, val, n=1):
         self.val = val
-        self.sum += val * n
+        self.sum = self.sum + val * n  # (if pytorch not support +=)
         self.count += n
         self.avg = self.sum / self.count
 
@@ -69,29 +68,47 @@ def mae(prediction, target):
     return torch.mean(torch.abs(target - prediction))
 
 
+def for_hook(module, input, output):
+    print(module)
+    for val in input:
+        print("input val:", val)
+    for out_val in output:
+        print("output val:", out_val)
+
+
 class BaseLearning:
     def __init__(self, model: Module, train_loader: MGEDataLoader, test_loader: MGEDataLoader, device: str = "cpu",
                  optimizer=None, clf: bool = False, loss_method=None, learning_rate: float = 1e-3, milestones=None,
-                 weight_decay: float = 0.01, checkpoint=True, resume=None,
-                 loss_threshold: float = 230.0, print_freq: int = None,print_what="all"):
+                 weight_decay: float = 0.01, checkpoint=True,
+                 loss_threshold: float = 230.0, print_freq: int = None, print_what="all"):
         """
 
         Parameters
         ----------
-        model
-        train_loader
-        test_loader
-        device
-        optimizer
-        clf
-        loss_method
-        learning_rate
-        milestones
-        weight_decay
-        checkpoint
-        resume:'checkpoint.pth.tar' or 'model_best.pth.tar'
-        loss_threshold
-        print_freq
+        model: module
+        train_loader: MGEDataLoader
+        test_loader: MGEDataLoader
+        device:str
+            such as "cuda:0","cpu"
+        optimizer:torch.Optimizer
+        clf:bool
+            under exploit......
+        loss_method:torch._Loss
+            see more in torch
+        learning_rate:float
+            see more in torch
+        milestones:list of float
+            see more in torch
+        weight_decay:float
+            see more in torch
+        checkpoint:bool
+            save checkpoint or not.
+        loss_threshold:
+            see more in torch
+        print_freq:int
+            print frequency
+        print_what:str
+            "all","train","test" log.
         """
 
         self.train_loader = train_loader
@@ -99,6 +116,7 @@ class BaseLearning:
 
         device = torch.device(device)
         self.train_loader.to_cuda(device)
+        self.train_loader.reset_shuffle(shuffle=True)
         if self.test_loader is not None:
             self.test_loader.to_cuda(device)
         self.device = device
@@ -109,7 +127,7 @@ class BaseLearning:
         self.milestones = milestones
         self.optimizer = optimizer
         self.checkpoint = checkpoint
-        self.resume = resume
+
         self.train_batch_number = len(self.train_loader.loader)
         self.test_batch_number = len(self.test_loader.loader) if self.test_loader is not None else 0
         if print_freq == "default":
@@ -139,17 +157,28 @@ class BaseLearning:
             self.loss_method = loss_method
         if self.milestones is None:
             self.milestones = [30, 50, 80]
-        self.scheduler = MultiStepLR(self.optimizer, gamma=0.15, milestones=self.milestones)
+        self.scheduler = MultiStepLR(self.optimizer, gamma=0.2, milestones=self.milestones)
         self.best_error = 1000000.0
         self.threshold = loss_threshold
-        self.resume = None
         # *.pth.tar or str
         self.run_train = self.run
-        self.print_what =print_what
+        self.print_what = print_what
+        self.forward_hook_list = []
 
     def run(self, epoch=50, warm_start=False):
+        """
+        run loop.
 
-        resume = warm_start if warm_start is not False else self.resume
+        Parameters
+        ----------
+        epoch:int
+            epoch.
+        warm_start: str, False
+            The name of resume file, 'checkpoint.pth.tar' or 'model_best.pth.tar'
+            If warm_start,try to resume from local disk.
+        """
+
+        resume = warm_start if warm_start is not False else None
         start_epoch = 0
         if resume:
             if os.path.isfile(resume):
@@ -238,14 +267,12 @@ class BaseLearning:
                 fscores.update(fscore, batch_y.size(0))
                 auc_scores.update(auc_score, batch_y.size(0))
 
-
             lossi.backward()
 
             self.optimizer.step()
             point = time.time()
 
-
-            if m % self.print_freq == 0 and self.print_what in ["all","train"]:
+            if m % self.print_freq == 0 and self.print_what in ["all", "train"]:
                 if self.clf is False:
                     print('Train: [{0}][{1}/{2}]\t'
                           'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
@@ -330,3 +357,64 @@ class BaseLearning:
             return mae_errors.avg
         else:
             return auc_scores.avg
+
+    def score(self, predict_loader):
+        """Return MAE score."""
+        y_pre, y_true = self.predict(predict_loader, return_y_true=True, add_hook=False)
+        return float(mae(y_pre, y_true))
+
+    def predict(self, predict_loader: MGEDataLoader, return_y_true=False, add_hook=True):
+        """
+        Just predict by model,and add one forward hook to get put.
+
+        Parameters
+        ----------
+        predict_loader:MGEDataLoader
+            MGEDataLoader, the target_y could be ``None``.
+        return_y_true:bool
+            if return_y_true, return (y_preds, y_true)
+        add_hook:bool
+            if add_hook, the model must contain torch native nn.ModuleList named ``fcs``
+            such as ``self.fcs = nn.ModuleList(...)`` in module.
+
+        Returns
+        -------
+        y_pred:tensor
+        y_true:tensor
+            if return_y_true
+
+        """
+
+        predict_loader.reset()
+        predict_loader.reset_shuffle(shuffle=False)  # shuffle False
+        predict_loader.to_cuda(self.device)
+
+        self.model.eval()
+
+        ############
+        handles = []
+        if add_hook:
+            self.forward_hook_list = []
+
+            def for_hook(module, input, output):
+                self.forward_hook_list.append(output)
+
+            le = len(self.model.fcs)
+            for i in range(le):
+                handles.append(self.model.fcs[1].register_forward_hook(for_hook))  # hook the fcs[i]
+
+        y_preds = []
+        y_true = []
+        batch_y = []
+        for batch_x, *batch_y in predict_loader:
+            y_preds.append(self.model(*batch_x).detach().cpu())
+            if batch_y:
+                y_true.append(batch_y[0].detach().cpu())
+
+        if add_hook:
+            [i.remove() for i in handles]  # del
+
+        if return_y_true and batch_y != []:
+            return torch.cat(y_preds), torch.cat(y_true)
+        else:
+            return torch.cat(y_preds)

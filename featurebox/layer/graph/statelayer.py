@@ -81,7 +81,7 @@ class StateLayer(BaseLayer):
         prop_filter = self.sigmoid(prop_filter)
         prop_core = prop_filter * prop_core
 
-        out = self.softplus1(state_fea + prop_core)
+        out = self.softplus1(prop_core)
         return out
 
 # if __name__ == "__main__":
