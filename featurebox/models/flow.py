@@ -175,7 +175,7 @@ class BaseLearning:
             epoch.
         warm_start: str, False
             The name of resume file, 'checkpoint.pth.tar' or 'model_best.pth.tar'
-            If warm_start,try to resume from local disk.
+            If warm_start, try to resume from local disk.
         """
 
         resume = warm_start if warm_start is not False else None
