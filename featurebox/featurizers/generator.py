@@ -108,7 +108,7 @@ class _BaseGraphSingleGenerator(Dataset):
 
         if targets is not None:
             if isinstance(targets, np.ndarray):
-                self.targets = torch.from_numpy(targets).resize((dataset_size, -1))
+                self.targets = torch.from_numpy(targets.reshape(dataset_size, -1))
             else:
                 self.targets = targets
         else:
@@ -116,7 +116,7 @@ class _BaseGraphSingleGenerator(Dataset):
 
         if sample_weights is not None:
             if isinstance(sample_weights, np.ndarray):
-                self.sample_weights = torch.from_numpy(sample_weights).resize((dataset_size, -1))
+                self.sample_weights = torch.from_numpy(targets.reshape(sample_weights, -1))
             else:
                 self.sample_weights = sample_weights
         else:
