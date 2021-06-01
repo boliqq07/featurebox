@@ -726,7 +726,7 @@ class MGEWholeDataLoader(MGEDataLoader):
         return ba
 
     def convert(self):
-        """Make sure this func not in loop"""
+        """Make sure this func not in loop."""
         if self._number_yield < self._loader.__len__():
             batch = next(self._loader.__iter__())
 
