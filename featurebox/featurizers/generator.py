@@ -348,7 +348,7 @@ class DuplicateGraphGenerator(_BaseGraphSingleGenerator):
             sample_weights: np.ndarray = None,
             duplicate: int = 5,
             noise: float = 0,
-            shuffle: bool = 0,
+            shuffle: bool = False,
             random_state: bool = 0,
             print_data_size=True,
     ):

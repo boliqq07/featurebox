@@ -24,7 +24,7 @@ class Block(nn.Module):
 
 
 class MEGNet(BaseLayer):
-    def __init__(self, atom_fea_len, nbr_fea_len, state_fea_len=2,
+    def __init__(self, atom_fea_len, nbr_fea_len, state_fea_len,
                  inner_atom_fea_len=64, n_conv=2, h_fea_len=128, n_h=1,
                  classification=False, class_number=2):
         """

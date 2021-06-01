@@ -293,8 +293,8 @@ class BaseNNGet(_BaseEnvGet):
         self.pbc = pbc
         self.check_align = check_align
 
-    def convert(self, structure: StructureOrMolecule) -> Tuple[
-        np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    def convert(self, structure: StructureOrMolecule):
+            # -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]
         """
 
         Args:
@@ -381,9 +381,9 @@ class BaseNNGet(_BaseEnvGet):
 
 
 #####################################################################################################################
-after_treatment_func_map_des = {"universe_refine": universe_refine_des}
+after_treatment_func_map_des = {"universe_refine": universe_refine_des,"universe_refine_des": universe_refine_des}
 
-after_treatment_func_map_nn = {"universe_refine": universe_refine_nn}
+after_treatment_func_map_nn = {"universe_refine": universe_refine_nn,"universe_refine_nn": universe_refine_nn}
 # class
 env_names = {"BaseNNGet": BaseNNGet, "BaseDesGet": BaseDesGet}
 # local env method

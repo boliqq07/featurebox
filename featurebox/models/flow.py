@@ -400,11 +400,11 @@ class BaseLearning:
             self.forward_hook_list = []
 
             def for_hook(module, input, output):
-                self.forward_hook_list.append(output)
+                self.forward_hook_list.append(output.detach().cpu())
 
-            le = len(self.model.fcs)
+            le = len(self.model.softpluses)
             for i in range(le):
-                handles.append(self.model.fcs[1].register_forward_hook(for_hook))  # hook the fcs[i]
+                handles.append(self.model.fcs[i].register_forward_hook(for_hook))  # hook the fcs[i]
 
         y_preds = []
         y_true = []
