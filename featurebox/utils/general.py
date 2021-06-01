@@ -146,5 +146,4 @@ def re_pbc(pbc: Union[bool, List[bool], np.ndarray], return_type="bool"):
         pbc = np.array(pbc)
     return pbc
 
-
 # a = re_pbc(np.array([True,True,False]), return_type="int")

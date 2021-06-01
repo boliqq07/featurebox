@@ -68,12 +68,12 @@ class BondLayer(BaseLayer):
             state_atom_ed = self.expand_idx(state_fea, node_atom_idx)
             total_nbr_fea = torch.cat(
                 [
-                 state_atom_ed.unsqueeze(1).expand(N, M, self.state_fea_len),
-                 atom_nbr_fea, nbr_fea], dim=2)
+                    state_atom_ed.unsqueeze(1).expand(N, M, self.state_fea_len),
+                    atom_nbr_fea, nbr_fea], dim=2)
         else:
             total_nbr_fea = torch.cat(
                 [
-                 atom_nbr_fea, nbr_fea], dim=2)
+                    atom_nbr_fea, nbr_fea], dim=2)
 
         total_gated_fea = self.fc_full(total_nbr_fea)
         total_gated_fea = self.fc_full2(total_gated_fea)

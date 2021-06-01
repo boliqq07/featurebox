@@ -1,9 +1,11 @@
 import unittest
 
+import pandas as pd
+
 from data.check_data import CheckElements
 from featurebox.featurizers.atom.mapper import AtomTableMap, AtomJsonMap
 from featurebox.featurizers.state.statistics import WeightedAverage, WeightedSum
-import pandas as pd
+
 
 class MyTestCase(unittest.TestCase):
     def setUp(self) -> None:
@@ -23,7 +25,7 @@ class MyTestCase(unittest.TestCase):
     def test_WeightedSum(self):
         data_map = AtomTableMap(search_tp="number", n_jobs=1)
         wa = WeightedSum(data_map, n_jobs=1)
-        x3 = [[2, 1],[2,3,4]]
+        x3 = [[2, 1], [2, 3, 4]]
         x4 = wa.fit_transform(x3)
         print(x4)
 

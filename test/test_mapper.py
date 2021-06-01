@@ -6,7 +6,6 @@ import pandas as pd
 from featurebox.data.check_data import CheckElements
 from featurebox.featurizers.atom.mapper import AtomTableMap, AtomJsonMap, AtomPymatgenPropMap
 from featurebox.featurizers.base_transform import ConverterCat
-from featurebox.featurizers.envir.environment import BaseDesGet
 
 
 class TestGraph(unittest.TestCase):

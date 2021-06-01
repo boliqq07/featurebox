@@ -96,8 +96,8 @@ class _BaseGraphSingleGenerator(Dataset):
     def __init__(
             self,
             dataset_size: int,
-            targets: Union[np.ndarray,torch.Tensor],
-            sample_weights: [np.ndarray,torch.Tensor] = None,
+            targets: Union[np.ndarray, torch.Tensor],
+            sample_weights: [np.ndarray, torch.Tensor] = None,
     ):
         """
         Args:

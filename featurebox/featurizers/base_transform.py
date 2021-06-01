@@ -456,7 +456,7 @@ class ConverterCat(BaseFeature):
         """
         super().__init__(n_jobs=n_jobs, on_errors=on_errors, return_type=return_type)
         self.args = self.sums(list(args))
-        self.force_concatenate=force_concatenate
+        self.force_concatenate = force_concatenate
 
     @staticmethod
     def sums(args):

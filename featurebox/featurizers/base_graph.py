@@ -201,7 +201,7 @@ class _StructureGraph(BaseFeature):
             atoms = self.atom_converter.convert(structure)
             atoms = np.array([atoms[round(i)] for i in center_indices])
         elif isinstance(self.atom_converter, ConverterCat):
-            self.atom_converter.force_concatenate=True # just accept the data could be concatenate as one array.
+            self.atom_converter.force_concatenate = True  # just accept the data could be concatenate as one array.
             atoms = self.atom_converter.convert(structure)
             atoms = np.array([atoms[round(i)] for i in center_indices])
         else:

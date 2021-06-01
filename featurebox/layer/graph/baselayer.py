@@ -10,6 +10,7 @@ from torch.nn.parameter import Parameter
 try:
 
     from featurebox.layer.graph import _merge_cpp
+
     mod = _merge_cpp.mod
     me_idx_cpp = mod.merge_idx
     me_idx_mean_cpp = mod.merge_idx_mean
@@ -18,6 +19,7 @@ try:
     me_idx_min_cpp = mod.merge_idx_min
 except BaseException:
     mod = None
+
 
 # try:
 #     from torch_scatter import scatter_max

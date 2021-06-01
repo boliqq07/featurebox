@@ -1,5 +1,4 @@
-from collections import Iterable
-from typing import Tuple, Union, List
+from typing import Tuple
 
 import numpy as np
 from pymatgen.core import Structure, Molecule

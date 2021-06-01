@@ -1,7 +1,9 @@
 """Use descriptors form ``pyXtal_FF``, in :mod:`featurebox.featurizers.descriptors`
 """
 from typing import Dict
+
 import numpy as np
+
 from featurebox.featurizers.descriptors.ACSF import ACSF
 from featurebox.featurizers.descriptors.EAD import EAD
 from featurebox.featurizers.descriptors.EAMD import EAMD
@@ -13,19 +15,18 @@ from featurebox.featurizers.descriptors.wACSF import wACSF
 from featurebox.utils.look_json import mark_classes
 
 DesDict = mark_classes([
-                        ACSF,
-                        BehlerParrinello,
-                        EAD,
-                        EAMD,
-                        SOAP,
-                        SO3,
-                        SO4_Bispectrum,
-                        wACSF,
-                        ])
+    ACSF,
+    BehlerParrinello,
+    EAD,
+    EAMD,
+    SOAP,
+    SO3,
+    SO4_Bispectrum,
+    wACSF,
+])
 
 for i, j in DesDict.items():
     locals()[i] = j
-
 
 
 def universe_refine_des(d: Dict, fill_size=10, **kwargs):
@@ -57,9 +58,9 @@ def universe_refine_des(d: Dict, fill_size=10, **kwargs):
         # please no cut
         # ACSF no
         # BehlerParrinello no
-        #EAD no
-        #EMAD
-        #wACSF
+        # EAD no
+        # EMAD
+        # wACSF
 
         seq0 = seq[:, 0]
 
@@ -125,4 +126,3 @@ def universe_refine_des(d: Dict, fill_size=10, **kwargs):
     assert seq_new.shape[0] == center.shape[0]
     assert seq_new.shape[1] == dxdr_new.shape[1]
     return np.array(range(atom_len)), seq_new, dxdr_new, None, center
-

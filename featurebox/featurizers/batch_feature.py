@@ -10,7 +10,7 @@ class BatchFeature(BaseFeature):
     """Script for generate batch_data, could be copied and user-defined."""
 
     def __init__(self, data_type: str = "compositions", user_convert: BaseFeature = None, n_jobs: int = 1,
-                 on_errors: str = 'raise', return_type: str = 'any',batch_calculate: bool = False,
+                 on_errors: str = 'raise', return_type: str = 'any', batch_calculate: bool = False,
                  batch_size: int = 30):
         """
 

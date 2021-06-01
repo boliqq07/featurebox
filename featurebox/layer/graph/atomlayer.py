@@ -68,7 +68,7 @@ class AtomLayer(BaseLayer):
         else:
             total_nbr_fea = torch.cat(
                 [
-                 atom_nbr_fea, nbr_fea], dim=2)
+                    atom_nbr_fea, nbr_fea], dim=2)
 
         total_gated_fea = self.fc_full(total_nbr_fea)
         total_gated_fea = self.fc_full2(total_gated_fea)

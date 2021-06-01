@@ -6,16 +6,11 @@ Created on Thu May 27 10:20:52 2021
 """
 
 import os
-import re
 
 import numpy as np
 import pandas as pd
 import torch
-from pymatgen.core import Structure
 
-from featurebox.data.check_data import CheckElements
-from featurebox.featurizers.atom.mapper import AtomTableMap
-from featurebox.featurizers.base_graph import CrystalGraph
 from featurebox.featurizers.generator import GraphGenerator, MGEDataLoader
 from featurebox.models.cgcnn import CrystalGraphConvNet
 from featurebox.models.flow import BaseLearning

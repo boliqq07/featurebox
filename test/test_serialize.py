@@ -1,7 +1,6 @@
 import unittest
 
 from monty.json import MSONable
-from pymatgen.analysis.local_env import VoronoiNN
 
 from featurebox.featurizers.envir.local_env import *
 from featurebox.utils.look_json import get_marked_class

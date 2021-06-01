@@ -10,13 +10,12 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from sklearn import metrics
-from torch.autograd import Variable
-from torch.optim.lr_scheduler import MultiStepLR
-
 from cgcnn.data import CIFData
 from cgcnn.data import collate_pool, get_train_val_test_loader
 from cgcnn.model import CrystalGraphConvNet
+from sklearn import metrics
+from torch.autograd import Variable
+from torch.optim.lr_scheduler import MultiStepLR
 
 parser = argparse.ArgumentParser(description='Crystal Graph Convolutional Neural Networks')
 parser.add_argument('data_options', metavar='OPTIONS', nargs='+',
@@ -24,7 +23,7 @@ parser.add_argument('data_options', metavar='OPTIONS', nargs='+',
                          'then other options')
 parser.add_argument('--task', choices=['regression', 'classification'],
                     default='regression', help='complete a regression or '
-                                                   'classification task (default: regression)')
+                                               'classification task (default: regression)')
 parser.add_argument('--disable-cuda', action='store_true',
                     help='Disable CUDA')
 parser.add_argument('-j', '--workers', default=0, type=int, metavar='N',
@@ -51,19 +50,19 @@ parser.add_argument('--resume', default='', type=str, metavar='PATH',
                     help='path to latest checkpoint (default: none)')
 train_group = parser.add_mutually_exclusive_group()
 train_group.add_argument('--train-ratio', default=None, type=float, metavar='N',
-                    help='number of training data to be loaded (default none)')
+                         help='number of training data to be loaded (default none)')
 train_group.add_argument('--train-size', default=None, type=int, metavar='N',
                          help='number of training data to be loaded (default none)')
 valid_group = parser.add_mutually_exclusive_group()
 valid_group.add_argument('--val-ratio', default=0.1, type=float, metavar='N',
-                    help='percentage of validation data to be loaded (default '
-                         '0.1)')
+                         help='percentage of validation data to be loaded (default '
+                              '0.1)')
 valid_group.add_argument('--val-size', default=None, type=int, metavar='N',
                          help='number of validation data to be loaded (default '
                               '1000)')
 test_group = parser.add_mutually_exclusive_group()
 test_group.add_argument('--test-ratio', default=0.1, type=float, metavar='N',
-                    help='percentage of test data to be loaded (default 0.1)')
+                        help='percentage of test data to be loaded (default 0.1)')
 test_group.add_argument('--test-size', default=None, type=int, metavar='N',
                         help='number of test data to be loaded (default 1000)')
 

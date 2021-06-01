@@ -16,7 +16,7 @@ class TestGraph(unittest.TestCase):
         self.data0_checked = ce.check(self.data)[:10]
 
     def test_size_xyz(self):
-        bag = BaseNNGet(cutoff=5.0,nn_strategy="find_xyz_in_spheres")
+        bag = BaseNNGet(cutoff=5.0, nn_strategy="find_xyz_in_spheres")
         for i in self.data0_3:
             center_indices, atom_nbr_idx, bond_states, bonds, center_prop = bag.convert(i)
             print(center_indices.shape)
@@ -27,7 +27,7 @@ class TestGraph(unittest.TestCase):
             print("next")
 
     def test_size_radius(self):
-        bag = BaseNNGet(cutoff=5.0,nn_strategy="find_points_in_spheres")
+        bag = BaseNNGet(cutoff=5.0, nn_strategy="find_points_in_spheres")
         for i in self.data0_3:
             center_indices, atom_nbr_idx, bond_states, bonds, center_prop = bag.convert(i)
             print(center_indices.shape)
@@ -38,7 +38,7 @@ class TestGraph(unittest.TestCase):
             print("next")
 
     def test_size_strategy(self):
-        bag = BaseNNGet(cutoff=5.0,nn_strategy="MinimumDistanceNNAll")
+        bag = BaseNNGet(cutoff=5.0, nn_strategy="MinimumDistanceNNAll")
         for i in self.data0_3:
             center_indices, atom_nbr_idx, bond_states, bonds, center_prop = bag.convert(i)
             print(center_indices.shape)

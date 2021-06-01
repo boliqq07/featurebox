@@ -8,21 +8,13 @@ Created on Thu May 27 10:20:52 2021
 """
 
 import os
-import re
-from os import listdir
 
-import numpy as np
-import pandas as pd
-import torch
 from pymatgen.core import Structure
 
 from featurebox.data.check_data import CheckElements
 from featurebox.featurizers.atom.mapper import AtomTableMap
 from featurebox.featurizers.base_graph import CrystalGraph
-from featurebox.featurizers.generator import GraphGenerator, MGEDataLoader
-from featurebox.models.cgcnn import CrystalGraphConvNet
-from featurebox.models.flow import BaseLearning
-from featurebox.utils.general import train_test
+
 
 class MyTestCase(unittest.TestCase):
 
@@ -32,7 +24,7 @@ class MyTestCase(unittest.TestCase):
         print(PATH)
         from mgetool.imports import BatchFile
 
-        bf = BatchFile(os.path.join(PATH,"data"), suffix='cif')
+        bf = BatchFile(os.path.join(PATH, "data"), suffix='cif')
         f = bf.merge()
         os.chdir(PATH)
         data = [Structure.from_file(i) for i in f[:10]]
@@ -40,10 +32,8 @@ class MyTestCase(unittest.TestCase):
         checked_data = ce.check(data)
 
         tmps = AtomTableMap(search_tp="name")
-        gt = CrystalGraph(n_jobs=2,atom_converter = tmps)
-        in_data = gt.transform(checked_data,state_attributes=None)
-
-
+        gt = CrystalGraph(n_jobs=2, atom_converter=tmps)
+        in_data = gt.transform(checked_data, state_attributes=None)
 
 
 if __name__ == '__main__':

@@ -13,6 +13,7 @@ from featurebox.featurizers.generator import MGEDataLoader
 
 
 def class_eval(prediction, target):
+    """Classification."""
     prediction = np.exp(prediction.numpy())
     target = target.numpy()
     pred_label = np.argmax(prediction, axis=1)
@@ -149,7 +150,7 @@ class BaseLearning:
                 self.loss_method = torch.nn.CrossEntropyLoss()
             elif self.clf == "multi_label":
                 self.loss_method = torch.nn.L1Loss()
-                # 主要是用来判定实际的输出与期望的输出的接近程度 MAE: 1/N |y_pred-y|
+                # 主要是用来判定实际的输出与期望的输出的接近程度 MAE: 1/N |y_pred-y| y 为多列
             else:
                 self.loss_method = torch.nn.MSELoss()
 
@@ -162,6 +163,7 @@ class BaseLearning:
         self.threshold = loss_threshold
         # *.pth.tar or str
         self.run_train = self.run
+        self.fit = self.run_train
         self.print_what = print_what
         self.forward_hook_list = []
 
@@ -258,6 +260,7 @@ class BaseLearning:
                 mae_error = mae(y_pred.data.cpu(), batch_y.cpu())
                 mae_errors.update(mae_error, batch_y.size(0))
             else:
+
                 accuracy, precision, recall, fscore, auc_score = \
                     class_eval(y_pred.data.cpu(), batch_y.cpu())
 

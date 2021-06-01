@@ -47,7 +47,5 @@ class TestGraph2(unittest.TestCase):
             print(s12["bond"].shape[-1])
 
 
-
-
 if __name__ == '__main__':
     unittest.main()

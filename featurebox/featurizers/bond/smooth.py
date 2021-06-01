@@ -3,7 +3,6 @@ from pathlib import Path
 
 import numba
 import numpy as np
-from mgetool.tool import tt
 
 from featurebox.featurizers.base_transform import BaseFeature
 
@@ -57,14 +56,14 @@ def smooth_func(d, r_c, r_cs):
     if d.ndim == 3:
         r = (d[:, :, 1] ** 2 + d[:, :, 2] ** 2 + d[:, :, 3] ** 2) ** 0.5
         k = np.array([_smooth_func(ri, r_c, r_cs) for ri in r])
-        k = k[...,np.newaxis]
-        r = r[...,np.newaxis]
+        k = k[..., np.newaxis]
+        r = r[..., np.newaxis]
 
     elif d.ndim == 2:
         r = (d[:, 1] ** 2 + d[:, 2] ** 2 + d[:, 3] ** 2) ** 0.5
         k = _smooth_func(r, r_c, r_cs)
-        k = k[...,np.newaxis]
-        r = r[...,np.newaxis]
+        k = k[..., np.newaxis]
+        r = r[..., np.newaxis]
     else:
         r = (d[1] ** 2 + d[2] ** 2 + d[3] ** 2) ** 0.5
         if r <= r_cs:

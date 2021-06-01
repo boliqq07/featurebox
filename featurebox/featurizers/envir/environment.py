@@ -211,7 +211,7 @@ class BaseDesGet(_BaseEnvGet):
         return d
 
     def get_strategy(self, structure: StructureOrMoleculeOrAtoms
-                     ) -> Tuple[np.ndarray,np.ndarray,np.ndarray,np.ndarray,np.ndarray]:
+                     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """For get bond distance with different strategy, for different nn_stagy could be rewrite"""
 
         try:
@@ -357,7 +357,7 @@ class BaseNNGet(_BaseEnvGet):
         cutoff = self.cutoff
         numerical_tol = self.numerical_tol
 
-        result = get_strategy_in_spheres(structure,self.nn_strategy, cutoff, numerical_tol)
+        result = get_strategy_in_spheres(structure, self.nn_strategy, cutoff, numerical_tol)
 
         ele_numbers = np.array(structure.atomic_numbers)
         result = self.refine(*result, ele_numbers=ele_numbers, **self.refined_strategy_param)
@@ -378,8 +378,6 @@ class BaseNNGet(_BaseEnvGet):
             self.nn_strategy.cutoff += 2
             self.cutoff += 2
             return self.get_strategy(structure)
-
-
 
 
 #####################################################################################################################

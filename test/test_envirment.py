@@ -34,7 +34,7 @@ class TestGraph(unittest.TestCase):
             print(resultt)
 
     def test_get19(self):
-        bag = BaseNNGet(cutoff=5.0,nn_strategy="find_points_in_spheres")
+        bag = BaseNNGet(cutoff=5.0, nn_strategy="find_points_in_spheres")
         for i in self.data0_3:
             resultt = bag.convert(i)
             print(resultt)
@@ -70,7 +70,7 @@ class TestGraph(unittest.TestCase):
             print(resultt)
 
     def test_get199(self):
-        bag = BaseNNGet(cutoff=5.0,nn_strategy="find_points_in_spheres")
+        bag = BaseNNGet(cutoff=5.0, nn_strategy="find_points_in_spheres")
         for i in self.data0_checked:
             resultt = bag.convert(i)
             print(resultt)

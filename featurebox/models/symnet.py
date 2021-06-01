@@ -36,12 +36,13 @@ class Embed2(nn.Module):
         G = self.linear(G)
         G_bar = G[:, :, :self.m2]
 
-        D = torch.bmm(G.transpose(1,2), R)
-        D = torch.bmm(D, R.transpose(1,2))
+        D = torch.bmm(G.transpose(1, 2), R)
+        D = torch.bmm(D, R.transpose(1, 2))
         D = torch.bmm(D, G_bar)
-        D = D.view((D.shape[0],-1))
+        D = D.view((D.shape[0], -1))
 
         return D
+
 
 class FeatureSymLayer(BaseLayer):
     def __init__(self, atom_fea_len, nbr_fea_len, in_state_fea_len, out_state_fea_len,
@@ -55,7 +56,7 @@ class FeatureSymLayer(BaseLayer):
 
         # self.conv = nn.Conv2d(1, 2 * out_state_fea_len,kernel_size=3)
 
-        self.fc_full = nn.Linear(m1*m2,
+        self.fc_full = nn.Linear(m1 * m2,
                                  2 * out_state_fea_len)
         self.sigmoid = nn.Sigmoid()
         self.softplus1 = nn.Softplus()
@@ -161,7 +162,7 @@ class SymNet(BaseLayer):
         self.embedding = nn.Linear(atom_fea_len, inner_atom_fea_len)
         # conv
         if isinstance(state_fea_len, int):
-            state_fea_len = tuple([state_fea_len for _ in range(n_conv+1)])
+            state_fea_len = tuple([state_fea_len for _ in range(n_conv + 1)])
         else:
             assert len(state_fea_len) == n_conv + 1, "len(state_fea_len) == n_conv+1"
 
@@ -171,8 +172,8 @@ class SymNet(BaseLayer):
                               nbr_fea_len=nbr_fea_len,
                               state_fea_len=state_fea_len[i],
                               out_state_fea_len=state_fea_len[i + 1],
-                              m1 = 10 * nbr_fea_len,
-                              m2 = nbr_fea_len,
+                              m1=10 * nbr_fea_len,
+                              m2=nbr_fea_len,
                               ))
 
         self.convs = nn.ModuleList(cov)
@@ -244,7 +245,6 @@ class SymNet(BaseLayer):
         if self.classification:
             out = self.logsoftmax(out)
         return out
-
 
 # class Embed(nn.Module):
 #     def __init__(self, nbr_fea_len=4, m1=None, m2=None):

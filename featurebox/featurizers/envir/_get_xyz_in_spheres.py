@@ -3,16 +3,17 @@ import math
 from typing import Union, List, Tuple
 
 import numpy as np
-from featurebox.utils.predefined_typing import StructureOrMolecule
 from mgetool.tool import tt
 from pymatgen.core import Structure
 
+from featurebox.utils.predefined_typing import StructureOrMolecule
 from utils.general import re_pbc
 
 
-def get_xyz_in_spheres(structure: StructureOrMolecule, nn_strategy=None,cutoff: float = 5.0, numerical_tol: float = 1e-8,
+def get_xyz_in_spheres(structure: StructureOrMolecule, nn_strategy=None, cutoff: float = 5.0,
+                       numerical_tol: float = 1e-8,
                        pbc=False,
-                       ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray,np.ndarray]:
+                       ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
     Get graph representations from structure within cutoff.
 
@@ -28,11 +29,12 @@ def get_xyz_in_spheres(structure: StructureOrMolecule, nn_strategy=None,cutoff: 
     _ = nn_strategy
     pbc = re_pbc(pbc, return_type="bool")
     return not_structure_get_xyz_in_spheres(structure.cart_coords,
-                              reciprocal_lattice_abc=structure.lattice.reciprocal_lattice.abc,
-                              matrix=structure.lattice.matrix,
-                              inv_matrix=structure.lattice.inv_matrix,
-                              pbc=pbc,
-                              cutoff=cutoff, numerical_tol=numerical_tol)
+                                            reciprocal_lattice_abc=structure.lattice.reciprocal_lattice.abc,
+                                            matrix=structure.lattice.matrix,
+                                            inv_matrix=structure.lattice.inv_matrix,
+                                            pbc=pbc,
+                                            cutoff=cutoff, numerical_tol=numerical_tol)
+
 
 def not_structure_get_xyz_in_spheres(
         all_coords: np.ndarray,
@@ -143,22 +145,21 @@ def not_structure_get_xyz_in_spheres(
     distances = np.concatenate(
         (((coords[:, 0] ** 2 + coords[:, 1] ** 2 + coords[:, 2] ** 2) ** 0.5).reshape(-1, 1), coords), axis=1)
 
-    exclude_self = (center_indices != neighbor_indices) | (distances[:,0] > numerical_tol)
+    exclude_self = (center_indices != neighbor_indices) | (distances[:, 0] > numerical_tol)
 
     return center_indices[exclude_self], neighbor_indices[exclude_self], images[exclude_self], distances[
         exclude_self], None
 
 
-
-if __name__ =="__main__":
+if __name__ == "__main__":
     structure = Structure.from_file("S2-CONTCAR")
     tt.t
     get_points_ = get_xyz_in_spheres(structure,
-                                        cutoff=5.0, pbc=True,
-                                        )
-    tt.t#tt.t
+                                     cutoff=5.0, pbc=True,
+                                     )
+    tt.t  # tt.t
     get_points_ = get_xyz_in_spheres(structure.cart_coords,
-                                        cutoff=5.0, pbc=True,
-                                        )
-    tt.t#
+                                     cutoff=5.0, pbc=True,
+                                     )
+    tt.t  #
     tt.p

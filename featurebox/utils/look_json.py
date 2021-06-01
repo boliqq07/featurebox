@@ -165,7 +165,7 @@ def mark_classes(classes: List):
     return NNDict
 
 
-def get_marked_class(nn_strategy, NNDict: Dict =None, instantiation: bool = True):
+def get_marked_class(nn_strategy, NNDict: Dict = None, instantiation: bool = True):
     """
     Just call values in NNict by,consider multiple cases at the same time.
     ["VoronoiNN",

@@ -1,8 +1,5 @@
 import unittest
 
-from featurebox.data.check_data import CheckElements
-import unittest
-
 import pandas as pd
 
 from featurebox.data.check_data import CheckElements

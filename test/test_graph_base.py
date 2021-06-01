@@ -54,6 +54,5 @@ class TestCrystalGraphWithBondTypes(unittest.TestCase):
         s12 = sg2(self.data0)
 
 
-
 if __name__ == '__main__':
     unittest.main()
