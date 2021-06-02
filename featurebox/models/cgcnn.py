@@ -35,7 +35,8 @@ class CrystalGraphConvNet(BaseLayer):
         """
         super(CrystalGraphConvNet, self).__init__()
         self.classification = classification
-        self.mes = ("mean", "sum", "min", "max")
+        # self.mes = ("mean", "sum", "min", "max")
+        self.mes = ("mean",)
         le = len(self.mes)
         if isinstance(h_fea_len, int):
             h_fea_len = tuple([h_fea_len for _ in range(n_h)])
@@ -46,8 +47,6 @@ class CrystalGraphConvNet(BaseLayer):
         self.convs = nn.ModuleList([AtomLayer(atom_fea_len=inner_atom_fea_len,
                                               nbr_fea_len=nbr_fea_len)
                                     for _ in range(n_conv)])
-
-        # self.merge_idx_methods expand self.mes times
 
         # conv to linear
         self.conv_to_fc = nn.Linear(le * inner_atom_fea_len, h_fea_len[0])

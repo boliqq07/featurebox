@@ -251,9 +251,11 @@ class BaseLearning:
             self.optimizer.zero_grad()
 
             y_pred = self.model(*batch_x)
-
-            lossi = self.loss_method(y_pred, batch_y)
-
+            try:
+                lossi = self.loss_method(y_pred, batch_y)
+            except TypeError:
+                target = batch_y.sign()
+                lossi = self.loss_method(y_pred, batch_y, target)
             losses.update(float(lossi.cpu().item()), batch_y.size(0))
 
             if self.clf is False:
@@ -319,7 +321,11 @@ class BaseLearning:
         for m, (batch_x, batch_y) in enumerate(self.test_loader):
 
             y_pred = self.model(*batch_x)
-            lossi = self.loss_method(y_pred, batch_y)
+            try:
+                lossi = self.loss_method(y_pred, batch_y)
+            except TypeError:
+                target = batch_y.sign()
+                lossi = self.loss_method(y_pred, batch_y, target)
 
             losses.update(lossi.cpu().item(), batch_y.size(0))
             if self.clf is False:
@@ -361,7 +367,7 @@ class BaseLearning:
         else:
             return auc_scores.avg
 
-    def score(self, predict_loader):
+    def mae_score(self, predict_loader):
         """Return MAE score."""
         y_pre, y_true = self.predict(predict_loader, return_y_true=True, add_hook=False)
         return float(mae(y_pre, y_true))
@@ -395,17 +401,24 @@ class BaseLearning:
         self.model.eval()
 
         ############
+
         handles = []
         if add_hook:
-            self.forward_hook_list = []
+            try:
+                self.forward_hook_list = []
 
-            def for_hook(module, input, output):
-                self.forward_hook_list.append(output.detach().cpu())
+                def for_hook(module, input, output):
+                    self.forward_hook_list.append(output.detach().cpu())
 
-            le = len(self.model.softpluses)
-            for i in range(le):
-                handles.append(self.model.fcs[i].register_forward_hook(for_hook))  # hook the fcs[i]
+                handles.append(self.model.conv_to_fc_softplus.register_forward_hook(for_hook))
 
+                le = len(self.model.softpluses)
+                for i in range(le):
+                    handles.append(self.model.softpluses[i].register_forward_hook(for_hook))  # hook the fcs[i]
+            except BaseException as e:
+                print(e)
+                raise AttributeError("The model must contain sub (model or layer) named ``conv_to_fc_softplus``and "
+                                     "nn.ModuleList named ``softpluses``")
         y_preds = []
         y_true = []
         batch_y = []

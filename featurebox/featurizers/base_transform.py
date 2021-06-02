@@ -210,10 +210,10 @@ class BaseFeature(MSONable):
         if self.return_type == 'any':
             return ret
 
-        if self.return_type == 'array':
+        if self.return_type == 'array' or self.return_type == 'np':
             return np.array(ret)
 
-        if self.return_type == 'df':
+        if self.return_type == 'df' or self.return_type == 'pd':
             try:
                 labels_len = len(self.feature_labels)
                 if labels_len > 0:

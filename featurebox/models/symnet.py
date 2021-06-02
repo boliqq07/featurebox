@@ -154,6 +154,7 @@ class SymNet(BaseLayer):
         super().__init__()
         self.classification = classification
         self.mes = ("mean", "sum", "min", "max")
+        self.mes = ("mean",)
         le = len(self.mes)
         if isinstance(h_fea_len, int):
             h_fea_len = tuple([h_fea_len for _ in range(n_h)])

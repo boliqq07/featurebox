@@ -202,13 +202,13 @@ def dict_method_reg():
     # 2nd part
 
     """6RFR"""
-    me7 = RandomForestRegressor(n_estimators=100, max_depth=None, min_samples_split=2, min_samples_leaf=1,
+    me7 = RandomForestRegressor(n_estimators=500, max_depth=None, min_samples_split=2, min_samples_leaf=1,
                                 min_weight_fraction_leaf=0.0, max_leaf_nodes=None, min_impurity_decrease=0.0,
                                 min_impurity_split=None, bootstrap=True, oob_score=False,
                                 random_state=None, verbose=0, warm_start=False)
     cv7 = 5
     scoring7 = 'r2'
-    param_grid7 = [{'max_depth': [3, 4, 5], }]
+    param_grid7 = [{'max_depth': [4, 5, 6, 7], }]
     dict_method.update({"RFR-em": [me7, cv7, scoring7, param_grid7]})
 
     """7GBR"""
@@ -218,7 +218,7 @@ def dict_method_reg():
                                     max_depth=3, min_impurity_decrease=0.,
                                     min_impurity_split=None, init=None, random_state=None,
                                     max_features=None, alpha=0.9, verbose=0, max_leaf_nodes=None,
-                                    warm_start=False, presort='auto')
+                                    warm_start=False,)
     cv8 = 5
     scoring8 = 'r2'
     param_grid8 = [{'max_depth': [3, 4, 5, 6], 'min_samples_split': [2, 3],
@@ -226,11 +226,11 @@ def dict_method_reg():
     dict_method.update({'GBR-em': [me8, cv8, scoring8, param_grid8]})
 
     "AdaBR"
-    dt = DecisionTreeRegressor(criterion="mse", splitter="best", max_features=None, max_depth=5, min_samples_split=4)
-    me9 = AdaBoostRegressor(dt, n_estimators=200, learning_rate=0.05, loss='linear', random_state=0)
+    dt3 = DecisionTreeRegressor(criterion="mse", splitter="best", max_features=None, max_depth=7, min_samples_split=4)
+    me9 = AdaBoostRegressor(dt3, n_estimators=200, learning_rate=0.05, random_state=0)
     cv9 = 5
     scoring9 = 'explained_variance'
-    param_grid9 = [{'n_estimators': [100, 200], 'learning_rate': [0.1, 0.05]}]
+    param_grid9 = [{"base_estimator":[dt3]}]
     dict_method.update({"AdaBR-em": [me9, cv9, scoring9, param_grid9]})
 
     '''DTR'''
@@ -246,7 +246,7 @@ def dict_method_reg():
         max_leaf_nodes=None,
         min_impurity_decrease=0.,
         min_impurity_split=None,
-        presort=False)
+        )
     cv10 = 5
     scoring10 = 'r2'
     param_grid10 = [
@@ -263,13 +263,13 @@ def dict_method_reg():
     dict_method.update({"EN-L1": [me11, cv11, scoring11, param_grid11]})
 
     'Lasso'
-    me12 = Lasso(alpha=1.0, fit_intercept=True, normalize=False, precompute=False, copy_X=True, max_iter=1000,
+    me12 = Lasso(alpha=1.0, fit_intercept=True, normalize=True, precompute=False, copy_X=True, max_iter=3000,
                  tol=0.001,
                  warm_start=False, positive=False, random_state=None, )
 
     cv12 = 5
     scoring12 = 'r2'
-    param_grid12 = [{'alpha': [0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 10, 100, 1000]}, ]
+    param_grid12 = [{'alpha': [0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 10, 100, 1000],"tol":[0.001,0.01,0.1]}, ]
     dict_method.update({"LASSO-L1": [me12, cv12, scoring12, param_grid12]})
 
     """2BayesianRidge"""
@@ -315,7 +315,7 @@ def dict_me(me="clf"):
     return dict_method_
 
 
-def method_pack(method_all, me="reg", scoreing=None, gd=True, cv=10):
+def method_pack(method_all, me="reg", scoring=None, gd=True, cv=10):
     """return cv or gd."""
     if not method_all:
         method_all = ['KNR-set', 'SVR-set', "KRR-set", "GPR-set",
@@ -329,11 +329,11 @@ def method_pack(method_all, me="reg", scoreing=None, gd=True, cv=10):
         for method_i in method_all:
             me2, cv2, scoring2, param_grid2 = dict_method[method_i]
             if me == "clf":
-                scoring2 = scoreing if scoreing else 'balanced_accuracy'
+                scoring2 = scoring if scoring else 'balanced_accuracy'
             if me == "reg":
-                scoring2 = scoreing if scoreing else 'r2'
+                scoring2 = scoring if scoring else 'r2'
             cv2 = cv if cv else cv2
-            gd2 = GridSearchCV(me2, cv=cv2, param_grid=param_grid2, scoring=scoring2, n_jobs=1)
+            gd2 = GridSearchCV(me2, cv=cv2, param_grid=param_grid2, scoring=scoring2, n_jobs=10)
             estimator.append(gd2)
         return estimator
     else:
@@ -341,9 +341,9 @@ def method_pack(method_all, me="reg", scoreing=None, gd=True, cv=10):
         for method_i in method_all:
             me2, cv2, scoring2, param_grid2 = dict_method[method_i]
             if me == "clf":
-                scoring2 = scoreing if scoreing else 'balanced_accuracy'
+                scoring2 = scoring if scoring else 'balanced_accuracy'
             if me == "reg":
-                scoring2 = scoreing if scoreing else 'r2'
+                scoring2 = scoring if scoring else 'r2'
             cv2 = cv if cv else cv2
             gd2 = partial(cross_val_score, estimator=me2, cv=cv2, scoring=scoring2)
             # gd2 = cross_val_score(me2, cv=cv2, scoring=scoring2)
