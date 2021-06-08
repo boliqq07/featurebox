@@ -47,7 +47,7 @@ class MEGNet(BaseLayer):
         super().__init__()
         self.classification = classification
         # self.mes = ("mean", "sum", "min", "max")
-        self.mes = ("mean", )
+        self.mes = ("mean",)
         le = len(self.mes)
         if isinstance(h_fea_len, int):
             h_fea_len = tuple([h_fea_len for _ in range(n_h)])
@@ -71,17 +71,17 @@ class MEGNet(BaseLayer):
         self.convs = nn.ModuleList(cov)
         # self.merge_idx_methods expand self.mes times
         # conv to linear
-        self.conv_to_fc = nn.Linear(le * inner_atom_fea_len, h_fea_len[0]) # dont change this layer name
-        self.conv_to_fc_softplus = nn.Softplus() # dont change this layer name
+        self.conv_to_fc = nn.Linear(le * inner_atom_fea_len, h_fea_len[0])  # dont change this layer name
+        self.conv_to_fc_softplus = nn.Softplus()  # dont change this layer name
         n_h = len(h_fea_len)
         # linear (connect)
         if self.classification:
             self.dropout = nn.Dropout()
         if n_h >= 2:
-            self.fcs = nn.ModuleList([nn.Linear(h_fea_len[hi], h_fea_len[hi + 1]) # dont change this layer name
+            self.fcs = nn.ModuleList([nn.Linear(h_fea_len[hi], h_fea_len[hi + 1])  # dont change this layer name
                                       for hi in range(n_h - 1)])
             self.softpluses = nn.ModuleList([nn.Softplus()
-                                             for _ in range(n_h - 1)]) # dont change this layer name
+                                             for _ in range(n_h - 1)])  # dont change this layer name
         # linear out
         if self.classification:
             self.fc_out = nn.Linear(h_fea_len, class_number)

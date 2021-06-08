@@ -294,7 +294,7 @@ class BaseNNGet(_BaseEnvGet):
         self.check_align = check_align
 
     def convert(self, structure: StructureOrMolecule):
-            # -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]
+        # -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]
         """
 
         Args:
@@ -326,6 +326,7 @@ class BaseNNGet(_BaseEnvGet):
         if len(result[0].tolist()) == len(structure.species) or not self.check_align:
             return result
         else:
+            self.cutoff += 2
             print("For {}, There is no neighbor in cutoff {} A, try with cutoff {} A for this structure.".format(
                 str(structure.composition), cutoff, cutoff + 2))
             return self.get_xyz(structure)
@@ -348,6 +349,7 @@ class BaseNNGet(_BaseEnvGet):
         else:
             print("For {}, There is no neighbor in cutoff {} A, try with cutoff {} A for this structure.".format(
                 str(structure.composition), cutoff, cutoff + 2))
+            self.cutoff += 2
             return self.get_radius(structure)
 
     def get_strategy(self, structure: StructureOrMolecule
@@ -381,9 +383,9 @@ class BaseNNGet(_BaseEnvGet):
 
 
 #####################################################################################################################
-after_treatment_func_map_des = {"universe_refine": universe_refine_des,"universe_refine_des": universe_refine_des}
+after_treatment_func_map_des = {"universe_refine": universe_refine_des, "universe_refine_des": universe_refine_des}
 
-after_treatment_func_map_nn = {"universe_refine": universe_refine_nn,"universe_refine_nn": universe_refine_nn}
+after_treatment_func_map_nn = {"universe_refine": universe_refine_nn, "universe_refine_nn": universe_refine_nn}
 # class
 env_names = {"BaseNNGet": BaseNNGet, "BaseDesGet": BaseDesGet}
 # local env method

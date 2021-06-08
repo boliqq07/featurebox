@@ -5,7 +5,7 @@ Embedded data: "element_table.csv", "elemental_MEGNet.json", "ie.json", "oe.csv"
 """
 import functools
 import os
-from abc import abstractmethod, ABC
+from abc import abstractmethod
 from pathlib import Path
 from typing import Any, Dict, List, Union, Callable
 
@@ -51,13 +51,13 @@ def get_atom_fea_name(structure: Structure) -> List[dict]:
 
 ##############################################################
 
-class AtomMap(Converter, ABC):
+class AtomMap(Converter):
     """
     Base class for atom converter. Map the element type and weight to element data.
     """
 
     def __init__(self, n_jobs: int = 1, on_errors: str = 'raise', return_type: str = 'any'):
-        super().__init__(n_jobs=n_jobs, on_errors=on_errors, return_type=return_type)
+        super(AtomMap, self).__init__(n_jobs=n_jobs, on_errors=on_errors, return_type=return_type)
 
     @staticmethod
     def get_json_embeddings(file_name: str = "elemental_MEGNet.json") -> Dict:
@@ -79,7 +79,7 @@ class BinaryMap(AtomMap):
     """Base converter with 2 different search_tp."""
 
     def __init__(self, search_tp: str = "number", weight: bool = True, **kwargs):
-        super(BinaryMap, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.search_tp = search_tp
         self.weight = weight
         self.ndim = 1

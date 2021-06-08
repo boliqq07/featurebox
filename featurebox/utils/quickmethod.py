@@ -218,7 +218,7 @@ def dict_method_reg():
                                     max_depth=3, min_impurity_decrease=0.,
                                     min_impurity_split=None, init=None, random_state=None,
                                     max_features=None, alpha=0.9, verbose=0, max_leaf_nodes=None,
-                                    warm_start=False,)
+                                    warm_start=False, )
     cv8 = 5
     scoring8 = 'r2'
     param_grid8 = [{'max_depth': [3, 4, 5, 6], 'min_samples_split': [2, 3],
@@ -230,7 +230,7 @@ def dict_method_reg():
     me9 = AdaBoostRegressor(dt3, n_estimators=200, learning_rate=0.05, random_state=0)
     cv9 = 5
     scoring9 = 'explained_variance'
-    param_grid9 = [{"base_estimator":[dt3]}]
+    param_grid9 = [{"base_estimator": [dt3]}]
     dict_method.update({"AdaBR-em": [me9, cv9, scoring9, param_grid9]})
 
     '''DTR'''
@@ -246,7 +246,7 @@ def dict_method_reg():
         max_leaf_nodes=None,
         min_impurity_decrease=0.,
         min_impurity_split=None,
-        )
+    )
     cv10 = 5
     scoring10 = 'r2'
     param_grid10 = [
@@ -269,7 +269,8 @@ def dict_method_reg():
 
     cv12 = 5
     scoring12 = 'r2'
-    param_grid12 = [{'alpha': [0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 10, 100, 1000],"tol":[0.001,0.01,0.1]}, ]
+    param_grid12 = [
+        {'alpha': [0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 10, 100, 1000], "tol": [0.001, 0.01, 0.1]}, ]
     dict_method.update({"LASSO-L1": [me12, cv12, scoring12, param_grid12]})
 
     """2BayesianRidge"""

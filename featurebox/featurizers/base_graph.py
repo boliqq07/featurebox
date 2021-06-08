@@ -197,16 +197,13 @@ class _StructureGraph(BaseFeature):
         if isinstance(self.atom_converter, DummyConverter):
             atoms_numbers = np.array(structure.atomic_numbers)[center_indices].reshape(-1, 1)
             atoms = self.atom_converter.convert(atoms_numbers)
-        elif isinstance(self.atom_converter, BinaryMap):
-            atoms = self.atom_converter.convert(structure)
-            atoms = np.array([atoms[round(i)] for i in center_indices])
         elif isinstance(self.atom_converter, ConverterCat):
             self.atom_converter.force_concatenate = True  # just accept the data could be concatenate as one array.
             atoms = self.atom_converter.convert(structure)
             atoms = np.array([atoms[round(i)] for i in center_indices])
         else:
-            raise TypeError("atom_converter just accept None,DummyConverter, "
-                            "or Converter with ``convert_structure`` method.")
+            atoms = self.atom_converter.convert(structure)
+            atoms = np.array([atoms[round(i)] for i in center_indices])
 
         bonds = self.bond_converter.convert(bondss)
 

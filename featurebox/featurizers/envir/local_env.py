@@ -274,8 +274,8 @@ def universe_refine_nn(center_indices, neighbor_indices, vectors, distances,
         cidx = np.where(center_indices == i)[0]
         nei = neighbor_indices[cidx]
         disi = distances[cidx]
-        if disi.ndim == 1:
-            print(disi)
+        # if disi.ndim == 1:
+        #     print(disi)
         if vectors is not None:
             vec = vectors[cidx, :]
         else:
