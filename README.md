@@ -40,6 +40,9 @@ Contact
 ----------------------
 Developer: Boliqq07: 986798607@qq.com
 
+Support
+----------------------
+[![Jetbrains](jetbrains.svg)](https://jb.gg/OpenSource)
 
 
 
