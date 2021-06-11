@@ -7,8 +7,8 @@ Each Graph data (for each structure):
 
 ``atom_fea``: np.ndarray, shape (N, atom_fea_len)
     center properties.
-``nbr_fea``: np.ndarray, shape (N, fill_size, atom_fea_len).
-    neighbor_indexes for each center_index.
+``nbr_fea``: np.ndarray, shape (N, fill_size, bond_fea_len).
+    neighbor properties for each center_index.
     `fill_size` default = 5.
 ``state_fea``: np.ndarray, shape (state_fea_len,)
     state feature.
@@ -75,7 +75,7 @@ class _StructureGraph(BaseFeature):
         Parameters
         ----------
         nn_strategy : str
-            NearNeighbor strategy
+            NearNeighbor strategy.
             For bond_converter ="BaseNNGet": ["BrunnerNN_reciprocal", "BrunnerNN_real", "BrunnerNN_relative",
             "EconNN", "CrystalNN", "MinimumDistanceNNAll", "find_points_in_spheres","UserVoronoiNN"]
             For bond_converter ="BaseDesGet": ["ACSF","BehlerParrinello","EAD","EAMD","SOAP","SO3","SO4_Bispectrum","wACSF"]

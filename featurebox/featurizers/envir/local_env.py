@@ -293,7 +293,7 @@ def universe_refine_nn(center_indices, neighbor_indices, vectors, distances,
 
         if disi.shape[0] >= fill_size:
             nei = nei[:fill_size]
-            disi = disi[:fill_size]  # todo
+            disi = disi[:fill_size]
             if vec is not None:
                 vec = vec[:fill_size, :]
         else:
@@ -326,18 +326,91 @@ def universe_refine_nn(center_indices, neighbor_indices, vectors, distances,
         diss = np.array(diss)[..., np.newaxis]
     else:
         diss = np.array(diss)
-        diss = np.array(diss)
 
-    if center_prop is None:
+    if center_prop is None: # must assort by rank of atom in structure before
         return cen, neis, vecs, diss, np.array(cen).reshape(-1, 1),
     else:
         if center_prop.ndim == 1:
             try:
-                center_prop = center_prop.reshape((cen.shape[0], -1))
+                center_prop = center_prop[cen]
             except ValueError:
                 center_prop = cen.reshape(-1, 1)
         elif center_prop.ndim == 2 and center_prop.shape[0] == cen.shape[0]:
-            pass
+            center_prop = center_prop[cen]
+        else:
+            center_prop = cen.reshape(-1, 1)
+        return cen, neis, vecs, diss, center_prop
+
+
+def geo_refine_nn(center_indices, neighbor_indices, vectors, distances,
+                       center_prop=None, ele_numbers=None,
+                       fill_size=10,
+                       dis_sort=True,
+                       **kwargs):
+    """
+    Change each center atoms has fill_size neighbors.
+    More neighbors would be abandoned.
+    Insufficient neighbors would be duplicated.
+
+    Args:
+        center_indices: np.ndarray 1d
+        neighbor_indices: np.ndarray 1d
+        distances: np.ndarray 1d or np.ndarray 2d
+        vectors: np.ndarray 2d
+        center_prop:np.ndarray 2d
+        ele_numbers:np.ndarray 1d
+        fill_size: float, not use,
+        cutoff:
+        dis_sort:bool
+            sort neighbors with distance.
+
+    Returns:
+        (center_indices,center_indices,  neighbor_indices, images, distances)\n
+        center_indices: np.ndarray 1d(N,).\n
+        neighbor_indices: np.ndarray 2d(N,fill_size).\n
+        images: np.ndarray 2d(N,fill_size,l).\n
+        distance: np.ndarray 2d(N,fill_size,1).
+        center_prop: np.ndarray 1d(N,l_c).\n
+
+    where l, and l_c >= 1
+    """
+    _ = ele_numbers
+    _ = fill_size
+
+    if distances.ndim == 2:
+        neidx = np.lexsort((center_indices,distances[:, 0],))
+    else:
+        neidx = np.lexsort((center_indices,distances,))
+
+    cen_nei = center_indices[neidx]
+    nei_nei = neighbor_indices[neidx]
+    diss = distances[neidx]
+    if vectors is not None:
+        vecs = vectors[neidx, :]
+    else:
+        vecs =vectors
+
+    neis = np.vstack((cen_nei,nei_nei))
+
+    cen = np.array(sorted(set((np.concatenate((center_indices,neighbor_indices),axis=0).tolist()))))
+
+    cen = np.array(cen).ravel()
+
+    if diss.ndim == 1:
+        diss = np.array(diss)[..., np.newaxis]
+    else:
+        diss = np.array(diss)
+
+    if center_prop is None: # must assort by rank of atom in structure before
+        return cen, neis, vecs, diss, np.array(cen).reshape(-1, 1),
+    else:
+        if center_prop.ndim == 1:
+            try:
+                center_prop = center_prop[cen]
+            except ValueError:
+                center_prop = cen.reshape(-1, 1)
+        elif center_prop.ndim == 2 and center_prop.shape[0] == cen.shape[0]:
+            center_prop = center_prop[cen]
         else:
             center_prop = cen.reshape(-1, 1)
         return cen, neis, vecs, diss, center_prop

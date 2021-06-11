@@ -11,7 +11,7 @@ from featurebox.featurizers.base_transform import BaseFeature
 from featurebox.featurizers.envir._get_radius_in_spheres import get_radius_in_spheres
 from featurebox.featurizers.envir._get_xyz_in_spheres import get_xyz_in_spheres
 from featurebox.featurizers.envir.desc_env import DesDict, universe_refine_des
-from featurebox.featurizers.envir.local_env import NNDict, get_strategy_in_spheres, universe_refine_nn
+from featurebox.featurizers.envir.local_env import NNDict, get_strategy_in_spheres, universe_refine_nn, geo_refine_nn
 from featurebox.utils.look_json import get_marked_class
 from featurebox.utils.predefined_typing import StructureOrMolecule, StructureOrMoleculeOrAtoms
 
@@ -32,7 +32,7 @@ class _BaseEnvGet(BaseFeature):
         offset vector in 3 orientations or more bond properties.
     ``distances``:np.ndarray of shape(n,fill_size)
         distance of neighbor_indexes for each center_index.
-    ``center_indices``:np.ndarray of shape(n,l_c)
+    ``center_properties``:np.ndarray of shape(n,l_c)
         center properties.
     """
 
@@ -120,7 +120,7 @@ class BaseDesGet(_BaseEnvGet):
         offset vector in 3 orientations or more bond properties.
     ``distances``:np.ndarray of shape(n,fill_size)
         distance of neighbor_indexes for each center_index.
-    ``center_indices``:np.ndarray of shape(n,l_c)
+    ``center_properties``:np.ndarray of shape(n,l_c)
         center properties.
     """
 
@@ -293,8 +293,7 @@ class BaseNNGet(_BaseEnvGet):
         self.pbc = pbc
         self.check_align = check_align
 
-    def convert(self, structure: StructureOrMolecule):
-        # -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]
+    def convert(self, structure: StructureOrMolecule) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """
 
         Args:
@@ -382,14 +381,59 @@ class BaseNNGet(_BaseEnvGet):
             return self.get_strategy(structure)
 
 
+class GEONNGet(BaseNNGet):
+
+    def __init__(self, nn_strategy: Union[NearNeighbors] = "find_points_in_spheres",
+                 refine="geo_refine_nn",
+                 refined_strategy_param: Dict = None,
+                 numerical_tol=1e-8, pbc: List[int] = None, cutoff=5.0, check_align=True):
+        """
+
+        Parameters
+        ----------
+        nn_strategy: Union[NearNeighbors]
+            search method for local_env for each atom.
+            See Also:
+            :class:`featurebox.featurizers.envir.local_env.MinimumDistanceNNAll`,
+        refine:str
+            sort method for neighbors of each atom.
+            See Also:
+            :func:`universe_refine_nn`
+        refined_strategy_param:dict
+            parameters for refine
+        numerical_tol:float
+            numerical_tol
+        pbc:list
+            only for find "find_points_in_spheres".
+            periodicity in 3 direction
+            3-length list,each one is 1 or 0. such as [0,0,0],The 1 mean in this direction is with periodicity.
+        cutoff:
+            if offered, the nn_strategy would be neglect and find neighbors using
+                ``find_points_in_spheres`` in pymatgen.
+        """
+        assert refine=="geo_refine_nn"
+        super().__init__(nn_strategy=nn_strategy,
+                         refine=refine,
+                         refined_strategy_param=refined_strategy_param,
+                         numerical_tol=numerical_tol, pbc=pbc,
+                         cutoff=cutoff,
+                         check_align=check_align,
+                         )
+
+
 #####################################################################################################################
 after_treatment_func_map_des = {"universe_refine": universe_refine_des, "universe_refine_des": universe_refine_des}
 
-after_treatment_func_map_nn = {"universe_refine": universe_refine_nn, "universe_refine_nn": universe_refine_nn}
+after_treatment_func_map_nn = {"universe_refine": universe_refine_nn,
+                               "universe_refine_nn": universe_refine_nn,
+                               "geo_refine_nn": geo_refine_nn,
+                               }
 # class
-env_names = {"BaseNNGet": BaseNNGet, "BaseDesGet": BaseDesGet}
+env_names = {"BaseNNGet": BaseNNGet, "BaseDesGet": BaseDesGet, "GEONNGet": GEONNGet}
 # local env method
-env_method = {"BaseNNGet": NNDict, "BaseDesGet": DesDict, }
+env_method = {"BaseNNGet": NNDict, "BaseDesGet": DesDict, "GEONNGet": NNDict}
 # after treatment
-env_after_treatment_func_map = {"BaseNNGet": after_treatment_func_map_nn, "BaseDesGet": after_treatment_func_map_des, }
+env_after_treatment_func_map = {"BaseNNGet": after_treatment_func_map_nn,
+                                "BaseDesGet": after_treatment_func_map_des,
+                                "GEONNGet": after_treatment_func_map_nn, }
 #####################################################################################################################
