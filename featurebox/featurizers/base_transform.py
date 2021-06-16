@@ -318,7 +318,7 @@ class BaseFeature(MSONable):
 
         Returns
         -------
-        new_x: any
+        new_x:
             new x.
         """
         try:

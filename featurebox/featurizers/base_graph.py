@@ -24,6 +24,7 @@ from operator import itemgetter
 from typing import Union, Dict, List
 
 import numpy as np
+from deprecated.sphinx import deprecated
 from mgetool.tool import parallelize, batch_parallelize
 from pymatgen.analysis.local_env import NearNeighbors
 from pymatgen.core import Structure
@@ -52,7 +53,7 @@ def itemgetter_list(data_list: List, indices: List) -> tuple:
         return it(data_list),
     return it(data_list)
 
-
+@deprecated(version='0.1.0')
 class _StructureGraph(BaseFeature):
     """
     Preferential use of _StructureGraphFixedRadius.

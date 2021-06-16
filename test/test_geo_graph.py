@@ -5,6 +5,7 @@ import pandas as pd
 from featurebox.data.check_data import CheckElements
 from featurebox.featurizers.base_graph import CrystalGraph
 from featurizers.base_graph_geo import StructureGraphGEO
+from featurizers.generator_geo import InMemoryDatasetGeo, DatasetGEO
 
 
 class TestGraph3(unittest.TestCase):
@@ -16,7 +17,7 @@ class TestGraph3(unittest.TestCase):
         self.data0_3 = self.data[:3]
         ce = CheckElements.from_pymatgen_structures()
 
-        self.data0_checked = ce.check(self.data)[:10]
+        self.data0_checked = ce.check(self.data[:20])
 
     def test_CrystalGraph(self):
         for i in self.data0_checked:
@@ -29,8 +30,8 @@ class TestGraph3(unittest.TestCase):
                  cutoff = 5.0,)
             s12 = sg1(i)
             # print(s12)
-            print(s12["bond"].shape[-2])
-            print(s12["bond"].shape[-1])
+            print(s12["edge_index"].shape[-1])
+            print(s12["edge_attr"].shape)
 
     def test_CrystalGraph2(self):
         for i in self.data0_checked:
@@ -48,19 +49,30 @@ class TestGraph3(unittest.TestCase):
                 print(s12[key].shape)
 
     def test_CrystalGraph3(self):
-        for i in self.data0_checked:
-            sg1 = StructureGraphGEO(nn_strategy="CrystalNN",
-                 bond_generator=None,
-                 atom_converter = None,
-                 bond_converter = None,
-                 state_converter = None,
-                 return_bonds = "all",
-                 cutoff = 5.0,)
-            s12 = sg1(i)
-            # print(s12)
-            print("next")
-            for key in s12.keys():
-                print(s12[key].shape)
+        imdg = InMemoryDatasetGeo(".",load_mode="i")
+
+        l = imdg[4]
+        l = imdg[4]
+
+
+    def test_CrystalGraph32(self):
+        imdg = InMemoryDatasetGeo(".",load_mode="i",re_process_init=False)
+
+        l = imdg[4]
+        l = imdg[4]
+
+
+    def test_CrystalGraph4(self):
+        imdg = DatasetGEO(".",load_mode="i")
+
+        l = imdg[4]
+        l = imdg[4]
+
+    def test_CrystalGraph42(self):
+        imdg = DatasetGEO(".",load_mode="i",re_process_init=False)
+
+        l = imdg[4]
+        l = imdg[4]
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,5 +1,6 @@
 """This is one general script. For different data, you should re-write this and tune."""
 import torch.nn as nn
+from deprecated.classic import deprecated
 
 from featurebox.layer.graph.atomlayer import AtomLayer
 from featurebox.layer.graph.baselayer import BaseLayer
@@ -22,7 +23,7 @@ class Block(nn.Module):
         state_fea = self.statelayer(atom_fea, nbr_fea, state_fea, atom_nbr_idx, node_atom_idx)
         return atom_fea, nbr_fea, state_fea
 
-
+@deprecated(version='0.1.0')
 class MEGNet(BaseLayer):
     def __init__(self, atom_fea_len, nbr_fea_len, state_fea_len,
                  inner_atom_fea_len=64, n_conv=2, h_fea_len=128, n_h=1,

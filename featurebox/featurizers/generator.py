@@ -1,6 +1,7 @@
 from os import path
 from typing import Union
 
+from deprecated.classic import deprecated
 from sklearn.utils import check_random_state, shuffle
 
 from featurebox.utils.fast._calculate_length import cal_length_numba
@@ -24,7 +25,7 @@ from torch.utils.data._utils.collate import default_convert
 
 MODULE_DIR = Path(__file__).parent.absolute()
 
-
+@deprecated(version='0.1.0')
 def collate_fn(batch: List, collate_marks: Tuple[str]) -> List[List]:
     """
     User collate function.

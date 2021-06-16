@@ -1,11 +1,12 @@
 """This is one general script. For different data, you should re-write this and tune."""
 import torch
+from deprecated.classic import deprecated
 from torch import nn
 
 from featurebox.layer.graph.atomlayer import AtomLayer
 from featurebox.layer.graph.baselayer import BaseLayer
 
-
+@deprecated(version='0.1.0')
 class Embed2(nn.Module):
     def __init__(self, nbr_fea_len=4, m1=None, m2=None):
         super(Embed2, self).__init__()
