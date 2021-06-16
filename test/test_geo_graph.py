@@ -1,6 +1,7 @@
 import unittest
 
 import pandas as pd
+from mgetool.tool import def_pwd
 
 from featurebox.data.check_data import CheckElements
 from featurebox.featurizers.base_graph import CrystalGraph
@@ -33,46 +34,53 @@ class TestGraph3(unittest.TestCase):
             print(s12["edge_index"].shape[-1])
             print(s12["edge_attr"].shape)
 
-    def test_CrystalGraph2(self):
-        for i in self.data0_checked:
-            sg1 = StructureGraphGEO(nn_strategy="find_xyz_in_spheres",
-                 bond_generator=None,
-                 atom_converter = None,
-                 bond_converter = None,
-                 state_converter = None,
-                 return_bonds = "all",
-                 cutoff = 5.0,)
-            s12 = sg1(i)
-            # print(s12)
-            print("next")
-            for key in s12.keys():
-                print(s12[key].shape)
 
     def test_CrystalGraph3(self):
         imdg = InMemoryDatasetGeo(".",load_mode="i")
 
-        l = imdg[4]
-        l = imdg[4]
+        l = imdg[2]
+        l = imdg[2]
 
 
     def test_CrystalGraph32(self):
         imdg = InMemoryDatasetGeo(".",load_mode="i",re_process_init=False)
 
-        l = imdg[4]
-        l = imdg[4]
+        l = imdg[2]
+        l = imdg[2]
 
 
     def test_CrystalGraph4(self):
-        imdg = DatasetGEO(".",load_mode="i")
+        def_pwd("./raw", change=False)
 
-        l = imdg[4]
-        l = imdg[4]
+        sg1 = StructureGraphGEO(nn_strategy="find_points_in_spheres",
+                                    bond_generator=None,
+                                    atom_converter=None,
+                                    bond_converter=None,
+                                    state_converter=None,
+                                    return_bonds="all",
+                                    cutoff=5.0, )
+        sg1.transform_and_save(self.data0_checked,save_mode="i")
+
+        imdg = DatasetGEO(".",load_mode="i",re_process_init=True)
+
+        l = imdg[2]
+        l = imdg[2]
 
     def test_CrystalGraph42(self):
+        def_pwd("./raw", change=False)
+
+        sg1 = StructureGraphGEO(nn_strategy="find_points_in_spheres",
+                                    bond_generator=None,
+                                    atom_converter=None,
+                                    bond_converter=None,
+                                    state_converter=None,
+                                    return_bonds="all",
+                                    cutoff=5.0, )
+        sg1.transform_and_save(self.data0_checked,save_mode="i")
         imdg = DatasetGEO(".",load_mode="i",re_process_init=False)
 
-        l = imdg[4]
-        l = imdg[4]
+        l = imdg[2]
+        l = imdg[2]
 
 if __name__ == '__main__':
     unittest.main()

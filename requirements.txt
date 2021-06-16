@@ -1,4 +1,4 @@
-
+deprecated
 pandas~=1.0.1
 numpy
 sympy>=1.6
