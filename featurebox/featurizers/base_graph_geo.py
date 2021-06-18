@@ -18,6 +18,8 @@ Each Graph data (for each structure):
 
 ``state_attr``: state feature. np.ndarray, shape (1, num_state_features)
 
+``z``: atom numbers. np.ndarray, with shape [num_nodes,]
+
 Where the state_attr is added newly.
 
 """
@@ -32,220 +34,54 @@ import torch
 from mgetool.tool import parallelize, batch_parallelize
 from pymatgen.core import Structure
 
-
-from featurebox.featurizers.atom.mapper import BinaryMap
 from featurebox.featurizers.base_transform import DummyConverter, BaseFeature, Converter, ConverterCat
-from featurebox.featurizers.envir.environment import env_method, env_names, GEONNGet
+from featurebox.featurizers.envir.environment import GEONNGet, env_method, env_names
 from featurebox.featurizers.envir.local_env import NNDict
-from featurebox.utils.look_json import get_marked_class
+from utils.look_json import get_marked_class
 
 
-class StructureGraphGEO(BaseFeature):
-    """
-    This is a base class for converting converting structure into graphs or model inputs.
+class _BaseStructureGraphGEO(BaseFeature):
 
-    Methods to be implemented are follows:
-        convert(self, structure)
-            This is to convert a structure into a graph dictionary.
-
-    """
-
-    def __init__(self, nn_strategy="find_points_in_spheres",
-                 bond_generator=None,
-                 atom_converter: Converter = None,
-                 bond_converter: Converter = None,
-                 state_converter: Converter = None,
-                 return_bonds: str = "all",
-                 cutoff: float = 5.0,
-                 flatten: bool = False,
-                 return_type="tensor",
-                 **kwargs):
+    def __init__(self, collect=False, return_type="tensor", **kwargs):
         """
-        Parameters
-        ----------
-        nn_strategy : str
-            NearNeighbor strategy
-            ["find_points_in_spheres", "find_xyz_in_spheres",
-            "BrunnerNN_reciprocal", "BrunnerNN_real", "BrunnerNN_relative",
-            "EconNN", "CrystalNN", "MinimumDistanceNNAll", "find_points_in_spheres","UserVoronoiNN"]
 
-        atom_converter: BinaryMap
-            atom features converter.
-            See Also:
-            :class:`featurebox.featurizers.atom.mapper.AtomTableMap` , :class:`featurebox.featurizers.atom.mapper.AtomJsonMap` ,
-            :class:`featurebox.featurizers.atom.mapper.AtomPymatgenPropMap`, :class:`featurebox.featurizers.atom.mapper.AtomTableMap`
-        bond_converter : Converter
-            bond features converter, default=None.
-        state_converter : Converter
-            state features converter.
-            See Also:
-            :class:`featurebox.featurizers.state.state_mapper.StructurePymatgenPropMap`
-            :mod:`featurebox.featurizers.state.statistics`
-            :mod:`featurebox.featurizers.state.union`
-        bond_generator : GEONNGet, str
-            bond features converter.
-
-        return_bonds: "all","bonds","bond_state"
-            which bond property return. default "all".
-            ``"bonds_state"`` : bond properties and ``"bonds"`` : atoms number near this center atom.
-        cutoff: float
-            Whether to use depends on the ``nn_strategy``.
-        **kwargs:
-
+        Args:
+            collect:(bool), Gather the batch data by different name.
+            True Just for show!!
+            return_type:(str), Return torch.tensor default, "numpy" is Just for show!!
+            **kwargs:
         """
         super().__init__(**kwargs)
+        self.graph_data_name = []
+        if collect is False:
+            self.get_collect_data = lambda x: x
 
-        if flatten is False:
-            self.get_flat_data = lambda x: x
-
-        self.return_bonds = return_bonds
-        self.cutoff = cutoff
-
-        if bond_generator is None:  # default use GEONNDict
-            nn_strategy = get_marked_class(nn_strategy, NNDict)
-            # there use the universal parameter, custom it please
-            self.bond_generator = GEONNGet(nn_strategy,
-                                           numerical_tol=1e-8, pbc=None, cutoff=cutoff)
-        elif isinstance(bond_generator, str):  # new add "BaseDesGet"
-            self.nn_strategy = get_marked_class(nn_strategy, env_method[bond_generator])
-            # there use the universal parameter, custom it please
-            self.bond_generator = env_names[bond_generator](self.nn_strategy, self.cutoff,
-                                                            numerical_tol=1e-8, pbc=None, cutoff=self.cutoff)
-        else:  # defined BaseDesGet or BaseNNGet
-            self.bond_generator = bond_generator
-            self.nn_strategy = self.bond_generator.nn_strategy
-
-        self.atom_converter = atom_converter or self._get_dummy_converter()
-        self.bond_converter = bond_converter or self._get_dummy_converter()
-        self.state_converter = state_converter or self._get_dummy_converter()
-        self.graph_data_name = ["x", 'edge_index', "edge_attr", 'y', 'pos', "state_attr", ]
-        self.cutoff = cutoff
-        self.return_type = return_type
-        if flatten is not False:
-            warnings.warn("The flatten=True just used for temporary show!", UserWarning)
+        if collect is True:
+            warnings.warn("The collect=True just used for temporary show!", UserWarning)
         if return_type != "tensor":
-            warnings.warn("The return_type != tensor just used for temporary display the shape of ndarray!!",
+            warnings.warn("The collect != tensor just used for temporary display the shape of ndarray!!",
                           UserWarning)
+        self.return_type = return_type
+        self.collect = collect
+        self.convert_funcs = [i for i in dir(self) if "_convert_" in i]
 
     def __add__(self, other):
         raise TypeError("There is no add.")
 
-    def convert(self, structure: Structure, state_attributes: List = None, y=None) -> Dict:
-        """
-        Take a pymatgen structure and convert it to a index-type graph representation
-        The graph will have node, distance, index1, index2, where node is a vector of Z number
-        of atoms in the structure, index1 and index2 mark the atom indices forming the bond and separated by
-        distance.
-
-        For state attributes, you can set structure.state = [[xx, xx]] beforehand or the algorithm would
-        take default [[0, 0]]
-
-        Parameters
-        ----------
-        state_attributes: list
-            state attributes
-        structure: Structure
-            pymatgen Structure
-        y:list
-            Target
-
-        """
-        if state_attributes is not None:
-            state_attributes = np.array(state_attributes)
-        else:
-            state_attributes = np.array([0.0, 0.0], dtype="float32")
-        if isinstance(self.state_converter, DummyConverter):
-            pass
-        else:
-            state_attributes = np.concatenate(
-                (state_attributes, np.array(self.state_converter.convert(structure)).ravel()))
-
-        state_attributes = state_attributes[np.newaxis, :]
-
-        if y is not None:
-            y = np.array(y).ravel()[np.newaxis, :]
-        else:
-            y = np.array(1.0)
-
-        center_indices, atom_nbr_idx, bond_states, bonds, center_prop = self.get_bond_fea(structure)
-        if self.return_bonds == "all":
-            bondss = np.concatenate((bonds, bond_states), axis=-1) if bonds is not None else bond_states
-        elif self.return_bonds == "bonds":
-            if bonds is not None:
-                bondss = bonds
-            else:
-                raise TypeError
-        elif self.return_bonds == "bonds_state":
-            bondss = bond_states
-        else:
-            raise NotImplementedError()
-
-        if isinstance(self.atom_converter, DummyConverter):
-            atoms_numbers = np.array(structure.atomic_numbers)[center_indices].reshape(-1, 1)
-            atoms = self.atom_converter.convert(atoms_numbers)
-        elif isinstance(self.atom_converter, ConverterCat):
-            self.atom_converter.force_concatenate = True  # just accept the data could be concatenate as one array.
-            atoms = self.atom_converter.convert(structure)
-            atoms = np.array([atoms[round(i)] for i in center_indices])
-        else:
-            atoms = self.atom_converter.convert(structure)
-            atoms = np.array([atoms[round(i)] for i in center_indices])
-
-        bonds = self.bond_converter.convert(bondss)
-
-        # atoms number in the first column.
-        if atoms.shape[1] == 1:
-            if center_prop.shape[1] > 1:
-                atoms = np.concatenate((np.array(atoms), center_prop), axis=1)
-            else:
-                pass
-        elif atoms.shape[1] > 1:
-            atoms_numbers = np.array(structure.atomic_numbers)[center_indices].reshape(-1, 1)
-            if center_prop.shape[1] > 1:
-                atoms = np.concatenate((atoms_numbers, np.array(atoms), center_prop), axis=1)
-            else:
-                atoms = np.concatenate((atoms_numbers, np.array(atoms)), axis=1)
-        else:
-            raise TypeError("Bad Converter for: atoms = self.atom_converter.convert(atoms_numbers)")
-
-        pos = structure.cart_coords[center_indices]
-
-        if self.return_type == "tensor":
-            return {"x": torch.from_numpy(atoms),
-                    "edge_index": torch.from_numpy(atom_nbr_idx),
-                    "edge_attr": torch.from_numpy(bonds),
-                    "y": torch.from_numpy(y),
-                    "pos": torch.from_numpy(pos),
-                    "state_attr": torch.from_numpy(state_attributes), }
-        else:
-            return {"x": atoms, "edge_index": atom_nbr_idx, "edge_attr": bonds, "y": y, "pos": pos,
-                    "state_attr": state_attributes, }
-
-    def get_bond_fea(self, structure: Structure):
-        """
-        Get atom features from structure, may be overwritten.
-        """
-        # assert hasattr(self.bond_generator, "convert")
-        return self.bond_generator.convert(structure)
-
-    def __call__(self, structure: Structure, *args, **kwargs) -> Dict:
-        return self.convert(structure, *args, **kwargs)
+    def __call__(self, structure: Structure, **kwargs) -> Dict:
+        return self.convert(structure, **kwargs)
 
     @staticmethod
     def _get_dummy_converter() -> DummyConverter:
         return DummyConverter()
 
-    def _transform(self, structures: List[Structure], state_attributes: List = None, y=None, ):
+    def _transform(self, structures: List[Structure], **kwargs):
         """
 
         Parameters
         ----------
         structures:list
-            preprocessing of samples need to transform to Graph.
-        state_attributes:list
-            preprocessing of samples need to add to Graph.
-        y:list
-            Target to train against (the same size with structure)
+            Preprocessing of samples need to transform to Graph.
 
         Returns
         -------
@@ -253,19 +89,18 @@ class StructureGraphGEO(BaseFeature):
             List of dict
 
         """
-
-        if state_attributes is None:
-            state_attributes = [None] * len(structures)
-        if y is None:
-            y = [None] * len(structures)
         assert isinstance(structures, Iterable)
         if hasattr(structures, "__len__"):
             assert len(structures) > 0, "Empty input data!"
-        iterables = zip(structures, state_attributes, y)
+
+        for i in kwargs.keys():
+            if kwargs[i] is None:
+                kwargs[i] = [None] * len(structures)
+
+        iterables = zip(structures, *(kwargs.values()))
 
         if not self.batch_calculate:
             rets = parallelize(self.n_jobs, self._wrapper, iterables, tq=True)
-
             ret, self.support_ = zip(*rets)
 
         else:
@@ -275,7 +110,7 @@ class StructureGraphGEO(BaseFeature):
             ret, self.support_ = zip(*rets)
         return ret
 
-    def get_flat_data(self, graphs: List[Dict]) -> dict:
+    def get_collect_data(self, graphs: List[Dict]) -> dict:
         """
         Not used in default.
 
@@ -293,12 +128,16 @@ class StructureGraphGEO(BaseFeature):
 
         # Convert the graphs to matrices
         for n, fi in enumerate(self.graph_data_name):
-            output[n] = [np.array(gi[fi]) if isinstance(gi, dict) else np.array(gi[n]) for gi in graphs]
-
+            np_data = [np.array(gi[fi]) if isinstance(gi, dict) else np.array(gi[n]) for gi in graphs]
+            if self.return_type == "tensor":
+                output[n] = [torch.from_numpy(i) for i in np_data]
+            else:
+                output[n] = np_data
         return output
 
-    def transform(self, structures: List[Structure], state_attributes: List = None, y=None):
+    def transform(self, structures: List[Structure], **kwargs):
         """
+        Transform batch of structure.
 
         Parameters
         ----------
@@ -310,7 +149,7 @@ class StructureGraphGEO(BaseFeature):
             Target to train against (the same size with structure)
 
         """
-        return self.get_flat_data(self._transform(structures, state_attributes, y=y))
+        return self.get_collect_data(self._transform(structures, **kwargs))
 
     def save(self, obj, name, root_dir="."):
         """save."""
@@ -351,3 +190,221 @@ class StructureGraphGEO(BaseFeature):
         from torch_geometric.data import Data
         result = self._transform(*args)
         return [Data.from_dict(i) for i in result]
+
+    def convert(self, structure: Structure, **kwargs) -> Dict:
+        """
+        Take a pymatgen structure and convert it to a index-type graph representation
+        The graph will have node, distance, index1, index2, where node is a vector of Z number
+        of atoms in the structure, index1 and index2 mark the atom indices forming the bond and separated by
+        distance.
+
+        For state attributes, you can set structure.state = [[xx, xx]] beforehand or the algorithm would
+        take default [[0, 0]]
+
+        Parameters
+        ----------
+        state_attributes: list
+            state attributes
+        structure: Structure
+            pymatgen Structure
+        y:list
+            Target
+
+        """
+        convert_funcs = [i for i in dir(self) if "_convert_" in i] if not self.convert_funcs else self.convert_funcs
+        if len(convert_funcs) <= 1:
+            raise NotImplementedError("Please implement the ``_convert_*`` functions, "
+                                      "such as ``_convert_edge_attr``.")
+        result_old = [getattr(self, i)(structure, **kwargs) for i in convert_funcs]
+        result = {}
+        [result.update(i) for i in result_old]
+        if self.return_type == "tensor":
+            result = {key: torch.from_numpy(value) for key, value in result.items() if key in self.graph_data_name}
+        else:
+            result = {key: value for key, value in result.items() if key in self.graph_data_name}
+        return result
+
+    def _convert_sample(self, *args, **kwargs):
+        """
+        Sample for convert.
+
+        Returns:dict
+
+        """
+
+        return {}
+
+
+class BaseStructureGraphGEO(_BaseStructureGraphGEO):
+    """
+    This is a base class for converting converting structure into graphs or model inputs.
+
+    Methods to be implemented are follows:
+        convert(self, structure)
+            This is to convert a structure into a graph dictionary.
+
+    """
+
+    def __init__(self,
+                 atom_converter: Converter = None,
+                 state_converter: Converter = None,
+                 **kwargs):
+        """
+
+        Args:
+            atom_converter: (BinaryMap) atom features converter. See Also:
+                :class:`featurebox.featurizers.atom.mapper.AtomTableMap` , :class:`featurebox.featurizers.atom.mapper.AtomJsonMap` ,
+                :class:`featurebox.featurizers.atom.mapper.AtomPymatgenPropMap`, :class:`featurebox.featurizers.atom.mapper.AtomTableMap`
+            state_converter: (Converter) state features converter. See Also:
+                :class:`featurebox.featurizers.state.state_mapper.StructurePymatgenPropMap`
+                :mod:`featurebox.featurizers.state.statistics`
+                :mod:`featurebox.featurizers.state.union`
+            **kwargs:
+        """
+        super().__init__(**kwargs)
+
+        self.atom_converter = atom_converter or self._get_dummy_converter()
+        self.state_converter = state_converter or self._get_dummy_converter()
+        self.graph_data_name = ["x", 'y', 'pos', "state_attr", 'z']
+
+    def _convert_state_attr(self, structure, state_attributes=None, **kwargs):
+        """return shape (1, num_state_features)"""
+        _ = kwargs
+        if state_attributes is not None:
+            state_attributes = np.array(state_attributes)
+        else:
+            state_attributes = np.array([0.0, 0.0], dtype="float32")
+        if isinstance(self.state_converter, DummyConverter):
+            pass
+        else:
+            state_attributes = np.concatenate(
+                (state_attributes, np.array(self.state_converter.convert(structure)).ravel()))
+
+        state_attributes = state_attributes[np.newaxis, :]
+
+        return {'state_attr': state_attributes}
+
+    def _convert_y(self, structure, y=None, **kwargs):
+        """return shape (1, num_state_features)"""
+        _ = kwargs
+        _ = structure
+        if y is not None:
+            y = np.array(y).ravel()[np.newaxis, :]
+        else:
+            y = np.array(1.0)
+
+        return {'y': y}
+
+    def _convert_x(self, structure, **kwargs):
+        _ = kwargs
+        z = np.array(structure.atomic_numbers).reshape(-1, 1)
+        if isinstance(self.atom_converter, DummyConverter):
+            atoms = self.atom_converter.convert(z)
+        elif isinstance(self.atom_converter, ConverterCat):
+            self.atom_converter.force_concatenate = True  # just accept the data could be concatenate as one array.
+            atoms = self.atom_converter.convert(structure)
+        else:
+            atoms = self.atom_converter.convert(structure)
+        return {'x': atoms, "z": z}
+
+    def _convert_pos(self, structure, **kwargs):
+        _ = kwargs
+        return {'pos': structure.cart_coords}
+
+
+class StructureGraphGEO(BaseStructureGraphGEO):
+    """
+    This is a base class for converting converting structure into graphs or model inputs.
+
+    Methods to be implemented are follows:
+        convert(self, structure)
+            This is to convert a structure into a graph dictionary.
+
+    """
+
+    def __init__(self, nn_strategy="find_points_in_spheres",
+                 bond_generator=None,
+                 bond_converter: Converter = None,
+                 cutoff: float = 5.0,
+                 **kwargs):
+        """
+        Parameters
+        ----------
+        nn_strategy : str
+            NearNeighbor strategy
+            ["find_points_in_spheres", "find_xyz_in_spheres",
+            "BrunnerNN_reciprocal", "BrunnerNN_real", "BrunnerNN_relative",
+            "EconNN", "CrystalNN", "MinimumDistanceNNAll", "find_points_in_spheres","UserVoronoiNN"]
+
+        atom_converter: BinaryMap
+            atom features converter.
+            See Also:
+            :class:`featurebox.featurizers.atom.mapper.AtomTableMap` , :class:`featurebox.featurizers.atom.mapper.AtomJsonMap` ,
+            :class:`featurebox.featurizers.atom.mapper.AtomPymatgenPropMap`, :class:`featurebox.featurizers.atom.mapper.AtomTableMap`
+        bond_converter : Converter
+            bond features converter, default=None.
+        state_converter : Converter
+            state features converter.
+            See Also:
+            :class:`featurebox.featurizers.state.state_mapper.StructurePymatgenPropMap`
+            :mod:`featurebox.featurizers.state.statistics`
+            :mod:`featurebox.featurizers.state.union`
+        bond_generator : GEONNGet, str
+            bond features converter.
+        cutoff: float
+            Whether to use depends on the ``nn_strategy``.
+        **kwargs:
+
+        """
+        super().__init__(**kwargs)
+        self.cutoff = cutoff
+
+        if bond_generator is None:  # default use GEONNDict
+            nn_strategy = get_marked_class(nn_strategy, NNDict)
+            # there use the universal parameter, custom it please
+            self.bond_generator = GEONNGet(nn_strategy,
+                                           numerical_tol=1e-8, pbc=None, cutoff=cutoff)
+        elif isinstance(bond_generator, str):  # new add "BaseDesGet"
+            # todo
+            self.nn_strategy = get_marked_class(nn_strategy, env_method[bond_generator])
+            # there use the universal parameter, custom it please
+            self.bond_generator = env_names[bond_generator](self.nn_strategy, self.cutoff,
+                                                            numerical_tol=1e-8, pbc=None, cutoff=self.cutoff)
+        else:  # defined BaseDesGet or BaseNNGet
+            # todo
+            self.bond_generator = bond_generator
+            self.nn_strategy = self.bond_generator.nn_strategy
+
+        self.bond_converter = bond_converter or self._get_dummy_converter()
+
+        self.graph_data_name = ["x", 'edge_index', "edge_weight", "edge_attr", 'y', 'pos', "state_attr", 'z']
+
+    def _convert_edges(self, structure, **kwargs):
+        """get edge data."""
+        _ = kwargs
+
+        center_indices, edge_index, edge_attr, edge_weight, center_prop = self.bond_generator.convert(structure)
+
+        if edge_weight.ndim == 2:
+            if edge_weight.shape[1] == 3:
+                edge_weight = np.sum(edge_weight ** 2, axis=1) ** 0.5
+                edge_weight = edge_weight.reshape(-1, 1)
+            elif edge_weight.shape[1] == 1:
+                pass
+            else:
+                raise TypeError("edge_weight just accpet 'xyz' shape(n_node,3) or 'r' shape(n_node,)")
+        elif edge_weight.ndim != 1:
+            raise TypeError("edge_weight just accpet 'xyz' shape(n_node,3) or 'r' shape(n_node,1)")
+
+        assert len(center_indices) == len(structure.atomic_numbers), \
+            "center_indices less than atomic_numbers, this structure is illegal," \
+            "which could due to there is discrete atom out of cutoff distance in structure."
+        if not np.all(np.equal(np.sort(center_indices), np.array(center_indices))):
+            raise UserWarning("center_indices rank is not compact with atomic_numbers,"
+                              "which could due to the structure atoms rank are re-arranged in ``bond_generator``,"
+                              "this could resulting in a correspondence error",
+                              )
+
+        edge_weight = self.bond_converter.convert(edge_weight)
+
+        return {'edge_index': edge_index, "edge_weight": edge_weight, "edge_attr": edge_attr}

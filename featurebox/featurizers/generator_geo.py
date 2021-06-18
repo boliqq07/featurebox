@@ -83,7 +83,6 @@ class InMemoryDatasetGeo(InMemoryDataset):
         """Re-process for skip reset in 56 line in ``InMemoryDataset``
         `self.data, self.slices = None, None` ."""
         rmtree(self.processed_dir)
-
         os.makedirs(self.processed_dir)
         self.process()
 

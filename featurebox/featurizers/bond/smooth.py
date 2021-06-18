@@ -54,18 +54,18 @@ def _smooth_func(rs, r_c, r_cs):
 
 def smooth_func(d, r_c, r_cs):
     if d.ndim == 3:
-        r = (d[:, :, 1] ** 2 + d[:, :, 2] ** 2 + d[:, :, 3] ** 2) ** 0.5
+        r = (d[:, :, 0] ** 2 + d[:, :, 1] ** 2 + d[:, :, 2] ** 2) ** 0.5
         k = np.array([_smooth_func(ri, r_c, r_cs) for ri in r])
         k = k[..., np.newaxis]
         r = r[..., np.newaxis]
 
     elif d.ndim == 2:
-        r = (d[:, 1] ** 2 + d[:, 2] ** 2 + d[:, 3] ** 2) ** 0.5
+        r = (d[:, 0] ** 2 + d[:, 1] ** 2 + d[:, 2] ** 2) ** 0.5
         k = _smooth_func(r, r_c, r_cs)
         k = k[..., np.newaxis]
         r = r[..., np.newaxis]
     else:
-        r = (d[1] ** 2 + d[2] ** 2 + d[3] ** 2) ** 0.5
+        r = (d[0] ** 2 + d[1] ** 2 + d[2] ** 2) ** 0.5
         if r <= r_cs:
             k = 1 / r
         elif r_cs < r <= r_c:

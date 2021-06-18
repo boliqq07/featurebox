@@ -141,9 +141,7 @@ def not_structure_get_xyz_in_spheres(
     center_indices = np.concatenate(center, axis=0)
     neighbor_indices = np.concatenate(neighbor, axis=0)
     images = np.concatenate(images, axis=0)
-    coords = np.concatenate(coords, axis=0)
-    distances = np.concatenate(
-        (((coords[:, 0] ** 2 + coords[:, 1] ** 2 + coords[:, 2] ** 2) ** 0.5).reshape(-1, 1), coords), axis=1)
+    distances = np.concatenate(coords, axis=0)
 
     exclude_self = (center_indices != neighbor_indices) | (distances[:, 0] > numerical_tol)
 

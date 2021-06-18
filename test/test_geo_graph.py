@@ -5,7 +5,7 @@ from mgetool.tool import def_pwd
 
 from featurebox.data.check_data import CheckElements
 from featurebox.featurizers.base_graph import CrystalGraph
-from featurizers.base_graph_geo import StructureGraphGEO
+from featurizers.base_graph_geo import BaseStructureGraphGEO, StructureGraphGEO
 from featurizers.generator_geo import InMemoryDatasetGeo, DatasetGEO
 
 
@@ -23,12 +23,11 @@ class TestGraph3(unittest.TestCase):
     def test_CrystalGraph(self):
         for i in self.data0_checked:
             sg1 = StructureGraphGEO(nn_strategy="find_points_in_spheres",
-                 bond_generator=None,
-                 atom_converter = None,
-                 bond_converter = None,
-                 state_converter = None,
-                 return_bonds = "all",
-                 cutoff = 5.0,)
+                                        bond_generator=None,
+                                        atom_converter = None,
+                                        bond_converter = None,
+                                        state_converter = None,
+                                        cutoff = 5.0, )
             s12 = sg1(i)
             # print(s12)
             print(s12["edge_index"].shape[-1])
@@ -57,7 +56,7 @@ class TestGraph3(unittest.TestCase):
                                     atom_converter=None,
                                     bond_converter=None,
                                     state_converter=None,
-                                    return_bonds="all",
+
                                     cutoff=5.0, )
         sg1.transform_and_save(self.data0_checked,save_mode="i")
 
@@ -69,12 +68,12 @@ class TestGraph3(unittest.TestCase):
     def test_CrystalGraph42(self):
         def_pwd("./raw", change=False)
 
-        sg1 = StructureGraphGEO(nn_strategy="find_points_in_spheres",
+        sg1 = StructureGraphGEO(nn_strategy="find_xyz_in_spheres",
                                     bond_generator=None,
                                     atom_converter=None,
                                     bond_converter=None,
                                     state_converter=None,
-                                    return_bonds="all",
+
                                     cutoff=5.0, )
         sg1.transform_and_save(self.data0_checked,save_mode="i")
         imdg = DatasetGEO(".",load_mode="i",re_process_init=False)

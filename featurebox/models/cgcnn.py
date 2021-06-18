@@ -2,13 +2,11 @@
 from __future__ import print_function, division
 
 import torch.nn as nn
-from deprecated.classic import deprecated
 
 from featurebox.layer.graph.atomlayer import AtomLayer
 from featurebox.layer.graph.baselayer import BaseLayer
 
 
-@deprecated(version='0.1.0')
 class CrystalGraphConvNet(BaseLayer):
     """
     Create a crystal graph convolutional neural network for predicting total

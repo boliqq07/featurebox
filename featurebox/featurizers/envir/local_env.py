@@ -327,7 +327,7 @@ def universe_refine_nn(center_indices, neighbor_indices, vectors, distances,
     else:
         diss = np.array(diss)
 
-    if center_prop is None: # must assort by rank of atom in structure before
+    if center_prop is None:  # must assort by rank of atom in structure before
         return cen, neis, vecs, diss, np.array(cen).reshape(-1, 1),
     else:
         if center_prop.ndim == 1:
@@ -343,10 +343,10 @@ def universe_refine_nn(center_indices, neighbor_indices, vectors, distances,
 
 
 def geo_refine_nn(center_indices, neighbor_indices, vectors, distances,
-                       center_prop=None, ele_numbers=None,
-                       fill_size=10,
-                       dis_sort=True,
-                       **kwargs):
+                  center_prop=None, ele_numbers=None,
+                  fill_size=10,
+                  dis_sort=True,
+                  **kwargs):
     """
     Change each center atoms has fill_size neighbors.
     More neighbors would be abandoned.
@@ -378,9 +378,9 @@ def geo_refine_nn(center_indices, neighbor_indices, vectors, distances,
     _ = fill_size
 
     if distances.ndim == 2:
-        neidx = np.lexsort((center_indices,distances[:, 0],))
+        neidx = np.lexsort((center_indices, distances[:, 0],))
     else:
-        neidx = np.lexsort((center_indices,distances,))
+        neidx = np.lexsort((center_indices, distances,))
 
     cen_nei = center_indices[neidx]
     nei_nei = neighbor_indices[neidx]
@@ -388,11 +388,11 @@ def geo_refine_nn(center_indices, neighbor_indices, vectors, distances,
     if vectors is not None:
         vecs = vectors[neidx, :]
     else:
-        vecs =vectors
+        vecs = vectors
 
-    neis = np.vstack((cen_nei,nei_nei))
+    neis = np.vstack((cen_nei, nei_nei))
 
-    cen = np.array(sorted(set((np.concatenate((center_indices,neighbor_indices),axis=0).tolist()))))
+    cen = np.array(sorted(set((np.concatenate((center_indices, neighbor_indices), axis=0).tolist()))))
 
     cen = np.array(cen).ravel()
 
@@ -401,7 +401,7 @@ def geo_refine_nn(center_indices, neighbor_indices, vectors, distances,
     else:
         diss = np.array(diss)
 
-    if center_prop is None: # must assort by rank of atom in structure before
+    if center_prop is None:  # must assort by rank of atom in structure before
         return cen, neis, vecs, diss, np.array(cen).reshape(-1, 1),
     else:
         if center_prop.ndim == 1:
