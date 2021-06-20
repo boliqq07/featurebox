@@ -1,36 +1,64 @@
-import torch
-import torch.nn.functional as F
-from torch.nn import Sequential, Linear, ReLU, GRU
+"""This is one general script. For different data, you should re-write this and tune."""
+from __future__ import print_function, division
 
+import torch.nn.functional as F
+from torch.nn import Module, Linear, ReLU, Sequential, GRU
 from torch_geometric.nn import NNConv, Set2Set
 
+from models.models_geo.basemodel import BaseCrystalModel
 
-class CGGRUNet(torch.nn.Module):
-    def __init__(self, num_node_features, num_edge_features, hidden_channels=128, inner_feature_len=64, n_conv=2):
-        super(CGGRUNet, self).__init__()
-        dim = inner_feature_len
-        self.lin0 = torch.nn.Linear(num_node_features, dim)
 
-        nn = Sequential(Linear(num_edge_features, hidden_channels), ReLU(), Linear(hidden_channels, dim * dim))
-        self.conv = NNConv(dim, dim, nn, aggr='mean')
-        self.gru = GRU(dim, dim)
+class CGGRU_Interactions(Module):
+    """auto attention."""
 
-        self.set2set = Set2Set(dim, processing_steps=3) #very import
-        self.lin1 = torch.nn.Linear(2 * dim, dim)
-        self.lin2 = torch.nn.Linear(dim, 1)
+    def __init__(self, hidden_channels=128, num_gaussians=100, num_filters=64, n_conv=2,
+                 ):
+        super(CGGRU_Interactions, self).__init__()
+        nf = num_filters
+        self.lin0 = Linear(hidden_channels, nf)
+
+        nn = Sequential(Linear(num_gaussians, hidden_channels), ReLU(), Linear(hidden_channels, nf * nf))
+        self.conv = NNConv(nf, nf, nn, aggr='mean')
         self.n_conv = n_conv
+        self.gru = GRU(nf, nf)
 
-    def forward(self, data):
-        out = F.relu(self.lin0(data.x))
+    def forward(self, h, edge_index, edge_weight, edge_attr, data):
+        out = F.relu(self.lin0(h))
         h = out.unsqueeze(0)
 
         for i in range(self.n_conv):
-            m = self.conv(out, data.edge_index, data.edge_attr)
+            m = self.conv(out, edge_index, edge_attr)
             m = F.relu(m)
             out, h = self.gru(m.unsqueeze(0), h)
             out = out.squeeze(0)
+        return out
 
-        out = self.set2set(out, data.batch)
+
+class CGGRU_ReadOut(Module):
+    def __init__(self, num_filters=128,
+                 n_set2set=2):
+        super(CGGRU_ReadOut, self).__init__()
+        nf = num_filters
+        self.set2set = Set2Set(nf, processing_steps=n_set2set)  # very import
+        self.lin1 = Linear(2 * nf, nf)
+        self.lin2 = Linear(nf, 1)
+
+    def forward(self, out, batch):
+        out = self.set2set(out, batch)
         out = F.relu(self.lin1(out))
         out = self.lin2(out)
-        return out.view(-1)
+        return out
+
+
+class CGGRUNet(BaseCrystalModel):
+    def __init__(self, **kwargs):
+        super(CGGRUNet, self).__init__(**kwargs)
+        self.num_state_features = None  # not used for this network.
+
+    def get_interactions_layer(self):
+        self.interactions = CGGRU_Interactions(self.hidden_channels,self.num_gaussians, self.num_filters,
+                                                n_conv=self.num_interactions,)
+
+    def get_readout_layer(self):
+        self.readout_layer = CGGRU_ReadOut(self.num_filters,
+                                           n_set2set=2)

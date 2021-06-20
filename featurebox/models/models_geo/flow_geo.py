@@ -8,8 +8,7 @@ import torch
 from sklearn import metrics
 from torch.nn import Module
 from torch.optim.lr_scheduler import MultiStepLR
-
-from featurebox.featurizers.generator import MGEDataLoader
+from torch.utils.data import DataLoader
 
 
 def class_eval(prediction, target):
@@ -69,26 +68,26 @@ def mae(prediction, target):
     return torch.mean(torch.abs(target - prediction))
 
 
-def for_hook(module, input, output):
-    print(module)
-    for val in input:
-        print("input val:", val)
-    for out_val in output:
-        print("output val:", out_val)
+# def for_hook(module, input, output):
+#     print(module)
+#     for val in input:
+#         print("input val:", val)
+#     for out_val in output:
+#         print("output val:", out_val)
 
 
 class BaseLearning:
-    def __init__(self, model: Module, train_loader: MGEDataLoader, test_loader: MGEDataLoader, device: str = "cpu",
+    def __init__(self, model: Module, train_loader: DataLoader, validate_loader: DataLoader, device: str = "cpu",
                  optimizer=None, clf: bool = False, loss_method=None, learning_rate: float = 1e-3, milestones=None,
-                 weight_decay: float = 0.01, checkpoint=True,
+                 weight_decay: float = 0.01, checkpoint=True, scheduler=None,
                  loss_threshold: float = 230.0, print_freq: int = None, print_what="all"):
         """
 
         Parameters
         ----------
         model: module
-        train_loader: MGEDataLoader
-        test_loader: MGEDataLoader
+        train_loader: DataLoader
+        validate_loader: DataLoader
         device:str
             such as "cuda:0","cpu"
         optimizer:torch.Optimizer
@@ -113,13 +112,10 @@ class BaseLearning:
         """
 
         self.train_loader = train_loader
-        self.test_loader = test_loader
+        self.test_loader = validate_loader
 
         device = torch.device(device)
-        self.train_loader.to_cuda(device)
-        self.train_loader.reset_shuffle(shuffle=True)
-        if self.test_loader is not None:
-            self.test_loader.to_cuda(device)
+
         self.device = device
         self.model = model
         self.model.to(device)
@@ -129,12 +125,10 @@ class BaseLearning:
         self.optimizer = optimizer
         self.checkpoint = checkpoint
 
-        self.train_batch_number = len(self.train_loader.loader)
-        self.test_batch_number = len(self.test_loader.loader) if self.test_loader is not None else 0
         if print_freq == "default":
-            self.print_freq = int(self.train_batch_number / 10) + 1
+            self.print_freq = 10
         else:
-            self.print_freq = self.train_batch_number if print_freq is None else print_freq
+            self.print_freq = 10 if isinstance(print_freq, int) else print_freq
 
         if self.optimizer is None or self.optimizer == "Adam":
             self.optimizer = torch.optim.Adam(self.model.parameters(), lr=learning_rate, weight_decay=weight_decay)
@@ -158,7 +152,10 @@ class BaseLearning:
             self.loss_method = loss_method
         if self.milestones is None:
             self.milestones = [30, 50, 80]
-        self.scheduler = MultiStepLR(self.optimizer, gamma=0.2, milestones=self.milestones)
+        if scheduler is None:
+            self.scheduler = MultiStepLR(self.optimizer, gamma=0.2, milestones=self.milestones)
+        else:
+            self.scheduler = scheduler
         self.best_error = 1000000.0
         self.threshold = loss_threshold
         # *.pth.tar or str
@@ -196,14 +193,10 @@ class BaseLearning:
                 print("=> no checkpoint found at '{}'".format(resume))
 
         self.model.to(self.device)
-        self.model.train()
-        train_loader = self.train_loader
         if start_epoch > 0:
             epoch += start_epoch
             print("Try to run start from 'resumed epoch' {} to 'epoch' {}".format(start_epoch, epoch))
         for epochi in range(start_epoch, epoch):
-
-            train_loader.reset()
 
             self._train(epochi)
 
@@ -243,14 +236,15 @@ class BaseLearning:
             fscores = AverageMeter()
             auc_scores = AverageMeter()
 
-        self.train_loader.reset()
         point = time.time()
-        for m, (batch_x, batch_y) in enumerate(self.train_loader):
+        for m, data in enumerate(self.train_loader):
+            batch_y=data.y
+            data = data.to(self.device)
             batch_time.update(time.time() - point)
 
             self.optimizer.zero_grad()
 
-            y_pred = self.model(*batch_x)
+            y_pred = self.model(data)
             try:
                 lossi = self.loss_method(y_pred, batch_y)
             except TypeError:
@@ -282,10 +276,10 @@ class BaseLearning:
                     print('Train: [{0}][{1}/{2}]\t'
                           'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
                           'MAE {mae_errors.val:.3f} ({mae_errors.avg:.3f})'
-                          'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
-                        .format(
-                        epochi, m, len(self.train_loader), loss=losses,
-                        batch_time=batch_time, mae_errors=mae_errors))
+                          'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'.format(epochi, m, len(self.train_loader),
+                                                                                      loss=losses,
+                                                                                      batch_time=batch_time,
+                                                                                      mae_errors=mae_errors))
                 else:
                     print('Train: [{0}][{1}/{2}]\t'
                           'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
@@ -316,11 +310,10 @@ class BaseLearning:
 
         self.model.eval()
 
-        self.test_loader.reset()
-
-        for m, (batch_x, batch_y) in enumerate(self.test_loader):
-
-            y_pred = self.model(*batch_x)
+        for m, data in enumerate(self.test_loader):
+            batch_y = data.y
+            data = data.to(self.device)
+            y_pred = self.model(data)
             try:
                 lossi = self.loss_method(y_pred, batch_y)
             except TypeError:
@@ -372,19 +365,21 @@ class BaseLearning:
         y_pre, y_true = self.predict(predict_loader, return_y_true=True, add_hook=False)
         return float(mae(y_pre, y_true))
 
-    def predict(self, predict_loader: MGEDataLoader, return_y_true=False, add_hook=True):
+    def predict(self, predict_loader: DataLoader, return_y_true=False, add_hook=True, hook_layer_name=None):
         """
         Just predict by model,and add one forward hook to get put.
 
         Parameters
         ----------
-        predict_loader:MGEDataLoader
+        predict_loader:DataLoader
             MGEDataLoader, the target_y could be ``None``.
         return_y_true:bool
             if return_y_true, return (y_preds, y_true)
         add_hook:bool
             if add_hook, the model must contain torch native nn.ModuleList named ``fcs``
             such as ``self.fcs = nn.ModuleList(...)`` in module.
+        hook_layer_name:str
+            user-defined hook layer name.
 
         Returns
         -------
@@ -394,11 +389,8 @@ class BaseLearning:
 
         """
 
-        predict_loader.reset()
-        predict_loader.reset_shuffle(shuffle=False)  # shuffle False
-        predict_loader.to_cuda(self.device)
-
         self.model.eval()
+        self.model.to(self.device)
 
         ############
 
@@ -410,20 +402,24 @@ class BaseLearning:
                 def for_hook(module, input, output):
                     self.forward_hook_list.append(output.detach().cpu())
 
-                handles.append(self.model.conv_to_fc_softplus.register_forward_hook(for_hook))
+                if hook_layer_name is None:
+                    handles.append(self.model.conv_to_fc_softplus.register_forward_hook(for_hook))
 
-                le = len(self.model.softpluses)
-                for i in range(le):
-                    handles.append(self.model.softpluses[i].register_forward_hook(for_hook))  # hook the fcs[i]
+                    le = len(self.model.softpluses)
+                    for i in range(le):
+                        handles.append(self.model.softpluses[i].register_forward_hook(for_hook))  # hook the fcs[i]
+                else:
+                    handles.append(getattr(self.model, hook_layer_name).register_forward_hook(for_hook))
             except BaseException as e:
                 print(e)
                 raise AttributeError("The model must contain sub (model or layer) named ``conv_to_fc_softplus``and "
-                                     "nn.ModuleList named ``softpluses``")
+                                     "nn.ModuleList named ``softpluses`` or"
+                                     " use hook_layer_name to defined the hook layer.")
         y_preds = []
         y_true = []
         batch_y = []
-        for batch_x, *batch_y in predict_loader:
-            y_preds.append(self.model(*batch_x).detach().cpu())
+        for data in predict_loader:
+            y_preds.append(self.model(data).detach().cpu())
             if batch_y:
                 y_true.append(batch_y[0].detach().cpu())
 
