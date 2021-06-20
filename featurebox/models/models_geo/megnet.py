@@ -1,6 +1,6 @@
 """
 Note:
-    This is a simple version for mgenet,where the bond iteration omitted.
+    This is a simple version for mgenet, where the bond update iteration is omitted.
 """
 from math import pi as PI
 

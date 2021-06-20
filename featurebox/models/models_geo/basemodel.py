@@ -210,7 +210,7 @@ class BaseCrystalModel(Module):
 
         if self.add_state:
             assert hasattr(data, "state_attr"), "the ``add_state`` must accpet ``state_attr`` in data."
-            out = self.ads(torch.cat((out,data.state_attr),dim=1))
+            out = self.ads(torch.cat((out, data.state_attr), dim=1))
             out = self.adsrelu(out)
 
         return self.output_forward(out)
