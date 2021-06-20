@@ -11,26 +11,38 @@ from models.models_geo.basemodel import BaseCrystalModel
 class CGGRU_Interactions(Module):
     """auto attention."""
 
-    def __init__(self, hidden_channels=128, num_gaussians=100, num_filters=64, n_conv=2,
+    def __init__(self, hidden_channels=64, num_gaussians=5, num_filters=64, n_conv=2,
                  ):
         super(CGGRU_Interactions, self).__init__()
         nf = num_filters
         self.lin0 = Linear(hidden_channels, nf)
 
-        nn = Sequential(Linear(num_gaussians, hidden_channels), ReLU(), Linear(hidden_channels, nf * nf))
+        self.short = Linear(num_gaussians, 3)
+
+        nn = Sequential(Linear(3, hidden_channels), ReLU(), Linear(hidden_channels, nf * nf))
+
         self.conv = NNConv(nf, nf, nn, aggr='mean')
         self.n_conv = n_conv
         self.gru = GRU(nf, nf)
 
-    def forward(self, h, edge_index, edge_weight, edge_attr, data):
+    def forward(self, h, edge_index, edge_weight, edge_attr, **kwargs):
         out = F.relu(self.lin0(h))
+
+        edge_attr = F.relu(self.short(edge_attr))
         h = out.unsqueeze(0)
 
         for i in range(self.n_conv):
-            m = self.conv(out, edge_index, edge_attr)
-            m = F.relu(m)
+            m = F.relu(self.conv(out, edge_index, edge_attr))
+
             out, h = self.gru(m.unsqueeze(0), h)
             out = out.squeeze(0)
+
+            # import pynvml
+            # pynvml.nvmlInit()
+            # handle = pynvml.nvmlDeviceGetHandleByIndex(1)  # 0表示显卡标号
+            # meminfo = pynvml.nvmlDeviceGetMemoryInfo(handle)
+            # print(meminfo.free / 1024 ** 2)  # 剩余显存大小
+
         return out
 
 
@@ -51,12 +63,14 @@ class CGGRU_ReadOut(Module):
 
 
 class CGGRUNet(BaseCrystalModel):
-    def __init__(self, **kwargs):
-        super(CGGRUNet, self).__init__(**kwargs)
+    def __init__(self,*args,num_gaussians=5, num_filters=64, hidden_channels=64,**kwargs):
+        super(CGGRUNet, self).__init__(*args, num_filters=num_filters,
+                                       num_gaussians=num_gaussians,
+                                       hidden_channels= hidden_channels,  **kwargs)
         self.num_state_features = None  # not used for this network.
 
     def get_interactions_layer(self):
-        self.interactions = CGGRU_Interactions(self.hidden_channels,self.num_gaussians, self.num_filters,
+        self.interactions = CGGRU_Interactions(self.hidden_channels, self.num_gaussians, self.num_filters,
                                                 n_conv=self.num_interactions,)
 
     def get_readout_layer(self):

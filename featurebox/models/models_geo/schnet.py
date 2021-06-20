@@ -5,25 +5,19 @@ Note:
 from math import pi as PI
 
 import torch
-import torch.nn.functional as F
-from ase.data import atomic_masses
-from torch.nn import Embedding, Sequential, Linear, ModuleList
-from torch_geometric.nn import radius_graph, MessagePassing, Set2Set
-from torch_scatter import scatter
-
+from torch.nn import ModuleList
+from torch_geometric.nn import MessagePassing
 
 """This is one general script. For different data, you should re-write this and tune."""
 
-import torch.nn.functional as F
-from torch.nn import Module, Linear, ReLU, Sequential, GRU
-from torch_geometric.nn import NNConv, Set2Set
+from torch.nn import Linear, Sequential
 
 from models.models_geo.basemodel import BaseCrystalModel, ShiftedSoftplus
 
 
 class SchNet(BaseCrystalModel):
-    def __init__(self, **kwargs):
-        super(SchNet, self).__init__(**kwargs)
+    def __init__(self,*args,  **kwargs):
+        super(SchNet, self).__init__(*args, **kwargs)
         self.num_state_features = None  # not used for this network.
 
     def get_interactions_layer(self):
@@ -57,7 +51,7 @@ class SchNet_InteractionBlock(torch.nn.Module):
         torch.nn.init.xavier_uniform_(self.lin.weight)
         self.lin.bias.data.fill_(0)
 
-    def forward(self, x, edge_index, edge_weight, edge_attr, data=None):
+    def forward(self, x, edge_index, edge_weight, edge_attr, **kwargs):
         x = self.conv(x, edge_index, edge_weight, edge_attr)
         x = self.act(x)
         x = self.lin(x)

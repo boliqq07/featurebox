@@ -10,28 +10,31 @@ from models.models_geo.basemodel import BaseCrystalModel
 
 class CGCNN_Interactions(Module):
     """auto attention."""
-    def __init__(self, hidden_channels=128, num_gaussians=100, num_filters=64, n_conv=2,
+    def __init__(self, hidden_channels=64, num_gaussians=5, num_filters=64, n_conv=2,
                  ):
         super(CGCNN_Interactions, self).__init__()
         nf = num_filters
         self.lin0 = Linear(hidden_channels, nf)
+        self.short = Linear(num_gaussians, 3)
 
-        nn = Sequential(Linear(num_gaussians, hidden_channels), ReLU(), Linear(hidden_channels, nf * nf))
+        nn = Sequential(Linear(3, hidden_channels), ReLU(), Linear(hidden_channels, nf * nf))
+
         self.conv = NNConv(nf, nf, nn, aggr='mean')
         self.n_conv = n_conv
 
     def forward(self, h, edge_index, edge_weight, edge_attr, data):
         out = F.relu(self.lin0(h))
-        out = out.unsqueeze(0)
+        edge_attr = F.relu(self.short(edge_attr))
+
         for i in range(self.n_conv):
-            out = self.conv(out, edge_index, edge_attr)
-            out = out.squeeze(0)
+            out = F.relu(self.conv(out, edge_index, edge_attr))
+
         return out
 
 
 class CrystalGraphConvNet(BaseCrystalModel):
-    def __init__(self, **kwargs):
-        super(CrystalGraphConvNet, self).__init__(**kwargs)
+    def __init__(self,*args, num_gaussians=5, num_filters=64, hidden_channels=64, **kwargs):
+        super(CrystalGraphConvNet, self).__init__(*args,num_gaussians=num_gaussians, num_filters=num_filters, hidden_channels=hidden_channels, **kwargs)
         self.num_state_features = None # not used for this network.
 
     def get_interactions_layer(self):

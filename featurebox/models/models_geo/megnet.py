@@ -2,6 +2,7 @@
 Note:
     This is a simple version for mgenet, where the bond update iteration is omitted.
 """
+import warnings
 from math import pi as PI
 
 import torch
@@ -14,8 +15,10 @@ from models.models_geo.basemodel import BaseCrystalModel, ShiftedSoftplus
 
 
 class MEGNet(BaseCrystalModel):
-    def __init__(self, **kwargs):
-        super(MEGNet, self).__init__(**kwargs)
+    def __init__(self,*args,num_state_features=2,  **kwargs):
+        super(MEGNet, self).__init__(*args,num_state_features=num_state_features, **kwargs)
+        if self.num_state_features == 0:
+            warnings.warn("you use no state_attr !!!, please make sure the ``num_state_features`` compat with your data")
 
     def get_interactions_layer(self):
         self.interactions = Meg_InteractionBlockLoop(self.hidden_channels, self.num_gaussians, self.num_filters,
@@ -38,19 +41,18 @@ class Meg_InteractionBlockLoop(torch.nn.Module):
 
     def forward(self, h, edge_index, edge_weight, edge_attr, data=None):
         state_attr = data.state_attr
-        state_attr = state_attr[data.batch]
 
         for lin1, interaction in zip(self.lin_list1, self.interactions):
             state_attr = state_attr[data.batch]
             hs = torch.cat((state_attr, h), dim=1)
             h = lin1(hs)
             h = h + interaction(h, edge_index, edge_weight, edge_attr, data=data)
-            state_attr = state_attr + torch.sum(scatter(h, data.batch, reduce="mean"), dim=1, keepdim=True).expend_as(
-                state_attr)
 
-        x = self.act(h)
-        x = self.lin(x)
-        return x
+            state_attr = torch.sum(scatter(h, data.batch, reduce="mean",dim=0), dim=1, keepdim=True)
+            state_attr=state_attr.expand(
+                data.state_attr.shape)
+
+        return h
 
 
 class Meg_InteractionBlock(torch.nn.Module):

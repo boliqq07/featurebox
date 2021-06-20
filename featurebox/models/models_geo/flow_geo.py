@@ -76,11 +76,11 @@ def mae(prediction, target):
 #         print("output val:", out_val)
 
 
-class BaseLearning:
+class LearningFlow:
     def __init__(self, model: Module, train_loader: DataLoader, validate_loader: DataLoader, device: str = "cpu",
                  optimizer=None, clf: bool = False, loss_method=None, learning_rate: float = 1e-3, milestones=None,
                  weight_decay: float = 0.01, checkpoint=True, scheduler=None,
-                 loss_threshold: float = 230.0, print_freq: int = None, print_what="all"):
+                 loss_threshold: float = 0.1, print_freq: int = 10, print_what="all"):
         """
 
         Parameters
@@ -125,10 +125,12 @@ class BaseLearning:
         self.optimizer = optimizer
         self.checkpoint = checkpoint
 
-        if print_freq == "default":
-            self.print_freq = 10
+        self.train_batch_number = len(self.train_loader)
+
+        if print_freq == "default" or print_freq is None:
+            self.print_freq = self.train_batch_number
         else:
-            self.print_freq = 10 if isinstance(print_freq, int) else print_freq
+            self.print_freq = self.train_batch_number if isinstance(print_freq, int) else print_freq
 
         if self.optimizer is None or self.optimizer == "Adam":
             self.optimizer = torch.optim.Adam(self.model.parameters(), lr=learning_rate, weight_decay=weight_decay)
@@ -205,8 +207,10 @@ class BaseLearning:
             if score != score:
                 print('Exit due to NaN')
                 sys.exit(1)
-
-            self.scheduler.step()
+            try:
+                self.scheduler.step()
+            except TypeError:
+                self.scheduler.step(score)
 
             is_best = score < self.best_error
             self.best_error = min(score, self.best_error)
@@ -240,6 +244,7 @@ class BaseLearning:
         for m, data in enumerate(self.train_loader):
             batch_y=data.y
             data = data.to(self.device)
+            batch_y = batch_y.to(self.device)
             batch_time.update(time.time() - point)
 
             self.optimizer.zero_grad()
@@ -313,6 +318,7 @@ class BaseLearning:
         for m, data in enumerate(self.test_loader):
             batch_y = data.y
             data = data.to(self.device)
+            batch_y = batch_y.to(self.device)
             y_pred = self.model(data)
             try:
                 lossi = self.loss_method(y_pred, batch_y)

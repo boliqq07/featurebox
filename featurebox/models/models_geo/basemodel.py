@@ -1,15 +1,19 @@
 """This part contains some base model and tools which just for crystal problem."""
+import warnings
+
 import ase.data as ase_data
 import torch
 import torch.nn.functional as F
 from torch.nn import Embedding, Linear, ModuleList, Sequential, ReLU
 from torch.nn import Module
 from torch_geometric.nn import radius_graph
+from torch_geometric.utils import remove_self_loops
 from torch_scatter import scatter
 
 
 class GaussianSmearing(Module):
     """Smear the radius."""
+
     def __init__(self, start=0.0, stop=5.0, num_gaussians=50):
         super(GaussianSmearing, self).__init__()
         offset = torch.linspace(start, stop, num_gaussians)
@@ -23,6 +27,7 @@ class GaussianSmearing(Module):
 
 class ShiftedSoftplus(Module):
     """Softplus with one log2 intercept."""
+
     def __init__(self):
         super(ShiftedSoftplus, self).__init__()
         self.shift = torch.log(torch.tensor(2.0)).item()
@@ -31,10 +36,9 @@ class ShiftedSoftplus(Module):
         return F.softplus(x) - self.shift
 
 
-
-
 class BaseCrystalModel(Module):
     """Base model for crystal problem."""
+
     def __init__(self,
                  num_node_features=1,
                  num_bond_features=3,
@@ -123,8 +127,10 @@ class BaseCrystalModel(Module):
         # 使用键性质,或者使用Embedding 产生随机数据。
 
         if simple_z:
-            assert num_node_features == 0, "simple_z just accept num_node_features == 0, and don't " \
-                                           "use your self-defined 'x' data"
+            if num_node_features != 0:
+                warnings.warn("simple_z just accept num_node_features == 0, "
+                              "and don't use your self-defined 'x' data", UserWarning)
+
             self.embedding_e = Embedding(num_embeddings, hidden_channels)
             self.embedding_l = Linear(2, hidden_channels)  # not used
         else:
@@ -132,11 +138,12 @@ class BaseCrystalModel(Module):
             self.embedding_e = Embedding(num_embeddings, hidden_channels)
             self.embedding_l = Linear(num_node_features, hidden_channels)
         if simple_edge:
-            print(
-                "simple_edge == True means re-calculate and arrange the edge_index,edge_weight,edge_attr."
-                "The old would be neglected")
-            assert num_bond_features == 0, "The `num_node_features` must be the same size with `edge_attr` feature." \
-                                           "and don't use your self-defined 'edge_attr' data"
+
+            if num_bond_features != 0:
+                warnings.warn("simple_edge == True means re-calculate and arrange the edge_index,edge_weight,edge_attr."
+                              "The old would be neglected, The `num_node_features` should be set as 0."
+                              "and don't use your self-defined 'edge_attr' data", UserWarning)
+
             self.distance_expansion = GaussianSmearing(0.0, cutoff, num_gaussians)
         else:
             assert num_bond_features > 0, "The `num_bond_features` must be the same size with `edge_attr` feature."
@@ -156,9 +163,9 @@ class BaseCrystalModel(Module):
             self.atomref.weight.data.copy_(atomref)
             # 单个原子的性质是否加到最后
 
-        self.add_state=add_state
+        self.add_state = add_state
         if self.add_state:
-            self.ads = Linear(self.hidden_channels+self.num_state_features,self.hidden_channels)
+            self.ads = Linear(self.hidden_channels + self.num_state_features, self.hidden_channels)
             self.adsrelu = ReLU(inplace=True)
         self.reset_parameters()
 
@@ -185,7 +192,8 @@ class BaseCrystalModel(Module):
 
         if self.simple_edge:
             edge_index = radius_graph(pos, r=self.cutoff, batch=batch)
-            row, col = edge_index
+            edge_index, _ = remove_self_loops(edge_index)
+            row, col = edge_index[0], edge_index[1]
             edge_weight = (pos[row] - pos[col]).norm(dim=-1)
             edge_attr = self.distance_expansion(edge_weight)
         else:
@@ -202,9 +210,11 @@ class BaseCrystalModel(Module):
 
         if isinstance(self.interactions, ModuleList):
             for interaction in self.interactions:
-                h = h + interaction(h, edge_index, edge_weight, edge_attr, data=data)
+                h = h + interaction(h, edge_index, edge_weight, edge_attr,
+                                    data=data)
         else:
-            h = self.interactions(h, edge_index, edge_weight, edge_attr, data=data)
+            h = self.interactions(h, edge_index, edge_weight, edge_attr,
+                                  data=data)
 
         out = self.readout_layer(h, batch)
 
@@ -244,7 +254,7 @@ class BaseCrystalModel(Module):
             >>> ...
             >>> self.readout_layer = YourNet()
         """
-        self.readout_layer = ReadOutLayer(readout=self.readout)
+        self.readout_layer = ReadOutLayer(hidden_channels=self.hidden_channels, readout=self.readout)
 
     def output_forward(self, out):
 
@@ -284,13 +294,6 @@ class BaseCrystalModel(Module):
     def reset_parameters(self):
         self.embedding_e.reset_parameters()
         self.embedding_l.reset_parameters()
-        if isinstance(self.interactions,ModuleList):
-            for interaction in self.interactions:
-                interaction.reset_parameters()
-        else:
-            self.interactions.reset_parameters()
-
-        self.readout_layer.reset_parameters()
         if self.atomref is not None:
             self.atomref.weight.data.copy_(self.initial_atomref)
 
@@ -298,13 +301,15 @@ class BaseCrystalModel(Module):
 class ReadOutLayer(Module):
     """Merge node"""
 
-    def __init__(self, readout="add"):
+    def __init__(self, hidden_channels, readout="add"):
         super(ReadOutLayer, self).__init__()
         self.readout = readout
         self.lin = Sequential(
-            Linear(self.hidden_channels, self.hidden_channels // 2),
+            Linear(hidden_channels, hidden_channels *5),
             ShiftedSoftplus(),
-            Linear(self.hidden_channels // 2, 1), )
+            Linear(hidden_channels *5, hidden_channels),
+            ShiftedSoftplus(),
+            Linear(hidden_channels, 1), )
 
     def forward(self, h, batch):
         h = self.lin(h)
