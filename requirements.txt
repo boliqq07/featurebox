@@ -22,3 +22,6 @@ monty~=4.0.2
 ase
 numba
 torch_geometric
+torch_sparse
+torch-scatter
+torch-cluster

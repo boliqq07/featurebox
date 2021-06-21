@@ -105,4 +105,4 @@ from featurebox.data.check_data import CheckElements
 
 class MyTestCase(unittest.TestCase):
     def test_something(self):
-        lf.run(50)
+        lf.run(5)
