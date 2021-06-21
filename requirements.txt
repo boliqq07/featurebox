@@ -23,7 +23,7 @@ ase
 numba
 
 torch-scatter -f https://pytorch-geometric.com/whl/torch-1.9.0+cu111.html
-torch-sparse
+torch-sparse -f https://pytorch-geometric.com/whl/torch-1.9.0+cu111.html
 torch-cluster
 torch-spline-conv
 torch_geometric
