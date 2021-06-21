@@ -25,6 +25,7 @@ from torch.utils.data._utils.collate import default_convert
 
 MODULE_DIR = Path(__file__).parent.absolute()
 
+
 @deprecated(version='0.1.0')
 def collate_fn(batch: List, collate_marks: Tuple[str]) -> List[List]:
     """

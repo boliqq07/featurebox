@@ -2,21 +2,23 @@
 Note:
     This is a reconstitution version from  pytorch_geometric/ torch_geometric / nn / models / schnet.py.
 """
+
 from math import pi as PI
 
 import torch
+from torch.nn import Linear, Sequential
 from torch.nn import ModuleList
 from torch_geometric.nn import MessagePassing
 
-"""This is one general script. For different data, you should re-write this and tune."""
-
-from torch.nn import Linear, Sequential
-
-from models.models_geo.basemodel import BaseCrystalModel, ShiftedSoftplus
+from featurebox.models.models_geo.basemodel import BaseCrystalModel, ShiftedSoftplus
 
 
 class SchNet(BaseCrystalModel):
-    def __init__(self,*args,  **kwargs):
+    """
+    SchNet.
+    """
+
+    def __init__(self, *args, **kwargs):
         super(SchNet, self).__init__(*args, **kwargs)
         self.num_state_features = None  # not used for this network.
 

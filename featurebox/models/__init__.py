@@ -1,60 +1,30 @@
-__all__ = ["cgcnn", "flow", "megnet", "symnet"]
+__all__ = ["cgcnn", "flow", "megnet", "symnet", "models_geo"]
 
 __doc__ = """
+
 Input Note/ Read Me First
 -------------------------
 
-There are 3 length for first dim(axis) of data.
+Each Graph data in (for each structure) in ``models_geo``:
 
-`N_atom` > `N_ele`> `N_node`.
+``x``: Node feature matrix. np.ndarray, with shape (num_nodes, num_node_features)
 
-1. `N_node`: This is consistent with the number of target. `N_node`==`N_target`. In brief, The first dim(axis) of data
-   should be reduced to `N_node` to calculated error in the final network.
+``edge_index``: Graph connectivity in COO format. np.ndarray, with shape (2, num_edges) and type torch.long
 
-   `N_node` is the min data number. which can be expand in to `N_atom`, and `N_ele`.
+``edge_attr``: Edge feature matrix. np.ndarray, with shape (num_edges, num_edge_features)
 
-   Examples:
+``pos``: Node position matrix. np.ndarray, with shape (num_nodes, num_dimensions)
 
-        new_data = self.expand_idx(data, node_atom_idx)
-        new_data = self.expand_idx(data, node_ele_idx)
+``y``: target. np.ndarray, shape (1, num_target), default shape (1,)
 
-2. `N_ele`: This is the number of type of atomic number.
+``state_attr``: state feature. np.ndarray, shape (1, num_state_features)
 
-   This type is not used very much.
+``z``: atom numbers. np.ndarray, with shape (num_nodes,)
 
-   `N_node` is the min data number. which can be expand in to and `N_atom` merged to `N_node`.
+Where the state_attr is added newly.
 
-   Examples:
+.. note::
 
-        new_data = self.expand_idx(data, ele_atom_idx)
-        new_data = self.merge_idx(data, node_ele_idx)
-
-3. `N_atom` (`N`): This is the number of all atom in batch data.
-
-   The data with `N` could be merged in to `N_node` by node_atom_idx.
-
-   Examples:
-
-        new_data = self.merge_idx(data, node_atom_idx)
-        new_data = self.merge_idx(data, ele_atom_idx)
-
-Common data
---------------
-
-`atom_fea`:(torch.Tensor) torch.float32, shape (N, atom_fea_len)
-
-`nbr_fea`:(torch.Tensor) torch.float32, shape (N, fill_size, atom_fea_len) M default is 5.
-
-`state_fea`: (torch.Tensor) torch.float32, shape (N_node, state_fea_len)
-
-`atom_nbr_idx`: (torch.Tensor) torch.int64, shape (N, fill_size) ,fill_size default is 5.
-
-`node_atom_idx`: (list of torch.Tensor) torch.int64, each one shape is different.
-
-`node_ele_idx`: (list of torch.Tensor) torch.int64, each one shape is different.
-
-`ele_atom_idx`: (list of torch.Tensor) torch.int64, each one shape is different.
-
-
-
+    For different model, not all attributes are used.
+    
 """

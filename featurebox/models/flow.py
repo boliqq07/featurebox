@@ -5,6 +5,7 @@ import time
 
 import numpy as np
 import torch
+from deprecated.classic import deprecated
 from sklearn import metrics
 from torch.nn import Module
 from torch.optim.lr_scheduler import MultiStepLR
@@ -77,6 +78,7 @@ def for_hook(module, input, output):
         print("output val:", out_val)
 
 
+@deprecated(version='0.1.0')
 class BaseLearning:
     def __init__(self, model: Module, train_loader: MGEDataLoader, test_loader: MGEDataLoader, device: str = "cpu",
                  optimizer=None, clf: bool = False, loss_method=None, learning_rate: float = 1e-3, milestones=None,

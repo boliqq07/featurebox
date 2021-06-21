@@ -6,8 +6,8 @@ import numpy as np
 from mgetool.tool import tt
 from pymatgen.core import Structure
 
+from featurebox.utils.general import re_pbc
 from featurebox.utils.predefined_typing import StructureOrMolecule
-from utils.general import re_pbc
 
 
 def get_xyz_in_spheres(structure: StructureOrMolecule, nn_strategy=None, cutoff: float = 5.0,

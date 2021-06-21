@@ -4,8 +4,8 @@ import numpy as np
 from pymatgen.core import Structure, Molecule
 from pymatgen.optimization.neighbors import find_points_in_spheres
 
+from featurebox.utils.general import re_pbc
 from featurebox.utils.predefined_typing import StructureOrMolecule
-from utils.general import re_pbc
 
 
 def get_radius_in_spheres(

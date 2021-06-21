@@ -53,6 +53,7 @@ def itemgetter_list(data_list: List, indices: List) -> tuple:
         return it(data_list),
     return it(data_list)
 
+
 @deprecated(version='0.1.0')
 class _StructureGraph(BaseFeature):
     """

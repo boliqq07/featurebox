@@ -29,6 +29,14 @@ featurebox.featurizers.base\_graph module
    :undoc-members:
    :show-inheritance:
 
+featurebox.featurizers.base\_graph\_geo module
+----------------------------------------------
+
+.. automodule:: featurebox.featurizers.base_graph_geo
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 featurebox.featurizers.base\_transform module
 ---------------------------------------------
 
@@ -57,6 +65,14 @@ featurebox.featurizers.generator module
 ---------------------------------------
 
 .. automodule:: featurebox.featurizers.generator
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+featurebox.featurizers.generator\_geo module
+--------------------------------------------
+
+.. automodule:: featurebox.featurizers.generator_geo
    :members:
    :undoc-members:
    :show-inheritance:

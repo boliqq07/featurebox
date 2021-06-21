@@ -1,4 +1,4 @@
-﻿from pathlib import Path
+from pathlib import Path
 from typing import Tuple, Union, Dict, List
 
 import numpy as np
@@ -293,7 +293,8 @@ class BaseNNGet(_BaseEnvGet):
         self.pbc = pbc
         self.check_align = check_align
 
-    def convert(self, structure: StructureOrMolecule) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    def convert(self, structure: StructureOrMolecule) -> Tuple[
+        np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """
 
         Args:
@@ -411,7 +412,7 @@ class GEONNGet(BaseNNGet):
             if offered, the nn_strategy would be neglect and find neighbors using
                 ``find_points_in_spheres`` in pymatgen.
         """
-        assert refine=="geo_refine_nn"
+        assert refine == "geo_refine_nn"
         super().__init__(nn_strategy=nn_strategy,
                          refine=refine,
                          refined_strategy_param=refined_strategy_param,

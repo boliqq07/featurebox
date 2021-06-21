@@ -6,17 +6,19 @@ Requirements
 
 Packages:
 
-============= ============  ============
- Dependence   Name          Version
-------------- ------------  ------------
- necessary    sympy         >=1.6
- necessary    deap          >=1.3.1
- necessary    scikit-learn  >=0.22.1
- necessary    torch         >=1.5.0
- necessary    pymatgen      \
- recommend    scikit-image  \
- recommend    minepy        \
-============= ============  ============
+============= =================  ============
+ Dependence   Name               Version
+------------- -----------------  ------------
+ necessary    sympy              >=1.6
+ necessary    deap               >=1.3.1
+ necessary    scikit-learn       >=0.22.1
+ necessary    torch              >=1.5.0
+ necessary    ase                \
+ necessary    pymatgen           \
+ recommend    scikit-image       \
+ recommend    minepy             \
+ recommend    torch_geometric    \
+============= =================  ============
 
 Method 1
 ::::::::::::
@@ -80,3 +82,18 @@ Reference: https://github.com/Mgedata/mgetool
 
     pip install featurebox
 
+7. torch-geometric::
+
+    pip install torch-scatter
+    pip install torch-sparse
+    pip install torch-cluster
+    pip install torch-spline-conv
+    pip install torch-geometric
+
+Reference: https://pytorch-geometric.readthedocs.io/en/latest/ , not necessary, just for network.
+
+8. ase::
+
+    pip install ase
+
+Reference: https://wiki.fysik.dtu.dk/ase/ , not necessary, just for network.

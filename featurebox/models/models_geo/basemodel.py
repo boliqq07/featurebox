@@ -1,4 +1,4 @@
-"""This part contains some base model and tools which just for crystal problem."""
+"""This part contains base model for crystal problem and tools."""
 import warnings
 
 import ase.data as ase_data
@@ -12,7 +12,7 @@ from torch_scatter import scatter
 
 
 class GaussianSmearing(Module):
-    """Smear the radius."""
+    """Smear the radius shape (num_node,1) to shape (num_node, num_gaussians)."""
 
     def __init__(self, start=0.0, stop=5.0, num_gaussians=50):
         super(GaussianSmearing, self).__init__()
@@ -37,7 +37,9 @@ class ShiftedSoftplus(Module):
 
 
 class BaseCrystalModel(Module):
-    """Base model for crystal problem."""
+    """
+    Base model for crystal problem.
+    """
 
     def __init__(self,
                  num_node_features=1,
@@ -61,16 +63,15 @@ class BaseCrystalModel(Module):
                  add_state=False,
                  ):
         """
-
         Args:
-            num_node_features: (int) number of node feature (atom feature).
-            num_bond_features: (int) number of bond feature.
-            num_state_features: (int) number of state feature.
+            num_node_features: (int) input number of node feature (atom feature).
+            num_bond_features: (int) input number of bond feature.
+            num_state_features: (int) input number of state feature.
             num_embeddings: (int) number of embeddings, For generate the initial embedding matrix
-                to on behalf of node feature.
-            hidden_channels: (int)
-            num_filters: (int)
-            num_interactions: (int)
+            to on behalf of node feature.
+            hidden_channels: (int) hidden_channels for node feature.
+            num_filters: (int) num_filters for node feature.
+            num_interactions: (int) conv number.
             num_gaussians: (int) number of gaussian Smearing number for radius.
             cutoff: (float) cutoff for calculate neighbor bond, just used for ``simple_edge`` == True.
             readout: (str) Merge node method. such as "add","mean","max","mean".
@@ -78,19 +79,14 @@ class BaseCrystalModel(Module):
             mean: (float) mean
             std: (float) std
             atomref: (torch.tensor shape (120,1)) properties for atom. such as target y is volumes of compound,
-                atomref could be the atom volumes of all atom (H,H,He,Li,...). And you could copy the first term to
-                make sure the `H` index start form 1.
+            atomref could be the atom volumes of all atom (H,H,He,Li,...). And you could copy the first term to
+            make sure the `H` index start form 1.
             simple_z: (bool) just used "z" or used "x" to calculate.
             simple_edge: (bool) True means re-calculate and arrange the edge_index, edge_weight, edge_attr.
-                The old would be neglected.
-            interactions: (Callable) torch module for interactions.
-                dynamic: pass the torch module to interactions parameter.
-                static: re-define the ``get_interactions_layer`` and keep this parameter is None.
-                the forward input is (h, edge_index, edge_weight, edge_attr, data=data)
-            readout_layer: (Callable) torch module for interactions.
-                dynamic: pass the torch module to interactions parameter.
-                static: re-define the ``get_interactions_layer`` and keep this parameter is None.
-                the forward input is (out,)
+            The old would be neglected.
+            interactions: (Callable) torch module for interactions.dynamic: pass the torch module to interactions parameter.static: re-define the ``get_interactions_layer`` and keep this parameter is None.
+            the forward input is (h, edge_index, edge_weight, edge_attr, data=data)
+            readout_layer: (Callable) torch module for interactions.dynamic: pass the torch module to interactions parameter. static: re-define the ``get_interactions_layer`` and keep this parameter is None. the forward input is (out,)
             add_state: (bool) add state attribute before output.
         """
         super(BaseCrystalModel, self).__init__()
@@ -207,7 +203,7 @@ class BaseCrystalModel(Module):
             edge_attr = self.distance_expansion(edge_weight)
             edge_index = data.edge_index
             edge_attr = torch.cat((data.edge_attr, edge_attr), dim=1)
-
+        # 自定义
         if isinstance(self.interactions, ModuleList):
             for interaction in self.interactions:
                 h = h + interaction(h, edge_index, edge_weight, edge_attr,
@@ -215,7 +211,7 @@ class BaseCrystalModel(Module):
         else:
             h = self.interactions(h, edge_index, edge_weight, edge_attr,
                                   data=data)
-
+        # 自定义
         out = self.readout_layer(h, batch)
 
         if self.add_state:
@@ -299,15 +295,15 @@ class BaseCrystalModel(Module):
 
 
 class ReadOutLayer(Module):
-    """Merge node"""
+    """Merge node layer."""
 
     def __init__(self, hidden_channels, readout="add"):
         super(ReadOutLayer, self).__init__()
         self.readout = readout
         self.lin = Sequential(
-            Linear(hidden_channels, hidden_channels *5),
+            Linear(hidden_channels, hidden_channels * 5),
             ShiftedSoftplus(),
-            Linear(hidden_channels *5, hidden_channels),
+            Linear(hidden_channels * 5, hidden_channels),
             ShiftedSoftplus(),
             Linear(hidden_channels, 1), )
 

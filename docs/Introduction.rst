@@ -17,7 +17,6 @@ The main feature tools are:
  :mod:`featurebox.featurizers.batch_feature`             A built-in goofy tool for generating features.
  :class:`featurebox.data.namesplit.NameSplit`            Dividing compound names to elemental proportion table.
  :class:`featurebox.data.mp_access.MpAccess`             Getting data from pymatgen conveniently.
- :mod:`featurebox.featurizers.base_graph`                Integrated structure data tool. (high dimensional data)
 ================================================         =========================================
 
 All the feature tools with  ``convert`` method for single case.
@@ -45,17 +44,19 @@ Featurebox integrated with **Graph neural network**.
 
 The main Graph neural network tools are:
 
-=========================================================== =========================================
- Name                                                       Application
------------------------------------------------------------ -----------------------------------------
- :class:`featurebox.models.cgcnn.CrystalGraphConvNet`        Traditional graph neural network.
- :class:`featurebox.models.megnet.MEGNet`                    Graph neural network with state features.
- :class:`featurebox.models.flow.BaseLearning`                Script for modeling (recommended customization by user).
- :class:`featurebox.featurizers.generator.GraphGenerator`   ``Dataset`` for data data in a non-uniform format. (Torch-like)
- :class:`featurebox.featurizers.generator.MGEDataLoader`    ``Dataloader`` for data data in a non-uniform format.(Torch-like)
-=========================================================== =========================================
+===================================================================== =========================================
+ Name                                                                 Application
+--------------------------------------------------------------------- -----------------------------------------
+ :class:`featurebox.featurizers.base_graph_geo.StructureGraphGEO`     Integrated structure data tool. (high dimensional data)
+ :class:`featurebox.models.models_geo.cgcnn.CrystalGraphConvNet`      Traditional graph neural network.
+ :class:`featurebox.models.models_geo.schnet.SchNet`                  Graph neural network with state features.
+ :class:`featurebox.models.models_geo.megnet.MEGNet`                  Graph neural network with state features.
+ :class:`featurebox.models.models_geo.flow_geo.LearningFlow`          Script for modeling (recommended customization by user).
+ :class:`featurebox.featurizers.generator_geo.InMemoryDatasetGeo`     ``Dataset`` for data data in a non-uniform format. (Torch-like)
+===================================================================== =========================================
 
 
 The neural network tools are ``torch-type``, with ``forward`` methods .etc.
 
-The **Graph neural network** employ **base_graph**, **bond** and **atom** .etc to build input data.
+The **Graph neural network** employ **base_graph_base**, **bond** and **atom** .etc to build input data.
+

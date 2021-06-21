@@ -16,3 +16,11 @@ featurebox.featurizers.bond.expander module
    :members:
    :undoc-members:
    :show-inheritance:
+
+featurebox.featurizers.bond.smooth module
+-----------------------------------------
+
+.. automodule:: featurebox.featurizers.bond.smooth
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -77,6 +77,43 @@ def mae(prediction, target):
 
 
 class LearningFlow:
+    """
+    LearningFlow for training.
+    
+    Examples:
+
+        >>> test_dataset = dataset[:1000]
+        >>> val_dataset = dataset[1000:2000]
+        >>> train_dataset = dataset[2000:3000]
+        >>> test_loader = DataLoader(test_dataset, batch_size=128, shuffle=False)
+        >>> val_loader = DataLoader(val_dataset, batch_size=128, shuffle=False)
+        >>> train_loader = DataLoader(train_dataset, batch_size=128, shuffle=True)
+
+        >>> device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
+
+        >>> # model = CGGRUNet(11, 5, cutoff=5.0).to(device)
+        >>> # model = CrystalGraphConvNet(11, 5, cutoff=5.0).to(device)
+        >>> # model = CrystalGraphGCN(11, 5, cutoff=5.0).to(device)
+        >>> # model = CrystalGraphGCN2(11, 5, cutoff=5.0).to(device)
+        >>> model = CrystalGraphGAT(11, 5, cutoff=5.0).to(device)
+        >>> # model = SchNet(0,0,simple_edge=True).to(device)
+        >>> # model = MEGNet(11, 5, cutoff=5.0,num_state_features=2).to(device)
+        >>> # model = SchNet(11,5,simple_edge=False).to(device)
+        >>> # model = CrystalGraphConvNet(0,5,simple_edge=False,simple_z=True).to(device)
+
+        >>> optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+        >>> scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.7, patience=2,...min_lr=0.001)
+        >>>
+        >>> lf= LearningFlow(model, train_loader, validate_loader=val_loader, device= "cuda:1",
+        ... optimizer=None, clf= False, loss_method=None, learning_rate = 1e-3, milestones=None,
+        ... weight_decay= 0.01, checkpoint=True, scheduler=scheduler,
+        ... loss_threshold= 0.1, print_freq= None, print_what="all")
+
+        >>> lf.run(50)
+
+    where the dataset could from :class:`featurebox.featurizers.base_graph_geo.StructureGraphGEO`
+    """
+
     def __init__(self, model: Module, train_loader: DataLoader, validate_loader: DataLoader, device: str = "cpu",
                  optimizer=None, clf: bool = False, loss_method=None, learning_rate: float = 1e-3, milestones=None,
                  weight_decay: float = 0.01, checkpoint=True, scheduler=None,
@@ -109,6 +146,8 @@ class LearningFlow:
             print frequency
         print_what:str
             "all","train","test" log.
+        scheduler:
+            scheduler, see more in torch
         """
 
         self.train_loader = train_loader
@@ -242,7 +281,7 @@ class LearningFlow:
 
         point = time.time()
         for m, data in enumerate(self.train_loader):
-            batch_y=data.y
+            batch_y = data.y
             data = data.to(self.device)
             batch_y = batch_y.to(self.device)
             batch_time.update(time.time() - point)

@@ -5,15 +5,12 @@
 # @Software: PyCharm
 # @License: BSD 3-Clause
 
-import scipy
-
 """
 General methods for computing property statistics from a list of values
 """
-
 import numpy as np
+import scipy
 from scipy import stats
-
 from six import string_types
 
 

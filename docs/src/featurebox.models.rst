@@ -6,29 +6,10 @@ featurebox.models package
    :undoc-members:
    :show-inheritance:
 
-Submodules
-----------
+Subpackages
+-----------
 
-featurebox.models.cgcnn module
-------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: featurebox.models.cgcnn
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-featurebox.models.flow module
------------------------------
-
-.. automodule:: featurebox.models.flow
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-featurebox.models.megnet module
--------------------------------
-
-.. automodule:: featurebox.models.megnet
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   featurebox.models.models_geo

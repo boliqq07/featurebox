@@ -31,13 +31,14 @@ from typing import Dict, List
 
 import numpy as np
 import torch
+import torch_geometric
 from mgetool.tool import parallelize, batch_parallelize
 from pymatgen.core import Structure
 
 from featurebox.featurizers.base_transform import DummyConverter, BaseFeature, Converter, ConverterCat
 from featurebox.featurizers.envir.environment import GEONNGet, env_method, env_names
 from featurebox.featurizers.envir.local_env import NNDict
-from utils.look_json import get_marked_class
+from featurebox.utils.look_json import get_marked_class
 
 
 class _BaseStructureGraphGEO(BaseFeature):
@@ -78,15 +79,14 @@ class _BaseStructureGraphGEO(BaseFeature):
     def _transform(self, structures: List[Structure], **kwargs):
         """
 
-        Parameters
-        ----------
-        structures:list
-            Preprocessing of samples need to transform to Graph.
+        Args:
+            structures:(list) Preprocessing of samples need to transform to Graph.
 
-        Returns
-        -------
-        list of graphs:
-            List of dict
+            **kwargs:
+
+        Returns:
+            list of graphs:
+                List of dict
 
         """
         assert isinstance(structures, Iterable)
@@ -110,7 +110,7 @@ class _BaseStructureGraphGEO(BaseFeature):
             ret, self.support_ = zip(*rets)
         return ret
 
-    def get_collect_data(self, graphs: List[Dict]) -> dict:
+    def get_collect_data(self, graphs: List[Dict]):
         """
         Not used in default.
 
@@ -118,12 +118,11 @@ class _BaseStructureGraphGEO(BaseFeature):
         This is useful when the model is trained on assembled graphs on the fly.
         Aim to get input for GraphGenerator.
 
-        Parameters
-        ----------
-        graphs: list of dict
-            list of graph dictionary for each structure
-
+        Args:
+            graphs: list of dict
+                list of graph dictionary for each structure
         """
+
         output = {}  # Will be a list of arrays
 
         # Convert the graphs to matrices
@@ -137,22 +136,23 @@ class _BaseStructureGraphGEO(BaseFeature):
 
     def transform(self, structures: List[Structure], **kwargs):
         """
-        Transform batch of structure.
+        use ``convert`` to deal with batch of data.
 
-        Parameters
-        ----------
-        structures:list
-            preprocessing of samples need to transform to Graph.
-        state_attributes:list
-            preprocessing of samples need to add to Graph.
-        y:list
-            Target to train against (the same size with structure)
-
+        Args:
+            structures: (list)
+                preprocessing of samples need to transform to Graph.
+            state_attributes: (list)
+                preprocessing of samples need to add to Graph.
+            y: (list)
+                Target to train against (the same size with structure)
+        Returns:
+            data
         """
+
         return self.get_collect_data(self._transform(structures, **kwargs))
 
     def save(self, obj, name, root_dir="."):
-        """save."""
+        """Save."""
         torch.save(obj, os.path.join(root_dir, "raw", '{}.pt'.format(name)))
 
     def check_dup(self, structures, file_names="composition_name"):
@@ -185,7 +185,7 @@ class _BaseStructureGraphGEO(BaseFeature):
         print("Done.")
         return result
 
-    def transform_and_to_data(self, *args):
+    def transform_and_to_data(self, *args) -> List[torch_geometric.data.Data]:
         """Return list of torch_geometric.data.Data."""
         from torch_geometric.data import Data
         result = self._transform(*args)
@@ -201,15 +201,16 @@ class _BaseStructureGraphGEO(BaseFeature):
         For state attributes, you can set structure.state = [[xx, xx]] beforehand or the algorithm would
         take default [[0, 0]]
 
-        Parameters
-        ----------
-        state_attributes: list
-            state attributes
-        structure: Structure
-            pymatgen Structure
-        y:list
-            Target
+        Args:
+            state_attributes: list
+                state attributes
+            structure: Structure
+                pymatgen Structure
+            y:list
+                Target
 
+        Returns:
+            dict
         """
         convert_funcs = [i for i in dir(self) if "_convert_" in i] if not self.convert_funcs else self.convert_funcs
         if len(convert_funcs) <= 1:
@@ -228,7 +229,8 @@ class _BaseStructureGraphGEO(BaseFeature):
         """
         Sample for convert.
 
-        Returns:dict
+        Returns:
+            data:(dict)
 
         """
 
@@ -237,11 +239,25 @@ class _BaseStructureGraphGEO(BaseFeature):
 
 class BaseStructureGraphGEO(_BaseStructureGraphGEO):
     """
-    This is a base class for converting converting structure into graphs or model inputs.
 
-    Methods to be implemented are follows:
-        convert(self, structure)
-            This is to convert a structure into a graph dictionary.
+    Returns
+
+    ``x``: Node feature matrix. np.ndarray, with shape [num_nodes, num_node_features]
+
+    ``pos``: Node position matrix. np.ndarray, with shape [num_nodes, num_dimensions]
+
+    ``y``: target. np.ndarray, shape (1, num_target) , default shape (1,)
+
+    ``z``: atom numbers. np.ndarray, with shape [num_nodes,]
+
+    Examples:
+        >>> from torch_geometric.data.dataloader import DataLoader
+        >>> sg1 = BaseStructureGraphGEO()
+        >>> data_list = sg1.transform_and_to_data(structures_checked)
+        >>> loader = DataLoader(data_list, batch_size=3)
+        >>> for i in loader:
+        ...     print(i)
+
 
     """
 
@@ -314,11 +330,31 @@ class BaseStructureGraphGEO(_BaseStructureGraphGEO):
 
 class StructureGraphGEO(BaseStructureGraphGEO):
     """
-    This is a base class for converting converting structure into graphs or model inputs.
+    Returns
 
-    Methods to be implemented are follows:
-        convert(self, structure)
-            This is to convert a structure into a graph dictionary.
+    ``x``: Node feature matrix. np.ndarray, with shape [num_nodes, num_node_features]
+
+    ``edge_index``: Graph connectivity in COO format. np.ndarray, with shape [2, num_edges] and type torch.long
+
+    ``edge_attr``: Edge feature matrix. np.ndarray,  with shape [num_edges, num_edge_features]
+
+    ``pos``: Node position matrix. np.ndarray, with shape [num_nodes, num_dimensions]
+
+    ``y``: target. np.ndarray, shape (1, num_target) , default shape (1,)
+
+    ``state_attr``: state feature. np.ndarray, shape (1, num_state_features)
+
+    ``z``: atom numbers. np.ndarray, with shape [num_nodes,]
+
+    Where the state_attr is added newly.
+
+    Examples:
+    >>> from torch_geometric.data.dataloader import DataLoader
+    >>> sg1 = BaseStructureGraphGEO()
+    >>> data_list = sg1.transform_and_to_data(structures_checked)
+    >>> loader = DataLoader(data_list, batch_size=3)
+    >>> for i in loader:
+    ...     print(i)
 
     """
 
@@ -328,34 +364,29 @@ class StructureGraphGEO(BaseStructureGraphGEO):
                  cutoff: float = 5.0,
                  **kwargs):
         """
-        Parameters
-        ----------
-        nn_strategy : str
-            NearNeighbor strategy
-            ["find_points_in_spheres", "find_xyz_in_spheres",
-            "BrunnerNN_reciprocal", "BrunnerNN_real", "BrunnerNN_relative",
-            "EconNN", "CrystalNN", "MinimumDistanceNNAll", "find_points_in_spheres","UserVoronoiNN"]
-
-        atom_converter: BinaryMap
-            atom features converter.
-            See Also:
-            :class:`featurebox.featurizers.atom.mapper.AtomTableMap` , :class:`featurebox.featurizers.atom.mapper.AtomJsonMap` ,
-            :class:`featurebox.featurizers.atom.mapper.AtomPymatgenPropMap`, :class:`featurebox.featurizers.atom.mapper.AtomTableMap`
-        bond_converter : Converter
-            bond features converter, default=None.
-        state_converter : Converter
-            state features converter.
-            See Also:
-            :class:`featurebox.featurizers.state.state_mapper.StructurePymatgenPropMap`
-            :mod:`featurebox.featurizers.state.statistics`
-            :mod:`featurebox.featurizers.state.union`
-        bond_generator : GEONNGet, str
-            bond features converter.
-        cutoff: float
-            Whether to use depends on the ``nn_strategy``.
-        **kwargs:
-
+        Args:
+            nn_strategy: (str) NearNeighbor strategy.
+                ["find_points_in_spheres", "find_xyz_in_spheres",
+                "BrunnerNN_reciprocal", "BrunnerNN_real", "BrunnerNN_relative",
+                "EconNN", "CrystalNN", "MinimumDistanceNNAll", "find_points_in_spheres","UserVoronoiNN"]
+            atom_converter: (BinaryMap) atom features converter.
+                See Also:
+                :class:`featurebox.featurizers.atom.mapper.AtomTableMap` , :class:`featurebox.featurizers.atom.mapper.AtomJsonMap` ,
+                :class:`featurebox.featurizers.atom.mapper.AtomPymatgenPropMap`, :class:`featurebox.featurizers.atom.mapper.AtomTableMap`
+            bond_converter: (Converter)
+                bond features converter, default=None.
+            state_converter: (Converter)
+                state features converter.
+                See Also:
+                :class:`featurebox.featurizers.state.state_mapper.StructurePymatgenPropMap`
+                :mod:`featurebox.featurizers.state.statistics`
+                :mod:`featurebox.featurizers.state.union`
+            bond_generator: (GEONNGet, str)
+                bond features converter.
+            cutoff: (float)
+                Whether to use depends on the ``nn_strategy``.
         """
+
         super().__init__(**kwargs)
         self.cutoff = cutoff
 

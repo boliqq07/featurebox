@@ -3,7 +3,7 @@
 sphinx-quickstart
 
 2.# 产生目录
-sphinx-apidoc -f -M -o ./src ../featurebox    (按需要运行)
+sphinx-apidoc -f -M -o ./src ../featurebox    (按需要运行) or
 sphinx-apidoc -f -M -e -o  ./src ../featurebox    (按需要运行,每个文件夹自己的页面)
 
 3.# 产生网页
