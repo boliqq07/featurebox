@@ -25,3 +25,4 @@ torch_geometric
 torch_sparse
 torch-scatter
 torch-cluster
+torch-spline-conv
