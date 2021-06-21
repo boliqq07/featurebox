@@ -1,40 +1,83 @@
-Build Model
-===========
+1.Structure Graph Processing
+==============================
 
-Using data::
+Get structure data
+------------------
 
-    >>> in_data, y = pd.read_pickle("in_data_no_sgt.pkl_pd")
+    >>> data = pd.read_pickle("pymatgen_structures_list.pkl_pd")
+    >>> y = ...
+    >>> # using your self pymatgen.structure List
 
-    >>> y = y.astype(np.float32)
-    >>> y = torch.from_numpy(y)
-    >>> X_train, y_train, X_test, y_test = train_test(*in_data, y, random_state=0)
-    >>> gen = GraphGenerator(*X_train, targets=y_train)
-    >>> test_gen = GraphGenerator(*X_test, targets=y_test)
+Check structure elements in scope
+---------------------------------
 
-    >>> loader1 = MGEDataLoader(
-    ...    dataset=gen,
-    ...    batch_size=2000,
-    ...    shuffle=False,
-    ...    num_workers=0,)
-    >>> loader2 = MGEDataLoader(
-    ...    dataset=test_gen,
-    ...    batch_size=2000,
-    ...    shuffle=False,
-    ...    num_workers=0,)
+    >>> ce = CheckElements.from_pymatgen_structures()
+    >>> checked_data = ce.check(data)
+    >>> y = np.array(y)[ce.passed_idx()]
 
-Net model::
+Transform parallel
+------------------
 
-    >>> model = CrystalGraphConvNet(atom_fea_len=36, nbr_fea_len=1,
-    ...                            # state_fea_len=2,
-    ...                            inner_atom_fea_len=64, n_conv=3, h_fea_len=(256, 128, 64), n_h=2,)
+    >>> gt = StructureGraphGEO(n_jobs=2)
+    >>>
+    >>> """dict data for show."""
+    >>> in_data = gt.transform(checked_data) 
 
+    >>> """1. torch_geometric.data.Data type data."""
+    >>> data = gt.transform_and_to_data(checked_data)
 
-where the ``atom_fea_len``, ``nbr_fea_len``, ``state_fea_len``, should be consist with the data,
-which depend on the :class:`CrystalBgGraph` and so on.
+    >>> """2. torch_geometric.data.Data type data and save to local path."""
+    >>> data = gt.transform_and_save(checked_data,root_dir = "path")
 
-Training and test::
+Using data
+----------
 
-    >>> bl = BaseLearning(model, loader1,test_loader=loader2, device="cuda:0",
-    ...                  opt=None, clf=False)
-    >>> torch.save(bl.model.state_dict(), './parameter_n_sgt.pkl')
-    >>> bl.run(500)
+    >>> from torch_geometric.data import DataLoader
+    >>> """1. Just use data (small data)."""
+    >>> loader = DataLoader(
+                        dataset=data,  
+                        batch_size=1,  
+                        shuffle=True,  
+                        num_workers=0,  
+                        )
+
+    >>> from torch_geometric.data import DataLoader
+    >>> """2. Use local data (middle data)."""
+    >>> gen = InMemoryDatasetGeo(root="path")
+    >>> loader = DataLoader(
+                        dataset=gen,  
+                        batch_size=1,  
+                        shuffle=True,  
+                        num_workers=0,  
+                        )
+
+    >>> from torch_geometric.data import DataLoader
+    >>> """3. Use local data (large data)."""
+    >>> gen = DatasetGeo(root="path")
+    >>> loader = DataLoader(
+                        dataset=gen,  
+                        batch_size=1,  
+                        shuffle=True,  
+                        num_workers=0,  
+                        )
+
+Note
+----
+
+    Each Graph data (for each structure):
+
+    ``x``: Node feature matrix. np.ndarray, with shape [num_nodes, num_node_features]
+    
+    ``edge_index``: Graph connectivity in COO format. np.ndarray, with shape [2, num_edges] and type torch.long
+    
+    ``edge_attr``: Edge feature matrix. np.ndarray, with shape [num_edges, num_edge_features]
+    
+    ``pos``: Node position matrix. np.ndarray, with shape [num_nodes, num_dimensions]
+    
+    ``y``: target. np.ndarray, shape (1, num_target), default shape (1,)
+    
+    ``state_attr``: state feature. np.ndarray, shape (1, num_state_features)
+    
+    ``z``: atom numbers. np.ndarray, with shape [num_nodes,]
+    
+    Where the state_attr is added newly.
