@@ -6,11 +6,6 @@ from sklearn.utils import check_random_state, shuffle
 
 from featurebox.utils.fast._calculate_length import cal_length_numba
 from featurebox.utils.fast._calculate_subp import subp_numba2d
-from featurebox.utils.general import train_test
-
-this_directory = path.abspath(path.dirname(__file__))
-with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
-    __doc__ = f.read()
 
 from abc import abstractmethod
 from itertools import zip_longest
@@ -22,6 +17,8 @@ import torch
 from torch import Tensor
 from torch.utils.data import Dataset, DataLoader
 from torch.utils.data._utils.collate import default_convert
+
+from featurebox.utils.general import train_test_pack
 
 MODULE_DIR = Path(__file__).parent.absolute()
 
@@ -796,12 +793,12 @@ def get_train_test_loader(*data_X, data_y, train_size=None, test_size=0.25,
     else:
         generator_type = DuplicateGraphGenerator
 
-    X_train_test, y_train_test, X_test, y_test = train_test(*data_X, data_y,
+    X_train_test, y_train_test, X_test, y_test = train_test_pack(*data_X, data_y,
                                                             train_size=train_size,
                                                             test_size=test_size,
                                                             shuffle=shuffle,
                                                             random_state=random_state,
-                                                            stratify=stratify)
+                                                            stratify=stratify,pack=1)
     train_gen = generator_type(*X_train_test, targets=y_train_test)
     test_gen = generator_type(*X_test, targets=y_test)
 

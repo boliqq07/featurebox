@@ -7,7 +7,7 @@ from mgetool.tool import def_pwd
 from torch_geometric.data import DataLoader
 
 from featurebox.data.check_data import CheckElements
-from featurizers.base_graph_geo import BaseStructureGraphGEO, StructureGraphGEO
+from featurebox.featurizers.base_graph_geo import BaseStructureGraphGEO, StructureGraphGEO
 
 
 class TestGraph3(unittest.TestCase):

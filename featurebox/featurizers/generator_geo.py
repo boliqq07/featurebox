@@ -1,10 +1,126 @@
+import copy
 import os
 import os.path as osp
 from shutil import rmtree
+from typing import List, Callable, Dict, Union
 
 import torch
+from torch.utils.data import Dataset as tD
 from torch_geometric.data import Data, Dataset
 from torch_geometric.data import InMemoryDataset
+
+
+class SimpleDataset(tD):
+    """Data list with shuffle (lazy)"""
+    def __init__(self, data: Union[List[Data],List[Dict]], pre_filter=None, pre_transform=None, transform: Callable = None):
+        super(SimpleDataset, self).__init__()
+        self.transform = transform
+        self.pre_filter = pre_filter
+        self.pre_transform = pre_transform
+        if isinstance(data[0],dict):
+            self.data = [Data.from_dict(di) for di in data]
+        else:
+            self.data = data
+        self.__indices__ = None
+        self.process()
+
+    def len(self):
+        return len(self.data)
+
+    def get(self, idx):
+        return self.data[idx]
+
+    def indices(self):
+        if self.__indices__ is not None:
+            return self.__indices__
+        else:
+            return range(len(self))
+
+    @property
+    def num_node_features(self):
+        r"""Returns the number of features per node in the dataset."""
+        return self[0].num_node_features
+
+    @property
+    def num_features(self):
+        r"""Alias for :py:attr:`~num_node_features`."""
+        return self.num_node_features
+
+    @property
+    def num_edge_features(self):
+        r"""Returns the number of features per edge in the dataset."""
+        return self[0].num_edge_features
+
+    def __len__(self):
+        r"""The number of examples in the dataset."""
+        if self.__indices__ is not None:
+            return len(self.__indices__)
+        return self.len()
+
+    def __getitem__(self, idx):
+        r"""Gets the data object at index :obj:`idx` and transforms it (in case
+        a :obj:`self.transform` is given).
+        In case :obj:`idx` is a slicing object, *e.g.*, :obj:`[2:5]`, a list, a
+        tuple, a  LongTensor or a BoolTensor, will return a subset of the
+        dataset at the specified indices."""
+        if isinstance(idx, int):
+            data = self.get(self.indices()[idx])
+            data = data if self.transform is None else self.transform(data)
+            return data
+        else:
+            return self.index_select(idx)
+
+    def index_select(self, idx):
+        indices = self.indices()
+
+        if isinstance(idx, slice):
+            indices = indices[idx]
+        elif torch.is_tensor(idx):
+            if idx.dtype == torch.long:
+                if len(idx.shape) == 0:
+                    idx = idx.unsqueeze(0)
+                return self.index_select(idx.tolist())
+            elif idx.dtype == torch.bool or idx.dtype == torch.uint8:
+                return self.index_select(
+                    idx.nonzero(as_tuple=False).flatten().tolist())
+        elif isinstance(idx, list) or isinstance(idx, tuple):
+            indices = [indices[i] for i in idx]
+        else:
+            raise IndexError(
+                'Only integers, slices (`:`), list, tuples, and long or bool '
+                'tensors are valid indices (got {}).'.format(
+                    type(idx).__name__))
+
+        dataset = copy.copy(self)
+        dataset.__indices__ = indices
+        return dataset
+
+    def shuffle(self, return_perm=False):
+        r"""Randomly shuffles the examples in the dataset.
+
+        Args:
+            return_perm (bool, optional): If set to :obj:`True`, will
+                additionally return the random permutation used to shuffle the
+                dataset. (default: :obj:`False`)
+        """
+        perm = torch.randperm(len(self))
+        dataset = self.index_select(perm)
+        return (dataset, perm) if return_perm is True else dataset
+
+    def __repr__(self):  # pragma: no cover
+        return f'{self.__class__.__name__}({len(self)})'
+
+    def process(self):
+        # Read data into huge `Data` list.
+        data_list = self.data
+
+        if self.pre_filter is not None:
+            data_list = [data for data in data_list if self.pre_filter(data)]
+
+        if self.pre_transform is not None:
+            data_list = [self.pre_transform(data) for data in data_list]
+
+        self.data = data_list
 
 
 class InMemoryDatasetGeo(InMemoryDataset):

@@ -117,7 +117,7 @@ class LearningFlow:
     def __init__(self, model: Module, train_loader: DataLoader, validate_loader: DataLoader, device: str = "cpu",
                  optimizer=None, clf: bool = False, loss_method=None, learning_rate: float = 1e-3, milestones=None,
                  weight_decay: float = 0.01, checkpoint=True, scheduler=None,
-                 loss_threshold: float = 0.1, print_freq: int = 10, print_what="all"):
+                 loss_threshold: float = 0.001, print_freq: int = 10, print_what="all",process_label=None):
         """
 
         Parameters
@@ -148,6 +148,8 @@ class LearningFlow:
             "all","train","test" log.
         scheduler:
             scheduler, see more in torch
+        process_label:Callable
+            function to get y/label.
         """
 
         self.train_loader = train_loader
@@ -204,6 +206,12 @@ class LearningFlow:
         self.fit = self.run_train
         self.print_what = print_what
         self.forward_hook_list = []
+        func = lambda x:x
+        self._process_label = func if process_label is None else process_label
+
+
+    def process_label(self,y):
+        return self._process_label(y)
 
     def run(self, epoch=50, warm_start=False):
         """
@@ -281,7 +289,7 @@ class LearningFlow:
 
         point = time.time()
         for m, data in enumerate(self.train_loader):
-            batch_y = data.y
+            batch_y = self.process_label(data.y)
             data = data.to(self.device)
             batch_y = batch_y.to(self.device)
             batch_time.update(time.time() - point)
@@ -355,7 +363,7 @@ class LearningFlow:
         self.model.eval()
 
         for m, data in enumerate(self.test_loader):
-            batch_y = data.y
+            batch_y = self.process_label(data.y)
             data = data.to(self.device)
             batch_y = batch_y.to(self.device)
             y_pred = self.model(data)
@@ -410,7 +418,7 @@ class LearningFlow:
         y_pre, y_true = self.predict(predict_loader, return_y_true=True, add_hook=False)
         return float(mae(y_pre, y_true))
 
-    def predict(self, predict_loader: DataLoader, return_y_true=False, add_hook=True, hook_layer_name=None):
+    def predict(self, predict_loader: DataLoader, return_y_true=False, add_hook=False, hook_layer_name=None):
         """
         Just predict by model,and add one forward hook to get put.
 
@@ -462,16 +470,16 @@ class LearningFlow:
                                      " use hook_layer_name to defined the hook layer.")
         y_preds = []
         y_true = []
-        batch_y = []
         for data in predict_loader:
+            data = data.to(self.device)
             y_preds.append(self.model(data).detach().cpu())
-            if batch_y:
-                y_true.append(batch_y[0].detach().cpu())
+            if hasattr(data, "y"):
+                y_true.append(self.process_label(data.y.detach().cpu()))
 
         if add_hook:
             [i.remove() for i in handles]  # del
 
-        if return_y_true and batch_y != []:
+        if return_y_true and y_true != []:
             return torch.cat(y_preds), torch.cat(y_true)
         else:
             return torch.cat(y_preds)

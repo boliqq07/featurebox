@@ -21,8 +21,9 @@ class _Interactions(Module):
 
         for _ in range(n_conv):
             nn = GCNConv(
+                aggr="add",
                 in_channels=num_filters, out_channels=num_filters,
-                improved=False, cached=False, add_self_loops=False,
+                improved=True, cached=False, add_self_loops=False,
                 normalize=True,
                 bias=True, )
             self.conv.append(nn)
@@ -30,10 +31,10 @@ class _Interactions(Module):
         self.n_conv = n_conv
 
     def forward(self, x, edge_index, edge_weight, edge_attr, **kwargs):
-        out = F.relu(self.lin0(x))
+        out = F.softplus(self.lin0(x))
 
         for convi in self.conv:
-            out = F.relu(convi(x=out, edge_index=edge_index, edge_weight=edge_weight))
+            out = out+F.softplus(convi(x=out, edge_index=edge_index, edge_weight=edge_weight))
 
         return out
 

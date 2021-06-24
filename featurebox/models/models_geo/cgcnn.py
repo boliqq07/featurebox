@@ -15,14 +15,14 @@ class _Interactions(Module):
                  ):
         super(_Interactions, self).__init__()
         self.lin0 = Linear(hidden_channels, num_filters)
-        short_len = 5
+        short_len = 20
         self.short = Linear(num_gaussians, short_len)
 
         self.conv = ModuleList()
 
         for _ in range(n_conv):
             nn = CGConv(channels=num_filters, dim=short_len,
-                        aggr='add', batch_norm=False,
+                        aggr='add', batch_norm=True,
                         bias=True, )
             self.conv.append(nn)
 
@@ -33,7 +33,7 @@ class _Interactions(Module):
         edge_attr = F.relu(self.short(edge_attr))
 
         for convi in self.conv:
-            out = F.relu(convi(x=out, edge_index=edge_index, edge_attr=edge_attr))
+            out = out+ F.relu(convi(x=out, edge_index=edge_index, edge_attr=edge_attr))
 
         return out
 

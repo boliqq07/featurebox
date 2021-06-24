@@ -32,7 +32,7 @@ class _Interactions(Module):
         out = F.relu(self.lin0(x))
 
         for convi in self.conv:
-            out = F.relu(convi(x=out, edge_index=edge_index))
+            out = out+ F.relu(convi(x=out, edge_index=edge_index))
 
         return out
 

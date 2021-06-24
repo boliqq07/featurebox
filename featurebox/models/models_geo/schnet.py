@@ -5,6 +5,7 @@ Note:
 
 from math import pi as PI
 
+import torch.nn.functional as F
 import torch
 from torch.nn import Linear, Sequential
 from torch.nn import ModuleList
@@ -23,10 +24,30 @@ class SchNet(BaseCrystalModel):
         self.num_state_features = None  # not used for this network.
 
     def get_interactions_layer(self):
+        self.interactions = _InteractionBlockLoop(self.hidden_channels, self.num_gaussians,
+                                                  self.num_filters,
+                                                  cutoff=self.cutoff,
+                                                  n_conv=self.num_interactions,
+                                                  )
+
+class _InteractionBlockLoop(torch.nn.Module):
+    def __init__(self, hidden_channels, num_gaussians, num_filters, cutoff, n_conv=2):
+        super(_InteractionBlockLoop, self).__init__()
         self.interactions = ModuleList()
-        for _ in range(self.num_interactions):
-            block = SchNet_InteractionBlock(self.hidden_channels, self.num_gaussians, self.num_filters, self.cutoff)
+        self.n_conv = n_conv
+        self.out = Linear(hidden_channels, num_filters)
+
+        for _ in range(self.n_conv):
+            block = SchNet_InteractionBlock(hidden_channels, num_gaussians, num_filters, cutoff)
             self.interactions.append(block)
+
+    def forward(self, h, edge_index, edge_weight, edge_attr, data=None):
+
+        for interaction in self.interactions:
+            h = h + interaction(h, edge_index, edge_weight, edge_attr, data=data)
+
+        h = F.softplus(self.out(h))
+        return h
 
 
 class SchNet_InteractionBlock(torch.nn.Module):

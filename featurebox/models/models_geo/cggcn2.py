@@ -32,14 +32,14 @@ class _Interactions(Module):
         x = F.relu(self.lin0(x))
         out = x
         for convi in self.conv:
-            out = F.relu(convi(x=out, x_0=x, edge_index=edge_index, edge_weight=edge_weight))
+            out = out + F.relu(convi(x=out, x_0=x, edge_index=edge_index, edge_weight=edge_weight))
         return out
 
 
 class CrystalGraphGCN2(BaseCrystalModel):
     """CrystalGraph with GCN2."""
 
-    def __init__(self, *args, num_gaussians=5, num_filters=64, hidden_channels=64, **kwargs):
+    def __init__(self, *args, num_gaussians=50, num_filters=128, hidden_channels=128, **kwargs):
         super(CrystalGraphGCN2, self).__init__(*args, num_gaussians=num_gaussians, num_filters=num_filters,
                                                hidden_channels=hidden_channels, **kwargs)
         self.num_state_features = None  # not used for this network.

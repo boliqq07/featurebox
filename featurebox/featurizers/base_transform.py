@@ -227,7 +227,7 @@ class BaseFeature(MSONable):
                 return pd.DataFrame(ret, index=entries.index, columns=labels)
             return pd.DataFrame(ret, columns=labels)
 
-    def _wrapper(self, x):
+    def _wrapper(self, *args, **kwargs):
         """
         An exception wrapper for convert, used in transform and
         changes the parameter passed to convert, and return the result with an bool mark.
@@ -237,17 +237,10 @@ class BaseFeature(MSONable):
         The _wrapper is only called for ``transform`` for batch data, If your want implement a specific function,
         you could just use ``convert`` and loop with ``for``.
 
-        Examples
-        --------
-        x= list([1,2,3])\n
-        _wrapper(x) -->> convert(x)\n
-
-        x= tuple([1,2,3])\n
-        _wrapper(x) -->> convert(*x)\n
 
         Parameters
         ----------
-        x:
+        args:
             input0 data_cluster to feature (type depends on feature).
 
         Returns
@@ -257,26 +250,16 @@ class BaseFeature(MSONable):
         """
 
         try:
-            if isinstance(x, tuple):
-                try:
-                    con = self.convert(*x)
-                except TypeError as e:
-                    print(e)
-                    raise TypeError("Please check the above errors, If there is an un-understood error, "
-                                    "please make sure the ``tuple`` type parameter would be separate automatically,"
-                                    "if you each case of data is ``tuple`` now, and want pass it to the first argument,"
-                                    "please change it to list, turn to ``_wrapper`` for more information\n"
-                                    )
-            else:
-                try:
-                    con = self.convert(x)
-                except TypeError as e:
-                    print(e)
-                    raise TypeError("Please check the above errors, If there is an un-understood error, "
-                                    "please make sure, If the parameters should be unpack, "
-                                    "please change the parameter to ``tuple``, "
-                                    "the other type (like ``list``) would just pass to the first parameter integrally"
-                                    "turn to ``_wrapper`` for more information")
+            try:
+                con = self.convert(*args, **kwargs)
+            except TypeError as e:
+                print(e)
+                raise TypeError("Please check the above errors")
+                # raise TypeError("Please check the above errors, If there is an un-understood error, "
+                #                 "please make sure the ``tuple`` type parameter would be separate automatically,"
+                #                 "if you each case of data is ``tuple`` now, and want pass it to the first argument,"
+                #                 "please change it to list, turn to ``_wrapper`` for more information\n"
+                #                 )
 
             if isinstance(con, (List, Tuple)):
                 if len(con) == 2 and isinstance(con[1], bool):
@@ -289,7 +272,7 @@ class BaseFeature(MSONable):
 
         except BaseException as e:
             if self.on_errors == "nan":
-                print("Bad conversion for:", x)
+                print("Bad conversion for:", args)
                 return np.nan, False
             elif self.on_errors == "raise":
                 raise e

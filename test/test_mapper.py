@@ -88,6 +88,19 @@ class TestGraph(unittest.TestCase):
         c = tmps.convert(s)
         self.assertTrue(np.all(np.equal(b, c)))
 
+    def test_equal4(self):
+        tmps = AtomPymatgenPropMap("X", search_tp="name")
+        s = [{"As": 1, }, {"U": 1}]
+        b = tmps.convert(s)
+        tmps = AtomPymatgenPropMap("X", search_tp="number")
+        s = [33, 92]
+        c = tmps.convert(s)
+        s = [[{"As": 1, }, {"U": 1}], [{"As": 1, }, {"U": 1}]]
+        self.assertTrue(np.all(np.equal(b, c)))
+        tmps = AtomPymatgenPropMap("X", search_tp="name")
+        c = tmps.transform(s)
+
+
 
 if __name__ == '__main__':
     unittest.main()

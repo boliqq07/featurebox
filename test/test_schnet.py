@@ -7,14 +7,14 @@ from torch_geometric.datasets import QM9
 from torch_geometric.utils import remove_self_loops
 
 
-from models.models_geo.cgcnn import CrystalGraphConvNet
-from models.models_geo.cggat import CrystalGraphGAT
-from models.models_geo.cggcn import CrystalGraphGCN
-from models.models_geo.cggcn2 import CrystalGraphGCN2
-from models.models_geo.cggrunet import CGGRUNet
-from models.models_geo.flow_geo import LearningFlow
-from models.models_geo.megnet import MEGNet
-from models.models_geo.schnet import SchNet
+from featurebox.models.models_geo.cgcnn import CrystalGraphConvNet
+from featurebox.models.models_geo.cggat import CrystalGraphGAT
+from featurebox.models.models_geo.cggcn import CrystalGraphGCN
+from featurebox.models.models_geo.cggcn2 import CrystalGraphGCN2
+from featurebox.models.models_geo.cggrunet import CGGRUNet
+from featurebox.models.models_geo.flow_geo import LearningFlow
+from featurebox.models.models_geo.megnet import MEGNet
+from featurebox.models.models_geo.schnet import SchNet
 
 
 target = 0
@@ -105,4 +105,4 @@ from featurebox.data.check_data import CheckElements
 
 class MyTestCase(unittest.TestCase):
     def test_something(self):
-        lf.run(5)
+        lf.run(2)

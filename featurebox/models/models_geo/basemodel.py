@@ -45,10 +45,10 @@ class BaseCrystalModel(Module):
                  num_node_features=1,
                  num_bond_features=3,
                  num_state_features=0,
-                 num_embeddings=100,
+                 num_embeddings=120,
                  hidden_channels=128,
                  num_filters=128,
-                 num_interactions=3,
+                 num_interactions=1,
                  num_gaussians=50,
                  cutoff=10.0,
                  readout='add',
@@ -92,7 +92,7 @@ class BaseCrystalModel(Module):
         super(BaseCrystalModel, self).__init__()
 
         # 初始定义
-        assert readout in ['add', 'sum', 'mean']
+        assert readout in ['add', 'sum', 'min', 'mean', "max", 'mul']
         self.hidden_channels = hidden_channels
         self.num_state_features = num_state_features
         self.num_filters = num_filters
@@ -121,6 +121,14 @@ class BaseCrystalModel(Module):
         # 定义输入
         # 使用原子性质,或者使用Embedding 产生随机数据。
         # 使用键性质,或者使用Embedding 产生随机数据。
+        if num_embeddings<120:
+            print("default, num_embeddings>=120,if you want simple the net work and "
+                  "This network does not apply to other elements, the num_embeddings could be less but large than "
+                  "the element type number in your data.")
+
+        # 原子个数，一般不用动，这是所有原子种类数，
+        # 一般来说，采用embedding的网络，
+        # 在向其他元素（训练集中没有的）数据推广的能力较差。
 
         if simple_z:
             if num_node_features != 0:
@@ -128,11 +136,13 @@ class BaseCrystalModel(Module):
                               "and don't use your self-defined 'x' data", UserWarning)
 
             self.embedding_e = Embedding(num_embeddings, hidden_channels)
-            self.embedding_l = Linear(2, hidden_channels)  # not used
+            self.embedding_l = Linear(2, 2)  # not used
+            self.embedding_l2 = Linear(2, 2) # not used
         else:
             assert num_node_features > 0, "The `num_node_features` must be the same size with `x` feature."
             self.embedding_e = Embedding(num_embeddings, hidden_channels)
             self.embedding_l = Linear(num_node_features, hidden_channels)
+            self.embedding_l2 = Linear(hidden_channels, hidden_channels)
         if simple_edge:
 
             if num_bond_features != 0:
@@ -161,8 +171,8 @@ class BaseCrystalModel(Module):
 
         self.add_state = add_state
         if self.add_state:
-            self.ads = Linear(self.hidden_channels + self.num_state_features, self.hidden_channels)
-            self.adsrelu = ReLU(inplace=True)
+            self.ads = Linear(self.num_state_features, 10)
+            self.ads2 = Linear(11, 1)
         self.reset_parameters()
 
     def forward(self, data):
@@ -177,13 +187,15 @@ class BaseCrystalModel(Module):
         if self.simple_z:
             # 处理数据阶段
             assert z.dim() == 1 and z.dtype == torch.long
-            batch = torch.zeros_like(z) if batch is None else batch
+            # batch = torch.zeros_like(z) if batch is None else batch
             h = self.embedding_e(z)
+            h = F.relu(h)
         else:
             assert hasattr(data, "x")
             x = data.x
             h1 = self.embedding_e(z)
-            h2 = self.embedding_l(x)
+            x = F.relu(self.embedding_l(x))
+            h2 = self.embedding_l2(x)
             h = h1 + h2
 
         if self.simple_edge:
@@ -211,13 +223,17 @@ class BaseCrystalModel(Module):
         else:
             h = self.interactions(h, edge_index, edge_weight, edge_attr,
                                   data=data)
+
         # 自定义
         out = self.readout_layer(h, batch)
 
         if self.add_state:
             assert hasattr(data, "state_attr"), "the ``add_state`` must accpet ``state_attr`` in data."
-            out = self.ads(torch.cat((out, data.state_attr), dim=1))
-            out = self.adsrelu(out)
+
+            sta = self.ads(data.state_attr)
+            sta = F.relu(sta)
+            out = self.ads2(torch.cat((out, sta), dim=1))
+            out = F.relu(out)
 
         return self.output_forward(out)
 
@@ -250,7 +266,7 @@ class BaseCrystalModel(Module):
             >>> ...
             >>> self.readout_layer = YourNet()
         """
-        self.readout_layer = ReadOutLayer(hidden_channels=self.hidden_channels, readout=self.readout)
+        self.readout_layer = ReadOutLayer(num_filters=self.num_filters, readout=self.readout)
 
     def output_forward(self, out):
 
@@ -290,6 +306,7 @@ class BaseCrystalModel(Module):
     def reset_parameters(self):
         self.embedding_e.reset_parameters()
         self.embedding_l.reset_parameters()
+        self.embedding_l2.reset_parameters()
         if self.atomref is not None:
             self.atomref.weight.data.copy_(self.initial_atomref)
 
@@ -297,15 +314,15 @@ class BaseCrystalModel(Module):
 class ReadOutLayer(Module):
     """Merge node layer."""
 
-    def __init__(self, hidden_channels, readout="add"):
+    def __init__(self, num_filters, readout="add"):
         super(ReadOutLayer, self).__init__()
         self.readout = readout
         self.lin = Sequential(
-            Linear(hidden_channels, hidden_channels * 5),
+            Linear(num_filters, num_filters * 5),
             ShiftedSoftplus(),
-            Linear(hidden_channels * 5, hidden_channels),
+            Linear(num_filters * 5, num_filters),
             ShiftedSoftplus(),
-            Linear(hidden_channels, 1), )
+            Linear(num_filters, 1), )
 
     def forward(self, h, batch):
         h = self.lin(h)

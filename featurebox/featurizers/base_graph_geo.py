@@ -43,7 +43,8 @@ from featurebox.utils.look_json import get_marked_class
 
 class _BaseStructureGraphGEO(BaseFeature):
 
-    def __init__(self, collect=False, return_type="tensor", **kwargs):
+    def __init__(self, collect=False, return_type="tensor", batch_calculate: bool = True,
+                 **kwargs):
         """
 
         Args:
@@ -52,7 +53,7 @@ class _BaseStructureGraphGEO(BaseFeature):
             return_type:(str), Return torch.tensor default, "numpy" is Just for show!!
             **kwargs:
         """
-        super().__init__(**kwargs)
+        super().__init__(batch_calculate=True, **kwargs)
         self.graph_data_name = []
         if collect is False:
             self.get_collect_data = lambda x: x
@@ -93,19 +94,25 @@ class _BaseStructureGraphGEO(BaseFeature):
         if hasattr(structures, "__len__"):
             assert len(structures) > 0, "Empty input data!"
 
+        le = len(structures)
+
         for i in kwargs.keys():
             if kwargs[i] is None:
-                kwargs[i] = [None] * len(structures)
+                kwargs[i] = [kwargs[i]] * len(structures)
+            elif not isinstance(kwargs[i], Iterable):
+                kwargs[i] = [kwargs[i]] * len(structures)
 
-        iterables = zip(structures, *(kwargs.values()))
+        kw = [{k: v[i] for k, v in kwargs.items()} for i in range(le)]
+
+        iterables = zip(structures, kw)
 
         if not self.batch_calculate:
-            rets = parallelize(self.n_jobs, self._wrapper, iterables, tq=True)
+            rets = parallelize(self.n_jobs, self._wrapper, iterables, tq=True, respective=True, respective_kwargs=True)
             ret, self.support_ = zip(*rets)
 
         else:
-            rets = batch_parallelize(self.n_jobs, self._wrapper, iterables, respective=False,
-                                     tq=True, batch_size=self.batch_size)
+            rets = batch_parallelize(self.n_jobs, self._wrapper, iterables, respective=True, respective_kwargs=True,
+                                     tq=True, mode="j", batch_size=self.batch_size)
 
             ret, self.support_ = zip(*rets)
         return ret
@@ -212,6 +219,19 @@ class _BaseStructureGraphGEO(BaseFeature):
         Returns:
             dict
         """
+
+        def rs(res):
+            dt = {}
+            for key, value in res.items():
+                if key in self.graph_data_name:
+                    if isinstance(value, np.ndarray):
+                        dt[key] = torch.from_numpy(value)
+                    elif isinstance(value, (int, float)):
+                        dt[key] = value
+                    else:
+                        dt[key] = value
+            return dt
+
         convert_funcs = [i for i in dir(self) if "_convert_" in i] if not self.convert_funcs else self.convert_funcs
         if len(convert_funcs) <= 1:
             raise NotImplementedError("Please implement the ``_convert_*`` functions, "
@@ -220,7 +240,7 @@ class _BaseStructureGraphGEO(BaseFeature):
         result = {}
         [result.update(i) for i in result_old]
         if self.return_type == "tensor":
-            result = {key: torch.from_numpy(value) for key, value in result.items() if key in self.graph_data_name}
+            result = rs(result)
         else:
             result = {key: value for key, value in result.items() if key in self.graph_data_name}
         return result
@@ -298,6 +318,8 @@ class BaseStructureGraphGEO(_BaseStructureGraphGEO):
 
         state_attributes = state_attributes[np.newaxis, :]
 
+        state_attributes = state_attributes.astype(dtype=np.float32)
+
         return {'state_attr': state_attributes}
 
     def _convert_y(self, structure, y=None, **kwargs):
@@ -305,15 +327,24 @@ class BaseStructureGraphGEO(_BaseStructureGraphGEO):
         _ = kwargs
         _ = structure
         if y is not None:
-            y = np.array(y).ravel()[np.newaxis, :]
+            if isinstance(y, np.ndarray):
+                if y.dtype == np.float64:
+                    y = y.astype(np.float32)
+                y = y.ravel()[np.newaxis, :]
+            elif isinstance(y, float):
+                y = np.array(y, dtype=np.float32).ravel()[np.newaxis, :]
+            elif isinstance(y, int):
+                y = np.array(y, dtype=np.int64).ravel()[np.newaxis, :]
+            else:
+                y = np.array(y, dtype=np.float32).ravel()[np.newaxis, :]
         else:
-            y = np.array(1.0)
+            y = np.nan
 
         return {'y': y}
 
     def _convert_x(self, structure, **kwargs):
         _ = kwargs
-        z = np.array(structure.atomic_numbers).reshape(-1, 1)
+        z = np.array(structure.atomic_numbers).ravel()
         if isinstance(self.atom_converter, DummyConverter):
             atoms = self.atom_converter.convert(z)
         elif isinstance(self.atom_converter, ConverterCat):
@@ -321,11 +352,15 @@ class BaseStructureGraphGEO(_BaseStructureGraphGEO):
             atoms = self.atom_converter.convert(structure)
         else:
             atoms = self.atom_converter.convert(structure)
+
+        atoms = atoms.astype(dtype=np.float32)
+        z = z.astype(dtype=np.int64)
         return {'x': atoms, "z": z}
 
     def _convert_pos(self, structure, **kwargs):
         _ = kwargs
-        return {'pos': structure.cart_coords}
+        pos = structure.cart_coords.astype(dtype=np.float32)
+        return {'pos': pos}
 
 
 class StructureGraphGEO(BaseStructureGraphGEO):
@@ -437,5 +472,9 @@ class StructureGraphGEO(BaseStructureGraphGEO):
                               )
 
         edge_weight = self.bond_converter.convert(edge_weight)
+
+        edge_index = edge_index.astype(dtype=np.int64)
+        edge_weight = edge_weight.astype(dtype=np.float32)
+        edge_attr = edge_attr.astype(dtype=np.float32)
 
         return {'edge_index': edge_index, "edge_weight": edge_weight, "edge_attr": edge_attr}

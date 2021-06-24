@@ -265,12 +265,12 @@ class _StructureGraph(BaseFeature):
         iterables = zip(structures, state_attributes)
 
         if not self.batch_calculate:
-            rets = parallelize(self.n_jobs, self._wrapper, iterables, tq=True)
+            rets = parallelize(self.n_jobs, self._wrapper, iterables, tq=True,respective=True)
 
             ret, self.support_ = zip(*rets)
 
         else:
-            rets = batch_parallelize(self.n_jobs, self._wrapper, iterables, respective=False,
+            rets = batch_parallelize(self.n_jobs, self._wrapper, iterables, respective=True,
                                      tq=True, batch_size=self.batch_size)
 
             ret, self.support_ = zip(*rets)

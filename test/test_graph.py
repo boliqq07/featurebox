@@ -4,7 +4,7 @@ import pandas as pd
 
 from featurebox.data.check_data import CheckElements
 from featurebox.featurizers.base_graph import CrystalGraph
-from featurizers.bond.smooth import Smooth
+from featurebox.featurizers.bond.smooth import Smooth
 
 
 class TestGraph2(unittest.TestCase):

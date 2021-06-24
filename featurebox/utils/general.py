@@ -66,7 +66,7 @@ def check_shape(array: Optional[np.ndarray], shape: Sequence) -> bool:
     return all(i == j for i, j in zip(array_shape[:n_for_check], valid_dims))
 
 
-def train_test(*arrays, **options):
+def train_test_pack(*arrays, out=0, **options):
     """Split arrays or matrices into random train and test subsets
 
     Quick utility that wraps input validation and
@@ -105,75 +105,44 @@ def train_test(*arrays, **options):
         If not None, data is split in a stratified fashion, using this as
         the class labels.
 
-    Examples
-    --------
-    >>> X_train, X_test, y_train, y_test = train_test_split(
-    ...     *X, y, test_size=0.33, random_state=42)
-
-
-    """
-
-    train_test_data = train_test_split(*arrays, **options)
-    le = len(train_test_data)
-    (*X_train, y_train), = [train_test_data[i] for i in range(le) if i % 2 == 0],
-
-    (*X_test, y_test) = [train_test_data[i] for i in range(le) if i % 2 == 1]
-    return X_train, y_train, X_test, y_test
-
-
-def train_test_label(*arrays, **options):
-    """Split arrays or matrices into random train and test subsets
-
-    Quick utility that wraps input validation and
-    ``next(ShuffleSplit().split(X, y))`` and application to input data
-    into a single call for splitting (and optionally subsampling) data in a
-    oneliner.
-
-    Parameters
-    ----------
-    *arrays : sequence of indexables with same length / shape[0]
-        Allowed inputs are lists, numpy arrays, scipy-sparse
-        matrices or pandas dataframes.
-
-    test_size : float or int, default=None
-        If float, should be between 0.0 and 1.0 and represent the proportion
-        of the dataset to include in the test split. If int, represents the
-        absolute number of test samples. If None, the value is set to the
-        complement of the train size. If ``train_size`` is also None, it will
-        be set to 0.25.
-
-    train_size : float or int, default=None
-        If float, should be between 0.0 and 1.0 and represent the
-        proportion of the dataset to include in the train split. If
-        int, represents the absolute number of train samples. If None,
-        the value is automatically set to the complement of the test size.
-
-    random_state : int or RandomState instance, default=None
-        Controls the shuffling applied to the data before applying the split.
-        Pass an int for reproducible output across multiple function calls.
-
-    shuffle : bool, default=True
-        Whether or not to shuffle the data before splitting. If shuffle=False
-        then stratify must be None.
-
-    stratify : array-like, default=None
-        If not None, data is split in a stratified fashion, using this as
-        the class labels.
+    out:int
+        pack the pack to format,
+        pack=None: (0:n-1)
+        pack=0: (0:n-1:2, 1:n:2)
+        pack=1: (0:n-3:2, -2, 1:n-2:2, -1)
+        pack=2: (0:n-5:2, -4, -2, 1:n-4:2, -3, -1)
 
     Examples
     --------
-    >>> X_train, X_test, y_train, y_test = train_test_split(
+    >>> X_train, y_train, X_test, y_test = train_test_split(
     ...     *X, y, test_size=0.33, random_state=42)
 
-
     """
+    num = len(arrays)
+    assert num >= out
 
     train_test_data = train_test_split(*arrays, **options)
     le = len(train_test_data)
-    (*X_train, y_train, label_train), = [train_test_data[i] for i in range(le) if i % 2 == 0],
-
-    (*X_test, y_test, label_test) = [train_test_data[i] for i in range(le) if i % 2 == 1]
-    return X_train, y_train, X_test, y_test, label_train, label_test
+    if out == 0:
+        X_train = [train_test_data[i] for i in range(le) if i % 2 == 0]
+        X_test = [train_test_data[i] for i in range(le) if i % 2 == 1]
+        if num == 1:
+            X_train, X_test = X_train[0], X_test[0]
+        return X_train, X_test
+    elif out == 1:
+        (*X_train, y_train) = [train_test_data[i] for i in range(le) if i % 2 == 0]
+        (*X_test, y_test) = [train_test_data[i] for i in range(le) if i % 2 == 1]
+        if num == 2:
+            X_train, X_test = X_train[0], X_test[0]
+        return X_train, y_train, X_test, y_test
+    elif out == 2:
+        (*X_train, y_train, label_train) = [train_test_data[i] for i in range(le) if i % 2 == 0]
+        (*X_test, y_test, label_test) = [train_test_data[i] for i in range(le) if i % 2 == 1]
+        if num == 3:
+            X_train, X_test = X_train[0], X_test[0]
+        return X_train, y_train, X_test, y_test, label_train, label_test
+    else:
+        return train_test_data
 
 
 def re_pbc(pbc: Union[bool, List[bool], np.ndarray], return_type="bool"):

@@ -5,6 +5,7 @@ Note:
 import warnings
 from math import pi as PI
 
+import torch.nn.functional as F
 import torch
 from torch.nn import Linear, Sequential
 from torch.nn import ModuleList
@@ -37,6 +38,7 @@ class Meg_InteractionBlockLoop(torch.nn.Module):
         self.interactions = ModuleList()
         self.lin_list1 = ModuleList()
         self.n_conv = n_conv
+        self.out = Linear(hidden_channels, num_filters)
 
         for _ in range(self.n_conv):
             self.lin_list1.append(Linear(hidden_channels + num_state, hidden_channels))
@@ -57,6 +59,7 @@ class Meg_InteractionBlockLoop(torch.nn.Module):
             state_attr = state_attr.expand(
                 data.state_attr.shape)
 
+        h = F.relu(self.out(h))
         return h
 
 

@@ -5,8 +5,8 @@ from mgetool.tool import def_pwd
 
 from featurebox.data.check_data import CheckElements
 from featurebox.featurizers.base_graph import CrystalGraph
-from featurizers.base_graph_geo import BaseStructureGraphGEO, StructureGraphGEO
-from featurizers.generator_geo import InMemoryDatasetGeo, DatasetGEO
+from featurebox.featurizers.base_graph_geo import BaseStructureGraphGEO, StructureGraphGEO
+from featurebox.featurizers.generator_geo import InMemoryDatasetGeo, DatasetGEO
 
 
 class TestGraph3(unittest.TestCase):

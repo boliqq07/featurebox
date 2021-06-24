@@ -17,9 +17,9 @@ class _Interactions(Module):
         nf = num_filters
         self.lin0 = Linear(hidden_channels, nf)
 
-        self.short = Linear(num_gaussians, 3)
+        self.short = Linear(num_gaussians, nf)
 
-        nn = Sequential(Linear(3, hidden_channels), ReLU(), Linear(hidden_channels, nf * nf))
+        nn = Sequential(Linear(nf, nf//4), ReLU(), Linear(nf//4, nf * nf))
 
         self.conv = NNConv(nf, nf, nn, aggr='mean')
         self.n_conv = n_conv
@@ -36,12 +36,6 @@ class _Interactions(Module):
 
             out, h = self.gru(m.unsqueeze(0), h)
             out = out.squeeze(0)
-
-            # import pynvml
-            # pynvml.nvmlInit()
-            # handle = pynvml.nvmlDeviceGetHandleByIndex(1)  # 0表示显卡标号
-            # meminfo = pynvml.nvmlDeviceGetMemoryInfo(handle)
-            # print(meminfo.free / 1024 ** 2)  # 剩余显存大小
 
         return out
 
