@@ -4,7 +4,7 @@ import warnings
 import ase.data as ase_data
 import torch
 import torch.nn.functional as F
-from torch.nn import Embedding, Linear, ModuleList, Sequential, ReLU
+from torch.nn import Embedding, Linear, ModuleList
 from torch.nn import Module
 from torch_geometric.nn import radius_graph
 from torch_geometric.utils import remove_self_loops
@@ -51,6 +51,7 @@ class BaseCrystalModel(Module):
                  num_interactions=1,
                  num_gaussians=50,
                  cutoff=10.0,
+                 out_size=1,
                  readout='add',
                  dipole=False,
                  mean=None,
@@ -61,6 +62,7 @@ class BaseCrystalModel(Module):
                  interactions=None,
                  readout_layer=None,
                  add_state=False,
+                 de=True
                  ):
         """
         Args:
@@ -88,6 +90,8 @@ class BaseCrystalModel(Module):
             the forward input is (h, edge_index, edge_weight, edge_attr, data=data)
             readout_layer: (Callable) torch module for interactions.dynamic: pass the torch module to interactions parameter. static: re-define the ``get_interactions_layer`` and keep this parameter is None. the forward input is (out,)
             add_state: (bool) add state attribute before output.
+            out_size:(int) number of out size. for regression,is 1 and for classification should be defined.
+            de: (bool) distance expension. default is True
         """
         super(BaseCrystalModel, self).__init__()
 
@@ -109,19 +113,20 @@ class BaseCrystalModel(Module):
         self.simple_z = simple_z
         self.interactions = interactions
         self.readout_layer = readout_layer
+        self.out_size = out_size
         # 嵌入原子属性，备用
         # (嵌入别太多，容易慢，大多数情况下用不到。)
         atomic_mass = torch.from_numpy(ase_data.atomic_masses)  # 嵌入原子质量
         covalent_radii = torch.from_numpy(ase_data.covalent_radii)  # 嵌入共价半径
         self.register_buffer('atomic_mass', atomic_mass)
-        self.register_buffer('atomic_mass', covalent_radii)
+        self.register_buffer('atomic_radii', covalent_radii)
         # 缓冲buffer必须要登记注册才会有效,如果仅仅将张量赋值给Module模块的属性,不会被自动转为缓冲buffer.
         # 因而也无法被state_dict()、buffers()、named_buffers()访问到。
 
         # 定义输入
         # 使用原子性质,或者使用Embedding 产生随机数据。
         # 使用键性质,或者使用Embedding 产生随机数据。
-        if num_embeddings<120:
+        if num_embeddings < 120:
             print("default, num_embeddings>=120,if you want simple the net work and "
                   "This network does not apply to other elements, the num_embeddings could be less but large than "
                   "the element type number in your data.")
@@ -130,31 +135,43 @@ class BaseCrystalModel(Module):
         # 一般来说，采用embedding的网络，
         # 在向其他元素（训练集中没有的）数据推广的能力较差。
 
-        if simple_z:
+        if simple_z is True:
             if num_node_features != 0:
                 warnings.warn("simple_z just accept num_node_features == 0, "
                               "and don't use your self-defined 'x' data", UserWarning)
 
             self.embedding_e = Embedding(num_embeddings, hidden_channels)
             self.embedding_l = Linear(2, 2)  # not used
-            self.embedding_l2 = Linear(2, 2) # not used
+            self.embedding_l2 = Linear(2, 2)  # not used
+        elif self.simple_z == "no_embed":
+            self.embedding_e = Linear(2, 2)
+            self.embedding_l = Linear(num_node_features, hidden_channels)
+            self.embedding_l2 = Linear(hidden_channels, hidden_channels)
         else:
             assert num_node_features > 0, "The `num_node_features` must be the same size with `x` feature."
             self.embedding_e = Embedding(num_embeddings, hidden_channels)
             self.embedding_l = Linear(num_node_features, hidden_channels)
             self.embedding_l2 = Linear(hidden_channels, hidden_channels)
-        if simple_edge:
+        self.de = de
 
-            if num_bond_features != 0:
-                warnings.warn("simple_edge == True means re-calculate and arrange the edge_index,edge_weight,edge_attr."
-                              "The old would be neglected, The `num_node_features` should be set as 0."
-                              "and don't use your self-defined 'edge_attr' data", UserWarning)
+        if self.de:
+            if simple_edge:
 
-            self.distance_expansion = GaussianSmearing(0.0, cutoff, num_gaussians)
+                if num_bond_features != 0:
+                    warnings.warn(
+                        "simple_edge == True means re-calculate and arrange the edge_index,edge_weight,edge_attr."
+                        "The old would be neglected, The `num_node_features` should be set as 0."
+                        "and don't use your self-defined 'edge_attr' data", UserWarning)
+
+                self.distance_expansion = GaussianSmearing(0.0, cutoff, num_gaussians)
+            else:
+                assert num_bond_features > 0, "The `num_bond_features` must be the same size with `edge_attr` feature."
+                self.distance_expansion = GaussianSmearing(0.0, cutoff, num_gaussians - num_bond_features)
         else:
-            assert num_bond_features > 0, "The `num_bond_features` must be the same size with `edge_attr` feature."
-            self.distance_expansion = GaussianSmearing(0.0, cutoff, num_gaussians - num_bond_features)
-
+            if simple_edge:
+                self.distance_expansion = Linear(1, num_gaussians)
+            else:
+                self.distance_expansion = Linear(1, num_gaussians - num_bond_features)
         # 交互层 需要自定义
         if interactions is None:
             self.get_interactions_layer()
@@ -173,6 +190,7 @@ class BaseCrystalModel(Module):
         if self.add_state:
             self.ads = Linear(self.num_state_features, 10)
             self.ads2 = Linear(11, 1)
+
         self.reset_parameters()
 
     def forward(self, data):
@@ -184,12 +202,17 @@ class BaseCrystalModel(Module):
         pos = data.pos
         batch = data.batch
         # 处理数据阶段
-        if self.simple_z:
+        if self.simple_z is True:
             # 处理数据阶段
             assert z.dim() == 1 and z.dtype == torch.long
             # batch = torch.zeros_like(z) if batch is None else batch
             h = self.embedding_e(z)
             h = F.relu(h)
+        elif self.simple_z == "no_embed":
+            assert hasattr(data, "x")
+            x = data.x
+            h = F.relu(self.embedding_l(x))
+            h = self.embedding_l2(h)
         else:
             assert hasattr(data, "x")
             x = data.x
@@ -203,7 +226,10 @@ class BaseCrystalModel(Module):
             edge_index, _ = remove_self_loops(edge_index)
             row, col = edge_index[0], edge_index[1]
             edge_weight = (pos[row] - pos[col]).norm(dim=-1)
-            edge_attr = self.distance_expansion(edge_weight)
+            if self.de:
+                edge_attr = self.distance_expansion(edge_weight)
+            else:
+                edge_attr = self.distance_expansion(edge_weight.view(-1, 1))
         else:
             assert hasattr(data, "edge_attr")
             assert hasattr(data, "edge_index")
@@ -212,9 +238,13 @@ class BaseCrystalModel(Module):
                 edge_weight = (pos[row] - pos[col]).norm(dim=-1)
             else:
                 edge_weight = data.edge_weight
-            edge_attr = self.distance_expansion(edge_weight)
             edge_index = data.edge_index
-            edge_attr = torch.cat((data.edge_attr, edge_attr), dim=1)
+            if self.de:
+                edge_attr = self.distance_expansion(edge_weight)
+                edge_attr = torch.cat((data.edge_attr, edge_attr), dim=1)
+            else:
+                edge_attr = self.distance_expansion(edge_weight.view(-1, 1))
+                edge_attr = torch.cat((data.edge_attr, edge_attr), dim=1)
         # 自定义
         if isinstance(self.interactions, ModuleList):
             for interaction in self.interactions:
@@ -266,7 +296,7 @@ class BaseCrystalModel(Module):
             >>> ...
             >>> self.readout_layer = YourNet()
         """
-        self.readout_layer = ReadOutLayer(num_filters=self.num_filters, readout=self.readout)
+        self.readout_layer = ReadOutLayer(num_filters=self.num_filters, readout=self.readout, out_size=self.out_size)
 
     def output_forward(self, out):
 
@@ -314,16 +344,35 @@ class BaseCrystalModel(Module):
 class ReadOutLayer(Module):
     """Merge node layer."""
 
-    def __init__(self, num_filters, readout="add"):
+    def __init__(self, num_filters, out_size=1, readout="add", temp_to_cpu=True):
         super(ReadOutLayer, self).__init__()
         self.readout = readout
-        self.lin = Sequential(
-            Linear(num_filters, num_filters * 5),
-            ShiftedSoftplus(),
-            Linear(num_filters * 5, num_filters),
-            ShiftedSoftplus(),
-            Linear(num_filters, 1), )
+        self.lin1 = Linear(num_filters, num_filters * 5)
+        self.s1 = ShiftedSoftplus()
+        self.lin2 = Linear(num_filters * 5, num_filters)
+        self.s2 = ShiftedSoftplus()
+        self.lin3 = Linear(num_filters, out_size)
+        self.temp_to_cpu = True
 
     def forward(self, h, batch):
-        h = self.lin(h)
-        return scatter(h, batch, dim=0, reduce=self.readout)
+        h = self.lin1(h)
+        h = self.s1(h)
+
+        h = self.jump(h,batch)
+
+        h = self.lin2(h)
+        h = self.s2(h)
+        h = self.lin3(h)
+        return h
+
+    def jump(self,h,batch):
+        if self.temp_to_cpu:
+            # torch.geometric scatter is unstable especially for small data in cuda device.!!!
+            old_device = h.device
+            device = torch.device("cpu")
+            h = h.to(device=device)
+            batch = batch.to(device=device)
+            h = scatter(h, batch, dim=0, reduce=self.readout)
+            h = h.to(device=old_device)
+            # batch = batch.to(device=old_device)
+        return h

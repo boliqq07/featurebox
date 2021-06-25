@@ -66,6 +66,7 @@ class _BaseStructureGraphGEO(BaseFeature):
         self.return_type = return_type
         self.collect = collect
         self.convert_funcs = [i for i in dir(self) if "_convert_" in i]
+        self.add_label = True
 
     def __add__(self, other):
         raise TypeError("There is no add.")
@@ -115,6 +116,9 @@ class _BaseStructureGraphGEO(BaseFeature):
                                      tq=True, mode="j", batch_size=self.batch_size)
 
             ret, self.support_ = zip(*rets)
+
+        if self.add_label:
+            [i.update({"label": n}) for n, i in enumerate(ret)]
         return ret
 
     def get_collect_data(self, graphs: List[Dict]):

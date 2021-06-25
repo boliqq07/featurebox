@@ -6,9 +6,12 @@ import time
 import numpy as np
 import torch
 from sklearn import metrics
+from torch.backends import cudnn
 from torch.nn import Module
 from torch.optim.lr_scheduler import MultiStepLR
 from torch.utils.data import DataLoader
+
+from featurebox.utils.general import getter_arr
 
 
 def class_eval(prediction, target):
@@ -209,7 +212,6 @@ class LearningFlow:
         func = lambda x:x
         self._process_label = func if process_label is None else process_label
 
-
     def process_label(self,y):
         return self._process_label(y)
 
@@ -241,7 +243,7 @@ class LearningFlow:
             else:
                 print("=> no checkpoint found at '{}'".format(resume))
 
-        self.model.to(self.device)
+        # self.model.to(self.device)
         if start_epoch > 0:
             epoch += start_epoch
             print("Try to run start from 'resumed epoch' {} to 'epoch' {}".format(start_epoch, epoch))
@@ -289,9 +291,8 @@ class LearningFlow:
 
         point = time.time()
         for m, data in enumerate(self.train_loader):
-            batch_y = self.process_label(data.y)
             data = data.to(self.device)
-            batch_y = batch_y.to(self.device)
+            batch_y = self.process_label(data.y)
             batch_time.update(time.time() - point)
 
             self.optimizer.zero_grad()
@@ -363,10 +364,10 @@ class LearningFlow:
         self.model.eval()
 
         for m, data in enumerate(self.test_loader):
-            batch_y = self.process_label(data.y)
             data = data.to(self.device)
-            batch_y = batch_y.to(self.device)
+            batch_y = self.process_label(data.y)
             y_pred = self.model(data)
+
             try:
                 lossi = self.loss_method(y_pred, batch_y)
             except TypeError:
@@ -456,18 +457,12 @@ class LearningFlow:
                     self.forward_hook_list.append(output.detach().cpu())
 
                 if hook_layer_name is None:
-                    handles.append(self.model.conv_to_fc_softplus.register_forward_hook(for_hook))
-
-                    le = len(self.model.softpluses)
-                    for i in range(le):
-                        handles.append(self.model.softpluses[i].register_forward_hook(for_hook))  # hook the fcs[i]
+                    raise NotImplementedError("The hook_layer_name is not passed")
                 else:
-                    handles.append(getattr(self.model, hook_layer_name).register_forward_hook(for_hook))
+                    handles.append(getter_arr(self.model, hook_layer_name).register_forward_hook(for_hook))
             except BaseException as e:
                 print(e)
-                raise AttributeError("The model must contain sub (model or layer) named ``conv_to_fc_softplus``and "
-                                     "nn.ModuleList named ``softpluses`` or"
-                                     " use hook_layer_name to defined the hook layer.")
+                raise AttributeError("use ``hook_layer_name`` to defined the hook layer.")
         y_preds = []
         y_true = []
         for data in predict_loader:

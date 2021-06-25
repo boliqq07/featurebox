@@ -1,11 +1,32 @@
 """This is one general script. For different data, you should re-write this and tune."""
 from __future__ import print_function, division
 
+import torch
 import torch.nn.functional as F
-from torch.nn import Module, Linear, ModuleList
+from torch import Tensor, Size
+from torch.nn import Linear
+from torch.nn import Module, ModuleList
+from torch_geometric.data.sampler import Adj
 from torch_geometric.nn import CGConv
 
 from featurebox.models.models_geo.basemodel import BaseCrystalModel
+from featurebox.utils.general import temp_jump, temp_jump_cpu, check_device
+
+
+class CGConvJump(CGConv):
+    """# torch.geometric scatter is unstable especially for small data in cuda device.!!!"""
+
+    @property
+    def device(self):
+        return check_device(self)
+
+    @temp_jump_cpu()
+    def propagate(self, edge_index: Adj, size: Size = None, **kwargs):
+        return super(CGConvJump, self).propagate(edge_index, size=size, **kwargs)
+
+    @temp_jump()
+    def message(self, x_i, x_j, edge_attr) -> Tensor:
+        return super(CGConvJump, self).message(x_i, x_j, edge_attr)
 
 
 class _Interactions(Module):
@@ -21,9 +42,9 @@ class _Interactions(Module):
         self.conv = ModuleList()
 
         for _ in range(n_conv):
-            nn = CGConv(channels=num_filters, dim=short_len,
-                        aggr='add', batch_norm=True,
-                        bias=True, )
+            nn = CGConvJump(channels=num_filters, dim=short_len,
+                            aggr='add', batch_norm=True,
+                            bias=True, )
             self.conv.append(nn)
 
         self.n_conv = n_conv
@@ -33,7 +54,7 @@ class _Interactions(Module):
         edge_attr = F.relu(self.short(edge_attr))
 
         for convi in self.conv:
-            out = out+ F.relu(convi(x=out, edge_index=edge_index, edge_attr=edge_attr))
+            out = out + F.relu(convi(x=out, edge_index=edge_index, edge_attr=edge_attr))
 
         return out
 

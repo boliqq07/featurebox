@@ -1,11 +1,19 @@
 """
-Operation utilities on lists and arrays
+Operation utilities on lists and arrays, for torch,
+
+Notes
+    just for network.
 """
 from collections import abc
+from functools import wraps
 from typing import Union, List, Sequence, Optional
 
 import numpy as np
+# import torch
+import torch
 from sklearn.model_selection import train_test_split
+from torch import Tensor
+from torch.nn import Module
 
 
 def to_list(x: Union[abc.Iterable, np.ndarray]) -> List:
@@ -160,4 +168,113 @@ def re_pbc(pbc: Union[bool, List[bool], np.ndarray], return_type="bool"):
         pbc = np.array(pbc)
     return pbc
 
+
 # a = re_pbc(np.array([True,True,False]), return_type="int")
+
+def getter_arr(obj, pi):
+    """Get prop.
+    """
+    if "." in pi:
+        pis = list(pi.split("."))
+        pis.reverse()
+        while len(pis):
+            s = pis.pop()
+            obj = getter_arr(obj, s)
+        return obj
+    elif "()" in pi:
+        return getattr(obj, pi[:-2])()
+
+    else:
+        return getattr(obj, pi)
+
+
+def temp_jump(mark=0, temp_device=None, old_device=None, temp=True, back=True):
+    def f(func):
+        return _temp_jump(func, mark=mark, temp_device=temp_device, old_device=old_device, temp=temp, back=back)
+
+    return f
+
+
+def temp_jump_cpu(mark=0, temp_device="cpu", old_device=None, temp=True, back=True):
+    def f(func):
+        return _temp_jump(func, mark=mark, temp_device=temp_device, old_device=old_device, temp=temp, back=back)
+
+    return f
+
+
+def _temp_jump(func, mark=0, temp_device="cpu", old_device=None, temp=True, back=True):
+    """temp to cpu to calculate and re-back the init device data."""
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+
+        if temp_device is None:
+            device = args[0].device
+        else:
+            device = torch.device(temp_device) if isinstance(temp_device, str) else temp_device
+
+        if old_device is None:
+            device2 = args[mark + 1].device if len(args) > 1 else list(kwargs.values())[0].device
+        else:
+            device2 = torch.device(old_device) if isinstance(old_device, str) else old_device
+
+        if temp:
+            args2 = [args[0]]
+            for i in args[1:]:
+                try:
+                    args2.append(i.to(device=device, copy=False))
+                except AttributeError:
+                    args2.append(i)
+            kwargs2 = {}
+            for k, v in kwargs.items():
+                try:
+                    if isinstance(v, tuple):
+                        kwargs2[k] = [i.to(device=device, copy=False) for i in v]
+                    else:
+                        kwargs2[k] = v.to(device=device, copy=False)
+                except AttributeError:
+                    kwargs2[k] = v
+
+            result = func(*args2, **kwargs2)
+        else:
+            result = func(*args, **kwargs)
+
+        if back:
+            if isinstance(result, tuple):
+                result2 = []
+                for i in result:
+                    try:
+                        result2.append(i.to(device=device2, copy=False))
+                    except AttributeError:
+                        result2.append(i)
+            else:
+                try:
+                    result2 = result.to(device=device2, copy=False)
+                except AttributeError:
+                    result2 = result
+            return result2
+        else:
+            return result
+
+    return wrapper
+
+
+def check_device(mode: Module):
+    device = _check_device(mode)
+    return torch.device("cpu") if device is None else device
+
+
+def _check_device(mode: Module):
+    device = None
+    for i in mode.children():
+        if hasattr(i, "weight") and isinstance(i, Tensor):
+            device = i.weight.device
+            break
+        elif hasattr(i, "bias"):
+            device = i.bias.device
+            break
+        elif len(i.children()) > 0:
+            device = check_device(i)
+            if device is not None:
+                break
+    return device

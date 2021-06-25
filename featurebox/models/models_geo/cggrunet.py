@@ -42,12 +42,12 @@ class _Interactions(Module):
 
 class CGGRU_ReadOut(Module):
     def __init__(self, num_filters=128,
-                 n_set2set=2):
+                 n_set2set=2,out_size=1):
         super(CGGRU_ReadOut, self).__init__()
         nf = num_filters
         self.set2set = Set2Set(nf, processing_steps=n_set2set)  # very import
         self.lin1 = Linear(2 * nf, nf)
-        self.lin2 = Linear(nf, 1)
+        self.lin2 = Linear(nf, out_size)
 
     def forward(self, out, batch):
         out = self.set2set(out, batch)
@@ -73,4 +73,4 @@ class CGGRUNet(BaseCrystalModel):
 
     def get_readout_layer(self):
         self.readout_layer = CGGRU_ReadOut(self.num_filters,
-                                           n_set2set=2)
+                                           n_set2set=2, out_size=self.outsize)
