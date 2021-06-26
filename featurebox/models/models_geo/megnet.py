@@ -4,11 +4,17 @@ Note:
 """
 import warnings
 from math import pi as PI
-
 import torch.nn.functional as F
+from torch import Tensor, Size
+from torch.nn import Linear, ModuleList
+from torch_geometric.data.sampler import Adj
+from torch_geometric.nn import GCN2Conv
+from torch_geometric.typing import OptTensor
+
+from featurebox.utils.general import check_device, temp_jump_cpu
+from featurebox.utils.general import temp_jump
 import torch
-from torch.nn import Linear, Sequential
-from torch.nn import ModuleList
+from torch.nn import Sequential
 from torch_geometric.nn import MessagePassing
 from torch_scatter import scatter
 
@@ -20,31 +26,38 @@ class MEGNet(BaseCrystalModel):
     MEGNet
     """
 
-    def __init__(self, *args, num_state_features=2, **kwargs):
+    def __init__(self, *args, num_state_features=2,jump=True, **kwargs):
         super(MEGNet, self).__init__(*args, num_state_features=num_state_features, **kwargs)
         if self.num_state_features == 0:
             warnings.warn(
                 "you use no state_attr !!!, please make sure the ``num_state_features`` compat with your data")
+        self.jump=jump
 
     def get_interactions_layer(self):
         self.interactions = Meg_InteractionBlockLoop(self.hidden_channels, self.num_gaussians, self.num_filters,
                                                      cutoff=self.cutoff,
-                                                     n_conv=self.num_interactions, num_state=self.num_state_features)
+                                                     n_conv=self.num_interactions, num_state=self.num_state_features
+                                                     ,jump=self.jump)
 
 
 class Meg_InteractionBlockLoop(torch.nn.Module):
-    def __init__(self, hidden_channels, num_gaussians, num_filters, cutoff, n_conv=2, num_state=0):
+    def __init__(self, hidden_channels, num_gaussians, num_filters, cutoff, n_conv=2, num_state=0,jump=True):
         super(Meg_InteractionBlockLoop, self).__init__()
         self.interactions = ModuleList()
         self.lin_list1 = ModuleList()
         self.n_conv = n_conv
         self.out = Linear(hidden_channels, num_filters)
+        self.jump=jump
 
         for _ in range(self.n_conv):
             self.lin_list1.append(Linear(hidden_channels + num_state, hidden_channels))
-            block = Meg_InteractionBlock(hidden_channels, num_gaussians, num_filters, cutoff)
+            block = Meg_InteractionBlock(hidden_channels, num_gaussians, num_filters, cutoff,jump==jump)
             self.interactions.append(block)
         self.num_state = num_state
+
+    @temp_jump()
+    def scatter_temp(self,h,batch):
+        return scatter(h, batch, reduce="mean", dim=0)
 
     def forward(self, h, edge_index, edge_weight, edge_attr, data=None):
         state_attr = data.state_attr
@@ -54,8 +67,15 @@ class Meg_InteractionBlockLoop(torch.nn.Module):
             hs = torch.cat((state_attr, h), dim=1)
             h = lin1(hs)
             h = h + interaction(h, edge_index, edge_weight, edge_attr, data=data)
+            if self.jump:
+                state_attr = torch.sum(
+                    self.scatter_temp(h,data.batch)
+                    , dim=1, keepdim=True)
+            else:
+                state_attr = torch.sum(
+                    scatter(h,data.batch)
+                    , dim=1, keepdim=True)
 
-            state_attr = torch.sum(scatter(h, data.batch, reduce="mean", dim=0), dim=1, keepdim=True)
             state_attr = state_attr.expand(
                 data.state_attr.shape)
 
@@ -64,17 +84,22 @@ class Meg_InteractionBlockLoop(torch.nn.Module):
 
 
 class Meg_InteractionBlock(torch.nn.Module):
-    def __init__(self, hidden_channels, num_gaussians, num_filters, cutoff):
+    def __init__(self, hidden_channels, num_gaussians, num_filters, cutoff, jump=True):
         super(Meg_InteractionBlock, self).__init__()
         self.mlp = Sequential(
             Linear(num_gaussians, num_filters),
             ShiftedSoftplus(),
             Linear(num_filters, num_filters),
         )
-        self.conv = _CFConv(hidden_channels, hidden_channels, num_filters,
-                            self.mlp, cutoff)
+        if jump:
+            self.conv = _CFConv(hidden_channels, hidden_channels, num_filters,
+                                self.mlp, cutoff)
+        else:
+            self.conv = _CFConvJump(hidden_channels, hidden_channels, num_filters,
+                                self.mlp, cutoff)
         self.act = ShiftedSoftplus()
         self.lin = Linear(hidden_channels, hidden_channels)
+
 
         self.reset_parameters()
 
@@ -120,3 +145,19 @@ class _CFConv(MessagePassing):
 
     def message(self, x_j, W):  # [num_edge,]
         return x_j * W
+
+
+class _CFConvJump(_CFConv):
+    """# torch.geometric scatter is unstable especially for small data in cuda device.!!!"""
+
+    @property
+    def device(self):
+        return check_device(self)
+
+    @temp_jump_cpu()
+    def propagate(self, edge_index: Adj, size: Size = None, **kwargs):
+        return super().propagate(edge_index, size=size, **kwargs)
+
+    @temp_jump()
+    def message(self, x_j, W) -> Tensor:
+        return super().message(x_j, W)

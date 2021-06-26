@@ -32,7 +32,7 @@ class CGConvJump(CGConv):
 class _Interactions(Module):
     """Auto attention."""
 
-    def __init__(self, hidden_channels=64, num_gaussians=5, num_filters=64, n_conv=2,
+    def __init__(self, hidden_channels=64, num_gaussians=5, num_filters=64, n_conv=2, jump=True,
                  ):
         super(_Interactions, self).__init__()
         self.lin0 = Linear(hidden_channels, num_filters)
@@ -42,9 +42,14 @@ class _Interactions(Module):
         self.conv = ModuleList()
 
         for _ in range(n_conv):
-            nn = CGConvJump(channels=num_filters, dim=short_len,
-                            aggr='add', batch_norm=True,
-                            bias=True, )
+            if jump:
+                nn = CGConvJump(channels=num_filters, dim=short_len,
+                                aggr='add', batch_norm=True,
+                                bias=True, )
+            else:
+                nn = CGConv(channels=num_filters, dim=short_len,
+                                aggr='add', batch_norm=True,
+                                bias=True, )
             self.conv.append(nn)
 
         self.n_conv = n_conv
@@ -64,11 +69,12 @@ class CrystalGraphConvNet(BaseCrystalModel):
     CrystalGraph with GAT.
     """
 
-    def __init__(self, *args, num_gaussians=5, num_filters=64, hidden_channels=64, **kwargs):
+    def __init__(self, *args, num_gaussians=5, num_filters=64, hidden_channels=64, jump=True, **kwargs):
         super(CrystalGraphConvNet, self).__init__(*args, num_gaussians=num_gaussians, num_filters=num_filters,
                                                   hidden_channels=hidden_channels, **kwargs)
         self.num_state_features = None  # not used for this network.
+        self.jump = jump
 
     def get_interactions_layer(self):
         self.interactions = _Interactions(self.hidden_channels, self.num_gaussians, self.num_filters,
-                                          n_conv=self.num_interactions, )
+                                          n_conv=self.num_interactions, jump=self.jump)
