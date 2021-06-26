@@ -267,13 +267,13 @@ def check_device(mode: Module):
 def _check_device(mode: Module):
     device = None
     for i in mode.children():
-        if hasattr(i, "weight") and isinstance(i, Tensor):
+        if hasattr(i, "weight"):
             device = i.weight.device
             break
         elif hasattr(i, "bias"):
             device = i.bias.device
             break
-        elif len(i.children()) > 0:
+        elif len(list(i.children())) > 0:
             device = check_device(i)
             if device is not None:
                 break

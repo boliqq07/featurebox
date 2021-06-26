@@ -24,21 +24,21 @@ class GATConvJump(GATConv):
 
     @temp_jump_cpu()
     def propagate(self, edge_index: Adj, size: Size = None, **kwargs):
-        return super().propagate(edge_index, size=size, **kwargs)
+        return super(GATConvJump, self).propagate(edge_index, size=size, **kwargs)
 
     @temp_jump()
     def message(self, x_j: Tensor, alpha_j: Tensor, alpha_i: OptTensor,
                 index: Tensor, ptr: OptTensor,
                 size_i: Optional[int]) -> Tensor:
-        return super().message(x_j, alpha_j, alpha_i,
-                index, ptr,
-                size_i)
+        return super(GATConvJump, self).message(x_j, alpha_j, alpha_i,
+                                                index, ptr,
+                                                size_i)
 
 
 class _Interactions(Module):
     """Auto attention."""
 
-    def __init__(self, hidden_channels=64, num_gaussians=5, num_filters=64, n_conv=2,jump=True,
+    def __init__(self, hidden_channels=64, num_gaussians=5, num_filters=64, n_conv=2, jump=True,
                  ):
         super(_Interactions, self).__init__()
         _ = num_gaussians
@@ -65,7 +65,7 @@ class _Interactions(Module):
         out = F.relu(self.lin0(x))
 
         for convi in self.conv:
-            out = out+ F.relu(convi(x=out, edge_index=edge_index))
+            out = out + F.relu(convi(x=out, edge_index=edge_index))
 
         return out
 
@@ -75,11 +75,10 @@ class CrystalGraphGAT(BaseCrystalModel):
     CrystalGraph with GAT.
     """
 
-    def __init__(self, *args, num_gaussians=5, num_filters=64, hidden_channels=64,jump=True, **kwargs):
+    def __init__(self, *args, num_gaussians=5, num_filters=32, hidden_channels=64, **kwargs):
         super(CrystalGraphGAT, self).__init__(*args, num_gaussians=num_gaussians, num_filters=num_filters,
                                               hidden_channels=hidden_channels, **kwargs)
         self.num_state_features = None  # not used for this network.
-        self.jump=jump
 
     def get_interactions_layer(self):
         self.interactions = _Interactions(self.hidden_channels, self.num_gaussians, self.num_filters,

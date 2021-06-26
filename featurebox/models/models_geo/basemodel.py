@@ -4,7 +4,7 @@ import warnings
 import ase.data as ase_data
 import torch
 import torch.nn.functional as F
-from torch.nn import Embedding, Linear, ModuleList
+from torch.nn import Embedding, Linear, ModuleList, Dropout, LayerNorm
 from torch.nn import Module
 from torch_geometric.nn import radius_graph
 from torch_geometric.utils import remove_self_loops
@@ -62,7 +62,8 @@ class BaseCrystalModel(Module):
                  interactions=None,
                  readout_layer=None,
                  add_state=False,
-                 de=True
+                 de=True,
+                 jump=True,
                  ):
         """
         Args:
@@ -114,6 +115,7 @@ class BaseCrystalModel(Module):
         self.interactions = interactions
         self.readout_layer = readout_layer
         self.out_size = out_size
+        self.jump = jump
         # 嵌入原子属性，备用
         # (嵌入别太多，容易慢，大多数情况下用不到。)
         atomic_mass = torch.from_numpy(ase_data.atomic_masses)  # 嵌入原子质量
@@ -188,8 +190,9 @@ class BaseCrystalModel(Module):
 
         self.add_state = add_state
         if self.add_state:
-            self.ads = Linear(self.num_state_features, 10)
-            self.ads2 = Linear(11, 1)
+            self.dp = LayerNorm(self.num_state_features)
+            self.ads = Linear(self.num_state_features, 1)
+            self.ads2 = Linear(1, self.out_size)
 
         self.reset_parameters()
 
@@ -259,11 +262,12 @@ class BaseCrystalModel(Module):
 
         if self.add_state:
             assert hasattr(data, "state_attr"), "the ``add_state`` must accpet ``state_attr`` in data."
+            sta = self.dp(data.state_attr)
+            sta = self.ads(sta)
 
-            sta = self.ads(data.state_attr)
             sta = F.relu(sta)
-            out = self.ads2(torch.cat((out, sta), dim=1))
-            out = F.relu(out)
+
+            out = self.ads2(out.expand_as(sta)+sta)
 
         return self.output_forward(out)
 
@@ -358,14 +362,14 @@ class ReadOutLayer(Module):
         h = self.lin1(h)
         h = self.s1(h)
 
-        h = self.jump(h,batch)
+        h = self.jump(h, batch)
 
         h = self.lin2(h)
         h = self.s2(h)
         h = self.lin3(h)
         return h
 
-    def jump(self,h,batch):
+    def jump(self, h, batch):
         if self.temp_to_cpu:
             # torch.geometric scatter is unstable especially for small data in cuda device.!!!
             old_device = h.device

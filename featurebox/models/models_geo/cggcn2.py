@@ -34,7 +34,7 @@ class _Interactions(Module):
     Auto attention.
     """
 
-    def __init__(self, hidden_channels=64, num_gaussians=5, num_filters=64, n_conv=2,jump=True,
+    def __init__(self, hidden_channels=64, num_gaussians=5, num_filters=64, n_conv=2, jump=True,
                  ):
         super(_Interactions, self).__init__()
         _ = num_gaussians
@@ -66,11 +66,10 @@ class _Interactions(Module):
 class CrystalGraphGCN2(BaseCrystalModel):
     """CrystalGraph with GCN2."""
 
-    def __init__(self, *args, num_gaussians=50, num_filters=128, hidden_channels=128,jump=True, **kwargs):
+    def __init__(self, *args, num_gaussians=50, num_filters=128, hidden_channels=128, **kwargs):
         super(CrystalGraphGCN2, self).__init__(*args, num_gaussians=num_gaussians, num_filters=num_filters,
                                                hidden_channels=hidden_channels, **kwargs)
         self.num_state_features = None  # not used for this network.
-        self.jump=jump
 
     def get_interactions_layer(self):
         self.interactions = _Interactions(self.hidden_channels, self.num_gaussians, self.num_filters,

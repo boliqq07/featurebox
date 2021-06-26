@@ -6,7 +6,6 @@ import time
 import numpy as np
 import torch
 from sklearn import metrics
-from torch.backends import cudnn
 from torch.nn import Module
 from torch.optim.lr_scheduler import MultiStepLR
 from torch.utils.data import DataLoader
@@ -120,7 +119,7 @@ class LearningFlow:
     def __init__(self, model: Module, train_loader: DataLoader, validate_loader: DataLoader, device: str = "cpu",
                  optimizer=None, clf: bool = False, loss_method=None, learning_rate: float = 1e-3, milestones=None,
                  weight_decay: float = 0.01, checkpoint=True, scheduler=None,
-                 loss_threshold: float = 0.001, print_freq: int = 10, print_what="all",process_label=None):
+                 loss_threshold: float = 0.001, print_freq: int = 10, print_what="all", process_label=None):
         """
 
         Parameters
@@ -209,10 +208,10 @@ class LearningFlow:
         self.fit = self.run_train
         self.print_what = print_what
         self.forward_hook_list = []
-        func = lambda x:x
+        func = lambda x: x
         self._process_label = func if process_label is None else process_label
 
-    def process_label(self,y):
+    def process_label(self, y):
         return self._process_label(y)
 
     def run(self, epoch=50, warm_start=False):

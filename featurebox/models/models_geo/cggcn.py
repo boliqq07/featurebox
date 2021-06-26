@@ -33,7 +33,7 @@ class GCNConvJump(GCNConv):
 class _Interactions(Module):
     """Auto attention."""
 
-    def __init__(self, hidden_channels=64, num_gaussians=5, num_filters=64, n_conv=2,jump=True,
+    def __init__(self, hidden_channels=64, num_gaussians=5, num_filters=64, n_conv=2, jump=True,
                  ):
         super(_Interactions, self).__init__()
         _ = num_gaussians
@@ -61,10 +61,10 @@ class _Interactions(Module):
         self.n_conv = n_conv
 
     def forward(self, x, edge_index, edge_weight, edge_attr, **kwargs):
-        out = F.softplus(self.lin0(x))
+        out = F.relu(self.lin0(x))
 
         for convi in self.conv:
-            out = out+F.softplus(convi(x=out, edge_index=edge_index, edge_weight=edge_weight))
+            out = out + F.relu(convi(x=out, edge_index=edge_index, edge_weight=edge_weight))
 
         return out
 
@@ -74,12 +74,11 @@ class CrystalGraphGCN(BaseCrystalModel):
     CrystalGraph with GCN.
     """
 
-    def __init__(self, *args, num_gaussians=5, num_filters=64, hidden_channels=64, jump=True,**kwargs):
+    def __init__(self, *args, num_gaussians=5, num_filters=32, hidden_channels=64, **kwargs):
         super(CrystalGraphGCN, self).__init__(*args, num_gaussians=num_gaussians, num_filters=num_filters,
                                               hidden_channels=hidden_channels, **kwargs)
         self.num_state_features = None  # not used for this network.
-        self.jump=jump
 
     def get_interactions_layer(self):
         self.interactions = _Interactions(self.hidden_channels, self.num_gaussians, self.num_filters,
-                                          n_conv=self.num_interactions,jump=self.jump )
+                                          n_conv=self.num_interactions, jump=self.jump)

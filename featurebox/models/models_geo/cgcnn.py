@@ -1,7 +1,6 @@
 """This is one general script. For different data, you should re-write this and tune."""
 from __future__ import print_function, division
 
-import torch
 import torch.nn.functional as F
 from torch import Tensor, Size
 from torch.nn import Linear
@@ -48,8 +47,8 @@ class _Interactions(Module):
                                 bias=True, )
             else:
                 nn = CGConv(channels=num_filters, dim=short_len,
-                                aggr='add', batch_norm=True,
-                                bias=True, )
+                            aggr='add', batch_norm=True,
+                            bias=True, )
             self.conv.append(nn)
 
         self.n_conv = n_conv
@@ -69,11 +68,10 @@ class CrystalGraphConvNet(BaseCrystalModel):
     CrystalGraph with GAT.
     """
 
-    def __init__(self, *args, num_gaussians=5, num_filters=64, hidden_channels=64, jump=True, **kwargs):
+    def __init__(self, *args, num_gaussians=5, num_filters=64, hidden_channels=64, **kwargs):
         super(CrystalGraphConvNet, self).__init__(*args, num_gaussians=num_gaussians, num_filters=num_filters,
                                                   hidden_channels=hidden_channels, **kwargs)
         self.num_state_features = None  # not used for this network.
-        self.jump = jump
 
     def get_interactions_layer(self):
         self.interactions = _Interactions(self.hidden_channels, self.num_gaussians, self.num_filters,

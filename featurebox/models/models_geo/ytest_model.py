@@ -1,7 +1,7 @@
 import torch
 
 from torch import nn
-from torch.nn import Linear, ModuleList
+from torch.nn import Linear
 
 from torch_geometric.nn import CGConv
 from torch_scatter import scatter
@@ -35,7 +35,6 @@ class Tes(torch.nn.Module):
                  add_state=False,
                  de=True
                  ):
-
         super(Tes, self).__init__()
 
         assert readout in ['add', 'sum', 'min', 'mean', "max", 'mul']
@@ -86,10 +85,8 @@ class Tes(torch.nn.Module):
 
         self.lin0 = Linear(hidden_channels, num_filters)
         self.interactions = CGConv(channels=num_filters, dim=num_gaussians,
-                        aggr='add', batch_norm=True,
-                        bias=True, )
-
-
+                                   aggr='add', batch_norm=True,
+                                   bias=True, )
 
         # 合并层 需要自定义
         # if readout_layer is None:
@@ -98,15 +95,15 @@ class Tes(torch.nn.Module):
         # self.register_buffer('initial_atomref', atomref)
         # self.atomref = None
 
-            # 单个原子的性质是否加到最后
+        # 单个原子的性质是否加到最后
 
         self.add_state = add_state
 
         # self.reset_parameters()
         self.readout = readout
-        self.lin1 = Linear(num_filters, num_filters )
+        self.lin1 = Linear(num_filters, num_filters)
         self.s1 = nn.Softplus()
-        self.lin2 = Linear(num_filters , num_filters)
+        self.lin2 = Linear(num_filters, num_filters)
         self.s2 = nn.Softplus()
         self.lin3 = Linear(num_filters, out_size)
 
@@ -121,7 +118,7 @@ class Tes(torch.nn.Module):
         x = data.x
         # h = F.relu(self.embedding_l(x))
         # h = self.embedding_l2(h)
-        h=x
+        h = x
 
         # edge_weight = data.edge_weight
 
@@ -129,17 +126,17 @@ class Tes(torch.nn.Module):
         # edge_attr = torch.cat((data.edge_attr, edge_attr), dim=1)
         # edge_index = data.edge_index
         # 自定义
-        h=self.lin0(h)
+        h = self.lin0(h)
         # h = self.interactions(h, edge_index, edge_attr,
         #                           )
 
         # h = self.lin1(h)
         # h = self.s1(h)
         device = torch.device("cpu")
-        h= h.to(device = device)
-        batch= batch.to(device = device)
+        h = h.to(device=device)
+        batch = batch.to(device=device)
         h = scatter(h, batch, dim=0, reduce=self.readout)
-        h= h.to(device = torch.device("cuda:1"))
+        h = h.to(device=torch.device("cuda:1"))
         h = self.lin2(h)
         h = self.s2(h)
         h = self.lin3(h)
@@ -147,7 +144,6 @@ class Tes(torch.nn.Module):
         return h.view(-1)
 
     # def get_interactions_layer(self):
-
 
     # def get_readout_layer(self):
     #     """This part shloud re-defined. And must add the ``readout_layer`` attribute.
@@ -204,4 +200,3 @@ class Tes(torch.nn.Module):
     #     self.embedding_l2.reset_parameters()
     #     if self.atomref is not None:
     #         self.atomref.weight.data.copy_(self.initial_atomref)
-
