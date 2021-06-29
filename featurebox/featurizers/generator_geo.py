@@ -10,8 +10,28 @@ from torch_geometric.data import Data, Dataset
 from torch_geometric.data import InMemoryDataset
 
 
+
 class SimpleDataset(tD):
-    """Data list with shuffle (lazy)"""
+    """Data list with shuffle (lazy)
+
+    Examples
+    -----------
+
+    >>> #Not with Dataset
+    >>> # with data.edge_index shape (2,num_edge)
+    >>> dataset = [Data.from_dict(di) for di in data]
+    >>> # SparseTensor: with data.edge_index shape (num_node,num_node)
+    >>> import torch_geometric.transforms as T
+    >>> dataset = [T.ToSparseTensor(Data.from_dict(di))) for di in data]
+
+    >>> SimpleDataset
+    >>> # with data.edge_index shape (2,num_edge)
+    >>> dataset = SimpleDataset(data)
+    >>> # SparseTensor: with data.edge_index shape (num_node,num_node)
+    >>> import torch_geometric.transforms as T
+    >>> dataset = SimpleDataset(data,pre_transform=T.ToSparseTensor())
+
+    """
     def __init__(self, data: Union[List[Data],List[Dict]], pre_filter=None, pre_transform=None, transform: Callable = None):
         super(SimpleDataset, self).__init__()
         self.transform = transform
@@ -124,7 +144,18 @@ class SimpleDataset(tD):
 
 
 class InMemoryDatasetGeo(InMemoryDataset):
-    """For small data <= 2000."""
+    """For small data <= 2000.
+    load data from local disk.
+
+    Examples
+    -----------
+    >>> # with data.edge_index shape (2,num_edge)
+    >>> dataset = SimpleDataset(root=",")
+    >>> # SparseTensor: with data.edge_index shape (num_node,num_node)
+    >>> import torch_geometric.transforms as T
+    >>> dataset = SimpleDataset(root=",", pre_transform=T.ToSparseTensor())
+
+    """
 
     def __init__(self, root, transform=None, pre_transform=None, pre_filter=None, re_process_init=True, load_mode="i"):
         """
@@ -206,7 +237,18 @@ class InMemoryDatasetGeo(InMemoryDataset):
 
 
 class DatasetGEO(Dataset):
-    """For very very huge data."""
+    """For very very huge data.
+    load data from local disk each epoth.
+
+    Examples
+    -----------
+    >>> # with data.edge_index shape (2,num_edge)
+    >>> dataset = DatasetGEO(root=",")
+    >>> # SparseTensor: with data.edge_index shape (num_node,num_node)
+    >>> import torch_geometric.transforms as T
+    >>> dataset = DatasetGEO(root=",", pre_transform=T.ToSparseTensor())
+
+    """
 
     def __init__(self, root, transform=None, pre_transform=None, pre_filter=None, re_process_init=False, load_mode="i"):
         """

@@ -10,6 +10,8 @@ from torch_geometric.nn import radius_graph
 from torch_geometric.utils import remove_self_loops
 from torch_scatter import scatter
 
+from featurebox.utils.general import sparse_eg
+
 
 class GaussianSmearing(Module):
     """Smear the radius shape (num_node,1) to shape (num_node, num_gaussians)."""
@@ -63,7 +65,8 @@ class BaseCrystalModel(Module):
                  readout_layer=None,
                  add_state=False,
                  de=True,
-                 jump=True,
+                 jump=False,
+                 sparse_edge_index=False,
                  ):
         """
         Args:
@@ -93,6 +96,8 @@ class BaseCrystalModel(Module):
             add_state: (bool) add state attribute before output.
             out_size:(int) number of out size. for regression,is 1 and for classification should be defined.
             de: (bool) distance expension. default is True
+            sparse_edge_index: bool
+                just for simple_edge=True. else, if you want use SparseTensor type edge_index, please pre_transorm the data.
         """
         super(BaseCrystalModel, self).__init__()
 
@@ -116,6 +121,8 @@ class BaseCrystalModel(Module):
         self.readout_layer = readout_layer
         self.out_size = out_size
         self.jump = jump
+        self.sparse_edge_index=sparse_edge_index
+
         # 嵌入原子属性，备用
         # (嵌入别太多，容易慢，大多数情况下用不到。)
         atomic_mass = torch.from_numpy(ase_data.atomic_masses)  # 嵌入原子质量
@@ -248,6 +255,11 @@ class BaseCrystalModel(Module):
             else:
                 edge_attr = self.distance_expansion(edge_weight.view(-1, 1))
                 edge_attr = torch.cat((data.edge_attr, edge_attr), dim=1)
+
+        if self.sparse_edge_index:
+            edge_index = sparse_eg(data, remove_edge_index=True, fill_cache=True)
+        #!! 后面不能用data.edge_attr,data.edge_index, edge_weight
+
         # 自定义
         if isinstance(self.interactions, ModuleList):
             for interaction in self.interactions:
@@ -356,7 +368,7 @@ class ReadOutLayer(Module):
         self.lin2 = Linear(num_filters * 5, num_filters)
         self.s2 = ShiftedSoftplus()
         self.lin3 = Linear(num_filters, out_size)
-        self.temp_to_cpu = True
+        self.temp_to_cpu = temp_to_cpu
 
     def forward(self, h, batch):
         h = self.lin1(h)
@@ -379,4 +391,6 @@ class ReadOutLayer(Module):
             h = scatter(h, batch, dim=0, reduce=self.readout)
             h = h.to(device=old_device)
             # batch = batch.to(device=old_device)
+        else:
+            h = scatter(h, batch, dim=0, reduce=self.readout)
         return h

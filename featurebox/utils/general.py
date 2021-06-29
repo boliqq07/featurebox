@@ -14,7 +14,7 @@ import torch
 from sklearn.model_selection import train_test_split
 from torch import Tensor
 from torch.nn import Module
-
+from torch_sparse import SparseTensor
 
 def to_list(x: Union[abc.Iterable, np.ndarray]) -> List:
     """
@@ -278,3 +278,35 @@ def _check_device(mode: Module):
             if device is not None:
                 break
     return device
+
+
+def sparse_eg(data,remove_edge_index=True,fill_cache=True):
+    assert data.edge_index is not None
+
+    (row, col), N, E = data.edge_index, data.num_nodes, data.num_edges
+    perm = (col * N + row).argsort()
+    row, col = row[perm], col[perm]
+
+    if remove_edge_index:
+        data.edge_index = None
+
+    value = None
+    for key in ['edge_weight', 'edge_attr', 'edge_type']:
+        if data[key] is not None:
+            value = data[key][perm]
+            if remove_edge_index:
+                data[key] = None
+            break
+
+    for key, item in data:
+        if item.size(0) == E:
+            data[key] = item[perm]
+
+    data.adj_t = SparseTensor(row=col, col=row, value=value,
+                              sparse_sizes=(N, N), is_sorted=True)
+
+    if fill_cache:  # Pre-process some important attributes.
+        data.adj_t.storage.rowptr()
+        data.adj_t.storage.csr2csc()
+
+    return data

@@ -108,30 +108,16 @@ class Tes(torch.nn.Module):
         self.lin3 = Linear(num_filters, out_size)
 
     def forward(self, data):
-        # 使用embedding 作为假的原子特征输入，而没有用原子特征输入
-        # assert hasattr(data, "z")
-        # assert hasattr(data, "pos")
-        # assert hasattr(data, "batch")
 
         batch = data.batch
-        # 处理数据阶段
+
         x = data.x
-        # h = F.relu(self.embedding_l(x))
-        # h = self.embedding_l2(h)
+
         h = x
 
-        # edge_weight = data.edge_weight
 
-        # edge_attr = self.distance_expansion(edge_weight.view(-1, 1))
-        # edge_attr = torch.cat((data.edge_attr, edge_attr), dim=1)
-        # edge_index = data.edge_index
-        # 自定义
         h = self.lin0(h)
-        # h = self.interactions(h, edge_index, edge_attr,
-        #                           )
 
-        # h = self.lin1(h)
-        # h = self.s1(h)
         device = torch.device("cpu")
         h = h.to(device=device)
         batch = batch.to(device=device)
@@ -143,60 +129,3 @@ class Tes(torch.nn.Module):
 
         return h.view(-1)
 
-    # def get_interactions_layer(self):
-
-    # def get_readout_layer(self):
-    #     """This part shloud re-defined. And must add the ``readout_layer`` attribute.
-    #
-    #     Examples::
-    #
-    #         >>> self.readout_layer = torch.nn.Sequential(...)
-    #
-    #     Examples::
-    #
-    #         >>> ...
-    #         >>> self.readout_layer = YourNet()
-    #     """
-    #     self.readout_layer = ReadOutLayer(num_filters=self.num_filters, readout=self.readout, out_size=self.out_size)
-
-    # def output_forward(self, out):
-    #
-    #     # if not self.dipole and self.mean is not None and self.std is not None:
-    #     #     out = out * self.std + self.mean
-    #     #
-    #     # if self.dipole:
-    #     #     out = torch.norm(out, dim=-1, keepdim=True)
-    #     #
-    #     # if self.scale is not None:
-    #     #     out = self.scale * out
-    #
-    #     return out.view(-1)
-
-    # def internal_forward(self, h, z, pos, batch, *args, **kwargs):
-    #
-    #     # if self.dipole:
-    #     #     # 加入偶极矩
-    #     #     # Get center of mass.
-    #     #     mass = self.atomic_mass[z].view(-1, 1)
-    #     #     c = scatter(mass * pos, batch, dim=0) / scatter(mass, batch, dim=0)
-    #     #     h = h * (pos - c[batch])
-    #     #
-    #     # if not self.dipole and self.atomref is not None:
-    #     #     h = h + self.atomref(z)
-    #
-    #     return h
-
-    # def __repr__(self):
-    #     return (f'{self.__class__.__name__}('
-    #             f'hidden_channels={self.hidden_channels}, '
-    #             f'num_filters={self.num_filters}, '
-    #             f'num_interactions={self.num_interactions}, '
-    #             f'num_gaussians={self.num_gaussians}, '
-    #             f'cutoff={self.cutoff})')
-
-    # def reset_parameters(self):
-    #     self.embedding_e.reset_parameters()
-    #     self.embedding_l.reset_parameters()
-    #     self.embedding_l2.reset_parameters()
-    #     if self.atomref is not None:
-    #         self.atomref.weight.data.copy_(self.initial_atomref)
