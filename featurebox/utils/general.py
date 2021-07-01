@@ -315,7 +315,7 @@ def sparse_eg_single(edge_index, num_nodes, num_edges, edge_weight=None, **kwarg
     adj_t = SparseTensor(row=col, col=row, value=value,
                          sparse_sizes=(N, N), is_sorted=True)
 
-    return adj_t, *others
+    return adj_t, others
 
 
 def get_ptr(index):
