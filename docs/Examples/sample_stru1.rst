@@ -1,4 +1,4 @@
-QM9 data
+Build model with QM9 data
 ==========================
 
 >>> import os.path as osp
