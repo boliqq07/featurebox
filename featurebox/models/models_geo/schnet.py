@@ -7,14 +7,14 @@ from math import pi as PI
 
 import torch
 import torch.nn.functional as F
-from torch import Tensor, Size
-from torch.nn import Linear, Sequential, ReLU
+from torch import Tensor
+from torch.nn import Linear, Sequential
 from torch.nn import ModuleList
-from torch_geometric.data.sampler import Adj
 from torch_geometric.nn import MessagePassing
+from torch_sparse import SparseTensor
 
 from featurebox.models.models_geo.basemodel import BaseCrystalModel, ShiftedSoftplus
-from featurebox.utils.general import check_device, temp_jump_cpu
+from featurebox.utils.general import collect_edge_attr_jump, lift_jump_index_select
 
 
 class SchNet(BaseCrystalModel):
@@ -64,12 +64,9 @@ class SchNet_InteractionBlock(torch.nn.Module):
             ShiftedSoftplus(),
             Linear(num_filters, num_filters),
         )
-        if jump:
-            self.conv = _CFConvJump(hidden_channels, hidden_channels, num_filters,
-                                    self.mlp, cutoff)
-        else:
-            self.conv = _CFConv(hidden_channels, hidden_channels, num_filters,
-                                self.mlp, cutoff)
+
+        self.conv = _CFConv(hidden_channels, hidden_channels, num_filters,
+                            self.mlp, cutoff)
         self.act = ShiftedSoftplus()
         # self.act = ReLU()
 
@@ -101,12 +98,20 @@ class _CFConv(MessagePassing):
 
         self.reset_parameters()
 
+    def __collect__(self, args, edge_index, size, kwargs):
+        return collect_edge_attr_jump(self, args, edge_index, size, kwargs)
+
+    def __lift__(self, src, edge_index, dim):
+        return lift_jump_index_select(self, src, edge_index, dim)
+
     def reset_parameters(self):
         torch.nn.init.xavier_uniform_(self.lin1.weight)
         torch.nn.init.xavier_uniform_(self.lin2.weight)
         self.lin2.bias.data.fill_(0)
 
     def forward(self, x, edge_index, edge_weight, edge_attr):
+        if isinstance(edge_index, SparseTensor):
+            edge_weight = edge_index.storage.value()
         C = 0.5 * (torch.cos(edge_weight * PI / self.cutoff) + 1.0)
         W = self.nn(edge_attr) * C.view(-1, 1)
 
@@ -118,18 +123,18 @@ class _CFConv(MessagePassing):
     def message(self, x_j: Tensor, W: Tensor):  # [num_edge,]
         return x_j * W
 
+#
+# class _CFConvJump(_CFConv):
+#     """# torch.geometric scatter is unstable especially for small data in cuda device.!!!"""
+#
+#     @property
+#     def device(self):
+#         return check_device(self)
+#
+#     @temp_jump_cpu()
+#     def propagate(self, edge_index: Adj, size: Size = None, **kwargs):
+#         return super().propagate(edge_index, size=size, **kwargs)
 
-class _CFConvJump(_CFConv):
-    """# torch.geometric scatter is unstable especially for small data in cuda device.!!!"""
-
-    @property
-    def device(self):
-        return check_device(self)
-
-    @temp_jump_cpu()
-    def propagate(self, edge_index: Adj, size: Size = None, **kwargs):
-        return super().propagate(edge_index, size=size, **kwargs)
-
-    # @temp_jump()
-    # def message(self, x_j, W) -> Tensor:
-    #     return super().message(x_j, W)
+# @temp_jump()
+# def message(self, x_j, W) -> Tensor:
+#     return super().message(x_j, W)

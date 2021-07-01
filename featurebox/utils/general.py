@@ -4,8 +4,10 @@ Operation utilities on lists and arrays, for torch,
 Notes
     just for network.
 """
+import warnings
 from collections import abc
 from functools import wraps
+from inspect import Parameter
 from typing import Union, List, Sequence, Optional
 
 import numpy as np
@@ -14,7 +16,12 @@ import torch
 from sklearn.model_selection import train_test_split
 from torch import Tensor
 from torch.nn import Module
+from torch_geometric.nn import radius_graph
+from torch_geometric.nn.conv.utils.helpers import expand_left
+from torch_geometric.utils import remove_self_loops
+from torch_scatter import gather_csr
 from torch_sparse import SparseTensor
+
 
 def to_list(x: Union[abc.Iterable, np.ndarray]) -> List:
     """
@@ -280,33 +287,141 @@ def _check_device(mode: Module):
     return device
 
 
-def sparse_eg(data,remove_edge_index=True,fill_cache=True):
-    assert data.edge_index is not None
+#
+def sparse_eg_single(edge_index, num_nodes, num_edges, edge_weight=None, **kwargs):
+    """
+    From:
 
-    (row, col), N, E = data.edge_index, data.num_nodes, data.num_edges
+    import torch_geometric.transforms as T
+    T.ToSparseTensor()
+
+    Make sure all the edge prop is spared together!!!
+    for example edge_index,edge_weight,edge_attr...,due to index is resort"""
+
+    (row, col), N, E = edge_index, num_nodes, num_edges
     perm = (col * N + row).argsort()
     row, col = row[perm], col[perm]
 
-    if remove_edge_index:
-        data.edge_index = None
+    if edge_weight:
+        value = edge_weight[perm]
+    else:
+        value = None
 
-    value = None
-    for key in ['edge_weight', 'edge_attr', 'edge_type']:
-        if data[key] is not None:
-            value = data[key][perm]
-            if remove_edge_index:
-                data[key] = None
-            break
-
-    for key, item in data:
+    others = [value, ]
+    for key, item in kwargs:
         if item.size(0) == E:
-            data[key] = item[perm]
+            others.append(item[perm])
 
-    data.adj_t = SparseTensor(row=col, col=row, value=value,
-                              sparse_sizes=(N, N), is_sorted=True)
+    adj_t = SparseTensor(row=col, col=row, value=value,
+                         sparse_sizes=(N, N), is_sorted=True)
 
-    if fill_cache:  # Pre-process some important attributes.
-        data.adj_t.storage.rowptr()
-        data.adj_t.storage.csr2csc()
+    return adj_t, *others
 
-    return data
+
+def get_ptr(index):
+    """Trans batch index to ptr"""
+    return torch.ops.torch_sparse.ind2ptr(index, index[-1] + 1)
+
+
+class GaussianSmearing:
+    """Smear the radius shape (num_node,1) to shape (num_node, num_gaussians)."""
+
+    def __init__(self, start=0.0, stop=5.0, num_gaussians=50):
+        super(GaussianSmearing, self).__init__()
+        self.offset = torch.linspace(start, stop, num_gaussians)
+        self.coeff = -0.5 / (self.offset[1] - self.offset[0]).item() ** 2
+
+    def __call__(self, data):
+        dist = data.edge_weight
+        dist = dist.view(-1, 1) - self.offset.view(1, -1)
+        if hasattr(data, "edge_attr") and data.edge_attr.shape[1] != 1:
+            warnings.warn("The old edge_attr is covered by smearing edge_weight", UserWarning)
+        data.edge_attr = torch.exp(self.coeff * torch.pow(dist, 2))
+
+        return data
+
+
+class AddEdge(object):
+    """For (BaseStructureGraphGEO) without edge index, this is one lazy way to calculate edge ."""
+
+    def __init__(self, cutoff=7.0, ):
+        self.cutoff = cutoff
+
+    def __call__(self, data):
+
+        edge_index = radius_graph(data.pos, r=self.cutoff, batch=data.batch)
+        edge_index, _ = remove_self_loops(edge_index)
+        row, col = edge_index[0], edge_index[1]
+        edge_weight = (data.pos[row] - data.pos[col]).norm(dim=-1)
+        if hasattr(data, "edge_attr"):
+            pass
+        else:
+            data.edge_attr = edge_weight.reshape(-1, 1)
+        return data
+
+
+def collect_edge_attr_jump(self, args, edge_index, size, kwargs):
+    """From MessagePassing.__collect__, jump edge_attr from adj"""
+    i, j = (1, 0) if self.flow == 'source_to_target' else (0, 1)
+
+    out = {}
+    for arg in args:
+        if arg[-2:] not in ['_i', '_j']:
+            out[arg] = kwargs.get(arg, Parameter.empty)
+        else:
+            dim = 0 if arg[-2:] == '_j' else 1
+            data = kwargs.get(arg[:-2], Parameter.empty)
+
+            if isinstance(data, (tuple, list)):
+                assert len(data) == 2
+                if isinstance(data[1 - dim], Tensor):
+                    self.__set_size__(size, 1 - dim, data[1 - dim])
+                data = data[dim]
+
+            if isinstance(data, Tensor):
+                self.__set_size__(size, dim, data)
+                data = self.__lift__(data, edge_index,
+                                     j if arg[-2:] == '_j' else i)
+
+            out[arg] = data
+
+    if isinstance(edge_index, Tensor):
+        out['adj_t'] = None
+        out['edge_index'] = edge_index
+        out['edge_index_i'] = edge_index[i]
+        out['edge_index_j'] = edge_index[j]
+        out['ptr'] = None
+    elif isinstance(edge_index, SparseTensor):
+        out['adj_t'] = edge_index
+        out['edge_index'] = None
+        out['edge_index_i'] = edge_index.storage.row()
+        out['edge_index_j'] = edge_index.storage.col()
+        out['ptr'] = edge_index.storage.rowptr()
+        out['edge_weight'] = edge_index.storage.value()
+        # out['edge_attr'] = edge_index.storage.value()
+        # out['edge_type'] = edge_index.storage.value()
+
+    out['index'] = out['edge_index_i']
+    out['size'] = size
+    out['size_i'] = size[1] or size[0]
+    out['size_j'] = size[0] or size[1]
+    out['dim_size'] = out['size_i']
+
+    return out
+
+
+def lift_jump_index_select(self, src, edge_index, dim):
+    """From MessagePassing.__lift__, jump edge_attr from adj"""
+    if isinstance(edge_index, Tensor):
+        index = edge_index[dim]
+        return src.index_select(self.node_dim, index)
+    elif isinstance(edge_index, SparseTensor):
+        if dim == 1:
+            rowptr = edge_index.storage.rowptr()
+            rowptr = expand_left(rowptr, dim=self.node_dim, dims=src.dim())
+            return gather_csr(src, rowptr)
+        elif dim == 0:
+            col = edge_index.storage.col()
+            # return src.index_select(self.node_dim, col)
+            return src[col]
+    raise ValueError

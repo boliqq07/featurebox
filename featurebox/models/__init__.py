@@ -21,6 +21,8 @@ Each Graph data in (for each structure) in ``models_geo``:
 
 ``z``: atom numbers. np.ndarray, with shape (num_nodes,)
 
+``edge_weight``: Edge feature matrix. np.ndarray, with shape (num_edge_features,) 
+
 Where the state_attr is added newly.
 
 .. note::

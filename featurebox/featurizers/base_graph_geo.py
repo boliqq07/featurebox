@@ -44,6 +44,7 @@ from featurebox.utils.look_json import get_marked_class
 class _BaseStructureGraphGEO(BaseFeature):
 
     def __init__(self, collect=False, return_type="tensor", batch_calculate: bool = True,
+                 add_label=False,
                  **kwargs):
         """
 
@@ -53,7 +54,7 @@ class _BaseStructureGraphGEO(BaseFeature):
             return_type:(str), Return torch.tensor default, "numpy" is Just for show!!
             **kwargs:
         """
-        super().__init__(batch_calculate=True, **kwargs)
+        super().__init__(batch_calculate=batch_calculate, **kwargs)
         self.graph_data_name = []
         if collect is False:
             self.get_collect_data = lambda x: x
@@ -66,7 +67,7 @@ class _BaseStructureGraphGEO(BaseFeature):
         self.return_type = return_type
         self.collect = collect
         self.convert_funcs = [i for i in dir(self) if "_convert_" in i]
-        self.add_label = True
+        self.add_label = add_label
 
     def __add__(self, other):
         raise TypeError("There is no add.")
@@ -118,7 +119,7 @@ class _BaseStructureGraphGEO(BaseFeature):
             ret, self.support_ = zip(*rets)
 
         if self.add_label:
-            [i.update({"label": n}) for n, i in enumerate(ret)]
+            [i.update({"label": torch.tensor([n, n])}) for n, i in enumerate(ret)]  # double for after.
         return ret
 
     def get_collect_data(self, graphs: List[Dict]):
@@ -377,6 +378,8 @@ class StructureGraphGEO(BaseStructureGraphGEO):
 
     ``edge_attr``: Edge feature matrix. np.ndarray,  with shape [num_edges, num_edge_features]
 
+    ``edge_weight``: Edge feature matrix. np.ndarray,  with shape [num_edges, ]
+
     ``pos``: Node position matrix. np.ndarray, with shape [num_nodes, num_dimensions]
 
     ``y``: target. np.ndarray, shape (1, num_target) , default shape (1,)
@@ -475,7 +478,10 @@ class StructureGraphGEO(BaseStructureGraphGEO):
                               "this could resulting in a correspondence error",
                               )
 
-        edge_weight = self.bond_converter.convert(edge_weight)
+        edge_weight = self.bond_converter.convert(edge_weight).ravel()
+
+        if edge_weight.ndim == 2 and edge_weight.shape[1] == 1:
+            edge_weight = edge_weight.ravel()
 
         edge_index = edge_index.astype(dtype=np.int64)
         edge_weight = edge_weight.astype(dtype=np.float32)

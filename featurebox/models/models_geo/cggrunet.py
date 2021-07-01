@@ -3,36 +3,33 @@ from __future__ import print_function, division
 
 import torch
 import torch.nn.functional as F
-from torch import Tensor, Size
 from torch.nn import Module, Linear
 from torch.nn import ReLU, Sequential, GRU
-from torch_geometric.data.sampler import Adj
 from torch_geometric.nn import NNConv, Set2Set
 from torch_geometric.utils import softmax
-from torch_scatter import scatter_add
+from torch_scatter import segment_csr
 
 from featurebox.models.models_geo.basemodel import BaseCrystalModel
-from featurebox.utils.general import check_device, temp_jump_cpu
-from featurebox.utils.general import temp_jump
+from featurebox.utils.general import collect_edge_attr_jump, get_ptr, lift_jump_index_select
 
 
-class NNConvJump(NNConv):
-    """# torch.geometric scatter is unstable especially for small data in cuda device.!!!"""
+# class NNConvJump(NNConv):
+#     """# torch.geometric scatter is unstable especially for small data in cuda device.!!!"""
+#
+#     @property
+#     def device(self):
+#         return check_device(self)
+#
+#     @temp_jump_cpu()
+#     def propagate(self, edge_index: Adj, size: Size = None, **kwargs):
+#         return super().propagate(edge_index, size=size, **kwargs)
+#
+#     @temp_jump()
+#     def message(self, x_j: Tensor, edge_attr: Tensor) -> Tensor:
+#         return super().message(x_j, edge_attr)
 
-    @property
-    def device(self):
-        return check_device(self)
 
-    @temp_jump_cpu()
-    def propagate(self, edge_index: Adj, size: Size = None, **kwargs):
-        return super().propagate(edge_index, size=size, **kwargs)
-
-    @temp_jump()
-    def message(self, x_j: Tensor, edge_attr: Tensor) -> Tensor:
-        return super().message(x_j, edge_attr)
-
-
-class Set2SetJump(Set2Set):
+class Set2SetNew(Set2Set):
 
     def forward(self, x, batch):
         """"""
@@ -47,18 +44,23 @@ class Set2SetJump(Set2Set):
             q = q.view(batch_size, self.in_channels)
             e = (x * q[batch]).sum(dim=-1, keepdim=True)
             a = softmax(e, batch, num_nodes=batch_size)
-            r = self.tem_scatter_add(a * x, batch, dim=0, dim_size=batch_size)
+
+            r = segment_csr((a * x), get_ptr(batch))
             q_star = torch.cat([q, r], dim=-1)
 
         return q_star
 
-    @temp_jump_cpu()
-    def tem_scatter_add(self, x, batch, dim, dim_size):
-        return scatter_add(x, batch, dim=dim, dim_size=dim_size)
-
     def __repr__(self):
         return '{}({}, {})'.format(self.__class__.__name__, self.in_channels,
                                    self.out_channels)
+
+
+class NNConvNew(NNConv):
+    def __collect__(self, args, edge_index, size, kwargs):
+        return collect_edge_attr_jump(self, args, edge_index, size, kwargs)
+
+    def __lift__(self, src, edge_index, dim):
+        return lift_jump_index_select(self, src, edge_index, dim)
 
 
 class _Interactions(Module):
@@ -73,10 +75,9 @@ class _Interactions(Module):
         self.short = Linear(num_gaussians, nf)
 
         nn = Sequential(Linear(nf, nf // 4), ReLU(), Linear(nf // 4, nf * nf))
-        if jump:
-            self.conv = NNConvJump(nf, nf, nn, aggr='mean')
-        else:
-            self.conv = NNConv(nf, nf, nn, aggr='mean')
+
+        self.conv = NNConvNew(nf, nf, nn, aggr='mean')
+
         self.n_conv = n_conv
         self.gru = GRU(nf, nf)
 
@@ -100,10 +101,8 @@ class CGGRU_ReadOut(Module):
                  n_set2set=2, out_size=1):
         super(CGGRU_ReadOut, self).__init__()
         nf = num_filters
-        if jump:
-            self.set2set = Set2SetJump(nf, processing_steps=n_set2set)  # very import
-        else:
-            self.set2set = Set2Set(nf, processing_steps=n_set2set)  # very import
+
+        self.set2set = Set2SetNew(nf, processing_steps=n_set2set)  # very import
         self.lin1 = Linear(2 * nf, nf)
         self.lin2 = Linear(nf, out_size)
 
@@ -117,6 +116,7 @@ class CGGRU_ReadOut(Module):
 class CGGRUNet(BaseCrystalModel):
     """
     CrystalGraph with CGGRUN.
+    weight_decay=0.001, best.
     """
 
     def __init__(self, *args, num_gaussians=5, num_filters=64, hidden_channels=64, **kwargs):

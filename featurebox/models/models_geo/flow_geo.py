@@ -87,25 +87,39 @@ class LearningFlow:
         >>> test_dataset = dataset[:1000]
         >>> val_dataset = dataset[1000:2000]
         >>> train_dataset = dataset[2000:3000]
-        >>> test_loader = DataLoader(test_dataset, batch_size=128, shuffle=False)
-        >>> val_loader = DataLoader(val_dataset, batch_size=128, shuffle=False)
-        >>> train_loader = DataLoader(train_dataset, batch_size=128, shuffle=True)
+        >>> import torch_geometric.transforms as T
+        >>> train_dataset = SimpleDataset(data_train, pre_transform=T.ToSparseTensor())
+        >>> test_dataset = SimpleDataset(data_test,pre_transform=T.ToSparseTensor())
+        >>> val_dataset = SimpleDataset(val_data,pre_transform=T.ToSparseTensor())
 
-        >>> device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
+        >>> train_loader = DataLoader(
+        ... dataset=train_dataset,
+        ... batch_size=200,
+        ... shuffle=False,
+        ... num_workers=0)
 
-        >>> # model = CGGRUNet(11, 5, cutoff=5.0).to(device)
-        >>> # model = CrystalGraphConvNet(11, 5, cutoff=5.0).to(device)
-        >>> # model = CrystalGraphGCN(11, 5, cutoff=5.0).to(device)
-        >>> # model = CrystalGraphGCN2(11, 5, cutoff=5.0).to(device)
-        >>> model = CrystalGraphGAT(11, 5, cutoff=5.0).to(device)
-        >>> # model = SchNet(0,0,simple_edge=True).to(device)
-        >>> # model = MEGNet(11, 5, cutoff=5.0,num_state_features=2).to(device)
-        >>> # model = SchNet(11,5,simple_edge=False).to(device)
-        >>> # model = CrystalGraphConvNet(0,5,simple_edge=False,simple_z=True).to(device)
+        >>> test_loader = ...
+        >>> val_loader = ...
+
+x
+        >>>  model = CrystalGraphConvNet(num_node_features=91,
+        ...  num_bond_features=3,
+        ...  num_state_features=29,
+        ...  hidden_channels=128,
+        ...  num_filters=64,
+        ...  num_interactions=2,)
+        >>> # model = CrystalGraphGCN(...)
+        >>> # model = CrystalGraphGCN2(...)
+        >>> # model = CrystalGraphGAT(...)
+        >>> # model = SchNet(...)
+        >>> # model = MEGNet(...)
+        >>> # model = SchNet(...)
+
 
         >>> optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
         >>> scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.7, patience=2,...min_lr=0.001)
-        >>>
+        >>> device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
+
         >>> lf= LearningFlow(model, train_loader, validate_loader=val_loader, device= "cuda:1",
         ... optimizer=None, clf= False, loss_method=None, learning_rate = 1e-3, milestones=None,
         ... weight_decay= 0.01, checkpoint=True, scheduler=scheduler,

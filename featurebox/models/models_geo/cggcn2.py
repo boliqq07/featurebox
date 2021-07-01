@@ -2,31 +2,33 @@
 from __future__ import print_function, division
 
 import torch.nn.functional as F
-from torch import Tensor, Size
 from torch.nn import Module, Linear, ModuleList
-from torch_geometric.data.sampler import Adj
 from torch_geometric.nn import GCN2Conv
-from torch_geometric.typing import OptTensor
 
 from featurebox.models.models_geo.basemodel import BaseCrystalModel
-from featurebox.utils.general import check_device, temp_jump_cpu
-from featurebox.utils.general import temp_jump
+# class GCN2ConvJump(GCN2Conv):
+#     """# torch.geometric scatter is unstable especially for small data in cuda device.!!!"""
+#
+#     @property
+#     def device(self):
+#         return check_device(self)
+#
+#     @temp_jump_cpu()
+#     def propagate(self, edge_index: Adj, size: Size = None, **kwargs):
+#         return super().propagate(edge_index, size=size, **kwargs)
+#
+#     @temp_jump()
+#     def message(self, x_j: Tensor, edge_weight: OptTensor) -> Tensor:
+#         return super().message(x_j, edge_weight)
+from featurebox.utils.general import collect_edge_attr_jump, lift_jump_index_select
 
 
-class GCN2ConvJump(GCN2Conv):
-    """# torch.geometric scatter is unstable especially for small data in cuda device.!!!"""
+class GCNConv2New(GCN2Conv):
+    def __collect__(self, args, edge_index, size, kwargs):
+        return collect_edge_attr_jump(self, args, edge_index, size, kwargs)
 
-    @property
-    def device(self):
-        return check_device(self)
-
-    @temp_jump_cpu()
-    def propagate(self, edge_index: Adj, size: Size = None, **kwargs):
-        return super().propagate(edge_index, size=size, **kwargs)
-
-    @temp_jump()
-    def message(self, x_j: Tensor, edge_weight: OptTensor) -> Tensor:
-        return super().message(x_j, edge_weight)
+    def __lift__(self, src, edge_index, dim):
+        return lift_jump_index_select(self, src, edge_index, dim)
 
 
 class _Interactions(Module):
@@ -42,16 +44,10 @@ class _Interactions(Module):
 
         self.conv = ModuleList()
         for _ in range(n_conv):
-            if jump:
-                nn = GCN2ConvJump(
-                    channels=num_filters, alpha=0.9, theta=None,
-                    layer=None, shared_weights=True,
-                    cached=False, add_self_loops=False, normalize=True, )
-            else:
-                nn = GCN2Conv(
-                    channels=num_filters, alpha=0.9, theta=None,
-                    layer=None, shared_weights=True,
-                    cached=False, add_self_loops=False, normalize=True, )
+            nn = GCNConv2New(
+                channels=num_filters, alpha=0.9, theta=None,
+                layer=None, shared_weights=True,
+                cached=False, add_self_loops=False, normalize=True, )
             self.conv.append(nn)
         self.n_conv = n_conv
 

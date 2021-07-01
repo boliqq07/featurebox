@@ -33,7 +33,10 @@ Using data
 ----------
 
     >>> from torch_geometric.data import DataLoader
+    >>> import torch_geometric.transforms as T
     >>> """1. Just use data (small data)."""
+    >>> sparse = T.ToSparseTensor()
+    >>> data = sparse(data)
     >>> loader = DataLoader(
                         dataset=data,  
                         batch_size=1,  
@@ -43,7 +46,7 @@ Using data
 
     >>> from torch_geometric.data import DataLoader
     >>> """2. Use local data (middle data)."""
-    >>> gen = InMemoryDatasetGeo(root="path")
+    >>> gen = InMemoryDatasetGeo(root="path", pre_transform=T.TOSparseTensor())
     >>> loader = DataLoader(
                         dataset=gen,  
                         batch_size=1,  
@@ -51,15 +54,17 @@ Using data
                         num_workers=0,  
                         )
 
+    >>> from featurebox.utils.general import train_test_pack, GaussianSmearing
     >>> from torch_geometric.data import DataLoader
     >>> """3. Use local data (large data)."""
-    >>> gen = DatasetGeo(root="path")
+    >>> gen = DatasetGeo(root="path",pre_transform=T.Compose([GaussianSmearing(num_gaussians=50),T.ToSparseTensor(),]))
     >>> loader = DataLoader(
                         dataset=gen,  
                         batch_size=1,  
                         shuffle=True,  
-                        num_workers=0,  
-                        )
+                        num_workers=0,  )
+
+More transforms can be shown in ``torch_geometric``.
 
 Note
 ----
@@ -71,6 +76,8 @@ Note
     ``edge_index``: Graph connectivity in COO format. np.ndarray, with shape [2, num_edges] and type torch.long
     
     ``edge_attr``: Edge feature matrix. np.ndarray, with shape [num_edges, num_edge_features]
+
+    ``edge_weight``: Edge feature matrix. np.ndarray, with shape [num_edges, ]
     
     ``pos``: Node position matrix. np.ndarray, with shape [num_nodes, num_dimensions]
     

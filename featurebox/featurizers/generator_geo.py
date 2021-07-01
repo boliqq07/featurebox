@@ -10,7 +10,6 @@ from torch_geometric.data import Data, Dataset
 from torch_geometric.data import InMemoryDataset
 
 
-
 class SimpleDataset(tD):
     """Data list with shuffle (lazy)
 
@@ -32,12 +31,14 @@ class SimpleDataset(tD):
     >>> dataset = SimpleDataset(data,pre_transform=T.ToSparseTensor())
 
     """
-    def __init__(self, data: Union[List[Data],List[Dict]], pre_filter=None, pre_transform=None, transform: Callable = None):
+
+    def __init__(self, data: Union[List[Data], List[Dict]], pre_filter=None, pre_transform=None,
+                 transform: Callable = None):
         super(SimpleDataset, self).__init__()
         self.transform = transform
         self.pre_filter = pre_filter
         self.pre_transform = pre_transform
-        if isinstance(data[0],dict):
+        if isinstance(data[0], dict):
             self.data = [Data.from_dict(di) for di in data]
         else:
             self.data = data
