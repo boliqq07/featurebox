@@ -1,36 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="iap13@192.9.200.238:22 password" remoteFilesAllowedToDisappearOnAutoupload="false">
+  <component name="PublishConfigData" autoUpload="Always" serverName="iap13@192.9.200.238:22" remoteFilesAllowedToDisappearOnAutoupload="false">
     <serverData>
-      <paths name="MachineLearning@192.9.200.233:22">
+      <paths name="gjj">
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
-      <paths name="iap13@192.9.200.238:22 password">
+      <paths name="iap13@192.9.200.238:22">
         <serverdata>
           <mappings>
             <mapping deploy="wcx/featurebox" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
-      <paths name="iap13@192.9.200.239:10002 password">
-        <serverdata>
-          <mappings>
-            <mapping deploy="/home/iap13/wcx/featurebox" local="$PROJECT_DIR$" web="/" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="iap13@60.205.247.59:22">
+      <paths name="iap13@192.9.200.239:10002">
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
-      <paths name="mgetool">
+      <paths name="root@10.1.8.133:32866">
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />
@@ -41,20 +34,6 @@
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="wangchangxin@222.28.70.247:22">
-        <serverdata>
-          <mappings>
-            <mapping deploy="/data/home/wangchangxin/gpaw/gpaw-21.1.0" local="$PROJECT_DIR$/../gpaw" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="wangchangxin@222.28.70.247:22 (1)">
-        <serverdata>
-          <mappings>
-            <mapping deploy="/tmp/pycharm_project_429" local="$PROJECT_DIR$" />
           </mappings>
         </serverdata>
       </paths>

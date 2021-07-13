@@ -64,7 +64,7 @@ Reference: https://github.com/materialsproject/pymatgen
 
 Such as ::
 
-    pip install spglib-1.16.1-cp38-cp38-win_amd64.whl
+    pip install /your/local/path/spglib-1.16.1-cp38-cp38-win_amd64.whl
 
 4. scikit-learn ::
 
