@@ -1,13 +1,27 @@
 import itertools
 import math
-from typing import Union, List, Tuple
+from collections import abc
+from typing import Tuple, Union, List
 
 import numpy as np
 from mgetool.tool import tt
 from pymatgen.core import Structure
-
-from featurebox.utils.general import re_pbc
 from featurebox.utils.predefined_typing import StructureOrMolecule
+
+def re_pbc(pbc: Union[bool, List[bool], np.ndarray], return_type="bool"):
+    if pbc is True:
+        pbc = [1, 1, 1]
+    elif pbc is False:
+        pbc = [0, 0, 0]
+    elif isinstance(pbc, abc.Iterable):
+        pbc = [1 if i == True or i == 1 else 0 for i in pbc]
+    else:
+        raise TypeError("Can't accept {}".format(pbc))
+    if return_type == "bool":
+        pbc = np.array(pbc) == 1
+    else:
+        pbc = np.array(pbc)
+    return pbc
 
 
 def get_xyz_in_spheres(structure: StructureOrMolecule, nn_strategy=None, cutoff: float = 5.0,

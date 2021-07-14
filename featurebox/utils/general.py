@@ -11,7 +11,7 @@ from inspect import Parameter
 from typing import Union, List, Sequence, Optional
 
 import numpy as np
-# import torch
+
 import torch
 from sklearn.model_selection import train_test_split
 from torch import Tensor
@@ -159,24 +159,6 @@ def train_test_pack(*arrays, out=0, **options):
     else:
         return train_test_data
 
-
-def re_pbc(pbc: Union[bool, List[bool], np.ndarray], return_type="bool"):
-    if pbc is True:
-        pbc = [1, 1, 1]
-    elif pbc is False:
-        pbc = [0, 0, 0]
-    elif isinstance(pbc, abc.Iterable):
-        pbc = [1 if i == True or i == 1 else 0 for i in pbc]
-    else:
-        raise TypeError("Can't accept {}".format(pbc))
-    if return_type == "bool":
-        pbc = np.array(pbc) == 1
-    else:
-        pbc = np.array(pbc)
-    return pbc
-
-
-# a = re_pbc(np.array([True,True,False]), return_type="int")
 
 def getter_arr(obj, pi):
     """Get prop.
