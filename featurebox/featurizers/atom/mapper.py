@@ -52,7 +52,7 @@ def get_atom_fea_name(structure: Structure) -> List[dict]:
 def get_ion_fea_name(structure: Structure) -> List[dict]:
     """
     For a structure return the list of dictionary for the site occupancy
-    for example, Fe0.5Ni0.5 site will be returned as {"Fe2+": 0.5, "Ni3+": 0.5}
+    for example, Fe0.5Ni0.5 site will be returned as {"Fe2+": 0.5, "Ni2+": 0.5}
 
     Args:
         structure (Structure): pymatgen Structure with potential site disorder
