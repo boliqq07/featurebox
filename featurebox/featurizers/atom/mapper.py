@@ -49,6 +49,21 @@ def get_atom_fea_name(structure: Structure) -> List[dict]:
     # return [i.species.to_dict() for i in structure.sites]
 
 
+def get_ion_fea_name(structure: Structure) -> List[dict]:
+    """
+    For a structure return the list of dictionary for the site occupancy
+    for example, Fe0.5Ni0.5 site will be returned as {"Fe2+": 0.5, "Ni3+": 0.5}
+
+    Args:
+        structure (Structure): pymatgen Structure with potential site disorder
+
+    Returns:
+        a list of site fraction description
+    """
+
+    return [i.species.to_dict() for i in structure.sites]
+
+
 ##############################################################
 
 class AtomMap(Converter):
@@ -88,6 +103,10 @@ class BinaryMap(AtomMap):
         if self.search_tp == "name":
             if isinstance(d, Structure):
                 d = get_atom_fea_name(d)
+            return self.convert_dict(d)
+        elif self.search_tp == "ion_name":
+            if isinstance(d, Structure):
+                d = get_ion_fea_name(d)
             return self.convert_dict(d)
         else:
             if isinstance(d, Structure):
