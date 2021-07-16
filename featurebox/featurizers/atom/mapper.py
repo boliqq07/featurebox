@@ -91,9 +91,18 @@ class AtomMap(Converter):
 
 
 class BinaryMap(AtomMap):
-    """Base converter with 2 different search_tp."""
+    """Base converter with 2 different search_tp.
 
-    def __init__(self, search_tp: str = "number", weight: bool = True, **kwargs):
+    """
+
+    def __init__(self, search_tp: str = "number", weight: bool = False, **kwargs):
+        """
+
+        Args:
+            search_tp: (str)
+            weight: (bool) , For true,the same key data are summed together.
+            **kwargs:
+        """
         super().__init__(**kwargs)
         self.search_tp = search_tp
         self.weight = weight
