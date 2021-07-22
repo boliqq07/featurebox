@@ -114,22 +114,25 @@ def filt(ind, min_=2, max_=None):
         if np.sum(ind) > max_:
             index = np.where(np.array(ind) == 1)[0]
             k = random.randint(min_, max_)
-            index2 = random.choices(index, k=k)
+            index2 = random.sample(list(index), k=k)
             ind[:] = [0] * len(ind)
             [ind.__setitem__(i, 1) for i in index2]
 
         elif np.sum(ind) < min_:
             k = random.randint(min_, max_)
-            index2 = random.choices(list(range(len(ind))), k=k)
+            index2 = random.sample(list(range(len(ind))), k=k)
             ind[:] = [0] * len(ind)
             [ind.__setitem__(i, 1) for i in index2]
 
     else:
         if np.sum(ind) < min_:
             k = random.randint(min_, len(ind))
-            index2 = random.choices(list(range(len(ind))), k=k)
+            index2 = random.sample(list(range(len(ind))), k=k)
             ind[:] = [0] * len(ind)
             [ind.__setitem__(i, 1) for i in index2]
+
+    # if np.sum(ind)<min_:
+    #     raise UserWarning("???")
 
     return ind
 
