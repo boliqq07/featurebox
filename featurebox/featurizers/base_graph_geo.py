@@ -175,7 +175,7 @@ class _BaseStructureGraphGEO(BaseFeature):
                            "to definition or specific names list.")
         elif len(set(file_names)) == len(structures):
             return file_names
-        elif len(set(file_names)) == "rank_number":
+        elif file_names == "rank_number":
             return ["raw_data_{}".format(i) for i in range(len(structures))]
         else:
             return names
@@ -343,7 +343,7 @@ class BaseStructureGraphGEO(_BaseStructureGraphGEO):
             else:
                 y = np.array(y, dtype=np.float32).ravel()[np.newaxis, :]
         else:
-            y = np.nan
+            y = np.array(np.nan)
 
         return {'y': y}
 

@@ -317,7 +317,7 @@ class GaussianSmearing:
         dist = data.edge_weight
         dist = dist.view(-1, 1) - self.offset.view(1, -1)
         if hasattr(data, "edge_attr") and data.edge_attr.shape[1] != 1:
-            warnings.warn("The old edge_attr is covered by smearing edge_weight", UserWarning)
+            print("The old edge_attr is covered by smearing edge_weight")
         data.edge_attr = torch.exp(self.coeff * torch.pow(dist, 2))
 
         return data
