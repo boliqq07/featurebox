@@ -10,6 +10,7 @@ from torch.nn import Module
 from torch.optim.lr_scheduler import MultiStepLR
 from torch.utils.data import DataLoader
 
+from featurebox.models.models_geo.log_model import LogModule, make_dot_, HookGradientModule, get_layers_with_weight
 from featurebox.utils.general import getter_arr
 
 
@@ -103,10 +104,10 @@ class LearningFlow:
 
 x
         >>>  model = CrystalGraphConvNet(num_node_features=91,
-        ...  num_bond_features=3,
+        ...  num_edge_features=3,
         ...  num_state_features=29,
-        ...  hidden_channels=128,
-        ...  num_filters=64,
+        ...  num_node_hidden_channels=128,
+        ...  num_node_interaction_channels=64,
         ...  num_interactions=2,)
         >>> # model = CrystalGraphGCN(...)
         >>> # model = CrystalGraphGCN2(...)
@@ -132,7 +133,7 @@ x
 
     def __init__(self, model: Module, train_loader: DataLoader, validate_loader: DataLoader, device: str = "cpu",
                  optimizer=None, clf: bool = False, loss_method=None, learning_rate: float = 1e-3, milestones=None,
-                 weight_decay: float = 0.01, checkpoint=True, scheduler=None,
+                 weight_decay: float = 0.01, checkpoint=True, scheduler=None, debug="", target_layers=(),
                  loss_threshold: float = 0.001, print_freq: int = 10, print_what="all", process_label=None):
         """
 
@@ -150,7 +151,7 @@ x
             see more in torch
         learning_rate:float
             see more in torch
-        milestones:list of float
+        milestones:list of float,None
             see more in torch
         weight_decay:float
             see more in torch
@@ -181,6 +182,9 @@ x
         self.milestones = milestones
         self.optimizer = optimizer
         self.checkpoint = checkpoint
+        self.weight_log = LogModule()
+
+        self.debug = debug
 
         self.train_batch_number = len(self.train_loader)
 
@@ -225,6 +229,36 @@ x
         func = lambda x: x
         self._process_label = func if process_label is None else process_label
 
+        # hook
+        self.target_layers = ()
+        self.hook_layer(target_layers)
+
+    def hook_layer(self, target_layers):
+        if isinstance(target_layers, (list, tuple)) and len(target_layers) > 0:
+            self.target_layers = target_layers
+        elif isinstance(target_layers, str):
+            mod = []
+            if target_layers == "all":
+                # all layer
+                for name, module in self.model.named_modules():
+                    mod.append(module)
+            elif target_layers == "top":
+                # top layer
+                for name, module in self.model._modules.items():
+                    mod.append(module)
+            # just with weight layer
+            else:
+                mmdict = get_layers_with_weight(self.model)
+                for name, module in mmdict.items():
+                    mod.append(module)
+            self.target_layers = mod[:]
+        else:
+            mod = []
+            mmdict = get_layers_with_weight(self.model)
+            for name, module in mmdict.items():
+                mod.append(module)
+            self.target_layers = mod[:]
+
     def process_label(self, y):
         return self._process_label(y)
 
@@ -264,6 +298,12 @@ x
 
             self._train(epochi)
 
+            if self.debug is not False:
+                self.weight_log.get_weight(self.model)
+
+            if self.debug == "single":
+                self.weight_log.stats()
+
             score = self._validate(epochi)
 
             if score != score:
@@ -288,6 +328,32 @@ x
             if score <= self.threshold:
                 print("Up to requirements and early termination in epoch ({})".format(epochi))
                 break
+        # debug
+
+        if "loop" in self.debug:
+            self.weight_log.stats_loop()
+        if "graphviz" in self.debug:
+            self.model.train()
+            for m, data in enumerate(self.train_loader):
+                data = data.to(self.device)
+                y_pred = self.model(data)
+                vis_graph = make_dot_(y_pred, params=dict(list(self.model.named_parameters())))
+                vis_graph.render(format="pdf")
+                break
+        if "hook" in self.debug:
+            self.hook_gradient = HookGradientModule(self.target_layers)
+            self.model.train()
+            for m, data in enumerate(self.train_loader):
+                data = data.to(self.device)
+                batch_y = self.process_label(data.y)
+                self.model.zero_grad()
+
+                y_pred = self.model(data)
+
+                lossi = self.loss_method(y_pred, batch_y)
+                lossi.backward(retain_graph=True)
+                # lossi.backward()
+                break
 
     def _train(self, epochi):
         self.model.train()
@@ -311,6 +377,7 @@ x
             self.optimizer.zero_grad()
 
             y_pred = self.model(data)
+
             try:
                 lossi = self.loss_method(y_pred, batch_y)
             except TypeError:

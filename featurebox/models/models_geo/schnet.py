@@ -27,32 +27,30 @@ class SchNet(BaseCrystalModel):
         self.num_state_features = None  # not used for this network.
 
     def get_interactions_layer(self):
-        self.interactions = _InteractionBlockLoop(self.hidden_channels, self.num_gaussians,
-                                                  self.num_filters,
+        self.interactions = _InteractionBlockLoop(self.num_node_hidden_channels, self.num_edge_gaussians,
+                                                  self.num_node_interaction_channels,
                                                   cutoff=self.cutoff,
                                                   n_conv=self.num_interactions,
-                                                  jump=self.jump
-                                                  )
+                                                  kwargs=self.interaction_kwargs)
 
 
 class _InteractionBlockLoop(torch.nn.Module):
-    def __init__(self, hidden_channels, num_gaussians, num_filters, cutoff, n_conv=2, jump=True):
+    def __init__(self, num_node_hidden_channels, num_edge_gaussians, num_node_interaction_channels, cutoff, n_conv=2, **kwargs):
         super(_InteractionBlockLoop, self).__init__()
         self.interactions = ModuleList()
         self.n_conv = n_conv
-        self.out = Linear(hidden_channels, num_filters)
-        self.jump = jump
+        self.out = Linear(num_node_hidden_channels, num_node_interaction_channels)
 
         for _ in range(self.n_conv):
-            block = SchNet_InteractionBlock(hidden_channels, num_gaussians, num_filters, cutoff, jump=jump)
+            block = SchNet_InteractionBlock(num_node_interaction_channels, num_edge_gaussians, num_node_interaction_channels, cutoff)
             self.interactions.append(block)
 
     def forward(self, h, edge_index, edge_weight, edge_attr, data=None):
+        h = self.out(h)
 
         for interaction in self.interactions:
-            h = h + interaction(h, edge_index, edge_weight, edge_attr, data=data)
+            h = F.softplus(interaction(h, edge_index, edge_weight, edge_attr, data=data))
 
-        h = F.softplus(self.out(h))
         return h
 
 
@@ -123,18 +121,3 @@ class _CFConv(MessagePassing):
     def message(self, x_j: Tensor, W: Tensor):  # [num_edge,]
         return x_j * W
 
-#
-# class _CFConvJump(_CFConv):
-#     """# torch.geometric scatter is unstable especially for small data in cuda device.!!!"""
-#
-#     @property
-#     def device(self):
-#         return check_device(self)
-#
-#     @temp_jump_cpu()
-#     def propagate(self, edge_index: Adj, size: Size = None, **kwargs):
-#         return super().propagate(edge_index, size=size, **kwargs)
-
-# @temp_jump()
-# def message(self, x_j, W) -> Tensor:
-#     return super().message(x_j, W)

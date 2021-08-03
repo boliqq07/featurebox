@@ -30,12 +30,8 @@ Model
 --------------
 
     >>>  model = CrystalGraphConvNet(num_node_features=91,
-    ...  num_bond_features=3,
-    ...  num_state_features=29,
-    ...  hidden_channels=128,
-    ...  num_gaussians=50,
-    ...  num_filters=64,
-    ...  num_interactions=2,)
+    ...  num_edge_features=3,
+    ...  num_state_features=29)
     >>> # model = CrystalGraphGCN(...)
     >>> # model = CrystalGraphGCN2(...)
     >>> # model = CrystalGraphGAT(...)

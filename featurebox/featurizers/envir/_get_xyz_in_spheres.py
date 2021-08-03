@@ -6,7 +6,9 @@ from typing import Tuple, Union, List
 import numpy as np
 from mgetool.tool import tt
 from pymatgen.core import Structure
+
 from featurebox.utils.predefined_typing import StructureOrMolecule
+
 
 def re_pbc(pbc: Union[bool, List[bool], np.ndarray], return_type="bool"):
     if pbc is True:
@@ -158,6 +160,10 @@ def not_structure_get_xyz_in_spheres(
     distances = np.concatenate(coords, axis=0)
 
     exclude_self = (center_indices != neighbor_indices) | (distances[:, 0] > numerical_tol)
+
+    # include_index = center_indices < neighbor_indices
+    #
+    # exclude_self = exclude_self * ~ include_index
 
     return center_indices[exclude_self], neighbor_indices[exclude_self], images[exclude_self], distances[
         exclude_self], None

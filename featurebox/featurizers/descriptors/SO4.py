@@ -626,11 +626,11 @@ def U(l, mp, m, a, b):
 
         mp:  integer
         integer parameter, corresponds to the magnetic quantum
-        number by the relation m' = mp - l/2
+        number by the relation layer' = mp - l/2
 
         m:  integer
         integer parameter, corresponds to the magnetic quantum
-        number by the relation m = m - l/2
+        number by the relation layer = layer - l/2
 
         a:  complex
         Cayley-Klein parameter of unit quaternion.  Corresponds
@@ -677,11 +677,11 @@ def U_wD(l, mp, m, Ra, Rb, gradRa, gradRb, dU):
 
         mp:  integer
         integer parameter, corresponds to the magnetic quantum
-        number by the relation m' = mp - l/2
+        number by the relation layer' = mp - l/2
 
         m:  integer
         integer parameter, corresponds to the magnetic quantum
-        number by the relation m = m - l/2
+        number by the relation layer = layer - l/2
 
         Ra:  complex
         Cayley-Klein parameter of unit quaternion.  Corresponds

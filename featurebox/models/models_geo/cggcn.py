@@ -37,18 +37,18 @@ class GCNConvNew(GCNConv):
 class _Interactions(Module):
     """Auto attention."""
 
-    def __init__(self, hidden_channels=64, num_gaussians=5, num_filters=64, n_conv=2, jump=True,
+    def __init__(self, node_hidden_channels=64, num_edge_gaussians=None, num_node_interaction_channels=64, n_conv=2,**kwargs
                  ):
         super(_Interactions, self).__init__()
-        _ = num_gaussians
+        _ = num_edge_gaussians
 
-        self.lin0 = Linear(hidden_channels, num_filters)
+        self.lin0 = Linear(node_hidden_channels, num_node_interaction_channels)
         self.conv = ModuleList()
 
         for _ in range(n_conv):
             nn = GCNConvNew(
                 aggr="add",
-                in_channels=num_filters, out_channels=num_filters,
+                in_channels=num_node_interaction_channels, out_channels=num_node_interaction_channels,
                 improved=True, cached=False, add_self_loops=False,
                 normalize=True,
                 bias=True, )
@@ -71,11 +71,14 @@ class CrystalGraphGCN(BaseCrystalModel):
     CrystalGraph with GCN.
     """
 
-    def __init__(self, *args, num_gaussians=5, num_filters=32, hidden_channels=64, **kwargs):
-        super(CrystalGraphGCN, self).__init__(*args, num_gaussians=num_gaussians, num_filters=num_filters,
-                                              hidden_channels=hidden_channels, **kwargs)
+    def __init__(self, *args, num_edge_gaussians=None, num_node_interaction_channels=32, num_node_hidden_channels=32,
+                 **kwargs):
+        super(CrystalGraphGCN, self).__init__(*args, num_edge_gaussians=num_edge_gaussians,
+                                              num_node_interaction_channels=num_node_interaction_channels,
+                                              num_node_hidden_channels=num_node_hidden_channels, **kwargs)
         self.num_state_features = None  # not used for this network.
 
     def get_interactions_layer(self):
-        self.interactions = _Interactions(self.hidden_channels, self.num_gaussians, self.num_filters,
-                                          n_conv=self.num_interactions, jump=self.jump)
+        self.interactions = _Interactions(self.num_node_hidden_channels, self.num_edge_gaussians,
+                                          self.num_node_interaction_channels,
+                                          n_conv=self.num_interactions, kwargs=self.interaction_kwargs)

@@ -29,26 +29,28 @@ class MEGNet(BaseCrystalModel):
                 "you use no state_attr !!!, please make sure the ``num_state_features`` compat with your data")
 
     def get_interactions_layer(self):
-        self.interactions = Meg_InteractionBlockLoop(self.hidden_channels, self.num_gaussians, self.num_filters,
-                                                     cutoff=self.cutoff,
-                                                     n_conv=self.num_interactions, num_state=self.num_state_features
-                                                     , jump=self.jump)
+        self.interactions = _Interaction(self.num_node_hidden_channels, self.num_edge_gaussians,
+                                         self.num_node_interaction_channels,
+                                         cutoff=self.cutoff,
+                                         n_conv=self.num_interactions, num_state_features=self.num_state_features,
+                                         kwargs = self.interaction_kwargs
+                                         )
 
 
-class Meg_InteractionBlockLoop(torch.nn.Module):
-    def __init__(self, hidden_channels, num_gaussians, num_filters, cutoff, n_conv=2, num_state=0, jump=True):
-        super(Meg_InteractionBlockLoop, self).__init__()
+class _Interaction(torch.nn.Module):
+    def __init__(self, num_node_hidden_channels, num_edge_gaussians, num_node_interaction_channels, cutoff, n_conv=2,
+                 num_state_features=0, **kwargs):
+        super(_Interaction, self).__init__()
         self.interactions = ModuleList()
         self.lin_list1 = ModuleList()
         self.n_conv = n_conv
-        self.out = Linear(hidden_channels, num_filters)
-        self.jump = jump
+        self.out = Linear(num_node_hidden_channels, num_node_interaction_channels)
 
         for _ in range(self.n_conv):
-            self.lin_list1.append(Linear(hidden_channels + num_state, hidden_channels))
-            block = Meg_InteractionBlock(hidden_channels, num_gaussians, num_filters, cutoff, jump=jump)
+            self.lin_list1.append(Linear(num_node_hidden_channels + num_state_features, num_node_hidden_channels))
+            block = Meg_InteractionBlock(num_node_hidden_channels, num_edge_gaussians, num_node_interaction_channels, cutoff)
             self.interactions.append(block)
-        self.num_state = num_state
+        self.num_state = num_state_features
 
     def forward(self, h, edge_index, edge_weight, edge_attr, data=None):
         state_attr = data.state_attr
@@ -71,7 +73,7 @@ class Meg_InteractionBlockLoop(torch.nn.Module):
 
 
 class Meg_InteractionBlock(torch.nn.Module):
-    def __init__(self, hidden_channels, num_gaussians, num_filters, cutoff, jump=True):
+    def __init__(self, hidden_channels, num_gaussians, num_filters, cutoff):
         super(Meg_InteractionBlock, self).__init__()
         self.mlp = Sequential(
             Linear(num_gaussians, num_filters),
@@ -82,7 +84,7 @@ class Meg_InteractionBlock(torch.nn.Module):
         self.conv = _CFConv(hidden_channels, hidden_channels, num_filters,
                             self.mlp, cutoff)
         self.act = ShiftedSoftplus()
-        # self.lin = Linear(hidden_channels, hidden_channels)
+        # self.lin = Linear(num_node_hidden_channels, num_node_hidden_channels)
 
         self.reset_parameters()
 

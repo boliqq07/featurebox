@@ -2,7 +2,6 @@ Build model with QM9 data
 ==========================
 
 >>> import os.path as osp
-
 >>> import torch
 >>> import torch_geometric.transforms as T
 >>> from torch_geometric.data import DataLoader

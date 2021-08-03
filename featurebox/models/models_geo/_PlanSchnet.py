@@ -57,13 +57,13 @@
 #         qm9_pretrained_schnet.py>`_.
 #
 #     Args:
-#         hidden_channels (int, optional): Hidden embedding size.
+#         num_node_hidden_channels (int, optional): Hidden embedding size.
 #             (default: :obj:`128`)
-#         num_filters (int, optional): The number of filters to use.
+#         num_node_interaction_channels (int, optional): The number of filters to use.
 #             (default: :obj:`128`)
 #         num_interactions (int, optional): The number of interaction blocks.
 #             (default: :obj:`6`)
-#         num_gaussians (int, optional): The number of gaussians :math:`\mu`.
+#         num_edge_gaussians (int, optional): The number of gaussians :math:`\mu`.
 #             (default: :obj:`50`)
 #         cutoff (float, optional): Cutoff distance for interatomic interactions.
 #             (default: :obj:`10.0`)
@@ -77,25 +77,25 @@
 #             (default: :obj:`None`)
 #         std (float, optional): The standard deviation of the property to
 #             predict. (default: :obj:`None`)
-#         atomref (torch.Tensor, optional): The reference of single-atom
+#         atom_ref (torch.Tensor, optional): The reference of single-atom
 #             properties.
 #             Expects a vector of shape :obj:`(max_atomic_number, )`.
 #     """
 #
 #     url = 'http://www.quantum-machine.org/datasets/trained_schnet_models.zip'
 #
-#     def __init__(self, hidden_channels=128, num_filters=128,
-#                  num_interactions=6, num_gaussians=50, cutoff=10.0,
+#     def __init__(self, num_node_hidden_channels=128, num_node_interaction_channels=128,
+#                  num_interactions=6, num_edge_gaussians=None0, cutoff=10.0,
 #                  readout='add', dipole=False, mean=None, std=None,
-#                  atomref=None):
+#                  atom_ref=None):
 #         super(_SchNet, self).__init__()
 #
 #         assert readout in ['add', 'sum', 'mean']
 #
-#         self.hidden_channels = hidden_channels
-#         self.num_filters = num_filters
+#         self.num_node_hidden_channels = num_node_hidden_channels
+#         self.num_node_interaction_channels = num_node_interaction_channels
 #         self.num_interactions = num_interactions
-#         self.num_gaussians = num_gaussians
+#         self.num_edge_gaussians = num_edge_gaussians
 #         self.cutoff = cutoff
 #         self.readout = readout
 #         self.dipole = dipole
@@ -107,24 +107,24 @@
 #         atomic_mass = torch.from_numpy(ase.data.atomic_masses)
 #         self.register_buffer('atomic_mass', atomic_mass)
 #
-#         self.embedding = Embedding(100, hidden_channels)
-#         self.distance_expansion = GaussianSmearing(0.0, cutoff, num_gaussians)
+#         self.embedding = Embedding(100, num_node_hidden_channels)
+#         self.distance_expansion = GaussianSmearing(0.0, cutoff, num_edge_gaussians)
 #
 #         self.interactions = ModuleList()
 #         for _ in range(num_interactions):
-#             block = InteractionBlock(hidden_channels, num_gaussians,
-#                                      num_filters, cutoff)
+#             block = InteractionBlock(num_node_hidden_channels, num_edge_gaussians,
+#                                      num_node_interaction_channels, cutoff)
 #             self.interactions.append(block)
 #
-#         self.lin1 = Linear(hidden_channels, hidden_channels // 2)
+#         self.lin1 = Linear(num_node_hidden_channels, num_node_hidden_channels // 2)
 #         self.act = ShiftedSoftplus()
-#         self.lin2 = Linear(hidden_channels // 2, 1)
+#         self.lin2 = Linear(num_node_hidden_channels // 2, 1)
 #
-#         self.register_buffer('initial_atomref', atomref)
-#         self.atomref = None
-#         if atomref is not None:
-#             self.atomref = Embedding(100, 1)
-#             self.atomref.weight.data.copy_(atomref)
+#         self.register_buffer('initial_atomref', atom_ref)
+#         self.atom_ref = None
+#         if atom_ref is not None:
+#             self.atom_ref = Embedding(100, 1)
+#             self.atom_ref.weight.data.copy_(atom_ref)
 #
 #         self.reset_parameters()
 #
@@ -136,8 +136,8 @@
 #         self.lin1.bias.data.fill_(0)
 #         torch.nn.init.xavier_uniform_(self.lin2.weight)
 #         self.lin2.bias.data.fill_(0)
-#         if self.atomref is not None:
-#             self.atomref.weight.data.copy_(self.initial_atomref)
+#         if self.atom_ref is not None:
+#             self.atom_ref.weight.data.copy_(self.initial_atomref)
 #
 #     @staticmethod
 #     def from_qm9_pretrained(root, dataset, target):
@@ -183,9 +183,9 @@
 #             warnings.simplefilter('ignore')
 #             state = torch.load(path, map_location='cpu')
 #
-#         net = _SchNet(hidden_channels=128, num_filters=128, num_interactions=6,
-#                       num_gaussians=50, cutoff=10.0,
-#                       atomref=dataset.atomref(target))
+#         net = _SchNet(num_node_hidden_channels=128, num_node_interaction_channels=128, num_interactions=6,
+#                       num_edge_gaussians=None0, cutoff=10.0,
+#                       atom_ref=dataset.atom_ref(target))
 #
 #         net.embedding.weight = state.representation.embedding.weight
 #
@@ -216,10 +216,10 @@
 #         net.mean = state.output_modules[0].standardize.mean.item()
 #         net.std = state.output_modules[0].standardize.stddev.item()
 #
-#         if state.output_modules[0].atomref is not None:
-#             net.atomref.weight = state.output_modules[0].atomref.weight
+#         if state.output_modules[0].atom_ref is not None:
+#             net.atom_ref.weight = state.output_modules[0].atom_ref.weight
 #         else:
-#             net.atomref = None
+#             net.atom_ref = None
 #
 #         net.scale = 1. / units[target]
 #
@@ -252,8 +252,8 @@
 #         if not self.dipole and self.mean is not None and self.std is not None:
 #             h = h * self.std + self.mean
 #
-#         if not self.dipole and self.atomref is not None:
-#             h = h + self.atomref(z)
+#         if not self.dipole and self.atom_ref is not None:
+#             h = h + self.atom_ref(z)
 #
 #         out = scatter(h, batch, dim=0, reduce=self.readout)
 #
@@ -267,25 +267,25 @@
 #
 #     def __repr__(self):
 #         return (f'{self.__class__.__name__}('
-#                 f'hidden_channels={self.hidden_channels}, '
-#                 f'num_filters={self.num_filters}, '
+#                 f'num_node_hidden_channels={self.num_node_hidden_channels}, '
+#                 f'num_node_interaction_channels={self.num_node_interaction_channels}, '
 #                 f'num_interactions={self.num_interactions}, '
-#                 f'num_gaussians={self.num_gaussians}, '
+#                 f'num_edge_gaussians={self.num_edge_gaussians}, '
 #                 f'cutoff={self.cutoff})')
 #
 #
 # class InteractionBlock(torch.nn.Module):
-#     def __init__(self, hidden_channels, num_gaussians, num_filters, cutoff):
+#     def __init__(self, num_node_hidden_channels, num_edge_gaussians, num_node_interaction_channels, cutoff):
 #         super(InteractionBlock, self).__init__()
 #         self.mlp = Sequential(
-#             Linear(num_gaussians, num_filters),
+#             Linear(num_edge_gaussians, num_node_interaction_channels),
 #             ShiftedSoftplus(),
-#             Linear(num_filters, num_filters),
+#             Linear(num_node_interaction_channels, num_node_interaction_channels),
 #         )
-#         self.conv = CFConv(hidden_channels, hidden_channels, num_filters,
+#         self.conv = CFConv(num_node_hidden_channels, num_node_hidden_channels, num_node_interaction_channels,
 #                            self.mlp, cutoff)
 #         self.act = ShiftedSoftplus()
-#         self.lin = Linear(hidden_channels, hidden_channels)
+#         self.lin = Linear(num_node_hidden_channels, num_node_hidden_channels)
 #
 #         self.reset_parameters()
 #
@@ -306,10 +306,10 @@
 #
 #
 # class CFConv(MessagePassing):
-#     def __init__(self, in_channels, out_channels, num_filters, nn, cutoff):
+#     def __init__(self, in_channels, out_channels, num_node_interaction_channels, nn, cutoff):
 #         super(CFConv, self).__init__(aggr='add')
-#         self.lin1 = Linear(in_channels, num_filters, bias=False)
-#         self.lin2 = Linear(num_filters, out_channels)
+#         self.lin1 = Linear(in_channels, num_node_interaction_channels, bias=False)
+#         self.lin2 = Linear(num_node_interaction_channels, out_channels)
 #         self.nn = nn
 #         self.cutoff = cutoff
 #
@@ -334,9 +334,9 @@
 #
 #
 # class GaussianSmearing(torch.nn.Module):
-#     def __init__(self, start=0.0, stop=5.0, num_gaussians=50):
+#     def __init__(self, start=0.0, stop=5.0, num_edge_gaussians=None0):
 #         super(GaussianSmearing, self).__init__()
-#         offset = torch.linspace(start, stop, num_gaussians)
+#         offset = torch.linspace(start, stop, num_edge_gaussians)
 #         self.coeff = -0.5 / (offset[1] - offset[0]).item()**2
 #         self.register_buffer('offset', offset)
 #

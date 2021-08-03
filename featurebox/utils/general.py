@@ -11,7 +11,6 @@ from inspect import Parameter
 from typing import Union, List, Sequence, Optional
 
 import numpy as np
-
 import torch
 from sklearn.model_selection import train_test_split
 from torch import Tensor
@@ -306,18 +305,18 @@ def get_ptr(index):
 
 
 class GaussianSmearing:
-    """Smear the radius shape (num_node,1) to shape (num_node, num_gaussians)."""
+    """Smear the radius shape (num_node,1) to shape (num_node, num_edge_gaussians)."""
 
-    def __init__(self, start=0.0, stop=5.0, num_gaussians=50):
+    def __init__(self, start=0.0, stop=5.0, num_edge_gaussians=50):
         super(GaussianSmearing, self).__init__()
-        self.offset = torch.linspace(start, stop, num_gaussians)
+        self.offset = torch.linspace(start, stop, num_edge_gaussians)
         self.coeff = -0.5 / (self.offset[1] - self.offset[0]).item() ** 2
 
     def __call__(self, data):
         dist = data.edge_weight
         dist = dist.view(-1, 1) - self.offset.view(1, -1)
         if hasattr(data, "edge_attr") and data.edge_attr.shape[1] != 1:
-            print("The old edge_attr is covered by smearing edge_weight")
+            warnings.warn("The old edge_attr is covered by smearing edge_weight",UserWarning)
         data.edge_attr = torch.exp(self.coeff * torch.pow(dist, 2))
 
         return data
@@ -379,7 +378,7 @@ def collect_edge_attr_jump(self, args, edge_index, size, kwargs):
         out['edge_index_i'] = edge_index.storage.row()
         out['edge_index_j'] = edge_index.storage.col()
         out['ptr'] = edge_index.storage.rowptr()
-        out['edge_weight'] = edge_index.storage.value()
+        # out['edge_weight'] = edge_index.storage.value()
         # out['edge_attr'] = edge_index.storage.value()
         # out['edge_type'] = edge_index.storage.value()
 

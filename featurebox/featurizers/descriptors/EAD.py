@@ -107,7 +107,7 @@ class EAD:
         -------
         d: dict
             The user-defined EAD that represent the crystal.
-            d = {'x': [N, d], 'dxdr': [N, m, d, 3], 'rdxdr': [N, m, d, 3, 3],
+            d = {'x': [N, d], 'dxdr': [N, layer, d, 3], 'rdxdr': [N, layer, d, 3, 3],
             'elements': list of elements}
         """
         self.crystal = crystal
@@ -427,7 +427,7 @@ def dij_dm_list(unique_js, ij_list):
 
 
 def dRij_dRm_norm(Rij, ijm_list):
-    """Calculate the derivative of Rij norm w. r. t. atom m. This term affects 
+    """Calculate the derivative of Rij norm w. r. t. atom layer. This term affects
     only on i and j.
     
     Parameters
@@ -435,12 +435,12 @@ def dRij_dRm_norm(Rij, ijm_list):
     Rij : array [j, 3]
         The vector distances of atom i to atom j.
     ijm_list: array [j, 3] or [j*k, 3]
-        Id list of center atom i, neighbors atom j, and atom m.
+        Id list of center atom i, neighbors atom j, and atom layer.
     
     Returns
     -------
     dRij_m: array [j, 3]
-        The derivative of pair atoms w.r.t. atom m in x, y, z directions.
+        The derivative of pair atoms w.r.t. atom layer in x, y, z directions.
     """
     dRij_m = np.zeros([len(Rij), 3])
 

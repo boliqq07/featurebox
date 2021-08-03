@@ -458,6 +458,14 @@ class StructureGraphGEO(BaseStructureGraphGEO):
 
         center_indices, edge_index, edge_attr, edge_weight, center_prop = self.bond_generator.convert(structure)
 
+        # remove dup
+
+        index = edge_index[0]<edge_index[1]
+
+        edge_index = edge_index[:,index]
+        edge_weight = edge_weight[index]
+        edge_attr = edge_attr[index]
+
         if edge_weight.ndim == 2:
             if edge_weight.shape[1] == 3:
                 edge_weight = np.sum(edge_weight ** 2, axis=1) ** 0.5

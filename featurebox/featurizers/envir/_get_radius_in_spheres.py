@@ -5,7 +5,6 @@ import numpy as np
 from pymatgen.core import Structure, Molecule
 from pymatgen.optimization.neighbors import find_points_in_spheres
 
-
 from featurebox.utils.predefined_typing import StructureOrMolecule
 
 
@@ -27,7 +26,7 @@ def re_pbc(pbc: Union[bool, List[bool], np.ndarray], return_type="bool"):
 
 def get_radius_in_spheres(
         structure: StructureOrMolecule, nn_strategy=None, cutoff: float = 5.0,
-        numerical_tol: float = 1e-8,
+        numerical_tol: float = 1e-6,
         pbc=True,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
@@ -62,10 +61,11 @@ def get_radius_in_spheres(
     center_indices, neighbor_indices, images, distances = find_points_in_spheres(
         cart_coords, cart_coords, r=r, pbc=pbc, lattice=lattice_matrix, tol=numerical_tol
     )
-    center_indices = center_indices.astype(np.int)
-    neighbor_indices = neighbor_indices.astype(np.int)
-    images = images.astype(np.int)
+    center_indices = center_indices.astype(np.int64)
+    neighbor_indices = neighbor_indices.astype(np.int64)
+    images = images.astype(np.int64)
     distances = distances.astype(np.float32)
     exclude_self = (center_indices != neighbor_indices) | (distances > numerical_tol)
+
     return center_indices[exclude_self], neighbor_indices[exclude_self], images[exclude_self], \
-           distances[exclude_self], None
+           distances[exclude_self], np.array(None)

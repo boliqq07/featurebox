@@ -66,13 +66,13 @@ class NNConvNew(NNConv):
 class _Interactions(Module):
     """Auto attention."""
 
-    def __init__(self, hidden_channels=64, num_gaussians=5, num_filters=64, n_conv=2, jump=True,
+    def __init__(self, um_node_hidden_channels=64, num_edge_gaussians=None, num_node_interaction_channels=64, n_conv=2,**kwargs
                  ):
         super(_Interactions, self).__init__()
-        nf = num_filters
-        self.lin0 = Linear(hidden_channels, nf)
+        nf = num_node_interaction_channels
+        self.lin0 = Linear(um_node_hidden_channels, nf)
 
-        self.short = Linear(num_gaussians, nf)
+        self.short = Linear(num_edge_gaussians, nf)
 
         nn = Sequential(Linear(nf, nf // 4), ReLU(), Linear(nf // 4, nf * nf))
 
@@ -97,8 +97,7 @@ class _Interactions(Module):
 
 
 class CGGRU_ReadOut(Module):
-    def __init__(self, num_filters=128, jump=True,
-                 n_set2set=2, out_size=1):
+    def __init__(self, num_filters=128, n_set2set=2, out_size=1, **kwargs):
         super(CGGRU_ReadOut, self).__init__()
         nf = num_filters
 
@@ -119,16 +118,18 @@ class CGGRUNet(BaseCrystalModel):
     weight_decay=0.001, best.
     """
 
-    def __init__(self, *args, num_gaussians=5, num_filters=64, hidden_channels=64, **kwargs):
-        super(CGGRUNet, self).__init__(*args, num_filters=num_filters,
-                                       num_gaussians=num_gaussians,
-                                       hidden_channels=hidden_channels, **kwargs)
+    def __init__(self, *args, num_edge_gaussians=None, num_node_interaction_channels=64, num_node_hidden_channels=64,
+                 **kwargs):
+        super(CGGRUNet, self).__init__(*args, num_node_interaction_channels=num_node_interaction_channels,
+                                       num_edge_gaussians=num_edge_gaussians,
+                                       num_node_hidden_channels=num_node_hidden_channels, **kwargs)
         self.num_state_features = None  # not used for this network.
 
     def get_interactions_layer(self):
-        self.interactions = _Interactions(self.hidden_channels, self.num_gaussians, self.num_filters,
-                                          n_conv=self.num_interactions, jump=self.jump)
+        self.interactions = _Interactions(self.num_node_hidden_channels, self.num_edge_gaussians,
+                                          self.num_node_interaction_channels,
+                                          n_conv=self.num_interactions, kwargs=self.interaction_kwargs)
 
     def get_readout_layer(self):
-        self.readout_layer = CGGRU_ReadOut(self.num_filters,
-                                           n_set2set=2, out_size=self.out_size, jump=self.jump)
+        self.readout_layer = CGGRU_ReadOut(self.num_node_interaction_channels,
+                                           n_set2set=2, out_size=self.out_size,kwargs=self.readout_kwargs)

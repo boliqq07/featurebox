@@ -14,20 +14,20 @@
 #
 #     def __init__(self,
 #                  num_node_features=1,
-#                  num_bond_features=3,
+#                  num_edge_features=3,
 #                  num_state_features=0,
-#                  num_embeddings=120,
-#                  hidden_channels=128,
-#                  num_filters=128,
+#                  num_node_embeddings=120,
+#                  num_node_hidden_channels=128,
+#                  num_node_interaction_channels=128,
 #                  num_interactions=1,
-#                  num_gaussians=50,
+#                  num_edge_gaussians=50,
 #                  cutoff=10.0,
 #                  out_size=1,
 #                  readout='add',
 #                  dipole=False,
 #                  mean=None,
 #                  std=None,
-#                  atomref=None,
+#                  atom_ref=None,
 #                  simple_z=True,
 #                  simple_edge=True,
 #                  interactions=None,
@@ -38,11 +38,11 @@
 #         super(Tes, self).__init__()
 #
 #         assert readout in ['add', 'sum', 'min', 'mean', "max", 'mul']
-#         self.hidden_channels = hidden_channels
+#         self.num_node_hidden_channels = num_node_hidden_channels
 #         self.num_state_features = num_state_features
-#         self.num_filters = num_filters
+#         self.num_node_interaction_channels = num_node_interaction_channels
 #         self.num_interactions = num_interactions
-#         self.num_gaussians = num_gaussians
+#         self.num_edge_gaussians = num_edge_gaussians
 #         self.cutoff = cutoff
 #         self.readout = readout
 #         self.dipole = dipole
@@ -67,9 +67,9 @@
 #         # 定义输入
 #         # 使用原子性质,或者使用Embedding 产生随机数据。
 #         # 使用键性质,或者使用Embedding 产生随机数据。
-#         # if num_embeddings < 120:
-#         #     print("default, num_embeddings>=120,if you want simple the net work and "
-#         #           "This network does not apply to other elements, the num_embeddings could be less but large than "
+#         # if num_node_embeddings < 120:
+#         #     print("default, num_node_embeddings>=120,if you want simple the net work and "
+#         #           "This network does not apply to other elements, the num_node_embeddings could be less but large than "
 #         #           "the element type number in your data.")
 #
 #         # 原子个数，一般不用动，这是所有原子种类数，
@@ -77,14 +77,14 @@
 #         # 在向其他元素（训练集中没有的）数据推广的能力较差。
 #
 #         # self.embedding_e = Linear(2, 2)
-#         self.embedding_l = Linear(num_node_features, hidden_channels)
-#         self.embedding_l2 = Linear(hidden_channels, hidden_channels)
-#         self.distance_expansion = Linear(1, num_gaussians - num_bond_features)
+#         self.embedding_l = Linear(num_node_features, num_node_hidden_channels)
+#         self.embedding_l2 = Linear(num_node_hidden_channels, num_node_hidden_channels)
+#         self.distance_expansion = Linear(1, num_edge_gaussians - num_edge_features)
 #         # 交互层 需要自定义
 #         # if interactions is None:
 #
-#         self.lin0 = Linear(hidden_channels, num_filters)
-#         self.interactions = CGConv(channels=num_filters, dim=num_gaussians,
+#         self.lin0 = Linear(num_node_hidden_channels, num_node_interaction_channels)
+#         self.interactions = CGConv(channels=num_node_interaction_channels, dim=num_edge_gaussians,
 #                                    aggr='add', batch_norm=True,
 #                                    bias=True, )
 #
@@ -92,8 +92,8 @@
 #         # if readout_layer is None:
 #         #     self.get_readout_layer()
 #
-#         # self.register_buffer('initial_atomref', atomref)
-#         # self.atomref = None
+#         # self.register_buffer('initial_atomref', atom_ref)
+#         # self.atom_ref = None
 #
 #         # 单个原子的性质是否加到最后
 #
@@ -101,11 +101,11 @@
 #
 #         # self.reset_parameters()
 #         self.readout = readout
-#         self.lin1 = Linear(num_filters, num_filters)
+#         self.lin1 = Linear(num_node_interaction_channels, num_node_interaction_channels)
 #         self.s1 = nn.Softplus()
-#         self.lin2 = Linear(num_filters, num_filters)
+#         self.lin2 = Linear(num_node_interaction_channels, num_node_interaction_channels)
 #         self.s2 = nn.Softplus()
-#         self.lin3 = Linear(num_filters, out_size)
+#         self.lin3 = Linear(num_node_interaction_channels, out_size)
 #
 #     def forward(self, data):
 #

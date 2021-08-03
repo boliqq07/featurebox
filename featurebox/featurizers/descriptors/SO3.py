@@ -410,7 +410,7 @@ def sph_harm(Ra, Rb, l, m):
         Ra: complex, Cayley-Klein parameter for spherical harmonic
         Rb: complex, Cayley-Klein parameter for spherical harmonic
         l: int, index of spherical harmonic l >= 0
-        m: int, index of spherical harmonic -l <= m <= l
+        layer: int, index of spherical harmonic -l <= layer <= l
 
     The spherical harmonics are a subset of Wigner-D matrices,
     and can be calculated in the same manner
@@ -606,7 +606,7 @@ def compute_carray(x, y, z, ri, alpha, rcut, nmax, lmax, w, clist, ulist, idxylm
             # analytically, hence we calculate the inner product numerically
             r_int = get_radial_inner_product(ri, alpha, rcut, n, l, nmax, w, False, g_array, Nmax)
             for m in range(-l, l + 1, 1):
-                # Ylm = sph_harm(Ra, Rb, l, m)
+                # Ylm = sph_harm(Ra, Rb, l, layer)
                 Ylm = ulist[idxylm[i]].conjugate() * np.sqrt((2 * l + 1) / 4 / np.pi) * (-1) ** m
                 clist[n - 1, i] += r_int * Ylm * expfac
                 i += 1
@@ -654,7 +654,7 @@ def compute_carray_wD(x, y, z, ri, alpha, rcut, nmax, lmax, w, clist, dclist, ul
     i = 0
     for l in range(0, lmax + 2, 1):
         for m in range(-l, l + 1, 1):
-            # Ylms[i] = sph_harm(Ra, Rb, l, m)
+            # Ylms[i] = sph_harm(Ra, Rb, l, layer)
             Ylms[i] = ulist[idxylm[i]].conjugate() * np.sqrt((2 * l + 1) / 4 / np.pi) * (-1) ** m
             i += 1
 
@@ -674,7 +674,7 @@ def compute_carray_wD(x, y, z, ri, alpha, rcut, nmax, lmax, w, clist, dclist, ul
         ellpl1 = np.sum(np.arange(0, l + 2, 1) * 2)
         ellm1 = np.sum(np.arange(0, l, 1) * 2)
         for m in range(-l, l + 1, 1):
-            # get indices of l+1 and l-1 spherical harmonics for m = 0
+            # get indices of l+1 and l-1 spherical harmonics for layer = 0
 
             # get the gradient of spherical harmonics with respect to
             # covariant spherical coordinates VMK 5.8.3

@@ -36,23 +36,23 @@ class _Interactions(Module):
     Auto attention.
     """
 
-    def __init__(self, hidden_channels=64, num_gaussians=5, num_filters=64, n_conv=2, jump=True,
+    def __init__(self, num_node_hidden_channels=64, num_edge_gaussians=None, num_node_interaction_channels=64, n_conv=2, **kwargs,
                  ):
         super(_Interactions, self).__init__()
-        _ = num_gaussians
-        self.lin0 = Linear(hidden_channels, num_filters)
+        _ = num_edge_gaussians
+        self.lin0 = Linear(num_node_hidden_channels, num_node_interaction_channels)
 
         self.conv = ModuleList()
         for _ in range(n_conv):
             nn = GCNConv2New(
-                channels=num_filters, alpha=0.9, theta=None,
+                channels=num_node_interaction_channels, alpha=0.9, theta=None,
                 layer=None, shared_weights=True,
                 cached=False, add_self_loops=False, normalize=True, )
             self.conv.append(nn)
         self.n_conv = n_conv
 
     def forward(self, x, edge_index, edge_weight, edge_attr, **kwargs):
-        x = F.relu(self.lin0(x))
+        x = F.softplus(self.lin0(x))
         out = x
         for convi in self.conv:
             out = out + F.relu(convi(x=out, x_0=x, edge_index=edge_index, edge_weight=edge_weight))
@@ -62,11 +62,14 @@ class _Interactions(Module):
 class CrystalGraphGCN2(BaseCrystalModel):
     """CrystalGraph with GCN2."""
 
-    def __init__(self, *args, num_gaussians=50, num_filters=128, hidden_channels=128, **kwargs):
-        super(CrystalGraphGCN2, self).__init__(*args, num_gaussians=num_gaussians, num_filters=num_filters,
-                                               hidden_channels=hidden_channels, **kwargs)
+    def __init__(self, *args, num_edge_gaussians=None, num_node_interaction_channels=128, num_node_hidden_channels=128,
+                 **kwargs):
+        super(CrystalGraphGCN2, self).__init__(*args, num_edge_gaussians=num_edge_gaussians,
+                                               num_node_interaction_channels=num_node_interaction_channels,
+                                               num_node_hidden_channels=num_node_hidden_channels, **kwargs)
         self.num_state_features = None  # not used for this network.
 
     def get_interactions_layer(self):
-        self.interactions = _Interactions(self.hidden_channels, self.num_gaussians, self.num_filters,
-                                          n_conv=self.num_interactions, jump=self.jump)
+        self.interactions = _Interactions(self.num_node_hidden_channels, self.num_edge_gaussians,
+                                          self.num_node_interaction_channels,
+                                          n_conv=self.num_interactions, kwargs=self.interaction_kwargs)

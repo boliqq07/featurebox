@@ -325,9 +325,9 @@ def calculate_G2(Dij, IDs, atomic_numbers, type_set, Rc, parameters, Gtype):
 
     Parameters
     ----------
-    Dij: float array [m]
+    Dij: float array [layer]
         The array of distances for a given atom.
-    IDs: int array [m]
+    IDs: int array [layer]
         The indices of neighbors centering about atom i.
     atomic_numbers: int array [N]
         The elemental indices for atoms within the unitcell.
@@ -352,9 +352,9 @@ def calculate_G2(Dij, IDs, atomic_numbers, type_set, Rc, parameters, Gtype):
     cutoff = Cutoff(parameters['cutoff'])
     n1, n2, m, l = len(Rs), len(etas), len(Dij), len(type_set)
 
-    d20 = (Dij - Rs[:, np.newaxis]) ** 2  # n1*m
-    term = np.exp(np.einsum('i,jk->ijk', -etas, d20))  # n2*n1*m
-    results = np.einsum('ijk,k->ijk', term, cutoff.calculate(Dij, Rc))  # n2*n1*m
+    d20 = (Dij - Rs[:, np.newaxis]) ** 2  # n1*layer
+    term = np.exp(np.einsum('i,jk->ijk', -etas, d20))  # n2*n1*layer
+    results = np.einsum('ijk,k->ijk', term, cutoff.calculate(Dij, Rc))  # n2*n1*layer
     results = results.reshape([n1 * n2, m])
 
     # Decompose G2 by species
@@ -381,11 +381,11 @@ def calculate_G2Prime(Rij, Ri, i, IDs, atomic_numbers, type_set, Rc, parameters,
     
     Parameters
     ----------
-    Rij: float array [m, 3]
+    Rij: float array [layer, 3]
         The vector distances of atom i to neighbors js.
     i: int
         The i-th atom center.
-    IDs: int array [m]
+    IDs: int array [layer]
         The indices of neighbors centering about atom i.
     atomic_numbers: int array [N]
         The elemental indices for atoms within the unitcell.
@@ -402,8 +402,8 @@ def calculate_G2Prime(Rij, Ri, i, IDs, atomic_numbers, type_set, Rc, parameters,
 
     Returns
     -------
-    G2Prime: 1D float array [m, (n1*n2*l), 3]
-        The derivative of G2 symmetry value at i-th atom. m is the index of the
+    G2Prime: 1D float array [layer, (n1*n2*l), 3]
+        The derivative of G2 symmetry value at i-th atom. layer is the index of the
         atom that force is acting on.
         
     """
@@ -428,10 +428,10 @@ def calculate_G2Prime(Rij, Ri, i, IDs, atomic_numbers, type_set, Rc, parameters,
     R1ij = np.sqrt(R2ij)
     dij = R1ij - Rs[:, np.newaxis]
     dij2 = (dij) ** 2
-    term1 = np.exp(np.einsum('i,jk->ijk', -etas, dij2))  # n2*n1*m
-    term21 = cutoff.calculate_derivative(R1ij, Rc)  # m
-    _term22 = np.einsum('ij,j->ij', dij, cutoff.calculate(R1ij, Rc))  # n1*m
-    term22 = 2 * np.einsum('i,jk->ijk', etas, _term22)  # n2*n1*m
+    term1 = np.exp(np.einsum('i,jk->ijk', -etas, dij2))  # n2*n1*layer
+    term21 = cutoff.calculate_derivative(R1ij, Rc)  # layer
+    _term22 = np.einsum('ij,j->ij', dij, cutoff.calculate(R1ij, Rc))  # n1*layer
+    term22 = 2 * np.einsum('i,jk->ijk', etas, _term22)  # n2*n1*layer
     term2 = term21 - term22
     term_1_and_2 = term1 * term2
     term_1_and_2 = term_1_and_2.reshape([n1 * n2, m])
@@ -441,7 +441,7 @@ def calculate_G2Prime(Rij, Ri, i, IDs, atomic_numbers, type_set, Rc, parameters,
         mm_list = _m * np.ones([m, 1], dtype=int)
         dRij_dRm[:, :, mm] = dRij_dRm_norm(Rij, np.hstack((ij_list, mm_list)))
 
-    # [d, m, 3, N1]
+    # [d, layer, 3, N1]
     G2ip0 = np.einsum('ij,jkl->ijkl', term_1_and_2, dRij_dRm)
 
     rG2ip0 = np.zeros([n1 * n2, len(ij_list), 3, N1, 3])
@@ -488,9 +488,9 @@ def calculate_G4(Rij, IDs, jks, atomic_numbers, type_set, Rc, parameters, Gtype)
     ----------
     Rij: array [j, 3]
         The vector distances of atom i to neighbors js.
-    IDs: int array [m]
+    IDs: int array [layer]
         The indices of neighbors centering about atom i.
-    jks: int array [m*(m-1)/2, 2]
+    jks: int array [layer*(layer-1)/2, 2]
         The list of [j,k] pairs
     atomic_numbers: int array [N]
         The elemental indices for atoms within the unitcell.
@@ -576,9 +576,9 @@ def calculate_G5(Rij, IDs, jks, atomic_numbers, type_set, Rc, parameters, Gtype)
     ----------
     Rij: array [j, 3]
         The vector distances of atom i to neighbors js.
-    IDs: int array [m]
+    IDs: int array [layer]
         The indices of neighbors centering about atom i.
-    jks: int array [m*(m-1)/2, 2]
+    jks: int array [layer*(layer-1)/2, 2]
         The list of [j,k] pairs
     atomic_numbers: int array [N]
         The elemental indices for atoms within the unitcell.
@@ -689,7 +689,7 @@ def calculate_G4Prime(Rij, Ri, i, IDs, jks, atomic_numbers, type_set, Rc,
         
     Returns
 
-        The derivative of G4 symmetry value at i-th atom. m is the index of the
+        The derivative of G4 symmetry value at i-th atom. layer is the index of the
         atom that force is acting on.
     """
     Rs = parameters['Rs']
@@ -759,7 +759,7 @@ def calculate_G4Prime(Rij, Ri, i, IDs, jks, atomic_numbers, type_set, Rc,
     cost = np.einsum('i,jk->jik', 2 * etas, term1)  # n3*n2*m1
     cost = np.einsum('ijk,klm->ijklm', cost, Rijk_dRm)  # n3*n2*m1*3*N1
     cost = np.broadcast_to(cost, (n4,) + (n3, n2, jk, 3, N1))
-    g42 = np.einsum('l,ijklmn->ijklmn', fcij * fcik * fcjk, dcos - cost)  # n4*n3*n2*m*3*N1
+    g42 = np.einsum('l,ijklmn->ijklmn', fcij * fcik * fcjk, dcos - cost)  # n4*n3*n2*layer*3*N1
 
     g43 = np.einsum('i,ijk->ijk', dfcij * fcik * fcjk, dRij_dRm) + \
           np.einsum('i,ijk->ijk', fcij * dfcik * fcjk, dRik_dRm) + \
@@ -768,10 +768,10 @@ def calculate_G4Prime(Rij, Ri, i, IDs, jks, atomic_numbers, type_set, Rc,
     g43 = np.broadcast_to(g43, (n4, n2,) + (n3, jk, 3, N1))
     g43 = np.transpose(g43, (0, 2, 1, 3, 4, 5))
 
-    # [n4, n3, n2, n1, m] * [n4, n3, n2, m, 3, N1] -> [n4, n3, n2, n1, m, 3, N1] -> [S, m, 3, N1] 
+    # [n4, n3, n2, n1, layer] * [n4, n3, n2, layer, 3, N1] -> [n4, n3, n2, n1, layer, 3, N1] -> [S, layer, 3, N1]
     G4ip0 = np.einsum('ijklm, ijkmno->ijklmno', g41, g42 + g43, \
                       optimize='greedy').reshape([n1 * n2 * n3 * n4, jk, 3, N1])
-    # [S, m, 3, N1] * [m, 3] -> [S, m, 3, N1, 3] 
+    # [S, layer, 3, N1] * [layer, 3] -> [S, layer, 3, N1, 3]
     # partition the dxdr to each i, j, k
     rG4ip0 = np.zeros([n1 * n2 * n3 * n4, len(ijk_list), 3, N1, 3])
     for mm, ijk in enumerate(ijk_list):
@@ -838,8 +838,8 @@ def calculate_G5Prime(Rij, Ri, i, IDs, jks, atomic_numbers, type_set, Rc,
         
     Returns
     -------
-    G5Prime: array [m, d, 3]
-        The derivative of G5 symmetry value at i-th atom. m is the index of the
+    G5Prime: array [layer, d, 3]
+        The derivative of G5 symmetry value at i-th atom. layer is the index of the
         atom that force is acting on.
     """
     Rs = parameters['Rs']
@@ -909,7 +909,7 @@ def calculate_G5Prime(Rij, Ri, i, IDs, jks, atomic_numbers, type_set, Rc,
     cost = np.einsum('i,jk->jik', 2 * etas, term1)  # n3*n2*m1
     cost = np.einsum('ijk,klm->ijklm', cost, Rijk_dRm)  # n3*n2*m1*3*N1
     cost = np.broadcast_to(cost, (n4,) + (n3, n2, jk, 3, N1))
-    g52 = np.einsum('l,ijklmn->ijklmn', fcij * fcik, dcos - cost)  # n4*n3*n2*m*3*N1
+    g52 = np.einsum('l,ijklmn->ijklmn', fcij * fcik, dcos - cost)  # n4*n3*n2*layer*3*N1
 
     g53 = np.einsum('i,ijk->ijk', dfcij * fcik, dRij_dRm) + \
           np.einsum('i,ijk->ijk', fcij * dfcik, dRik_dRm)
@@ -920,7 +920,7 @@ def calculate_G5Prime(Rij, Ri, i, IDs, jks, atomic_numbers, type_set, Rc,
     G5ip0 = np.einsum('ijklm, ijkmno->ijklmno', g51, g52 + g53, \
                       optimize='greedy').reshape([n1 * n2 * n3 * n4, jk, 3, N1])
 
-    # [S, m, 3, N1] * [m, 3] -> [S, m, 3, N1, 3] 
+    # [S, layer, 3, N1] * [layer, 3] -> [S, layer, 3, N1, 3]
     # partition the dxdr to each i, j, k
     rG5ip0 = np.zeros([n1 * n2 * n3 * n4, len(ijk_list), 3, N1, 3])
     for mm, ijk in enumerate(ijk_list):
@@ -958,7 +958,7 @@ def calculate_G5Prime(Rij, Ri, i, IDs, jks, atomic_numbers, type_set, Rc,
 
 
 def dRij_dRm_norm(Rij, ijm_list):
-    """Calculate the derivative of Rij norm w. r. t. atom m. This term affects 
+    """Calculate the derivative of Rij norm w. r. t. atom layer. This term affects
     only on i and j.
     
     Parameters
@@ -966,12 +966,12 @@ def dRij_dRm_norm(Rij, ijm_list):
     Rij : array [j, 3] or [j*k, 3]
         The vector distances of atom i to atom j.
     ijm_list: array [j, 3] or [j*k, 3]
-        Id list of center atom i, neighbors atom j, and atom m.
+        Id list of center atom i, neighbors atom j, and atom layer.
     
     Returns
     -------
     dRij_m: array [j, 3] or [j*k, 3]
-        The derivative of pair atoms w.r.t. atom m in x, y, z directions.
+        The derivative of pair atoms w.r.t. atom layer in x, y, z directions.
     """
     dRij_m = np.zeros([len(Rij), 3])
     R1ij = np.linalg.norm(Rij, axis=1).reshape([len(Rij), 1])
@@ -986,8 +986,8 @@ def dRij_dRm_norm(Rij, ijm_list):
 
 
 def dcosijk_dRm(Rij, Rik, ijk_list, m_list, dRij_dRm, dRik_dRm):
-    """Calculate the derivative of cosine_ijk function w. r. t. atom m.
-    m must belong to one of the ijks. Otherwise, the derivative is zero.
+    """Calculate the derivative of cosine_ijk function w. r. t. atom layer.
+    layer must belong to one of the ijks. Otherwise, the derivative is zero.
     If the input Rij and Rik are (j*k)*3 dimensions, the output will be 
     (j*k)*3*3. The extra dimension comes from looping over {i, j, k}.
     
@@ -1000,8 +1000,8 @@ def dcosijk_dRm(Rij, Rik, ijk_list, m_list, dRij_dRm, dRik_dRm):
         
     Returns
     -------
-    Derivative of cosine dot product w.r.t. the radius of an atom m,
-    The atom m has to be in the an array with 3 indices: i, j, and k.
+    Derivative of cosine dot product w.r.t. the radius of an atom layer,
+    The atom layer has to be in the an array with 3 indices: i, j, and k.
     """
     m = dRik_dRm.shape[-1]
     Dij = np.linalg.norm(Rij, axis=1)
@@ -1012,7 +1012,7 @@ def dcosijk_dRm(Rij, Rik, ijk_list, m_list, dRij_dRm, dRik_dRm):
     ik_list = ijk_list[:, [0, 2]]
     dcos = np.zeros([len(Rij), 3, m])
 
-    # for mm in range(m):
+    # for mm in range(layer):
     for mm, _m in enumerate(m_list):
         mm_list = _m * np.ones([len(Rij), 1], dtype=int)
         # mm_list = mm * np.ones([len(Rij), 1], dtype=int)
@@ -1025,24 +1025,24 @@ def dcosijk_dRm(Rij, Rik, ijk_list, m_list, dRij_dRm, dRik_dRm):
         term30 = Rij_Rik * rDijDik / Dij  # jk*3
         dcos[:, :, mm] -= np.einsum('i,ij->ij', term30, dRij_dRm[:, :, mm])
         term40 = Rij_Rik * rDijDik / Dik  # jk*3
-        dcos[:, :, mm] -= np.einsum('i,ij->ij', term40, dRik_dRm[:, :, mm])  # jk*3*m
+        dcos[:, :, mm] -= np.einsum('i,ij->ij', term40, dRik_dRm[:, :, mm])  # jk*3*layer
 
     return dcos
 
 
 def dRij_dRm_vector(ijm_list):
-    """Calculate the derivative of Rij vector w. r. t. atom m.
+    """Calculate the derivative of Rij vector w. r. t. atom layer.
     
     Parameters
     ----------
     ijm_list: array [i*j, 3]
-        List of indices of center atom i, neighbors atom j, and atom m.
+        List of indices of center atom i, neighbors atom j, and atom layer.
     
     Returns
     -------
     list of float
         The derivative of the position vector R_{ij} with respect to atom
-        index m in x, y, z directions.
+        index layer in x, y, z directions.
     """
 
     dRij_dRm_vector = np.zeros(len(ijm_list))
@@ -1055,7 +1055,7 @@ def dRij_dRm_vector(ijm_list):
 
 
 def dRijk_dRm(Rij, Rik, Rjk, ijk_list, m):
-    """Calculate the derivative of R_{ab} norm with respect to atom m.
+    """Calculate the derivative of R_{ab} norm with respect to atom layer.
     
     Parameters
     ----------
@@ -1072,8 +1072,8 @@ def dRijk_dRm(Rij, Rik, Rjk, ijk_list, m):
         
     Returns
     -------
-    dR{ab}_dRm: array [j*k, 3, m]
-        The derivative of R_{ab} norm with respect to atom m.
+    dR{ab}_dRm: array [j*k, 3, layer]
+        The derivative of R_{ab} norm with respect to atom layer.
     """
     dRij_dRm = np.zeros([len(Rij), 3, len(m)])
     dRik_dRm = np.zeros([len(Rij), 3, len(m)])
@@ -1082,7 +1082,7 @@ def dRijk_dRm(Rij, Rik, Rjk, ijk_list, m):
     ik_list = ijk_list[:, [0, 2]]
     jk_list = ijk_list[:, [1, 2]]
 
-    # for mm in m:
+    # for mm in layer:
     for mm, _m in enumerate(m):
         mm_list = _m * np.ones([len(Rij), 1], dtype=int)
         dRij_dRm[:, :, mm] = dRij_dRm_norm(Rij, np.append(ij_list, mm_list,
