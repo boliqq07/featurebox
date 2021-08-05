@@ -74,17 +74,6 @@ class _Interactions(Module):
 
         return out
 
-    # def forward(self, h, edge_index, edge_weight, edge_attr, data):
-    #     """use edge_weight"""
-    #     out = F.softplus(self.lin0(h))
-    #
-    #     for convi in self.conv:
-    #
-    #         out = out + convi(x=out, edge_index=edge_index, edge_attr=edge_weight)
-    #
-    #     return out
-
-
 class CrystalGraphConvNet(BaseCrystalModel):
     """
     CrystalGraph.

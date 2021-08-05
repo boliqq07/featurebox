@@ -19,7 +19,6 @@ Build model with QM9 data
 
 
 >>> target = 0
->>> dim = 64
 
 
 >>> class MyTransform(object):
@@ -27,7 +26,12 @@ Build model with QM9 data
 ... # Specify target.
 ...        data.y = data.y[:, target]
 ...        return data
-
+>>> class RemoveStr(object):
+...    def __call__(self, data):
+>>>        for key, item in data:
+>>>            if isinstance(item, (str, float, int)):
+>>>                data[key] = None
+>>>             return data
 
 >>> class Complete(object):
 >>>     def __call__(self, data):
@@ -47,12 +51,13 @@ Build model with QM9 data
 ...         edge_index, edge_attr = remove_self_loops(edge_index, edge_attr)
 ...         data.edge_attr = edge_attr
 ...         data.edge_index = edge_index
-...         data.state_attr = torch.zeros((1,2))
+...         data.state_attr = torch.zeros((1, 2))
+...         data.edge_weight = torch.norm(data.edge_attr[:, :3], dim=1, keepdim=True)
 ...         return data
 
 
 >>> path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data', 'QM9')
->>> transform = T.Compose([MyTransform(), Complete(), T.Distance(norm=False)])
+>>> transform = T.Compose([MyTransform(), Complete(),  RemoveStr(), T.ToSparseTensor()])
 >>> dataset = QM9(path, transform=transform).shuffle()
 
 >>> # Normalize targets to mean = 0 and std = 1.

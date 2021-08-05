@@ -21,7 +21,7 @@ class BondGaussianConverter(BaseFeature):
         Args:
             centers: (np.array) centers for the Gaussian basis
             width: (float) width of Gaussian basis
-            width: (float) width of Gaussian basis
+
         """
         if centers is None:
             centers = np.linspace(0, 5, 100)

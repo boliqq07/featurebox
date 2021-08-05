@@ -42,14 +42,15 @@ class _InteractionBlockLoop(torch.nn.Module):
         self.out = Linear(num_node_hidden_channels, num_node_interaction_channels)
 
         for _ in range(self.n_conv):
-            block = SchNet_InteractionBlock(num_node_interaction_channels, num_edge_gaussians, num_node_interaction_channels, cutoff)
+            block = SchNet_InteractionBlock(num_node_hidden_channels, num_edge_gaussians, num_node_hidden_channels, cutoff)
             self.interactions.append(block)
 
     def forward(self, h, edge_index, edge_weight, edge_attr, data=None):
-        h = self.out(h)
 
         for interaction in self.interactions:
-            h = F.softplus(interaction(h, edge_index, edge_weight, edge_attr, data=data))
+            h = h+F.softplus(interaction(h, edge_index, edge_weight, edge_attr, data=data))
+
+        h = self.out(h)
 
         return h
 

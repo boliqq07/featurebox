@@ -14,7 +14,6 @@ Subpackages
 
    featurebox.data
    featurebox.featurizers
-   featurebox.layer
-   featurebox.models
+   featurebox.models_geo
    featurebox.selection
    featurebox.utils

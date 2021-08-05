@@ -44,29 +44,28 @@ class BaseCrystalModel(Module):
                  **kwargs
                  ):
         """
+        Model for crystal problem.
+
         Args:
             num_node_features: (int) input number of node feature (atom feature).
-            num_edge_features: (int) input number of bond feature.
-            if ``num_edge_gaussians`` offered, this parameter is neglect.
+            num_edge_features: (int) input number of bond feature. if ``num_edge_gaussians` offered, this parameter is neglect.
             num_state_features: (int) input number of state feature.
-            num_node_embeddings: (int) number of embeddings, For generate the initial embedding matrix
-            to on behalf of node feature.
+            num_node_embeddings: (int) number of embeddings, For generate the initial embedding matrix to on behalf of node feature.
             num_node_hidden_channels: (int) num_node_hidden_channels for node feature.
             num_node_interaction_channels: (int) channels for node feature.
             num_interactions: (int) conv number.
-            num_edge_gaussians: (int) number of gaussian Smearing number for radius. deprecated
-            keep this compact with your bond data.
-            cutoff: (float) cutoff for calculate neighbor bond
+            num_edge_gaussians: (int) number of gaussian Smearing number for radius. deprecated, keep this compact with your bond data.
+            cutoff: (float) cutoff for calculate neighbor bond.
             readout: (str) Merge node method. such as "add","mean","max","mean".
-            mean: (float) mean
-            std: (float) std
-            norm:(bool) False or True
+            mean: (float) mean for y.
+            std: (float) std for y.
+            norm:(bool) False or True norm for y.
             atom_ref: (torch.tensor shape (120,1)) properties for atom. such as target y is volumes of compound,
-            atom_ref could be the atom volumes of all atom (H,H,He,Li,...). And you could copy the first term to
-            make sure the `H` index start form 1.
+                atom_ref could be the atom volumes of all atom (H,H,He,Li,...). And you could copy the first term to
+                make sure the `H` index start form 1.
             simple_z: (bool,str) just used "z" or used "x" to calculate.
             interactions: (Callable) torch module for interactions dynamically: pass the torch module to interactions parameter.static: re-define the ``get_interactions_layer`` and keep this parameter is None.
-            the forward input is (h, edge_index, edge_weight, edge_attr, data=data)
+                the forward input is (h, edge_index, edge_weight, edge_attr, data=data)
             readout_layer: (Callable) torch module for interactions  dynamically: pass the torch module to interactions parameter. static: re-define the ``get_interactions_layer`` and keep this parameter is None. the forward input is (out,)
             add_state: (bool) add state attribute before output.
             out_size:(int) number of out size. for regression,is 1 and for classification should be defined.
@@ -415,6 +414,7 @@ class GeneralReadOutLayer(Module):
 
 
 class GeoResNet(Module):
+    """Simple ResNet"""
     def __init__(self, module_list: ModuleList):
         super().__init__()
         self.modules_list = module_list

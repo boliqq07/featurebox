@@ -191,11 +191,13 @@ def print_log_dataloader(dataloader: DataLoader, print_index_of_sample=False):
 
 
 def make_dot_(var, params=None, show_attrs=False, show_saved=False, max_attr_chars=50):
+    # 画出 PyTorch 自动梯度图 autograd graph 的 Graphviz 表示.
+    # 蓝色节点表示有梯度计算的变量Variables;
+    # 橙色节点表示用于 torch.autograd.Function 中的 backward 的张量 Tensors.
     """
     Produces Graphviz representation of PyTorch autograd graph.
 
     First install graphviz:
-
         https://forum.graphviz.org/t/new-simplified-installation-procedure-on-windows/224  (windows)
 
         yum install graphviz (centos)
@@ -206,19 +208,13 @@ def make_dot_(var, params=None, show_attrs=False, show_saved=False, max_attr_cha
         pip install graphviz
         pip install torchviz
 
-
     use:
-
         >>> vis_graph = make_dot_(y_pred, params=dict(list(model.named_parameters())))
         >>> vis_graph.render(format="pdf")
 
-
-    画出 PyTorch 自动梯度图 autograd graph 的 Graphviz 表示.
-    蓝色节点表示有梯度计算的变量Variables;
-    橙色节点表示用于 torch.autograd.Function 中的 backward 的张量 Tensors.
-
     If a node represents a backward function, it is gray. Otherwise, the node
     represents a tensor and is either blue, orange, or green:
+
      - Blue: reachable leaf tensors that requires grad (tensors whose `.grad`
          fields will be populated during `.backward()`)
      - Orange: saved tensors of custom autograd functions as well as those

@@ -6,24 +6,8 @@ featurebox.utils package
    :undoc-members:
    :show-inheritance:
 
-Subpackages
------------
-
-.. toctree::
-   :maxdepth: 4
-
-   featurebox.utils.fast
-
 Submodules
 ----------
-
-featurebox.utils.general module
--------------------------------
-
-.. automodule:: featurebox.utils.general
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 featurebox.utils.look\_json module
 ----------------------------------

@@ -1,8 +1,8 @@
 Polynomial Combination
 ==========================
 
-Polynomial combination.
-::
+Polynomial combination.::
+
     >>> from featurebox.featurizers.state.union import PolyFeature
     >>> n = np.array([[0,1,2,3,4,5],[0.422068,0.360958,0.201433,-0.459164,-0.064783,-0.250939]]).T
     >>> ps = pd.DataFrame(n,columns=["f1","f2"],index= ["x0","x1","x2","x3","x4","x5"])

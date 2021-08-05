@@ -22,11 +22,12 @@ class MEGNet(BaseCrystalModel):
     MEGNet
     """
 
-    def __init__(self, *args, num_state_features=2, **kwargs):
-        super(MEGNet, self).__init__(*args, num_state_features=num_state_features, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super(MEGNet, self).__init__(*args, **kwargs)
         if self.num_state_features == 0:
             warnings.warn(
                 "you use no state_attr !!!, please make sure the ``num_state_features`` compat with your data")
+
     def get_interactions_layer(self):
         self.interactions = _Interaction(self.num_node_hidden_channels, self.num_edge_gaussians,
                                          self.num_node_interaction_channels,
@@ -67,7 +68,7 @@ class _Interaction(torch.nn.Module):
             state_attr = state_attr.expand(
                 data.state_attr.shape)
 
-        h = F.relu(self.out(h))
+        h = self.out(h)
         return h
 
 
