@@ -1,6 +1,7 @@
 Use Yourself Data
 =================
 
+>>> from featurebox.featurizers.atom.mapper import AtomJsonMap
 >>> tmps = AtomJsonMap(search_tp="number",embedding_dict="your.json")
 >>> tmps = AtomJsonMap(search_tp="number",embedding_dict=Your_dict)
 

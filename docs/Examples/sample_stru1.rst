@@ -1,6 +1,5 @@
 Build model with QM9 data
 ==========================
-
 >>> import os.path as osp
 >>> import torch
 >>> import torch_geometric.transforms as T
@@ -9,7 +8,7 @@ Build model with QM9 data
 >>> from torch_geometric.utils import remove_self_loops
 
 
->>> from featurebox.models.models_geo.cgcnn import CrystalGraphConvNet
+>>> from Instances.old_net.featurebox import CrystalGraphConvNet
 >>> from featurebox.models.models_geo.cggat import CrystalGraphGAT
 >>> from featurebox.models.models_geo.cggcn import CrystalGraphGCN
 >>> from featurebox.models.models_geo.cggcn2 import CrystalGraphGCN2
@@ -92,4 +91,3 @@ Build model with QM9 data
 ... loss_threshold= 0.1, print_freq= None, print_what="all")
 
 >>> # lf.run(50)
-

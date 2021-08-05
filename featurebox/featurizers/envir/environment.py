@@ -134,8 +134,8 @@ class BaseDesGet(_BaseEnvGet):
         nn_strategy:
             pyXtelff descriptors, which has calculate method.
             See Also:
-            :mod:`featurebox.featurizers.descriptors`,
-            :class:`featurebox.featurizers.descriptors.SOAP.SOAP`,
+            :mod:`featurebox.test_featurizers.descriptors`,
+            :class:`featurebox.test_featurizers.descriptors.SOAP.SOAP`,
         refine:str
             sort method for neighbors of each atom.
             all the refine_method should return 5 result.
@@ -262,7 +262,7 @@ class BaseNNGet(_BaseEnvGet):
         nn_strategy: Union[NearNeighbors]
             search method for local_env for each atom.
             See Also:
-            :class:`featurebox.featurizers.envir.local_env.MinimumDistanceNNAll`,
+            :class:`featurebox.test_featurizers.envir.local_env.MinimumDistanceNNAll`,
         refine:str
             sort method for neighbors of each atom.
             See Also:
@@ -395,7 +395,7 @@ class GEONNGet(BaseNNGet):
         nn_strategy: Union[NearNeighbors]
             search method for local_env for each atom.
             See Also:
-            :class:`featurebox.featurizers.envir.local_env.MinimumDistanceNNAll`,
+            :class:`featurebox.test_featurizers.envir.local_env.MinimumDistanceNNAll`,
         refine:str
             sort method for neighbors of each atom.
             See Also:

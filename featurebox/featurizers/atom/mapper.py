@@ -61,7 +61,7 @@ def get_ion_fea_name(structure: Structure) -> List[dict]:
         a list of site fraction description
     """
 
-    return [i.species.to_dict() for i in structure.sites]
+    return [i.species.to_reduced_dict for i in structure.sites]
 
 
 ##############################################################
@@ -170,7 +170,7 @@ class AtomJsonMap(BinaryMap):
                 Name of file or dict,element to element vector dictionary
 
                 Provides the pre-trained elemental embeddings using formation energies,
-                which can be used to speed up the training of other models. The embeddings
+                which can be used to speed up the training of other models_geo. The embeddings
                 are also extremely useful elemental descriptors that encode chemical
                 similarity that may be used in other ways.
         """

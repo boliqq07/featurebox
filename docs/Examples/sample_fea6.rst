@@ -29,16 +29,3 @@ Custom bond Features::
 
     >>> appb1 = BaseDesGet(nn_strategy="SOAP", numerical_tol=1e-8, cutoff=None, cut_off_name=None)
 
-
-Total Features::
-
-    >>> cg = CrystalGraph(bond_generator=appb1,
-    ...                  atom_converter=appa,
-    ...                  bond_converter=None,
-    ...                  state_converter=apps1,
-    ...                  cutoff=5.0,
-    ...                  n_jobs=6,)
-    >>> ds = cg.fit_transform(structures)
-    >>> # "if there are other state_feature to add.such as state_feature_add is one table, rows number is equal to structures' number"
-    >>> ds = cg.fit_transform(zip((structures,state_feature_add)))
-

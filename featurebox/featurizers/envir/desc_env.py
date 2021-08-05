@@ -1,4 +1,4 @@
-"""Use descriptors form ``pyXtal_FF``, in :mod:`featurebox.featurizers.descriptors`
+"""Use descriptors form ``pyXtal_FF``, in :mod:`featurebox.test_featurizers.descriptors`
 """
 from typing import Dict
 

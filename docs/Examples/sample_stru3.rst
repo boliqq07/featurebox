@@ -9,14 +9,15 @@ GaussianSmearing transform data
     >>> val_dataset = dataset[1000:2000]
     >>> train_dataset = dataset[2000:3000]
     >>> import torch_geometric.transforms as T
+    >>> from featurebox.models_geo.basemodel import GaussianSmearing
     >>> trans = T.Compose([GaussianSmearing(num_gaussians=50),T.ToSparseTensor(),])
 
-
+    >>> from featurebox.featurizers.generator_geo import SimpleDataset
     >>> train_dataset = SimpleDataset(data_train, pre_transform=trans)
     >>> test_dataset = SimpleDataset(data_test,pre_transform=trans)
     >>> val_dataset = SimpleDataset(val_data,pre_transform=trans)
 
-
+    >>> from torch_geometric.data.dataloader import DataLoader
     >>> train_loader = DataLoader(
     ... dataset=train_dataset,
     ... batch_size=200,
@@ -29,6 +30,7 @@ GaussianSmearing transform data
 Model
 --------------
 
+    >>> from featurebox.models_geo.cgcnn import CrystalGraphConvNet
     >>>  model = CrystalGraphConvNet(num_node_features=91,
     ...  num_edge_features=3,
     ...  num_state_features=29)
@@ -46,6 +48,7 @@ Training
     >>> scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.7, patience=2,...min_lr=0.001)
     >>> device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
 
+    >>> from featurebox.models_geo.flow_geo import LearningFlow
     >>> lf= LearningFlow(model, train_loader, validate_loader=val_loader, device= "cuda:1",
     ... optimizer=None, clf= False, loss_method=None, learning_rate = 1e-3, milestones=None,
     ... weight_decay= 0.01, checkpoint=True, scheduler=scheduler,

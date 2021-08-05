@@ -5,6 +5,7 @@ Pymatgen Data
 The data are using the inner periodical_data.json in pymatgen elemental data.
 ::
 
+    >>> from featurebox.featurizers.atom.mapper import AtomPymatgenPropMap
     >>> tmps = AtomPymatgenPropMap(search_tp="name")
     >>> s = [{"H": 2, }, {"Po": 1}, {"C": 2}] # [i.species.as_dict() for i in pymatgen.structure.sites]
     >>> a2 = tmps.convert(s) # or
@@ -13,6 +14,7 @@ The data are using the inner periodical_data.json in pymatgen elemental data.
 In addition, we could get structure state data by structure.
 ::
 
+    >>> from featurebox.featurizers.state.state_mapper import StructurePymatgenPropMap
     >>> tmps = StructurePymatgenPropMap(prop_name = ["density", "volume", "ntypesp"])
     >>> a2 = tmps.convert(structurei)
 

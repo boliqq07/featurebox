@@ -274,7 +274,7 @@ if __name__ == '__main__':
         '(TiLa3)', '(TiLa)', '(TiLa3)2',
         "((Ti)2P2)1H0.2", "((Ti)2)1H0.2", "((Ti))1H0.2"
     ]
-    os.chdir(r'.')
+    os.chdir(r'')
 
     NS = NameSplit()
 

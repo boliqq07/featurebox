@@ -30,7 +30,7 @@ class Corr(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
     Examples
     ---------
     >>> from sklearn.datasets import load_boston
-    >>> from featurebox.selection.corr import Corr
+    >>> from featurebox import Corr
     >>> x, y = load_boston(return_X_y=True)
     >>> co = Corr(threshold=0.5)
     >>> nx = co.fit_transform(x)
@@ -41,7 +41,7 @@ class Corr(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
     ---------
 
     >>> from sklearn.datasets import load_boston
-    >>> from featurebox.selection.corr import Corr
+    >>> from featurebox import Corr
     >>> x, y = load_boston(return_X_y=True)
     >>> co = Corr(threshold=0.7)
     >>> groups = co.count_cof(np.corrcoef(x[:,:7], rowvar=False))
@@ -57,7 +57,7 @@ class Corr(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
     Examples
     -----------
     >>> from sklearn.datasets import load_boston
-    >>> from featurebox.selection.corr import Corr
+    >>> from featurebox import Corr
     >>> x, y = load_boston(return_X_y=True)
     >>> co = Corr(threshold=0.7)
     >>> co.fit(x)
@@ -75,7 +75,7 @@ class Corr(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
     Examples
     -----------
     >>> from sklearn.datasets import load_boston
-    >>> from featurebox.selection.corr import Corr
+    >>> from featurebox import Corr
     >>> x, y = load_boston(return_X_y=True)
     >>> co = Corr(threshold=0.7,muti_index=[0,8],muti_grade=2)
     >>> # in range [0,8], the features are binding in to 2 sized: [[0,1],[2,3],[4,5],[6,7]]

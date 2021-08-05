@@ -59,6 +59,8 @@ class _BaseStructureGraphGEO(BaseFeature):
         if collect is False:
             self.get_collect_data = lambda x: x
 
+        assert return_type in ["tensor", "np", "numpy", "array", "ndarray"]
+
         if collect is True:
             warnings.warn("The collect=True just used for temporary show!", UserWarning)
         if return_type != "tensor":
@@ -118,8 +120,10 @@ class _BaseStructureGraphGEO(BaseFeature):
 
             ret, self.support_ = zip(*rets)
 
-        if self.add_label:
+        if self.add_label and self.return_type == "tensor":
             [i.update({"label": torch.tensor([n, n])}) for n, i in enumerate(ret)]  # double for after.
+        else:
+            [i.update({"label": np.array([n, n])}) for n, i in enumerate(ret)]  # double for after.
         return ret
 
     def get_collect_data(self, graphs: List[Dict]):
@@ -294,12 +298,12 @@ class BaseStructureGraphGEO(_BaseStructureGraphGEO):
 
         Args:
             atom_converter: (BinaryMap) atom features converter. See Also:
-                :class:`featurebox.featurizers.atom.mapper.AtomTableMap` , :class:`featurebox.featurizers.atom.mapper.AtomJsonMap` ,
-                :class:`featurebox.featurizers.atom.mapper.AtomPymatgenPropMap`, :class:`featurebox.featurizers.atom.mapper.AtomTableMap`
+                :class:`featurebox.test_featurizers.atom.mapper.AtomTableMap` , :class:`featurebox.test_featurizers.atom.mapper.AtomJsonMap` ,
+                :class:`featurebox.test_featurizers.atom.mapper.AtomPymatgenPropMap`, :class:`featurebox.test_featurizers.atom.mapper.AtomTableMap`
             state_converter: (Converter) state features converter. See Also:
-                :class:`featurebox.featurizers.state.state_mapper.StructurePymatgenPropMap`
-                :mod:`featurebox.featurizers.state.statistics`
-                :mod:`featurebox.featurizers.state.union`
+                :class:`featurebox.test_featurizers.state.state_mapper.StructurePymatgenPropMap`
+                :mod:`featurebox.test_featurizers.state.statistics`
+                :mod:`featurebox.test_featurizers.state.union`
             **kwargs:
         """
         super().__init__(**kwargs)
@@ -413,16 +417,16 @@ class StructureGraphGEO(BaseStructureGraphGEO):
                 "EconNN", "CrystalNN", "MinimumDistanceNNAll", "find_points_in_spheres","UserVoronoiNN"]
             atom_converter: (BinaryMap) atom features converter.
                 See Also:
-                :class:`featurebox.featurizers.atom.mapper.AtomTableMap` , :class:`featurebox.featurizers.atom.mapper.AtomJsonMap` ,
-                :class:`featurebox.featurizers.atom.mapper.AtomPymatgenPropMap`, :class:`featurebox.featurizers.atom.mapper.AtomTableMap`
+                :class:`featurebox.test_featurizers.atom.mapper.AtomTableMap` , :class:`featurebox.test_featurizers.atom.mapper.AtomJsonMap` ,
+                :class:`featurebox.test_featurizers.atom.mapper.AtomPymatgenPropMap`, :class:`featurebox.test_featurizers.atom.mapper.AtomTableMap`
             bond_converter: (Converter)
                 bond features converter, default=None.
             state_converter: (Converter)
                 state features converter.
                 See Also:
-                :class:`featurebox.featurizers.state.state_mapper.StructurePymatgenPropMap`
-                :mod:`featurebox.featurizers.state.statistics`
-                :mod:`featurebox.featurizers.state.union`
+                :class:`featurebox.test_featurizers.state.state_mapper.StructurePymatgenPropMap`
+                :mod:`featurebox.test_featurizers.state.statistics`
+                :mod:`featurebox.test_featurizers.state.union`
             bond_generator: (GEONNGet, str)
                 bond features converter.
             cutoff: (float)
@@ -460,9 +464,9 @@ class StructureGraphGEO(BaseStructureGraphGEO):
 
         # remove dup
 
-        index = edge_index[0]<edge_index[1]
+        index = edge_index[0] < edge_index[1]
 
-        edge_index = edge_index[:,index]
+        edge_index = edge_index[:, index]
         edge_weight = edge_weight[index]
         edge_attr = edge_attr[index]
 
