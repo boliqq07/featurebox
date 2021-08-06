@@ -13,3 +13,25 @@ make html
 make clean
 
 #重复234直到满意
+
+#####################################################
+#####https://www.sphinx-doc.org/en/master/usage/advanced/intl.html#intl#####
+
+# 多语言
+
+pip install sphinx-intl
+
+# 1.conf.py 加入
+locale_dirs = ['locale/']   # path is example but recommended.
+gettext_compact = False     # optional.
+
+# 2.提取要翻译的字符串信息 .pot文件
+make gettext
+
+# 3. 根据提取要翻译的字符串信息，更新翻译文件夹(中文) .po文件
+sphinx-intl update -p _build/gettext -l zh_CN
+
+# 4
+make -e SPHINXOPTS="-D language='zh_CN'" html
+
+#重复23,4直到满意

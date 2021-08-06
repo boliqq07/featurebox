@@ -1,0 +1,103 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, boliqq07
+# This file is distributed under the same license as the featurebox package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: featurebox \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-08-06 15:30+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.0\n"
+
+#: ../../Examples/sample_stru2.rst:2
+msgid "1.Structure Graph Processing"
+msgstr "结构图形处理"
+
+#: ../../Examples/sample_stru2.rst:5
+msgid "Get structure data"
+msgstr "获取结构数据"
+
+#: ../../Examples/sample_stru2.rst:12
+msgid "Check structure elements in scope"
+msgstr "检查范围内的结构元素"
+
+#: ../../Examples/sample_stru2.rst:19
+msgid "Transform parallel"
+msgstr "转换提取数据信息"
+
+#: ../../Examples/sample_stru2.rst:34
+msgid "Using data"
+msgstr "使用数据"
+
+#: ../../Examples/sample_stru2.rst:70
+msgid "More transforms can be shown in ``torch_geometric``."
+msgstr "更多的信息和转换在``torch_geometric``."
+
+#: ../../Examples/sample_stru2.rst:73
+msgid "Note"
+msgstr "注意"
+
+#: ../../Examples/sample_stru2.rst:75
+msgid "Each Graph data (for each structure):"
+msgstr "每个图数据(针对每个结构)"
+
+#: ../../Examples/sample_stru2.rst:77
+msgid ""
+"``x``: Node feature matrix. np.ndarray, with shape [num_nodes, "
+"num_node_features]"
+msgstr ""
+"``x``: （节点）原子特征. 形状[num_nodes, "
+"num_node_features]"
+
+#: ../../Examples/sample_stru2.rst:79
+msgid ""
+"``edge_index``: Graph connectivity in COO format. np.ndarray, with shape "
+"[2, num_edges] and type torch.long"
+msgstr ""
+"``edge_index``: 键索引对，形状"
+"[2, num_edges] 数据类型torch.long"
+#: ../../Examples/sample_stru2.rst:81
+
+msgid ""
+"``edge_attr``: Edge feature matrix. np.ndarray, with shape [num_edges, "
+"num_edge_features]"
+msgstr ""
+"``edge_attr``: 键特征，形状[num_edges, "
+"num_edge_features]"
+
+#: ../../Examples/sample_stru2.rst:83
+msgid "``edge_weight``: Edge feature matrix. np.ndarray, with shape [num_edges, ]"
+msgstr "``edge_weight``: 键长，形状 [num_edges, ]"
+
+#: ../../Examples/sample_stru2.rst:85
+msgid ""
+"``pos``: Node position matrix. np.ndarray, with shape [num_nodes, "
+"num_dimensions]"
+msgstr ""
+"``pos``: 节点（原子）位置矩阵，形状[num_nodes, "
+"num_dimensions]"
+
+#: ../../Examples/sample_stru2.rst:87
+msgid "``y``: target. np.ndarray, shape (1, num_target), default shape (1,)"
+msgstr "``y``: 目标量，形状 [1, num_target], 默认形状 [1,]"
+
+#: ../../Examples/sample_stru2.rst:89
+msgid "``state_attr``: state feature. np.ndarray, shape (1, num_state_features)"
+msgstr "``state_attr``: 状态（化合物整体）特征，形状 [1, num_state_features]"
+
+#: ../../Examples/sample_stru2.rst:91
+msgid "``z``: atom numbers. np.ndarray, with shape [num_nodes,]"
+msgstr "``z``: 原子序号，形状[num_nodes,]"
+
+#: ../../Examples/sample_stru2.rst:93
+msgid "Where the state_attr is added newly."
+msgstr "其中state_attr状态特征是新添加的。"
+

@@ -9,4 +9,6 @@ python:
       - requirements: docs/requirements.txt
 
 
-formats: []
+# Optionally build your docs in additional formats such as PDF
+formats:
+  - pdf

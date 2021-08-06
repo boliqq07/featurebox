@@ -1,0 +1,53 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, boliqq07
+# This file is distributed under the same license as the featurebox package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: featurebox \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-08-06 15:30+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.0\n"
+
+#: ../../Examples/sample_fea1.rst:2
+msgid "Json Data"
+msgstr "Json数据"
+
+#: ../../Examples/sample_fea1.rst:4
+msgid ""
+"The key json must be element name, such as {\"H\": ... ,\"He\": ... }, "
+"and The structures is pymatgen ``Structure`` list."
+msgstr "key json必须是元素名，例如 {\"H\": ... ,\"He\": ... }, 结构是pymatgen ``Structure`` 列表"
+
+#: ../../Examples/sample_fea1.rst:6
+msgid "Index by structure ::"
+msgstr "根据结构索引 ::"
+
+#: ../../Examples/sample_fea1.rst:13 ../../Examples/sample_fea1.rst:24
+msgid "The return data are properties of 1, 76 elements."
+msgstr "返回的数据是1,76号元素的属性"
+
+#: ../../Examples/sample_fea1.rst:15
+msgid "Index by number, with your-self json ::"
+msgstr "用自己的json数据，按数字索引 ::"
+
+#: ../../Examples/sample_fea1.rst:28
+msgid "Index by dict data ::"
+msgstr "根据字典索引 ::"
+
+#: ../../Examples/sample_fea1.rst:40
+msgid "Batch data ::"
+msgstr "批量数据"
+
+#: ../../Examples/sample_fea1.rst:48
+msgid "The return data are list of 2 np.ndarray data."
+msgstr "默认返回数据为np.ndarray类型。"
+

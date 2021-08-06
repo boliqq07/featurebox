@@ -1,0 +1,54 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, boliqq07
+# This file is distributed under the same license as the featurebox package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: featurebox \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-08-06 15:30+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.0\n"
+
+#: ../../Examples/sample_fea0.rst:2
+msgid "Batch Transform Data"
+msgstr "批处理转换数据"
+
+#: ../../Examples/sample_fea0.rst:4
+msgid ""
+"If you don't have a preference for features or idea, just try "
+"BatchFeature, we using features from pymatgen."
+msgstr "如果你对目前的问题没有特殊想法或迷茫，那就试一试"
+"BatchFeature，它使用pymatgen中的特征。"
+
+#: ../../Examples/sample_fea0.rst:7
+msgid "1.Transform structure list."
+msgstr "转换结构数据"
+
+#: ../../Examples/sample_fea0.rst:13
+msgid "``structures_list`` is list of ``struceture`` of ``pymatgen``."
+msgstr "structures_list是 ``pymatgen.Structure`` 的列表。"
+
+#: ../../Examples/sample_fea0.rst:17
+msgid "2.Transform composition list."
+msgstr "转换化合物列表"
+
+#: ../../Examples/sample_fea0.rst:27
+msgid "3.Transform element list."
+msgstr "转换元素列表"
+
+#: ../../Examples/sample_fea0.rst:37
+msgid "Note ::"
+msgstr "注意"
+
+#: ../../Examples/sample_fea0.rst:43
+msgid "Just go on !"
+msgstr ""
+

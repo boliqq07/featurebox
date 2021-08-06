@@ -9,7 +9,6 @@ Welcome to featurebox's documentation!
    Introduction
    Install
    src/modules
-   Chinese/index
    Examples/index
    contact
 

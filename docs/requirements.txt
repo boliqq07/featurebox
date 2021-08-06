@@ -25,3 +25,4 @@ networkx~=2.4
 monty~=4.0.2
 ase
 torch_geometric
+sphinx-intl
