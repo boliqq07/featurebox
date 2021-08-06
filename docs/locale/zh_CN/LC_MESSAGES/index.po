@@ -56,7 +56,7 @@ msgstr "链接"
 
 #: ../../index.rst:33
 msgid "`Featurebox source code <https://github.com/boliqq07/featurebox>`_"
-msgstr "`Featurebox source code <https://github.com/boliqq07/featurebox>`_"
+msgstr "`Github <https://github.com/boliqq07/featurebox>`_"
 
 #: ../../index.rst:36
 msgid "Index"

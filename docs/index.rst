@@ -36,3 +36,6 @@ Index
 
 * :ref:`genindex`
 * :ref:`modindex`
+
+* `English Version <https://featurebox.readthedocs.io/en/latest/>`_
+* `Chinese Version <https://featurebox.readthedocs.io/zh_CN/latest/>`_
