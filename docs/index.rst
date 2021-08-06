@@ -30,6 +30,8 @@ Links
 >>>>>>>
 
 `Featurebox source code <https://github.com/boliqq07/featurebox>`_
+`English Version <https://featurebox.readthedocs.io/en/latest/>`_
+`Chinese Version <https://featurebox.readthedocs.io/zh_CN/latest/>`_
 
 Index
 >>>>>>>
@@ -37,5 +39,4 @@ Index
 * :ref:`genindex`
 * :ref:`modindex`
 
-* `English Version <https://featurebox.readthedocs.io/en/latest/>`_
-* `Chinese Version <https://featurebox.readthedocs.io/zh_CN/latest/>`_
+
