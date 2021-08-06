@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: featurebox \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-06 20:12+0800\n"
+"POT-Creation-Date: 2021-08-06 21:49+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -49,18 +49,24 @@ msgid "Links"
 msgstr ""
 
 #: ../../index.rst:32
-msgid "`Featurebox source code <https://github.com/boliqq07/featurebox>`_"
-msgstr ""
-
-#: ../../index.rst:35
-msgid "Index"
+msgid ""
+"`Featurebox source code <https://github.com/boliqq07/featurebox>`_ "
+"`English Version <https://featurebox.readthedocs.io/en/latest/>`_ "
+"`Chinese Version <https://featurebox.readthedocs.io/zh_CN/latest/>`_"
 msgstr ""
 
 #: ../../index.rst:37
+msgid "Index"
+msgstr ""
+
+#: ../../index.rst:39
 msgid ":ref:`genindex`"
 msgstr ""
 
-#: ../../index.rst:38
+#: ../../index.rst:40
 msgid ":ref:`modindex`"
 msgstr ""
+
+#~ msgid "`Featurebox source code <https://github.com/boliqq07/featurebox>`_"
+#~ msgstr ""
 

@@ -29,7 +29,7 @@ gettext_compact = False     # optional.
 make gettext
 
 # 3. 根据提取要翻译的字符串信息，更新翻译文件夹(中文) .po文件
-sphinx-intl update -p _build/gettext -l zh_CN en
+sphinx-intl update -p _build/gettext -l zh_CN -l en
 
 # 4
 make -e SPHINXOPTS="-D language='zh_CN'" html
