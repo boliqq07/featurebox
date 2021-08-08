@@ -89,7 +89,7 @@ class WeightedAverage(BaseCompositionFeature):
     """
     Examples
     ---------
-    >>> from featurebox import AtomTableMap, AtomJsonMap
+    >>> from featurebox.featurizers.atom import AtomTableMap, AtomJsonMap
     >>> data_map = AtomJsonMap(search_tp="name", n_jobs=1)
     >>> wa = WeightedAverage(data_map, n_jobs=1,return_type="df")
     >>> x3 = [{"H": 2, "Pd": 1},{"He":1,"Al":4}]
@@ -122,7 +122,7 @@ class WeightedSum(BaseCompositionFeature):
     """
     Examples
     --------
-    >>> from featurebox import AtomTableMap, AtomJsonMap
+    >>> from featurebox.featurizers.atom import AtomTableMap, AtomJsonMap
     >>> data_map = AtomJsonMap(search_tp="name", n_jobs=1)
     >>> wa = WeightedSum(data_map, n_jobs=1,return_type="df")
     >>> x3 = [{"H": 2, "Pd": 1},{"He":1,"Al":4}]
@@ -248,7 +248,7 @@ class DepartElementFeature(BaseCompositionFeature):
 
     Examples
     ----------
-    >>> from featurebox import AtomTableMap, AtomJsonMap
+    >>> from featurebox.featurizers.atom import AtomTableMap, AtomJsonMap
     >>> data_map = AtomJsonMap(search_tp="name", n_jobs=1)
     >>> wa = DepartElementFeature(data_map,n_composition=2, n_jobs=1,return_type="df")
     >>> x3 = [{"H": 2, "Pd": 1},{"He":1,"Al":4}]

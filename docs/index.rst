@@ -8,6 +8,7 @@ Welcome to featurebox's documentation!
 
    Introduction
    Install
+   Guide/index
    src/modules
    Examples/index
    contact
@@ -24,14 +25,14 @@ Features:
 
 2. Selection tools with feature binding and restriction.
 
+3. Match with ``scikit-learn`` and ``torch``.
+
 .. image:: structures0.gif
 
 Links
 >>>>>>>
 
-`Featurebox source code <https://github.com/boliqq07/featurebox>`_
-`English Version <https://featurebox.readthedocs.io/en/latest/>`_
-`Chinese Version <https://featurebox.readthedocs.io/zh_CN/latest/>`_
+`Github <https://github.com/boliqq07/featurebox>`_  |  `English Version <https://featurebox.readthedocs.io/en/latest/>`_  |  `Chinese Version <https://featurebox.readthedocs.io/zh_CN/latest/>`_
 
 Index
 >>>>>>>
@@ -39,4 +40,10 @@ Index
 * :ref:`genindex`
 * :ref:`modindex`
 
-
+Support
+>>>>>>>>
+.. image:: ustbgjj.png
+    :scale: 50 %
+    :target: http://bjmge.ustb.edu.cn/
+.. image:: jetbrains.svg
+    :scale: 40 %

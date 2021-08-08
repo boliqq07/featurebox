@@ -22,14 +22,12 @@ msgid "Select by Corr"
 msgstr "相关系数筛选"
 
 #: ../../Examples/sample_sel2.rst:4
-#, fuzzy
 msgid "1. Corr Automatically ::"
-msgstr "1. 自动"
+msgstr "1. 自动 ::"
 
 #: ../../Examples/sample_sel2.rst:17
-#, fuzzy
 msgid "2. Corr Step ::"
-msgstr "2. 手动"
+msgstr "2. 手动 ::"
 
 #: ../../Examples/sample_sel2.rst:25
 msgid ""
@@ -46,7 +44,7 @@ msgstr ""
 msgid ""
 "In this step, you could select manually, or filter automatically as "
 "following. ::"
-msgstr "在此步骤中，您可以手动选择，或自动过滤:如下 ::"
+msgstr "在此步骤中，您可以手动选择，或自动过滤。如下 ::"
 
 #: ../../Examples/sample_sel2.rst:42
 msgid ""

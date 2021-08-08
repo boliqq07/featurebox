@@ -36,7 +36,7 @@ In default, the proportion would be multiplied in data, also you can neglect wei
 Index by structure
 ::
 
->>> tmps = AtomTableMap(search_tp="number"，tablename="aa.csv")
+>>> tmps = AtomTableMap(search_tp="number",tablename="aa.csv")
 >>> a = tmps.convert(structure)
 
 

@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  featurebox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-06 19:31+0800\n"
+"POT-Creation-Date: 2021-08-08 12:44+0800\n"
 "PO-Revision-Date: 2021-08-06 06:13+0000\n"
 "Last-Translator: changxin W <986798607@qq.com>, 2021\n"
 "Language: zh\n"
@@ -45,12 +45,8 @@ msgstr "名字"
 msgid "Version"
 msgstr "版本号"
 
-#: ../../Install.rst:12
-#: ../../Install.rst:13
-#: ../../Install.rst:14
-#: ../../Install.rst:15
-#: ../../Install.rst:16
-#: ../../Install.rst:17
+#: ../../Install.rst:12 ../../Install.rst:13 ../../Install.rst:14
+#: ../../Install.rst:15 ../../Install.rst:16 ../../Install.rst:17
 msgid "necessary"
 msgstr "要求"
 
@@ -124,8 +120,15 @@ msgid "Install with pip ::"
 msgstr "使用pip安装 ::"
 
 #: ../../Install.rst:32
-msgid "If VC++ needed for windows, Please download the dependent packages from `Python Extension Packages <https://www.lfd.uci.edu/~gohlke/pythonlibs/>`_ and install offline. Such as ``Spglib``. And try again, or reference to Method 2."
-msgstr "如果windows平台需要vc++，请从 `Python扩展包网站 <https://www.lfd.uci.edu/~gohlke/pythonlibs/>`_ 下载相关包并离线安装。如 ``Spglib`` 等。然后重复上述步骤，或者使用手动方法安装（参考方法2）。"
+msgid ""
+"If VC++ needed for windows, Please download the dependent packages from "
+"`Python Extension Packages "
+"<https://www.lfd.uci.edu/~gohlke/pythonlibs/>`_ and install offline. Such"
+" as ``Spglib``. And try again, or reference to Method 2."
+msgstr ""
+"如果windows平台需要vc++，请从 `Python扩展包网站 "
+"<https://www.lfd.uci.edu/~gohlke/pythonlibs/>`_ 下载相关包并离线安装。如 ``Spglib`` "
+"等。然后重复上述步骤，或者使用手动方法安装（参考方法2）。"
 
 #: ../../Install.rst:37
 msgid "Method 2"
@@ -160,14 +163,13 @@ msgid "Reference: https://github.com/materialsproject/pymatgen"
 msgstr ""
 
 #: ../../Install.rst:61
-#, fuzzy
 msgid ""
 "If ``Spblib`` needed, which need C++ to compiled, please download `Python"
 " Extension Packages <https://www.lfd.uci.edu/~gohlke/pythonlibs/>`_ and "
 "pip install locally."
 msgstr ""
-"如果``Spblib``需要用vc++编译，请下载 `Python扩展包 "
-"<https://www.lfd.uci.edu/~gohlke/pythonlibs/>'_ 并在本地安装。"
+"如果 ``Spblib`` 需要用vc++编译，请下载"
+" `Python扩展包 <https://www.lfd.uci.edu/~gohlke/pythonlibs/>'_ ， 并在本地安装。"
 
 #: ../../Install.rst:65
 msgid "Such as ::"
@@ -194,10 +196,8 @@ msgid "torch-geometric::"
 msgstr ""
 
 #: ../../Install.rst:93
-msgid ""
-"Reference: https://pytorch-geometric.readthedocs.io/en/latest/ , not "
-"necessary, just for network."
-msgstr ""
+msgid "Reference: https://pytorch-geometric.readthedocs.io/en/latest/ , not necessary, just for network."
+msgstr "Reference: https://wiki.fysik.dtu.dk/ase/ , 非必须, 仅使用于 神经网络。"
 
 #: ../../Install.rst:95
 msgid "ase::"
@@ -207,5 +207,5 @@ msgstr ""
 msgid ""
 "Reference: https://wiki.fysik.dtu.dk/ase/ , not necessary, just for "
 "network."
-msgstr ""
+msgstr "Reference: https://wiki.fysik.dtu.dk/ase/ , 非必须, 仅使用于 神经网络。"
 

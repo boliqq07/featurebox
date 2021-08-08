@@ -5,7 +5,8 @@ Introduction
 
 Featurebox contains some tools for material feature **Generation** and **Selection**.
 
-The main tools are:
+Generation tools
+-----------------------
 
 ================================================         =========================================
  Name                                                    Application
@@ -19,10 +20,14 @@ The main tools are:
  :class:`featurebox.data.mp_access.MpAccess`             Getting data from pymatgen conveniently.
 ================================================         =========================================
 
-All the feature tools with  ``convert`` method for single case.
+All the **Generation** tools with  ``convert`` method for single case.
 and ``fit_transform`` methods for case list.
 
-The main binding selection tools are:
+Guide: :doc:`Guide/data_type`
+
+
+Binding selection tools
+-----------------------------------------
 
 ======================================================= =========================================
  Name                                                   Application
@@ -35,14 +40,18 @@ The main binding selection tools are:
 
 All the selection tools are ``sklearn-type``, with ``fit``, ``fit_transform`` methods .etc.
 
+Guide: :doc:`Guide/bind_selection`
+
 .. note::
 
     Where the binding means treat the binding features as one feature.
     And the binding features are selected or deleted synchronously.
 
-Featurebox integrated with **Graph neural network**.
 
-The main Graph neural network tools are:
+Graph neural network tools
+-------------------------------------------
+
+Featurebox integrated with **Graph neural network**.
 
 ===================================================================== =========================================
  Name                                                                 Application
@@ -58,5 +67,12 @@ The main Graph neural network tools are:
 
 The neural network tools are ``torch-type``, with ``forward`` methods .etc.
 
-The **Graph neural network** employ **base_graph_base**, **bond** and **atom** .etc to build input data.
+Guide: :doc:`Guide/geo_data`
+
+.. note::
+
+    The **Graph neural network** employ **envir**, **bond** and **atom** .etc to build input data.
+
+
+
 

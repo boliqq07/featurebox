@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: featurebox \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-06 20:12+0800\n"
+"POT-Creation-Date: 2021-08-07 23:36+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,191 +27,224 @@ msgid ""
 "**Selection**."
 msgstr ""
 
-#: ../../Introduction.rst:8
-msgid "The main tools are:"
+#: ../../Introduction.rst:9
+msgid "Generation tools"
 msgstr ""
 
-#: ../../Introduction.rst:11 ../../Introduction.rst:28
-#: ../../Introduction.rst:48
+#: ../../Introduction.rst:12 ../../Introduction.rst:33
+#: ../../Introduction.rst:57
 msgid "Name"
 msgstr ""
 
-#: ../../Introduction.rst:11 ../../Introduction.rst:28
-#: ../../Introduction.rst:48
+#: ../../Introduction.rst:12 ../../Introduction.rst:33
+#: ../../Introduction.rst:57
 msgid "Application"
 msgstr ""
 
-#: ../../Introduction.rst:13
+#: ../../Introduction.rst:14
 msgid ":mod:`featurebox.featurizers.atom.mapper`"
 msgstr ""
 
-#: ../../Introduction.rst:13
+#: ../../Introduction.rst:14
 msgid "``atom`` Getting each element data of compound."
 msgstr ""
 
-#: ../../Introduction.rst:14
+#: ../../Introduction.rst:15
 msgid ":mod:`featurebox.featurizers.envir`"
 msgstr ""
 
-#: ../../Introduction.rst:14
+#: ../../Introduction.rst:15
 msgid "``bond`` Getting local environment data (bond and state) of compound."
 msgstr ""
 
-#: ../../Introduction.rst:15
+#: ../../Introduction.rst:16
 msgid ":mod:`featurebox.featurizers.state`"
 msgstr ""
 
-#: ../../Introduction.rst:15
+#: ../../Introduction.rst:16
 msgid "``state`` Getting holistic compound data."
 msgstr ""
 
-#: ../../Introduction.rst:16
+#: ../../Introduction.rst:17
 msgid ":mod:`featurebox.featurizers.bond.expander`"
 msgstr ""
 
-#: ../../Introduction.rst:16
+#: ../../Introduction.rst:17
 msgid "Tools to transforming pure bond data."
 msgstr ""
 
-#: ../../Introduction.rst:17
+#: ../../Introduction.rst:18
 msgid ":mod:`featurebox.featurizers.batch_feature`"
 msgstr ""
 
-#: ../../Introduction.rst:17
+#: ../../Introduction.rst:18
 msgid "A built-in goofy tool for generating features."
 msgstr ""
 
-#: ../../Introduction.rst:18
+#: ../../Introduction.rst:19
 msgid ":class:`featurebox.data.namesplit.NameSplit`"
 msgstr ""
 
-#: ../../Introduction.rst:18
+#: ../../Introduction.rst:19
 msgid "Dividing compound names to elemental proportion table."
 msgstr ""
 
-#: ../../Introduction.rst:19
+#: ../../Introduction.rst:20
 msgid ":class:`featurebox.data.mp_access.MpAccess`"
 msgstr ""
 
-#: ../../Introduction.rst:19
+#: ../../Introduction.rst:20
 msgid "Getting data from pymatgen conveniently."
 msgstr ""
 
-#: ../../Introduction.rst:22
+#: ../../Introduction.rst:23
 msgid ""
-"All the feature tools with  ``convert`` method for single case. and "
-"``fit_transform`` methods for case list."
+"All the **Generation** tools with  ``convert`` method for single case. "
+"and ``fit_transform`` methods for case list."
 msgstr ""
 
-#: ../../Introduction.rst:25
-msgid "The main binding selection tools are:"
+#: ../../Introduction.rst:26
+msgid "Guide: :doc:`Guide/data_type`"
 msgstr ""
 
 #: ../../Introduction.rst:30
+msgid "Binding selection tools"
+msgstr ""
+
+#: ../../Introduction.rst:35
 msgid ":class:`featurebox.selection.backforward.BackForward`"
 msgstr ""
 
-#: ../../Introduction.rst:30
+#: ../../Introduction.rst:35
 msgid "Backforward selection"
 msgstr ""
 
-#: ../../Introduction.rst:31
+#: ../../Introduction.rst:36
 msgid ":class:`featurebox.selection.corr.Corr`"
 msgstr ""
 
-#: ../../Introduction.rst:31
+#: ../../Introduction.rst:36
 msgid "Correlation selection."
 msgstr ""
 
-#: ../../Introduction.rst:32
+#: ../../Introduction.rst:37
 msgid ":class:`featurebox.selection.exhaustion.Exhaustion`"
 msgstr ""
 
-#: ../../Introduction.rst:32
+#: ../../Introduction.rst:37
 msgid "Exhaustion selection."
 msgstr ""
 
-#: ../../Introduction.rst:33
+#: ../../Introduction.rst:38
 msgid ":class:`featurebox.selection.ga.GA`"
 msgstr ""
 
-#: ../../Introduction.rst:33
+#: ../../Introduction.rst:38
 msgid "Genetic algorithm selection."
 msgstr ""
 
-#: ../../Introduction.rst:36
+#: ../../Introduction.rst:41
 msgid ""
 "All the selection tools are ``sklearn-type``, with ``fit``, "
 "``fit_transform`` methods .etc."
 msgstr ""
 
-#: ../../Introduction.rst:40
+#: ../../Introduction.rst:43
+msgid "Guide: :doc:`Guide/bind_selection`"
+msgstr ""
+
+#: ../../Introduction.rst:47
 msgid ""
 "Where the binding means treat the binding features as one feature. And "
 "the binding features are selected or deleted synchronously."
 msgstr ""
 
-#: ../../Introduction.rst:43
+#: ../../Introduction.rst:52
+msgid "Graph neural network tools"
+msgstr ""
+
+#: ../../Introduction.rst:54
 msgid "Featurebox integrated with **Graph neural network**."
 msgstr ""
 
-#: ../../Introduction.rst:45
-msgid "The main Graph neural network tools are:"
-msgstr ""
-
-#: ../../Introduction.rst:50
+#: ../../Introduction.rst:59
 msgid ":class:`featurebox.featurizers.base_graph_geo.StructureGraphGEO`"
 msgstr ""
 
-#: ../../Introduction.rst:50
+#: ../../Introduction.rst:59
 msgid "Integrated structure data tool. (high dimensional data)"
 msgstr ""
 
-#: ../../Introduction.rst:51
+#: ../../Introduction.rst:60
 msgid ":class:`featurebox.models_geo.cgcnn.CrystalGraphConvNet`"
 msgstr ""
 
-#: ../../Introduction.rst:51
+#: ../../Introduction.rst:60
 msgid "Traditional graph neural network."
 msgstr ""
 
-#: ../../Introduction.rst:52
+#: ../../Introduction.rst:61
 msgid ":class:`featurebox.models_geo.schnet.SchNet`"
 msgstr ""
 
-#: ../../Introduction.rst:52 ../../Introduction.rst:53
+#: ../../Introduction.rst:61 ../../Introduction.rst:62
 msgid "Graph neural network with state features."
 msgstr ""
 
-#: ../../Introduction.rst:53
+#: ../../Introduction.rst:62
 msgid ":class:`featurebox.models_geo.megnet.MEGNet`"
 msgstr ""
 
-#: ../../Introduction.rst:54
+#: ../../Introduction.rst:63
 msgid ":class:`featurebox.models_geo.flow_geo.LearningFlow`"
 msgstr ""
 
-#: ../../Introduction.rst:54
+#: ../../Introduction.rst:63
 msgid "Script for modeling (recommended customization by user)."
 msgstr ""
 
-#: ../../Introduction.rst:55
+#: ../../Introduction.rst:64
 msgid ":class:`featurebox.featurizers.generator_geo.InMemoryDatasetGeo`"
 msgstr ""
 
-#: ../../Introduction.rst:55
+#: ../../Introduction.rst:64
 msgid "``Dataset`` for data data in a non-uniform format. (Torch-like)"
 msgstr ""
 
-#: ../../Introduction.rst:59
+#: ../../Introduction.rst:68
 msgid ""
 "The neural network tools are ``torch-type``, with ``forward`` methods "
 ".etc."
 msgstr ""
 
-#: ../../Introduction.rst:61
-msgid ""
-"The **Graph neural network** employ **base_graph_base**, **bond** and "
-"**atom** .etc to build input data."
+#: ../../Introduction.rst:70
+msgid "Guide: :doc:`Guide/geo_data`"
 msgstr ""
+
+#: ../../Introduction.rst:74
+msgid ""
+"The **Graph neural network** employ **envir**, **bond** and **atom** .etc"
+" to build input data."
+msgstr ""
+
+#~ msgid "The main tools are:"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "All the feature tools with  ``convert``"
+#~ " method for single case. and "
+#~ "``fit_transform`` methods for case list."
+#~ msgstr ""
+
+#~ msgid "The main binding selection tools are:"
+#~ msgstr ""
+
+#~ msgid "The main Graph neural network tools are:"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The **Graph neural network** employ "
+#~ "**base_graph_base**, **bond** and **atom** "
+#~ ".etc to build input data."
+#~ msgstr ""
 

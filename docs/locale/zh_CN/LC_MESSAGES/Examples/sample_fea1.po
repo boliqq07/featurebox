@@ -25,7 +25,8 @@ msgstr "Json数据"
 msgid ""
 "The key json must be element name, such as {\"H\": ... ,\"He\": ... }, "
 "and The structures is pymatgen ``Structure`` list."
-msgstr "key json必须是元素名，例如 {\"H\": ... ,\"He\": ... }, 结构是pymatgen ``Structure`` 列表"
+msgstr "json数据的键必须是元素名，例如 {\"H\": ... ,\"He\": ... },"
+" 这里的结构是pymatgen ``Structure`` 列表"
 
 #: ../../Examples/sample_fea1.rst:6
 msgid "Index by structure ::"
@@ -33,7 +34,7 @@ msgstr "根据结构索引 ::"
 
 #: ../../Examples/sample_fea1.rst:13 ../../Examples/sample_fea1.rst:24
 msgid "The return data are properties of 1, 76 elements."
-msgstr "返回的数据是1,76号元素的属性"
+msgstr "返回的数据是1,76号元素的属性。"
 
 #: ../../Examples/sample_fea1.rst:15
 msgid "Index by number, with your-self json ::"

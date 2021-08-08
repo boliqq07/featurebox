@@ -248,7 +248,7 @@ class BaseNNGet(_BaseEnvGet):
         offset vector in 3 orientations or more bond properties.
     ``distances``:np.ndarray of shape(n,fill_size)
         distance of neighbor_indexes for each center_index.
-    ``center_indices``:np.ndarray of shape(n,l_c)
+    ``center_properties``:np.ndarray of shape(n,l_c)
         center properties.
     """
 
