@@ -1,0 +1,173 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2021, boliqq07
+# This file is distributed under the same license as the featurebox package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: featurebox \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-08-08 12:44+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.0\n"
+
+#: ../../Guide/geo_data.rst:2
+msgid "Crystal Structure Data"
+msgstr ""
+
+#: ../../Guide/geo_data.rst:4
+msgid ""
+"Crystal structure data is not a 2D numpy data, but a cluster of tuple "
+"data."
+msgstr ""
+
+#: ../../Guide/geo_data.rst:6
+msgid "Therefore, it suit for ``torch`` network rather than ``sklearn``."
+msgstr ""
+
+#: ../../Guide/geo_data.rst:8
+msgid ""
+"For unification with ``torch_geometrics``, the Crystal Structure Data "
+"(Graph neural network data) use the following name."
+msgstr ""
+
+#: ../../Guide/geo_data.rst:14
+msgid "Each Graph data (for each structure) contains:"
+msgstr ""
+
+#: ../../Guide/geo_data.rst:16
+msgid "``x``: Node feature matrix.  with shape [num_nodes, num_node_features]"
+msgstr ""
+
+#: ../../Guide/geo_data.rst:18
+msgid "alias atom features."
+msgstr ""
+
+#: ../../Guide/geo_data.rst:20
+msgid ""
+"``edge_index``: Graph connectivity in COO format. with shape [2, "
+"num_edges] and type torch.long"
+msgstr ""
+
+#: ../../Guide/geo_data.rst:22
+msgid ""
+"``edge_attr``: Edge feature matrix. with shape [num_edges, "
+"num_edge_features]"
+msgstr ""
+
+#: ../../Guide/geo_data.rst:24
+msgid "alias bond features."
+msgstr ""
+
+#: ../../Guide/geo_data.rst:26
+msgid "``edge_weight``: Edge feature matrix. with shape [num_edges, ]"
+msgstr ""
+
+#: ../../Guide/geo_data.rst:28
+msgid "alias bond length."
+msgstr ""
+
+#: ../../Guide/geo_data.rst:30
+msgid "``pos``: Node position matrix. with shape [num_nodes, num_dimensions]"
+msgstr ""
+
+#: ../../Guide/geo_data.rst:32
+msgid "``y``: target. np.ndarray, shape [1, num_target], default shape [1,]"
+msgstr ""
+
+#: ../../Guide/geo_data.rst:34
+msgid "``state_attr``: state feature. shape [1, num_state_features]"
+msgstr ""
+
+#: ../../Guide/geo_data.rst:36
+msgid "alias state features."
+msgstr ""
+
+#: ../../Guide/geo_data.rst:38
+msgid "``z``: atom numbers. np.ndarray, with shape [num_nodes,]"
+msgstr ""
+
+#: ../../Guide/geo_data.rst:40
+msgid "Where the state_attr is added newly."
+msgstr ""
+
+#: ../../Guide/geo_data.rst:44
+msgid "Name alias::"
+msgstr ""
+
+#: ../../Guide/geo_data.rst:43
+msgid "``\"node\"`` <-> ``\"atom\"``, ``\"edge\"`` <-> ``\"bond\"``"
+msgstr ""
+
+#: ../../Guide/geo_data.rst:47
+msgid "Access"
+msgstr ""
+
+#: ../../Guide/geo_data.rst:49
+msgid "Example:"
+msgstr ""
+
+#: ../../Guide/geo_data.rst:55
+msgid ""
+"and the ``x``, ( ``atom features``) get by "
+":mod:`featurebox.featurizers.atom.mapper`, and the "
+"``edge_weight``,``edge_attr``(``bond features``) get by "
+":mod:`featurebox.featurizers.envir.environment`"
+msgstr ""
+
+#: ../../Guide/geo_data.rst:59
+msgid ":doc:`../Examples/sample_fea3`"
+msgstr ""
+
+#: ../../Guide/geo_data.rst:61
+msgid ""
+"The usage of Graph data could find in `torch geometrics <https://pytorch-"
+"geometric.readthedocs.io/en/latest/>`_ and examples: "
+":doc:`../Examples/sample_stru2`, :doc:`../Examples/sample_stru3`."
+msgstr ""
+
+#~ msgid "``\"node\"`` <-> ``\"atom\"``"
+#~ msgstr ""
+
+#~ msgid "``\"edge\"`` <-> ``\"bond\"``"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "``x``: Node feature matrix. np.ndarray, "
+#~ "with shape [num_nodes, num_node_features]"
+#~ msgstr ""
+
+#~ msgid "``y``: target. np.ndarray, shape (1, num_target), default shape (1,)"
+#~ msgstr ""
+
+#~ msgid "``state_attr``: state feature. shape (1, num_state_features)"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "and the ``x``(``atom features``) get by"
+#~ " :mod:`featurebox.featurizers.atom.mapper`, and the "
+#~ "``edge_weight``,``edge_attr``(``bond features``) get "
+#~ "by :mod:`featurebox.featurizers.atom.envir`"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The usage of Graph data could find"
+#~ " in `torch geometrics <https://pytorch-"
+#~ "geometric.readthedocs.io/en/latest/>`_ and examples: "
+#~ ":doc:`../Examples/sample_stru2`,:doc:`../Examples/sample_stru3`"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "and the ``x``, ( ``atom features``) "
+#~ "get by :mod:`featurebox.featurizers.atom.mapper`, "
+#~ "and the ``edge_weight``,``edge_attr``(``bond "
+#~ "features``) get by "
+#~ ":mod:`featurebox.featurizers.atom.envir`"
+#~ msgstr ""
+
