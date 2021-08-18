@@ -249,29 +249,29 @@ class Corr(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
         check_is_fitted(self, 'support_')
         return self.support_
 
-    # def transform_index(self, data):
-    #     if isinstance(data, int):
-    #         return self.shrink_list.index(data)
-    #     elif isinstance(data, (list, tuple)):
-    #         return [self.shrink_list.index(i) for i in data]
-    #
-    # def inverse_transform_index(self, data):
-    #     if isinstance(data, int):
-    #         return self.shrink_list[data]
-    #     elif isinstance(data, (list, tuple)):
-    #         return [self.shrink_list[i] for i in data]
-    #     else:
-    #         pass
-    #
-    # def transform(self, data):
-    #     if isinstance(data, (list, tuple)):
-    #         return data[self.shrink_list]
-    #     elif isinstance(data, np.ndarray) and data.ndim == 1:
-    #         return data[self.shrink_list]
-    #     elif isinstance(data, np.ndarray) and data.ndim == 2:
-    #         return data[:, self.shrink_list]
-    #     else:
-    #         pass
+    def transform_index(self, data):
+        if isinstance(data, int):
+            return self.shrink_list.index(data)
+        elif isinstance(data, (list, tuple)):
+            return [self.shrink_list.index(i) for i in data]
+    
+    def inverse_transform_index(self, data):
+        if isinstance(data, int):
+            return self.shrink_list[data]
+        elif isinstance(data, (list, tuple)):
+            return [self.shrink_list[i] for i in data]
+        else:
+            pass
+
+    def transform(self, data):
+        if isinstance(data, (list, tuple)):
+            return data[self.shrink_list]
+        elif isinstance(data, np.ndarray) and data.ndim == 1:
+            return data[self.shrink_list]
+        elif isinstance(data, np.ndarray) and data.ndim == 2:
+            return data[:, self.shrink_list]
+        else:
+            pass
 
 
 if __name__ == "__main__":
