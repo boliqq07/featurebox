@@ -254,7 +254,7 @@ class Corr(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
             return self.shrink_list.index(data)
         elif isinstance(data, (list, tuple)):
             return [self.shrink_list.index(i) for i in data]
-    
+
     def inverse_transform_index(self, data):
         if isinstance(data, int):
             return self.shrink_list[data]
