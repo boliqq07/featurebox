@@ -525,9 +525,8 @@ class StructureGraphGEO(BaseStructureGraphGEO):
         if edge_index.ndim <= 1:
             edge_index = edge_index.reshape(2, -1)
             if edge_index.shape[1] == 0:
-                warnings.warn(
-                    "Bad data The {} is with no edge_index in cutoff. May lead to later wrong.".format(structure),
-                    UserWarning)
+                raise ValueError(
+                    "Bad data The {} is with no edge_index in cutoff. May lead to later wrong.".format(structure),)
         if edge_weight.ndim <= 1:
             edge_weight = edge_weight.ravel()
 
