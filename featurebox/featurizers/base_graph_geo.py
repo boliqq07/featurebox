@@ -56,8 +56,7 @@ class _BaseStructureGraphGEO(BaseFeature):
         """
         super().__init__(batch_calculate=batch_calculate, **kwargs)
         self.graph_data_name = []
-        if collect is False:
-            self.get_collect_data = lambda x: x
+
 
         assert return_type in ["tensor", "np", "numpy", "array", "ndarray"]
 
@@ -128,7 +127,7 @@ class _BaseStructureGraphGEO(BaseFeature):
             pass
         return ret
 
-    def get_collect_data(self, graphs: List[Dict])->Dict:
+    def get_collect_data(self, graphs: List[Dict]):
         """
         Not used in default, just for shown.
 
@@ -140,6 +139,8 @@ class _BaseStructureGraphGEO(BaseFeature):
             graphs: list of dict
                 list of graph dictionary for each structure
         """
+        if self.collect is False:
+            return graphs
 
         output = {}  # Will be a list of arrays
 
@@ -183,6 +184,7 @@ class _BaseStructureGraphGEO(BaseFeature):
         Returns:
             data
         """
+        self.collect = True
         return self.get_collect_data(self._transform(structures, **kwargs))
 
     def save(self, obj, name, root_dir=".")->None:
