@@ -122,8 +122,10 @@ class _BaseStructureGraphGEO(BaseFeature):
 
         if self.add_label and self.return_type == "tensor":
             [i.update({"label": torch.tensor([n, n])}) for n, i in enumerate(ret)]  # double for after.
-        else:
+        elif self.add_label:
             [i.update({"label": np.array([n, n])}) for n, i in enumerate(ret)]  # double for after.
+        else:
+            pass
         return ret
 
     def get_collect_data(self, graphs: List[Dict])->Dict:
