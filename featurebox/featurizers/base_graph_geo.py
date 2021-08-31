@@ -57,7 +57,6 @@ class _BaseStructureGraphGEO(BaseFeature):
         super().__init__(batch_calculate=batch_calculate, **kwargs)
         self.graph_data_name = []
 
-
         assert return_type in ["tensor", "np", "numpy", "array", "ndarray"]
 
         if collect is True:
@@ -80,7 +79,7 @@ class _BaseStructureGraphGEO(BaseFeature):
     def _get_dummy_converter() -> DummyConverter:
         return DummyConverter()
 
-    def _transform(self, structures: List[Structure], **kwargs)->List[Dict]:
+    def _transform(self, structures: List[Structure], **kwargs) -> List[Dict]:
         """
 
         Args:
@@ -153,7 +152,7 @@ class _BaseStructureGraphGEO(BaseFeature):
                 output[n] = np_data
         return output
 
-    def transform(self, structures: List[Structure], **kwargs)->List[Dict]:
+    def transform(self, structures: List[Structure], **kwargs) -> List[Dict]:
         """
         New type of transform structure.
 
@@ -170,7 +169,7 @@ class _BaseStructureGraphGEO(BaseFeature):
 
         return self._transform(structures, **kwargs)
 
-    def transform_and_collect(self, structures: List[Structure], **kwargs)->Dict:
+    def transform_and_collect(self, structures: List[Structure], **kwargs) -> Dict:
         """
         New type of transform structure.
 
@@ -187,7 +186,7 @@ class _BaseStructureGraphGEO(BaseFeature):
         self.collect = True
         return self.get_collect_data(self._transform(structures, **kwargs))
 
-    def save(self, obj, name, root_dir=".")->None:
+    def save(self, obj, name, root_dir=".") -> None:
         """Save."""
         torch.save(obj, os.path.join(root_dir, "raw", '{}.pt'.format(name)))
 
@@ -204,7 +203,7 @@ class _BaseStructureGraphGEO(BaseFeature):
         else:
             return names
 
-    def transform_and_save(self, *args, root_dir=".", file_names="composition_name", save_mode="i",**kwargs):
+    def transform_and_save(self, *args, root_dir=".", file_names="composition_name", save_mode="i", **kwargs):
         r"""Save the data to 'root_dir/raw' """
         raw_path = os.path.join(root_dir, "raw")
         if os.path.isdir(raw_path):
@@ -212,7 +211,7 @@ class _BaseStructureGraphGEO(BaseFeature):
         os.makedirs(raw_path)
 
         fns = self.check_dup(args[0], file_names=file_names)
-        result = self._transform(*args,**kwargs)
+        result = self._transform(*args, **kwargs)
         print("Save raw files to {}.".format(raw_path))
         if save_mode in ["I", "R", "i", "r", "Respective", "respective"]:
             [self.save(i, j, root_dir) for i, j in zip(result, fns)]
@@ -384,7 +383,7 @@ class BaseStructureGraphGEO(_BaseStructureGraphGEO):
 
         atoms = atoms.astype(dtype=np.float32)
         if atoms.ndim <= 1:
-            atoms = atoms.reshape(-1,1)
+            atoms = atoms.reshape(-1, 1)
         z = z.astype(dtype=np.int64)
         return {'x': atoms, "z": z}
 
@@ -392,7 +391,7 @@ class BaseStructureGraphGEO(_BaseStructureGraphGEO):
         _ = kwargs
         pos = structure.cart_coords.astype(dtype=np.float32)
         if pos.ndim <= 1:
-            pos = pos.reshape(-1,1)
+            pos = pos.reshape(-1, 1)
         return {'pos': pos}
 
 
@@ -524,12 +523,15 @@ class StructureGraphGEO(BaseStructureGraphGEO):
         edge_attr = edge_attr.astype(dtype=np.float32)
 
         if edge_index.ndim <= 1:
-            edge_index = edge_index.reshape(-1, 1)
-
+            edge_index = edge_index.reshape(2, -1)
+            if edge_index.shape[1] == 0:
+                warnings.warn(
+                    "Bad data The {} is with no edge_index in cutoff. May lead to later wrong.".format(structure),
+                    UserWarning)
         if edge_weight.ndim <= 1:
-            edge_weight = edge_weight.reshape(-1, 1)
+            edge_weight = edge_weight.ravel()
 
-        if edge_weight.ndim <= 1:
-            edge_attr = edge_attr.reshape(-1, 1)
+        if edge_attr.ndim <= 1:
+            edge_attr = edge_attr.reshape(1, -1)
 
         return {'edge_index': edge_index, "edge_weight": edge_weight, "edge_attr": edge_attr}
