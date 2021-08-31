@@ -383,12 +383,16 @@ class BaseStructureGraphGEO(_BaseStructureGraphGEO):
             atoms = self.atom_converter.convert(structure)
 
         atoms = atoms.astype(dtype=np.float32)
+        if atoms.ndim <= 1:
+            atoms = atoms.reshape(-1,1)
         z = z.astype(dtype=np.int64)
         return {'x': atoms, "z": z}
 
     def _convert_pos(self, structure, **kwargs):
         _ = kwargs
         pos = structure.cart_coords.astype(dtype=np.float32)
+        if pos.ndim <= 1:
+            pos = pos.reshape(-1,1)
         return {'pos': pos}
 
 
@@ -518,5 +522,14 @@ class StructureGraphGEO(BaseStructureGraphGEO):
         edge_index = edge_index.astype(dtype=np.int64)
         edge_weight = edge_weight.astype(dtype=np.float32)
         edge_attr = edge_attr.astype(dtype=np.float32)
+
+        if edge_index.ndim <= 1:
+            edge_index = edge_index.reshape(-1, 1)
+
+        if edge_weight.ndim <= 1:
+            edge_weight = edge_weight.reshape(-1, 1)
+
+        if edge_weight.ndim <= 1:
+            edge_attr = edge_attr.reshape(-1, 1)
 
         return {'edge_index': edge_index, "edge_weight": edge_weight, "edge_attr": edge_attr}
