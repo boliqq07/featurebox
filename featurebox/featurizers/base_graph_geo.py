@@ -200,7 +200,7 @@ class _BaseStructureGraphGEO(BaseFeature):
         else:
             return names
 
-    def transform_and_save(self, *args, root_dir=".", file_names="composition_name", save_mode="i"):
+    def transform_and_save(self, *args, root_dir=".", file_names="composition_name", save_mode="i",**kwargs):
         r"""Save the data to 'root_dir/raw' """
         raw_path = os.path.join(root_dir, "raw")
         if os.path.isdir(raw_path):
@@ -208,7 +208,7 @@ class _BaseStructureGraphGEO(BaseFeature):
         os.makedirs(raw_path)
 
         fns = self.check_dup(args[0], file_names=file_names)
-        result = self._transform(*args)
+        result = self._transform(*args,**kwargs)
         print("Save raw files to {}.".format(raw_path))
         if save_mode in ["I", "R", "i", "r", "Respective", "respective"]:
             [self.save(i, j, root_dir) for i, j in zip(result, fns)]
@@ -217,10 +217,10 @@ class _BaseStructureGraphGEO(BaseFeature):
         print("Done.")
         return result
 
-    def transform_and_to_data(self, *args) -> List[torch_geometric.data.Data]:
+    def transform_and_to_data(self, *args, **kwargs) -> List[torch_geometric.data.Data]:
         """Return list of torch_geometric.data.Data."""
         from torch_geometric.data import Data
-        result = self._transform(*args)
+        result = self._transform(*args, **kwargs)
         return [Data.from_dict(i) for i in result]
 
     def convert(self, structure: Structure, **kwargs) -> Dict:
