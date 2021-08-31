@@ -167,7 +167,7 @@ class _BaseStructureGraphGEO(BaseFeature):
 
         return self._transform(structures, **kwargs)
 
-    def transform_and_collect(self, structures: List[Structure], **kwargs)->Dict[List]:
+    def transform_and_collect(self, structures: List[Structure], **kwargs)->Dict:
         """
         New type of transform structure.
 
