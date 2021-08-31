@@ -81,7 +81,7 @@ class _BaseStructureGraphGEO(BaseFeature):
     def _get_dummy_converter() -> DummyConverter:
         return DummyConverter()
 
-    def _transform(self, structures: List[Structure], **kwargs):
+    def _transform(self, structures: List[Structure], **kwargs)->List[Dict]:
         """
 
         Args:
@@ -126,9 +126,9 @@ class _BaseStructureGraphGEO(BaseFeature):
             [i.update({"label": np.array([n, n])}) for n, i in enumerate(ret)]  # double for after.
         return ret
 
-    def get_collect_data(self, graphs: List[Dict]):
+    def get_collect_data(self, graphs: List[Dict])->Dict:
         """
-        Not used in default.
+        Not used in default, just for shown.
 
         Expand the graph dictionary to form a list of features and targets tensors.
         This is useful when the model is trained on assembled graphs on the fly.
@@ -150,9 +150,9 @@ class _BaseStructureGraphGEO(BaseFeature):
                 output[n] = np_data
         return output
 
-    def transform(self, structures: List[Structure], **kwargs):
+    def transform(self, structures: List[Structure], **kwargs)->List[Dict]:
         """
-        use ``convert`` to deal with batch of data.
+        New type of transform structure.
 
         Args:
             structures: (list)
@@ -165,9 +165,25 @@ class _BaseStructureGraphGEO(BaseFeature):
             data
         """
 
+        return self._transform(structures, **kwargs)
+
+    def transform_and_collect(self, structures: List[Structure], **kwargs)->Dict[List]:
+        """
+        New type of transform structure.
+
+        Args:
+            structures: (list)
+                preprocessing of samples need to transform to Graph.
+            state_attributes: (list)
+                preprocessing of samples need to add to Graph.
+            y: (list)
+                Target to train against (the same size with structure)
+        Returns:
+            data
+        """
         return self.get_collect_data(self._transform(structures, **kwargs))
 
-    def save(self, obj, name, root_dir="."):
+    def save(self, obj, name, root_dir=".")->None:
         """Save."""
         torch.save(obj, os.path.join(root_dir, "raw", '{}.pt'.format(name)))
 
@@ -192,7 +208,7 @@ class _BaseStructureGraphGEO(BaseFeature):
         os.makedirs(raw_path)
 
         fns = self.check_dup(args[0], file_names=file_names)
-        result = self.transform(*args)
+        result = self._transform(*args)
         print("Save raw files to {}.".format(raw_path))
         if save_mode in ["I", "R", "i", "r", "Respective", "respective"]:
             [self.save(i, j, root_dir) for i, j in zip(result, fns)]
