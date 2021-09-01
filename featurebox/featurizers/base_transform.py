@@ -272,6 +272,8 @@ class BaseFeature(MSONable):
 
         except BaseException as e:
             if self.on_errors == "nan":
+
+                warnings.warn(e.__str__())
                 print("Bad conversion for:", args)
                 return np.nan, False
             elif self.on_errors == "raise":

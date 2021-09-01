@@ -44,7 +44,7 @@ from featurebox.utils.look_json import get_marked_class
 class _BaseStructureGraphGEO(BaseFeature):
 
     def __init__(self, collect=False, return_type="tensor", batch_calculate: bool = True,
-                 add_label=False,
+                 add_label=False,check=True,
                  **kwargs):
         """
 
@@ -68,6 +68,7 @@ class _BaseStructureGraphGEO(BaseFeature):
         self.collect = collect
         self.convert_funcs = [i for i in dir(self) if "_convert_" in i]
         self.add_label = add_label
+        self.check=check
 
     def __add__(self, other):
         raise TypeError("There is no add.")
@@ -152,7 +153,8 @@ class _BaseStructureGraphGEO(BaseFeature):
                 output[n] = np_data
         return output
 
-    def transform(self, structures: List[Structure], **kwargs) -> List[Dict]:
+    def transform(self, structures: List[Structure], state_attributes=None, y=None,  **kwargs) -> List[
+        Dict]:
         """
         New type of transform structure.
 
@@ -166,8 +168,11 @@ class _BaseStructureGraphGEO(BaseFeature):
         Returns:
             data
         """
+        data = self._transform(structures, state_attributes=state_attributes, y=y, **kwargs)
+        if self.check:
+            data = np.array(data)[np.array(self.support_)].tolist()
 
-        return self._transform(structures, **kwargs)
+        return data
 
     def transform_and_collect(self, structures: List[Structure], **kwargs) -> Dict:
         """
@@ -211,7 +216,7 @@ class _BaseStructureGraphGEO(BaseFeature):
         os.makedirs(raw_path)
 
         fns = self.check_dup(args[0], file_names=file_names)
-        result = self._transform(*args, **kwargs)
+        result = self.transform(*args, **kwargs)
         print("Save raw files to {}.".format(raw_path))
         if save_mode in ["I", "R", "i", "r", "Respective", "respective"]:
             [self.save(i, j, root_dir) for i, j in zip(result, fns)]
@@ -223,7 +228,7 @@ class _BaseStructureGraphGEO(BaseFeature):
     def transform_and_to_data(self, *args, **kwargs) -> List[torch_geometric.data.Data]:
         """Return list of torch_geometric.data.Data."""
         from torch_geometric.data import Data
-        result = self._transform(*args, **kwargs)
+        result = self.transform(*args, **kwargs)
         return [Data.from_dict(i) for i in result]
 
     def convert(self, structure: Structure, **kwargs) -> Dict:
@@ -267,10 +272,18 @@ class _BaseStructureGraphGEO(BaseFeature):
         result_old = [getattr(self, i)(structure, **kwargs) for i in convert_funcs]
         result = {}
         [result.update(i) for i in result_old]
+
+        result = {key: value for key, value in result.items() if key in self.graph_data_name}
+        if self.check:
+            for key, value in result.items():
+                if key != "y":
+                    if not np.all(np.isreal(value)):
+                        raise ValueError("There is not real numerical data for {} of {}.  Not Acceptable: nan, infinite, complex.".format(
+                        structure.composition, key))
+
         if self.return_type == "tensor":
             result = rs(result)
-        else:
-            result = {key: value for key, value in result.items() if key in self.graph_data_name}
+
         return result
 
     def _convert_sample(self, *args, **kwargs):
@@ -383,7 +396,7 @@ class BaseStructureGraphGEO(_BaseStructureGraphGEO):
 
         atoms = atoms.astype(dtype=np.float32)
         if atoms.ndim <= 1:
-            atoms = atoms.reshape(-1, 1)
+            atoms = atoms.reshape(1, -1)
         z = z.astype(dtype=np.int64)
         return {'x': atoms, "z": z}
 
@@ -391,7 +404,7 @@ class BaseStructureGraphGEO(_BaseStructureGraphGEO):
         _ = kwargs
         pos = structure.cart_coords.astype(dtype=np.float32)
         if pos.ndim <= 1:
-            pos = pos.reshape(-1, 1)
+            pos = pos.reshape(1, -1)
         return {'pos': pos}
 
 
@@ -479,7 +492,7 @@ class StructureGraphGEO(BaseStructureGraphGEO):
 
         self.graph_data_name = ["x", 'edge_index', "edge_weight", "edge_attr", 'y', 'pos', "state_attr", 'z']
 
-    def _convert_edges(self, structure, **kwargs):
+    def _convert_edges(self, structure:Structure, **kwargs):
         """get edge data."""
         _ = kwargs
 
@@ -527,9 +540,9 @@ class StructureGraphGEO(BaseStructureGraphGEO):
 
         if edge_weight.ndim <= 1:
             edge_weight = edge_weight.ravel()
-            if edge_index.shape[0] == 0:
+            if edge_weight.shape[0] == 0:
                 raise ValueError(
-                    "Bad data The {} is with no edge_index in cutoff. May lead to later wrong.".format(structure),)
+                    "Bad data The {} is with no edge_index in cutoff. May lead to later wrong.".format(structure.composition), )
 
         if edge_attr.ndim <= 1:
             edge_attr = edge_attr.reshape(1, -1)
