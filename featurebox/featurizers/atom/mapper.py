@@ -297,13 +297,13 @@ class AtomTableMap(BinaryMap):
         super(AtomTableMap, self).__init__(search_tp=search_tp, **kwargs)
 
         if tablename is None:
-            self.da = self.get_ele_embeddings()
+            self.da = self.get_ele_embeddings("element_table_norm.csv")
             self.dax = self.da.values
             self.da_columns = list(self.da.columns)
 
         elif isinstance(tablename, str):
-            if tablename == "element_table.csv":
-                self.da = self.get_ele_embeddings()
+            if tablename in ["element_table.csv", "element_table_norm.csv"]:
+                self.da = self.get_ele_embeddings(tablename)
             else:
                 self.da = self.get_csv_embeddings(tablename)
             self.dax = self.da.values
@@ -329,9 +329,9 @@ class AtomTableMap(BinaryMap):
             self.ndim = 1
 
     @staticmethod
-    def get_ele_embeddings() -> pd.DataFrame:
+    def get_ele_embeddings(name="element_table_norm.csv") -> pd.DataFrame:
         """get CSV preprocessing"""
-        oedata = pd.read_csv(os.path.join(MODULE_DIR, "data", "element_table.csv"), index_col=0, header=7, skiprows=0)
+        oedata = pd.read_csv(os.path.join(MODULE_DIR, "data", name), index_col=0, header=0, skiprows=0)
         oedata = oedata.drop(["abbrTex", "abbr"], axis=0)
         oedata = oedata.fillna(0)
         oedata = oedata.apply(pd.to_numeric, errors='ignore')
