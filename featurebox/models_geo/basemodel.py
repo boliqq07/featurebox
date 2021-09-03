@@ -8,9 +8,10 @@ import torch.nn.functional as F
 from torch import Tensor
 from torch.nn import Embedding, Linear, LayerNorm, ModuleList, Softplus, ReLU, Sequential, BatchNorm1d
 from torch.nn import Module
-from torch_scatter import segment_csr
 from torch_geometric.nn import radius_graph
 from torch_geometric.utils import remove_self_loops
+from torch_scatter import segment_csr
+
 from featurebox.models_geo.general import get_ptr
 
 
@@ -75,12 +76,12 @@ class BaseCrystalModel(Module):
         self.interaction_kwargs = {}
         for k, v in kwargs.items():
             if "interaction_kwargs_" in k:
-                self.interaction_kwargs[k.replace("interaction_kwargs_","")] = v
+                self.interaction_kwargs[k.replace("interaction_kwargs_", "")] = v
 
         self.readout_kwargs = {}
         for k, v in kwargs.items():
             if "readout_kwargs_" in k:
-                self.readout_kwargs[k.replace("readout_kwargs_","")] = v
+                self.readout_kwargs[k.replace("readout_kwargs_", "")] = v
 
         # 初始定义
         if num_edge_gaussians is None:
@@ -415,6 +416,7 @@ class GeneralReadOutLayer(Module):
 
 class GeoResNet(Module):
     """Simple ResNet"""
+
     def __init__(self, module_list: ModuleList):
         super().__init__()
         self.modules_list = module_list
@@ -448,7 +450,7 @@ class GaussianSmearing:
         dist = data.edge_weight
         dist = dist.view(-1, 1) - self.offset.view(1, -1)
         if hasattr(data, "edge_attr") and data.edge_attr.shape[1] != 1:
-            warnings.warn("The old edge_attr is covered by smearing edge_weight",UserWarning)
+            warnings.warn("The old edge_attr is covered by smearing edge_weight", UserWarning)
         data.edge_attr = torch.exp(self.coeff * torch.pow(dist, 2))
 
         return data
@@ -471,3 +473,51 @@ class AddEdge(object):
         else:
             data.edge_attr = edge_weight.reshape(-1, 1)
         return data
+
+
+class NormalizeStateAttr(object):
+
+    def __init__(self):
+        self.scale = None
+
+    def __call__(self, data):
+        if self.scale is None:
+            self.scale = data.state_attr.sum(1, keepdim=True)
+        data.state_attr = data.state_attr / self.scale.clamp(min=1)
+
+        return data
+
+    def __repr__(self):
+        return '{}()'.format(self.__class__.__name__)
+
+
+class NormalizeX(object):
+
+    def __init__(self):
+        self.scale = None
+
+    def __call__(self, data):
+        if self.scale is None:
+            self.scale = data.x.sum(1, keepdim=True)
+        data.x = data.x / self.scale.clamp(min=1)
+
+        return data
+
+    def __repr__(self):
+        return '{}()'.format(self.__class__.__name__)
+
+
+class NormalizeEdgeAttr(object):
+
+    def __init__(self):
+        self.scale = None
+
+    def __call__(self, data):
+        if self.scale is None:
+            self.scale = data.edge_attr.sum(1, keepdim=True)
+        data.edge_attr = data.edge_attr / self.scale.clamp(min=1)
+
+        return data
+
+    def __repr__(self):
+        return '{}()'.format(self.__class__.__name__)
