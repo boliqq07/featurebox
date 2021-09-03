@@ -10,13 +10,13 @@ from pymatgen.core import Structure
 from featurebox.utils.predefined_typing import StructureOrMolecule
 
 
-def re_pbc(pbc: Union[bool, List[bool], np.ndarray], return_type="bool"):
+def _re_pbc(pbc: Union[bool, List[bool], np.ndarray], return_type="bool"):
     if pbc is True:
         pbc = [1, 1, 1]
     elif pbc is False:
         pbc = [0, 0, 0]
     elif isinstance(pbc, abc.Iterable):
-        pbc = [1 if i == True or i == 1 else 0 for i in pbc]
+        pbc = [1 if i is True or i == 1 else 0 for i in pbc]
     else:
         raise TypeError("Can't accept {}".format(pbc))
     if return_type == "bool":
@@ -43,7 +43,7 @@ def get_xyz_in_spheres(structure: StructureOrMolecule, nn_strategy=None, cutoff:
         center_indices, neighbor_indices, images, distances,center_prop
     """
     _ = nn_strategy
-    pbc = re_pbc(pbc, return_type="bool")
+    pbc = _re_pbc(pbc, return_type="bool")
     return not_structure_get_xyz_in_spheres(structure.cart_coords,
                                             reciprocal_lattice_abc=structure.lattice.reciprocal_lattice.abc,
                                             matrix=structure.lattice.matrix,
@@ -127,7 +127,7 @@ def not_structure_get_xyz_in_spheres(
                 valid_images.append(np.tile(image, [np.sum(valid_index_bool), 1]) - image_offsets[valid_index_bool])
                 valid_indices.extend([k for k in ind if valid_index_bool[k]])
         if len(valid_coords) < 1:
-            return [[]] * len(center_coords)
+            raise ValueError("No valid coords element, in cutcoff {}".format(cutoff))
         valid_coords = np.concatenate(valid_coords, axis=0)
         valid_images = np.concatenate(valid_images, axis=0)
         valid_indices = np.array(valid_indices)
@@ -161,22 +161,14 @@ def not_structure_get_xyz_in_spheres(
 
     exclude_self = (center_indices != neighbor_indices) | (distances[:, 0] > numerical_tol)
 
-    # include_index = center_indices < neighbor_indices
-    #
-    # exclude_self = exclude_self * ~ include_index
-
     return center_indices[exclude_self], neighbor_indices[exclude_self], images[exclude_self], distances[
-        exclude_self], None
+        exclude_self], np.array(None)
 
 
 if __name__ == "__main__":
-    structure = Structure.from_file("S2-CONTCAR")
+    structure = Structure.from_file("../../data/temp_test_structure/W2C.cif")
     tt.t
     get_points_ = get_xyz_in_spheres(structure,
-                                     cutoff=5.0, pbc=True,
-                                     )
-    tt.t  # tt.t
-    get_points_ = get_xyz_in_spheres(structure.cart_coords,
                                      cutoff=5.0, pbc=True,
                                      )
     tt.t  #

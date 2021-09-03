@@ -106,7 +106,7 @@ For the ``Atoms`` of ``ase``, The ``Structure`` could transformed by ``pymatgen.
 Example:
 
 >>> from pymatgen.core.structure import Structure
->>> structurei =Structure.from_file(r"your_path/featurebox/data/example_Structure_for_show.cif")
+>>> structurei =Structure.from_file(r"your_path/featurebox/data/W2C.cif")
 
 >>> from featurebox.featurizers.state.state_mapper import StructurePymatgenPropMap
 >>> tmps = StructurePymatgenPropMap(prop_name = ["density", "volume", "ntypesp"])
@@ -127,7 +127,7 @@ This is one key method to get state features!!!
 - Get State features directly.
 
 >>> from pymatgen.core.structure import Structure
->>> structurei =Structure.from_file(r"your_path/featurebox/data/example_Structure_for_show.cif")
+>>> structurei =Structure.from_file(r"your_path/featurebox/data/W2C.cif")
 
 >>> from featurebox.featurizers.atom import AtomTableMap
 >>> data_map = AtomTableMap(search_tp="name", n_jobs=1)

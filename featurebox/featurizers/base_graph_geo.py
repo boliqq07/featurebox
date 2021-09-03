@@ -36,15 +36,14 @@ from mgetool.tool import parallelize, batch_parallelize
 from pymatgen.core import Structure
 
 from featurebox.featurizers.base_transform import DummyConverter, BaseFeature, Converter, ConverterCat
-from featurebox.featurizers.envir.environment import GEONNGet, env_method, env_names
-from featurebox.featurizers.envir.local_env import NNDict
+from featurebox.featurizers.envir.environment import GEONNGet, env_method
 from featurebox.utils.look_json import get_marked_class
 
 
 class _BaseStructureGraphGEO(BaseFeature):
 
     def __init__(self, collect=False, return_type="tensor", batch_calculate: bool = True,
-                 add_label=False,check=True,
+                 add_label=False, check=True,
                  **kwargs):
         """
 
@@ -68,7 +67,7 @@ class _BaseStructureGraphGEO(BaseFeature):
         self.collect = collect
         self.convert_funcs = [i for i in dir(self) if "_convert_" in i]
         self.add_label = add_label
-        self.check=check
+        self.check = check
 
     def __add__(self, other):
         raise TypeError("There is no add.")
@@ -153,7 +152,7 @@ class _BaseStructureGraphGEO(BaseFeature):
                 output[n] = np_data
         return output
 
-    def transform(self, structures: List[Structure], state_attributes=None, y=None,  **kwargs) -> List[
+    def transform(self, structures: List[Structure], state_attributes=None, y=None, **kwargs) -> List[
         Dict]:
         """
         New type of transform structure.
@@ -278,8 +277,9 @@ class _BaseStructureGraphGEO(BaseFeature):
             for key, value in result.items():
                 if key != "y":
                     if not np.all(np.isreal(value)):
-                        raise ValueError("There is not real numerical data for {} of {}.  Not Acceptable: nan, infinite, complex.".format(
-                        structure.composition, key))
+                        raise ValueError(
+                            "There is not real numerical data for {} of {}.  Not Acceptable: nan, infinite, complex.".format(
+                                structure.composition, key))
 
         if self.return_type == "tensor":
             result = rs(result)
@@ -444,6 +444,7 @@ class StructureGraphGEO(BaseStructureGraphGEO):
                  bond_generator=None,
                  bond_converter: Converter = None,
                  cutoff: float = 5.0,
+                 pbc=False,
                  **kwargs):
         """
         Args:
@@ -472,27 +473,19 @@ class StructureGraphGEO(BaseStructureGraphGEO):
         super().__init__(**kwargs)
         self.cutoff = cutoff
 
+        nn_strategy = get_marked_class(nn_strategy, env_method)
+
         if bond_generator is None:  # default use GEONNDict
-            nn_strategy = get_marked_class(nn_strategy, NNDict)
-            # there use the universal parameter, custom it please
-            self.bond_generator = GEONNGet(nn_strategy,
-                                           numerical_tol=1e-8, pbc=None, cutoff=cutoff)
-        elif isinstance(bond_generator, str):  # new add "BaseDesGet"
-            # todo
-            self.nn_strategy = get_marked_class(nn_strategy, env_method[bond_generator])
-            # there use the universal parameter, custom it please
-            self.bond_generator = env_names[bond_generator](self.nn_strategy, self.cutoff,
-                                                            numerical_tol=1e-8, pbc=None, cutoff=self.cutoff)
+            self.bond_generator = GEONNGet(nn_strategy, numerical_tol=1e-8, pbc=pbc, cutoff=cutoff)
         else:  # defined BaseDesGet or BaseNNGet
-            # todo
+            bond_generator.nn_strategy = nn_strategy
             self.bond_generator = bond_generator
-            self.nn_strategy = self.bond_generator.nn_strategy
 
         self.bond_converter = bond_converter or self._get_dummy_converter()
 
         self.graph_data_name = ["x", 'edge_index', "edge_weight", "edge_attr", 'y', 'pos', "state_attr", 'z']
 
-    def _convert_edges(self, structure:Structure, **kwargs):
+    def _convert_edges(self, structure: Structure, **kwargs):
         """get edge data."""
         _ = kwargs
 
@@ -542,7 +535,8 @@ class StructureGraphGEO(BaseStructureGraphGEO):
             edge_weight = edge_weight.ravel()
             if edge_weight.shape[0] == 0:
                 raise ValueError(
-                    "Bad data The {} is with no edge_index in cutoff. May lead to later wrong.".format(structure.composition), )
+                    "Bad data The {} is with no edge_index in cutoff. May lead to later wrong.".format(
+                        structure.composition), )
 
         if edge_attr.ndim <= 1:
             edge_attr = edge_attr.reshape(1, -1)

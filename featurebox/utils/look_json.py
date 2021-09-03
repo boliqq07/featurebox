@@ -165,7 +165,7 @@ def mark_classes(classes: List):
     return NNDict
 
 
-def get_marked_class(nn_strategy, NNDict: Dict = None, instantiation: bool = True):
+def get_marked_class(nn_strategy, env_dict: Dict = None, instantiation: bool = True):
     """
     Just call values in NNict by,consider multiple cases at the same time.
     ["VoronoiNN",
@@ -193,7 +193,7 @@ def get_marked_class(nn_strategy, NNDict: Dict = None, instantiation: bool = Tru
     ----------
     nn_strategy
         str or class in NNDict.
-    NNDict:dict
+    env_dict:dict
         dict of pre-definition, {"classname_D": class}.
     instantiation:bool
         return class of object.
@@ -208,33 +208,33 @@ def get_marked_class(nn_strategy, NNDict: Dict = None, instantiation: bool = Tru
         ######old type for compatibility ####
         if nn_strategy is None:
             return nn_strategy
-        if isinstance(nn_strategy, str) and nn_strategy in ["find_points_in_spheres", "find_xyz_in_spheres"]:
+        elif isinstance(nn_strategy, str) and nn_strategy in ["find_points_in_spheres", "find_xyz_in_spheres"]:
             return nn_strategy
-        if isinstance(nn_strategy, (float, int)):
+        elif isinstance(nn_strategy, (float, int)):
             return nn_strategy
 
         ############restore##################
 
-        if isinstance(nn_strategy, dict):
-            return NNDict[nn_strategy["tp_na"]](**nn_strategy['all_args_kwargs'])
+        elif isinstance(nn_strategy, dict):
+            return env_dict[nn_strategy["tp_na"]](**nn_strategy['all_args_kwargs'])
 
         ############by str name##############
-        if isinstance(nn_strategy, str):
+        elif isinstance(nn_strategy, str):
             if "_D" in nn_strategy:
-                Nei = NNDict[nn_strategy]()
+                Nei = env_dict[nn_strategy]()
             else:
-                Nei = NNDict[nn_strategy + "_D"]()
+                Nei = env_dict[nn_strategy + "_D"]()
         else:
             try:
                 nn_strategy = nn_strategy()
             except TypeError:
                 pass
 
-            if nn_strategy.__class__.__name__ in NNDict:
+            if nn_strategy.__class__.__name__ in env_dict:
                 Nei = nn_strategy
             else:
-                if nn_strategy.__class__.__name__ + "_D" in NNDict:
-                    Nei = NNDict[nn_strategy.__class__.__name__ + "_D"]()
+                if nn_strategy.__class__.__name__ + "_D" in env_dict:
+                    Nei = env_dict[nn_strategy.__class__.__name__ + "_D"]()
                     Nei.__dict__.update(nn_strategy.__dict__)
                 else:
                     raise TypeError("only accept str or object inherit from nn_dict.values()")
@@ -245,13 +245,6 @@ def get_marked_class(nn_strategy, NNDict: Dict = None, instantiation: bool = Tru
     except (KeyError, TypeError):
         raise TypeError("only accept str or object inherit from nn_dict.values()")
 
-# def serialize(neighbors):
-#     """Add method dynamically ."""
-#     neighbors.as_dict = types.MethodType(as_dict, neighbors)
-#     neighbors.to_json = types.MethodType(to_json, neighbors)
-#     neighbors.from_dict = from_dict
-#     neighbors.tp_na = True
-#     return neighbors
 
 # if __name__ == '__main__':
 #     class AD(MSONable):

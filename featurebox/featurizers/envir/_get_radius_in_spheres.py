@@ -2,19 +2,19 @@ from collections import abc
 from typing import Tuple, Union, List
 
 import numpy as np
+
 from pymatgen.core import Structure, Molecule
 from pymatgen.optimization.neighbors import find_points_in_spheres
-
 from featurebox.utils.predefined_typing import StructureOrMolecule
 
 
-def re_pbc(pbc: Union[bool, List[bool], np.ndarray], return_type="bool"):
+def _re_pbc(pbc: Union[bool, List[bool], np.ndarray], return_type="bool"):
     if pbc is True:
         pbc = [1, 1, 1]
     elif pbc is False:
         pbc = [0, 0, 0]
     elif isinstance(pbc, abc.Iterable):
-        pbc = [1 if i == True or i == 1 else 0 for i in pbc]
+        pbc = [1 if i is True or i == 1 else 0 for i in pbc]
     else:
         raise TypeError("Can't accept {}".format(pbc))
     if return_type == "bool":
@@ -47,7 +47,7 @@ def get_radius_in_spheres(
     if isinstance(structure, Structure):
         lattice_matrix = np.ascontiguousarray(np.array(structure.lattice.matrix), dtype=float)
         if pbc is not False:
-            pbc = re_pbc(pbc, return_type="int")
+            pbc = _re_pbc(pbc, return_type="int")
         else:
             pbc = np.array([0, 0, 0])
     elif isinstance(structure, Molecule):
@@ -69,3 +69,13 @@ def get_radius_in_spheres(
 
     return center_indices[exclude_self], neighbor_indices[exclude_self], images[exclude_self], \
            distances[exclude_self], np.array(None)
+
+if __name__ == "__main__":
+    from mgetool.tool import tt
+    structure = Structure.from_file("../../data/temp_test_structure/W2C.cif")
+    tt.t
+    get_points_ = get_radius_in_spheres(structure,
+                                     cutoff=5.0, pbc=True,
+                                     )
+    tt.t  #
+    tt.p

@@ -1,29 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="iap13@192.9.200.238:22" remoteFilesAllowedToDisappearOnAutoupload="false">
+  <component name="PublishConfigData" autoUpload="Always" serverName="iap13@192.9.200.238:22 password" remoteFilesAllowedToDisappearOnAutoupload="false">
     <serverData>
-      <paths name="gjj">
+      <paths name="MachineLearning@192.9.200.233:22">
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
-      <paths name="iap13@192.9.200.238:22">
+      <paths name="iap13@192.9.200.238:22 password">
         <serverdata>
           <mappings>
-            <mapping deploy="wcx/featurebox" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/wcx/featurebox" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
-      <paths name="iap13@192.9.200.239:10002">
+      <paths name="iap13@192.9.200.239:10002 password">
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
-      <paths name="root@10.1.8.133:32866">
+      <paths name="iap13@60.205.247.59:22">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="mgetool">
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />
@@ -31,6 +38,20 @@
         </serverdata>
       </paths>
       <paths name="skk@192.9.200.240:22">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="wangchangxin@222.28.70.247:22">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="wangchangxin@222.28.70.247:22 (1)">
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />
