@@ -73,7 +73,39 @@ class TestGraph3(unittest.TestCase):
                                     bond_converter=None,
                                     state_converter=None,
 
-                                    cutoff=5.0, )
+                                    cutoff=2.0, )
+        sg1.transform_and_save(self.data0_checked,save_mode="i")
+        imdg = DatasetGEO(".",load_mode="i",re_process_init=False)
+
+        l = imdg[2]
+        l = imdg[2]
+
+    def test_CrystalGraph43(self):
+        def_pwd("./raw", change=False)
+
+        sg1 = StructureGraphGEO(nn_strategy="SOAP",
+                                    bond_generator=None,
+                                    atom_converter=None,
+                                    bond_converter=None,
+                                    state_converter=None,
+
+                                    cutoff=2.0, )
+        sg1.transform_and_save(self.data0_checked,save_mode="i")
+        imdg = DatasetGEO(".",load_mode="i",re_process_init=False)
+
+        l = imdg[2]
+        l = imdg[2]
+
+    def test_CrystalGraph44(self):
+        def_pwd("./raw", change=False)
+
+        sg1 = StructureGraphGEO(nn_strategy="CrystalNN",
+                                    bond_generator=None,
+                                    atom_converter=None,
+                                    bond_converter=None,
+                                    state_converter=None,
+
+                                    cutoff=2.0, )
         sg1.transform_and_save(self.data0_checked,save_mode="i")
         imdg = DatasetGEO(".",load_mode="i",re_process_init=False)
 

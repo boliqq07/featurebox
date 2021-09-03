@@ -83,12 +83,13 @@ def geo_refine_nn(center_indices, neighbor_indices, vectors, distances,
         if center_prop.ndim == 1:
             try:
                 center_prop = center_prop[cen]
+                center_prop = center_prop.reshape(-1, 1)
             except ValueError:
-                center_prop = cen.reshape(-1, 1)
+                raise UserWarning("center_prop is less than center atom number. Try to add cutoff.")
         elif center_prop.ndim == 2 and center_prop.shape[0] == cen.shape[0]:
             center_prop = center_prop[cen]
         else:
-            center_prop = cen.reshape(-1, 1)
+            center_prop = np.array(None)
         return cen, neis, vecs, diss, center_prop
 
 
@@ -175,7 +176,7 @@ class GEONNGet(_BaseEnvGet):
 
     def __init__(self, nn_strategy: Union[NearNeighbors, str] = "UserVoronoiNN", refine: str = "geo_refine_nn",
                  refined_strategy_param: Dict = None,
-                 numerical_tol=1e-8, pbc: Union[List[int],bool] = False, cutoff=5.0, check_align=True,
+                 numerical_tol=1e-8, pbc: Union[List[int], bool] = False, cutoff=5.0, check_align=True,
                  cutoff_name="cutoff",
                  n_jobs=1,
                  on_errors='raise', return_type='any'):
@@ -184,9 +185,10 @@ class GEONNGet(_BaseEnvGet):
         Parameters
         ----------
         nn_strategy: Union[NearNeighbors,str]
-            search method for local_env for each atom.
-            See Also:
-            :class:`featurebox.test_featurizers.envir.local_env.MinimumDistanceNNAll`,
+            ["find_points_in_spheres", "find_xyz_in_spheres",
+            "BrunnerNN_reciprocal", "BrunnerNN_real", "BrunnerNN_relative",
+            "EconNN", "CrystalNN", "MinimumDistanceNNAll", "find_points_in_spheres","UserVoronoiNN",
+            "ACSF","BehlerParrinello","EAD","EAMD","SOAP","SO3","SO4_Bispectrum","wACSF",]
         refine:str
             sort method for neighbors of each atom.
             See Also:
@@ -243,9 +245,9 @@ class GEONNGet(_BaseEnvGet):
             self._convert = self.get_radius
         elif self.nn_strategy == "find_xyz_in_spheres":
             self._convert = self.get_xyz
-        elif self.nn_strategy.__class__.name in NNDict:
+        elif self.nn_strategy.__class__.__name__ in NNDict:
             self._convert = self.get_strategy1
-        elif self.nn_strategy.__class__.name in DesDict:
+        elif self.nn_strategy.__class__.__name__ in DesDict:
             self._convert = self.get_strategy2
         else:
             raise NameError("can't determining ", self.nn_strategy)
@@ -277,8 +279,8 @@ class GEONNGet(_BaseEnvGet):
 
         numerical_tol = self.numerical_tol
 
-        result = get_xyz_in_spheres(structure, nn_strategy=None,cutoff=cutoff, numerical_tol= numerical_tol,
-                                       pbc=self.pbc)
+        result = get_xyz_in_spheres(structure, nn_strategy=None, cutoff=cutoff, numerical_tol=numerical_tol,
+                                    pbc=self.pbc)
         # Result: center_indices, neighbor_indices, images, distances, center_prop
         ele_numbers = np.array(structure.atomic_numbers)
         result = self.refine(*result, ele_numbers=ele_numbers, **self.refined_strategy_param, )
@@ -298,7 +300,7 @@ class GEONNGet(_BaseEnvGet):
 
         numerical_tol = self.numerical_tol
 
-        result = get_radius_in_spheres(structure, nn_strategy=None,cutoff=cutoff, numerical_tol= numerical_tol,
+        result = get_radius_in_spheres(structure, nn_strategy=None, cutoff=cutoff, numerical_tol=numerical_tol,
                                        pbc=self.pbc)
         # Result: center_indices, neighbor_indices, images, distances, center_prop
         ele_numbers = np.array(structure.atomic_numbers)
@@ -319,8 +321,9 @@ class GEONNGet(_BaseEnvGet):
 
         numerical_tol = self.numerical_tol
 
-        result = get_strategy1_in_spheres(structure, nn_strategy=self.nn_strategy, cutoff=cutoff, numerical_tol= numerical_tol,
-                                       pbc=self.pbc)
+        result = get_strategy1_in_spheres(structure, nn_strategy=self.nn_strategy, cutoff=cutoff,
+                                          numerical_tol=numerical_tol,
+                                          pbc=self.pbc)
 
         ele_numbers = np.array(structure.atomic_numbers)
         result = self.refine(*result, ele_numbers=ele_numbers, **self.refined_strategy_param)
@@ -337,7 +340,7 @@ class GEONNGet(_BaseEnvGet):
         numerical_tol = self.numerical_tol
 
         result = get_strategy2_in_spheres(structure, nn_strategy=self.nn_strategy, cutoff=cutoff,
-                                          numerical_tol=numerical_tol,
+                                          numerical_tol=numerical_tol, pbc=self.pbc,
                                           cutoff_name=self.cutoff_name)
 
         ele_numbers = np.array(structure.atomic_numbers)

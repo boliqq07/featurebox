@@ -270,8 +270,13 @@ class _BaseStructureGraphGEO(BaseFeature):
                                       "such as ``_convert_edge_attr``.")
         result_old = [getattr(self, i)(structure, **kwargs) for i in convert_funcs]
         result = {}
-        [result.update(i) for i in result_old]
-
+        for dcti in result_old:
+            for k in dcti:
+                if k in result:
+                    result[k] = np.concatenate((result[k], dcti[k]),
+                                               axis=-1)  # please just for state-attr,edge_attr, and x
+                else:
+                    result[k] = dcti[k]
         result = {key: value for key, value in result.items() if key in self.graph_data_name}
         if self.check:
             for key, value in result.items():
@@ -451,7 +456,8 @@ class StructureGraphGEO(BaseStructureGraphGEO):
             nn_strategy: (str) NearNeighbor strategy.
                 ["find_points_in_spheres", "find_xyz_in_spheres",
                 "BrunnerNN_reciprocal", "BrunnerNN_real", "BrunnerNN_relative",
-                "EconNN", "CrystalNN", "MinimumDistanceNNAll", "find_points_in_spheres","UserVoronoiNN"]
+                "EconNN", "CrystalNN", "MinimumDistanceNNAll", "find_points_in_spheres","UserVoronoiNN",
+                "ACSF","BehlerParrinello","EAD","EAMD","SOAP","SO3","SO4_Bispectrum","wACSF",]
             atom_converter: (BinaryMap) atom features converter.
                 See Also:
                 :class:`featurebox.test_featurizers.atom.mapper.AtomTableMap` , :class:`featurebox.test_featurizers.atom.mapper.AtomJsonMap` ,
@@ -464,7 +470,7 @@ class StructureGraphGEO(BaseStructureGraphGEO):
                 :class:`featurebox.test_featurizers.state.state_mapper.StructurePymatgenPropMap`
                 :mod:`featurebox.test_featurizers.state.statistics`
                 :mod:`featurebox.test_featurizers.state.union`
-            bond_generator: (GEONNGet, str)
+            bond_generator: (GEONNGet, )
                 bond features converter.
             cutoff: (float)
                 Whether to use depends on the ``nn_strategy``.
@@ -475,23 +481,21 @@ class StructureGraphGEO(BaseStructureGraphGEO):
 
         nn_strategy = get_marked_class(nn_strategy, env_method)
 
-        if bond_generator is None:  # default use GEONNDict
+        if bond_generator is None or bond_generator == "GEONNDict":  # default use GEONNDict
             self.bond_generator = GEONNGet(nn_strategy, numerical_tol=1e-8, pbc=pbc, cutoff=cutoff)
-        else:  # defined BaseDesGet or BaseNNGet
+        else:
             bond_generator.nn_strategy = nn_strategy
             self.bond_generator = bond_generator
 
         self.bond_converter = bond_converter or self._get_dummy_converter()
 
-        self.graph_data_name = ["x", 'edge_index', "edge_weight", "edge_attr", 'y', 'pos', "state_attr", 'z']
+        self.graph_data_name = ["x", 'y', 'pos', "state_attr", 'z', 'edge_index', "edge_weight", "edge_attr", ]
 
     def _convert_edges(self, structure: Structure, **kwargs):
         """get edge data."""
         _ = kwargs
 
         center_indices, edge_index, edge_attr, edge_weight, center_prop = self.bond_generator.convert(structure)
-
-        # remove dup
 
         index = edge_index[0] < edge_index[1]
 
@@ -541,4 +545,9 @@ class StructureGraphGEO(BaseStructureGraphGEO):
         if edge_attr.ndim <= 1:
             edge_attr = edge_attr.reshape(1, -1)
 
-        return {'edge_index': edge_index, "edge_weight": edge_weight, "edge_attr": edge_attr}
+        if center_prop is not None and np.all(np.isreal(center_prop)):
+            center_prop = center_prop.astype(dtype=np.float32)
+
+            return {'edge_index': edge_index, "edge_weight": edge_weight, "edge_attr": edge_attr, "x": center_prop}
+        else:
+            return {'edge_index': edge_index, "edge_weight": edge_weight, "edge_attr": edge_attr}
