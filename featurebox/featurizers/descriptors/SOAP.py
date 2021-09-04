@@ -666,10 +666,16 @@ def zero_4D_array(arr):
                     arr[i, j, k, l] = 0.0 + 0.0j
     return
 
+# @nb.njit(nb.void(nb.c16[:, :]), cache=True, fastmath=True, nogil=True)
+# def zero_2D_array(arr):
+#     '''
+#     zeros an arbitrary 2D array
+#     '''
+#     return np.full_like(arr,0.0 + 0.0j)
 
 @nb.njit(nb.void(nb.f8[:, :], nb.f8[:, :, :], nb.i8[:, :], nb.i8[:, :], nb.i8, nb.i8, nb.f8, nb.f8, nb.b1, nb.b1,
                  nb.c16[:, :], nb.c16[:, :, :, :], nb.c16[:, :, :, :, :]),
-         cache=True, fastmath=True, nogil=True)
+         cache=True, fastmath=True)
 def get_power_spectrum_components(center_atoms, neighborlist, neighbor_indices, neighbor_ANs, nmax, lmax, rcut, alpha,
                                   derivative, stress, plist, dplist, pstress):
     '''
@@ -691,8 +697,8 @@ def get_power_spectrum_components(center_atoms, neighborlist, neighbor_indices, 
     w = np.zeros((nmax, nmax), np.float64)
     W(nmax, w)
 
-    if derivative == True:
-        if stress == True:
+    if derivative is True:
+        if stress is True:
             numps = nmax * (nmax + 1) * (lmax + 1) // 2
             tempdp = np.zeros((numps, 3), dtype=np.complex128)
             Rj = np.zeros(3, dtype=np.float64)
@@ -772,7 +778,7 @@ def get_power_spectrum_components(center_atoms, neighborlist, neighbor_indices, 
     else:
 
         for site in range(nsites):
-            zero_2D_array(clisttot)
+            clisttot = np.full_like(clisttot, 0.0 + 0.0j)
             for neighbor in prange(nneighbors):
                 x = neighborlist[site, neighbor, 0]
                 y = neighborlist[site, neighbor, 1]
@@ -780,14 +786,14 @@ def get_power_spectrum_components(center_atoms, neighborlist, neighbor_indices, 
                 r = np.sqrt(x * x + y * y + z * z)
                 if r < 10 ** (-8):
                     continue
-                zero_2D_array(clist)
+                clist = np.full_like(clist,0.0 + 0.0j)
 
                 compute_carray(x, y, z, r, alpha, rcut, nmax, lmax, w, clist)
 
                 weight = neighbor_ANs[site, neighbor]
                 clist *= weight
 
-                add_carraytot(clisttot, clist)
+                clisttot = clisttot + clist
 
             compute_pi(nmax, lmax, clisttot, plist[site])
     return

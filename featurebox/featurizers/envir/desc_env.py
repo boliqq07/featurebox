@@ -14,6 +14,7 @@ from featurebox.featurizers.descriptors.SO4 import SO4_Bispectrum
 from featurebox.featurizers.descriptors.SOAP import SOAP
 from featurebox.featurizers.descriptors.behlerparrinello import BehlerParrinello
 from featurebox.featurizers.descriptors.wACSF import wACSF
+from featurebox.featurizers.envir._get_radius_in_spheres import get_radius_in_spheres
 from featurebox.featurizers.envir._get_xyz_in_spheres import get_xyz_in_spheres
 from featurebox.utils.general import aaa
 from featurebox.utils.look_json import mark_classes
@@ -46,9 +47,10 @@ def get_strategy2_in_spheres(structure, nn_strategy, cutoff, numerical_tol=None,
 
     result = nn_strategy_.calculate(atoms)
 
-    _, _, _, _, b5 = get_5_result(result)
+    *_, b5 = get_5_result(result)
 
-    a1, a2, a3, a4, _ = get_xyz_in_spheres(structure, nn_strategy=None, cutoff=cutoff, numerical_tol=numerical_tol,
+    a1, a2, a3, a4, _ = get_radius_in_spheres(structure, nn_strategy=None, cutoff=cutoff,
+                                              numerical_tol=numerical_tol,
                                            pbc=pbc,
                                            )
 
@@ -74,7 +76,7 @@ def get_5_result(d: Dict, **kwargs) -> Tuple[np.ndarray, np.ndarray, np.ndarray,
         center_prop: np.ndarray 1d(N,l_c).\n
 
     """
-    center, seq = d["x"], d.get("seq")
+    center= d["x"]
     atom_len = center.shape[0]
 
     center_indices = np.array(range(atom_len))
