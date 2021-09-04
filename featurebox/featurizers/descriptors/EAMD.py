@@ -25,7 +25,7 @@ class EAMD:
         If True, calculate the virial stress contribution of EAMD.
     """
 
-    def __init__(self, parameters=None, Rc=5., derivative=True, stress=False):
+    def __init__(self, parameters=None, Rc=5., derivative=False, stress=False):
         if parameters is None:
             parameters = {'L': 2, 'eta': [0.36], 'Rs': [1.0]}
         self._type = 'EAMD'
@@ -445,7 +445,7 @@ if __name__ == '__main__':
         cell[0, 1] += 0.1
         si.set_cell(cell)
 
-        bp = EAMD(parameters1, Rc=Rc, derivative=True, stress=True)
+        bp = EAMD(parameters1, Rc=Rc, derivative=False, stress=True)
         des = bp.calculate(si)
 
         print("G:", des['x'][0])

@@ -22,7 +22,7 @@ class SO4_Bispectrum:
     U-functions using horner form
     '''
 
-    def __init__(self, lmax=3, rcut=3.5, derivative=True, stress=False, normalize_U=False, cutoff_function='cosine'):
+    def __init__(self, lmax=3, rcut=3.5, derivative=False, stress=False, normalize_U=False, cutoff_function='cosine'):
         # populate attributes
         self.lmax = lmax
         self.rcut = rcut
@@ -1783,7 +1783,7 @@ if __name__ == "__main__":
     stress = options.stress
 
     # import time
-    f = SO4_Bispectrum(lmax, rcut, derivative=True, stress=True, normalize_U=False, cutoff_function='tanh')
+    f = SO4_Bispectrum(lmax, rcut, derivative=False, stress=True, normalize_U=False, cutoff_function='tanh')
     x = f.calculate(test)
     # start2 = time.time()
     # for key, item in x.items():

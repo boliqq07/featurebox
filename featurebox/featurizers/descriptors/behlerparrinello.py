@@ -27,7 +27,7 @@ class BehlerParrinello:
     """
 
     def __init__(self, symmetry_parameters=None, Rc=6.5,
-                 derivative=True, stress=False, atom_weighted=False):
+                 derivative=False, stress=False, atom_weighted=False):
 
         if symmetry_parameters is None:
             symmetry_parameters = {'G2': {'eta': [0.1, 0.2, ], 'Rs': [0.0, 0.1]}}
@@ -1091,7 +1091,7 @@ if __name__ == '__main__':
         si.set_cell(cell)
         print(si.get_cell())
 
-        bp = BehlerParrinello(symmetry, Rc=Rc, derivative=True, stress=True, atom_weighted=False)
+        bp = BehlerParrinello(symmetry, Rc=Rc, derivative=False, stress=True, atom_weighted=False)
         des = bp.calculate(si, system=[14])
 
         # print("G:", des['x'][0])
@@ -1101,7 +1101,7 @@ if __name__ == '__main__':
         # print("GPrime", des['dxdr'][0,:,4,:])
         # print(np.einsum('ijklm->klm', des['rdxdr']))
 
-        bp = BehlerParrinello(symmetry, Rc=Rc, derivative=True, stress=True, atom_weighted=True)
+        bp = BehlerParrinello(symmetry, Rc=Rc, derivative=False, stress=True, atom_weighted=True)
         des = bp.calculate(si, system=[14])
         print("G:", des['x'][0])
         print("Sequence", des['seq'][0])

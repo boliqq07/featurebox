@@ -28,7 +28,7 @@ class wACSF:
     """
 
     def __init__(self, symmetry_parameters=None,
-                 Rc=6.5, derivative=True, stress=False):
+                 Rc=6.5, derivative=False, stress=False):
         if symmetry_parameters is None:
             symmetry_parameters = {'G2': {'eta': [0.1, 0.2, ], 'Rs': [0.0, 0.1]}}
         self._type = 'wACSF'
@@ -889,7 +889,7 @@ if __name__ == '__main__':
         si.set_cell(cell)
         print(si.get_cell())
 
-        bp = wACSF(symmetry, Rc=Rc, derivative=True, stress=True)
+        bp = wACSF(symmetry, Rc=Rc, derivative=False, stress=True)
         des = bp.calculate(si)
         print("G:", des['x'][0])
         print("GPrime", des['dxdr'][0, :, 0, :])

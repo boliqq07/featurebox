@@ -33,7 +33,7 @@ for i, j in DesDict.items():
     locals()[i] = j
 
 
-def get_strategy2_in_spheres(structure, nn_strategy, cutoff, numerical_tol=None, cutoff_name="cutoff", pbc=False):
+def get_strategy2_in_spheres(structure, nn_strategy, cutoff, numerical_tol=None, cutoff_name="cutoff", pbc=True):
     _ = numerical_tol
     if isinstance(structure, Structure) or isinstance(structure, Molecule):
         atoms = aaa.get_atoms(structure)

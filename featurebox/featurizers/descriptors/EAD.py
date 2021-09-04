@@ -27,7 +27,7 @@ class EAD:
         If True, calculate the virial stress contribution of EAD.
     """
 
-    def __init__(self, parameters=None, Rc=5., derivative=True, stress=False, cutoff='cosine'):
+    def __init__(self, parameters=None, Rc=5., derivative=False, stress=False, cutoff='cosine'):
         if parameters is None:
             parameters = {'L': 2, 'eta': [0.36], 'Rs': [1.0]}
         self._type = 'EAD'
@@ -470,7 +470,7 @@ if __name__ == '__main__':
         cell[0, 1] += 0.1
         si.set_cell(cell)
 
-        bp = EAD(parameters1, Rc=Rc, derivative=True, stress=True, cutoff='cosine')
+        bp = EAD(parameters1, Rc=Rc, derivative=False, stress=True, cutoff='cosine')
         des = bp.calculate(si)
 
         print("G:", des['x'][0])

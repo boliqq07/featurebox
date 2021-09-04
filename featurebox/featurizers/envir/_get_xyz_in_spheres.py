@@ -28,7 +28,7 @@ def _re_pbc(pbc: Union[bool, List[bool], np.ndarray], return_type="bool"):
 
 def get_xyz_in_spheres(structure: StructureOrMolecule, nn_strategy=None, cutoff: float = 5.0,
                        numerical_tol: float = 1e-8,
-                       pbc=False,
+                       pbc=True,
                        ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
     Get graph representations from structure within cutoff.

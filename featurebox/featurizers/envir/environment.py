@@ -276,6 +276,8 @@ class GEONNGet(_BaseEnvGet):
     def get_xyz(self, structure: StructureOrMolecule, cutoff
                 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """For quick get bond distance"""
+        if cutoff > 15:
+            raise ValueError("The cutoff is to large than cutoff.")
 
         numerical_tol = self.numerical_tol
 
@@ -297,6 +299,8 @@ class GEONNGet(_BaseEnvGet):
     def get_radius(self, structure: StructureOrMolecule, cutoff
                    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """For quick get bond distance"""
+        if cutoff > 15:
+            raise ValueError("The cutoff is to large than cutoff.")
 
         numerical_tol = self.numerical_tol
 
@@ -318,6 +322,8 @@ class GEONNGet(_BaseEnvGet):
                       ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """For get bond distance with different strategy, for different nn_staagy could be rewrite."""
         # assert hasattr(self.nn_strategy, "cutoff")
+        if cutoff > 15:
+            raise ValueError("The cutoff is to large than cutoff.")
 
         numerical_tol = self.numerical_tol
 
@@ -336,6 +342,9 @@ class GEONNGet(_BaseEnvGet):
     def get_strategy2(self, structure: StructureOrMoleculeOrAtoms, cutoff
                       ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """For get bond distance with different strategy, for different nn_staagy could be rewrite."""
+
+        if cutoff > 15:
+            raise ValueError("The cutoff is to large than cutoff.")
 
         numerical_tol = self.numerical_tol
 

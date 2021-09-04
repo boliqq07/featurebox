@@ -449,7 +449,7 @@ class StructureGraphGEO(BaseStructureGraphGEO):
                  bond_generator=None,
                  bond_converter: Converter = None,
                  cutoff: float = 5.0,
-                 pbc=False,
+                 pbc=True,
                  **kwargs):
         """
         Args:

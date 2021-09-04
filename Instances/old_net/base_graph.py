@@ -127,12 +127,12 @@ class _StructureGraph(BaseFeature):
             self.nn_strategy = get_marked_class(nn_strategy, NNDict)
             # there use the universal parameter, custom it please
             self.bond_generator = BaseNNGet(self.nn_strategy,
-                                            numerical_tol=1e-8, pbc=None, cutoff=self.cutoff)
+                                            numerical_tol=1e-8, pbc=True, cutoff=self.cutoff)
         elif isinstance(bond_generator, str):  # new add "BaseDesGet"
             self.nn_strategy = get_marked_class(nn_strategy, env_method[bond_generator])
             # there use the universal parameter, custom it please
             self.bond_generator = env_names[bond_generator](self.nn_strategy, self.cutoff,
-                                                            numerical_tol=1e-8, pbc=None, cutoff=self.cutoff)
+                                                            numerical_tol=1e-8, pbc=True, cutoff=self.cutoff)
         else:  # defined BaseDesGet or BaseNNGet
             self.bond_generator = bond_generator
             self.nn_strategy = self.bond_generator.nn_strategy

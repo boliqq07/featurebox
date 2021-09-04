@@ -24,7 +24,7 @@ class SO3:
         derivative: bool, whether to calculate the gradient of not
     '''
 
-    def __init__(self, nmax=3, lmax=3, rcut=3.5, alpha=2.0, derivative=True, stress=False):
+    def __init__(self, nmax=3, lmax=3, rcut=3.5, alpha=2.0, derivative=False, stress=False):
         # populate attributes
         self.nmax = nmax
         self.lmax = lmax
@@ -1180,7 +1180,7 @@ if __name__ == "__main__":
     import time
 
     start1 = time.time()
-    f = SO3(nmax, lmax, rcut, alpha, derivative=True, stress=False)
+    f = SO3(nmax, lmax, rcut, alpha, derivative=False, stress=False)
     x = f.calculate(test, atom_ids=[0, 1, ])
     print(x['dxdr'])
     start2 = time.time()

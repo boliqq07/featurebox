@@ -24,7 +24,7 @@ class SOAP:
         derivative: bool, whether to calculate the gradient of not
     '''
 
-    def __init__(self, nmax=5, lmax=3, rcut=5.0, alpha=2.0, derivative=True, stress=False):
+    def __init__(self, nmax=5, lmax=3, rcut=5.0, alpha=2.0, derivative=False, stress=False):
         # populate attributes
         self.nmax = nmax
         self.lmax = lmax
