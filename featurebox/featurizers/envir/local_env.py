@@ -232,6 +232,8 @@ def get_strategy1_in_spheres(structure: StructureOrMolecule, nn_strategy: NearNe
     else:
         center_prop = np.array(center_prop)
 
+    distances = np.array(distances)
+
     exclude_self = (distances > numerical_tol)
     # exclude_self = (center_indices != neighbor_indices) | (distances > numerical_tol)
 
