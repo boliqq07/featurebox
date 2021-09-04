@@ -65,7 +65,8 @@ def get_radius_in_spheres(
     neighbor_indices = neighbor_indices.astype(np.int64)
     images = images.astype(np.int64)
     distances = distances.astype(np.float32)
-    exclude_self = (center_indices != neighbor_indices) | (distances > numerical_tol)
+    exclude_self = (distances > numerical_tol)
+    # exclude_self = (center_indices != neighbor_indices) | (distances > numerical_tol)
 
     return center_indices[exclude_self], neighbor_indices[exclude_self], images[exclude_self], \
            distances[exclude_self], np.array(None)

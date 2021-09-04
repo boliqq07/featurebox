@@ -232,7 +232,11 @@ def get_strategy1_in_spheres(structure: StructureOrMolecule, nn_strategy: NearNe
     else:
         center_prop = np.array(center_prop)
 
-    return np.array(center_indices), np.array(neighbor_indices), np.array(images), np.array(distances), \
+    exclude_self = (distances > numerical_tol)
+    # exclude_self = (center_indices != neighbor_indices) | (distances > numerical_tol)
+
+    return np.array(center_indices)[exclude_self], np.array(neighbor_indices)[exclude_self], \
+           np.array(images)[exclude_self], np.array(distances)[exclude_self], \
            np.array(center_prop)
 
 # def universe_refine_nn(center_indices, neighbor_indices, vectors, distances,
