@@ -8,7 +8,7 @@ from deap import tools
 from deap.algorithms import varAnd
 from deap.tools import mutShuffleIndexes
 from mgetool.newclass import create
-from mgetool.tool import batch_parallelize, check_random_state
+from mgetool.tool import batch_parallelize, check_random_state,parallelize
 from sklearn.base import BaseEstimator, MetaEstimatorMixin
 from sklearn.datasets import load_boston
 from sklearn.feature_selection import SelectorMixin
@@ -47,7 +47,8 @@ def eaSimple(population, toolbox, cxpb, mutpb, ngen, stats=None, n_jobs=2,
     invalid_ind = [ind for ind in population if not ind.fitness.valid]
     # n_job=n
     invalid_ind2 = [tuple(i) for i in invalid_ind]
-    fitnesses = batch_parallelize(n_jobs, toolbox.evaluate, invalid_ind2, batch_size=30, tq=True)
+    # fitnesses = batch_parallelize(n_jobs, toolbox.evaluate, invalid_ind2, batch_size=30, tq=True)
+    fitnesses = parallelize(n_jobs, toolbox.evaluate, invalid_ind2, tq=True)
     # n_job=1
     # fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
 
@@ -80,8 +81,8 @@ def eaSimple(population, toolbox, cxpb, mutpb, ngen, stats=None, n_jobs=2,
         # n_job=n
         invalid_ind2 = [tuple(i) for i in invalid_ind]
 
-        fitnesses = batch_parallelize(n_jobs, toolbox.evaluate, invalid_ind2, batch_size=30, tq=True)
-        # fitnesses = parallelize(n_jobs, toolbox.evaluate, invalid_ind2)
+        # fitnesses = batch_parallelize(n_jobs, toolbox.evaluate, invalid_ind2, batch_size=30, tq=True)
+        fitnesses = parallelize(n_jobs, toolbox.evaluate, invalid_ind2, tq=True)
         # n_job=1
         # fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
 
