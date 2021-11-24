@@ -169,7 +169,7 @@ msgid ""
 "pip install locally."
 msgstr ""
 "如果 ``Spblib`` 需要用vc++编译，请下载"
-" `Python扩展包 <https://www.lfd.uci.edu/~gohlke/pythonlibs/>'_ ， 并在本地安装。"
+"`Python扩展包 <https://www.lfd.uci.edu/~gohlke/pythonlibs/>'_ ， 并在本地安装。"
 
 #: ../../Install.rst:65
 msgid "Such as ::"

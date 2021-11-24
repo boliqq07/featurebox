@@ -1,36 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="iap13@192.9.200.238:22 password" remoteFilesAllowedToDisappearOnAutoupload="false">
+  <component name="PublishConfigData" autoUpload="Always" serverName="wcx@192.168.3.6:22 password" remoteFilesAllowedToDisappearOnAutoupload="false">
     <serverData>
-      <paths name="MachineLearning@192.9.200.233:22">
+      <paths name="gjj">
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
-      <paths name="iap13@192.9.200.238:22 password">
-        <serverdata>
-          <mappings>
-            <mapping deploy="/wcx/featurebox" local="$PROJECT_DIR$" web="/" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="iap13@192.9.200.239:10002 password">
-        <serverdata>
-          <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="iap13@60.205.247.59:22">
-        <serverdata>
-          <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="mgetool">
+      <paths name="root@10.1.8.133:32866">
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />
@@ -44,14 +23,28 @@
           </mappings>
         </serverdata>
       </paths>
-      <paths name="wangchangxin@222.28.70.247:22">
+      <paths name="suyj@222.74.8.218:12288">
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
-      <paths name="wangchangxin@222.28.70.247:22 (1)">
+      <paths name="wcx@192.168.3.6:22 password">
+        <serverdata>
+          <mappings>
+            <mapping deploy="featurebox" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="wcx@192.9.200.238:22 password">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="wcx@192.9.200.239:10002 password">
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />

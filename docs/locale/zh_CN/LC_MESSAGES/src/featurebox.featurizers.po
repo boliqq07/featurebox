@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: featurebox \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-06 15:30+0800\n"
+"POT-Creation-Date: 2021-11-24 10:33+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,195 +31,6 @@ msgstr ""
 
 #: ../../src/featurebox.featurizers.rst:25
 msgid "featurebox.featurizers.base\\_graph\\_geo module"
-msgstr ""
-
-#: featurebox.featurizers.base_graph_geo:1 of
-msgid ""
-"Abstract classes for building graph representations consist with "
-"``pytorch-geometric``."
-msgstr ""
-
-#: featurebox.featurizers.base_graph_geo:3 of
-msgid "All the Graph in this part should return data as following:"
-msgstr ""
-
-#: featurebox.featurizers.base_graph_geo:5 of
-msgid "Each Graph data (for each structure):"
-msgstr ""
-
-#: featurebox.featurizers.base_graph_geo:8
-#: featurebox.featurizers.base_graph_geo.BaseStructureGraphGEO:3
-#: featurebox.featurizers.base_graph_geo.StructureGraphGEO:3 of
-msgid ""
-"``x``: Node feature matrix. np.ndarray, with shape [num_nodes, "
-"num_node_features]"
-msgstr ""
-
-#: featurebox.featurizers.base_graph_geo:10
-#: featurebox.featurizers.base_graph_geo.StructureGraphGEO:5 of
-msgid ""
-"``edge_index``: Graph connectivity in COO format. np.ndarray, with shape "
-"[2, num_edges] and type torch.long"
-msgstr ""
-
-#: featurebox.featurizers.base_graph_geo:12
-#: featurebox.featurizers.base_graph_geo.StructureGraphGEO:7 of
-msgid ""
-"``edge_attr``: Edge feature matrix. np.ndarray,  with shape [num_edges, "
-"num_edge_features]"
-msgstr ""
-
-#: featurebox.featurizers.base_graph_geo:14
-#: featurebox.featurizers.base_graph_geo.BaseStructureGraphGEO:5
-#: featurebox.featurizers.base_graph_geo.StructureGraphGEO:11 of
-msgid ""
-"``pos``: Node position matrix. np.ndarray, with shape [num_nodes, "
-"num_dimensions]"
-msgstr ""
-
-#: featurebox.featurizers.base_graph_geo:16
-#: featurebox.featurizers.base_graph_geo.BaseStructureGraphGEO:7
-#: featurebox.featurizers.base_graph_geo.StructureGraphGEO:13 of
-msgid "``y``: target. np.ndarray, shape (1, num_target) , default shape (1,)"
-msgstr ""
-
-#: featurebox.featurizers.base_graph_geo:18
-#: featurebox.featurizers.base_graph_geo.StructureGraphGEO:15 of
-msgid "``state_attr``: state feature. np.ndarray, shape (1, num_state_features)"
-msgstr ""
-
-#: featurebox.featurizers.base_graph_geo:20
-#: featurebox.featurizers.base_graph_geo.BaseStructureGraphGEO:9
-#: featurebox.featurizers.base_graph_geo.StructureGraphGEO:17 of
-msgid "``z``: atom numbers. np.ndarray, with shape [num_nodes,]"
-msgstr ""
-
-#: featurebox.featurizers.base_graph_geo:22
-#: featurebox.featurizers.base_graph_geo.StructureGraphGEO:19 of
-msgid "Where the state_attr is added newly."
-msgstr ""
-
-#: featurebox.featurizers.base_graph_geo.BaseStructureGraphGEO:1 of
-msgid ""
-"Bases: "
-":class:`featurebox.featurizers.base_graph_geo._BaseStructureGraphGEO`"
-msgstr ""
-
-#: featurebox.featurizers.base_graph_geo.BaseStructureGraphGEO:1
-#: featurebox.featurizers.base_graph_geo.StructureGraphGEO:1
-#: featurebox.featurizers.base_transform.BaseFeature.authors
-#: featurebox.featurizers.base_transform.BaseFeature.citations
-#: featurebox.featurizers.base_transform.BaseFeature.convert
-#: featurebox.featurizers.base_transform.BaseFeature.feature_labels
-#: featurebox.featurizers.base_transform.BaseFeature.fit_transform
-#: featurebox.featurizers.base_transform.BaseFeature.set_feature_labels
-#: featurebox.featurizers.base_transform.BaseFeature.transform
-#: featurebox.featurizers.base_transform.BaseFeature.transform2
-#: featurebox.featurizers.batch_feature.BatchFeature.convert
-#: featurebox.featurizers.batch_feature.BatchFeature.feature_labels
-#: featurebox.featurizers.batch_feature.BatchFeature.set_feature_labels
-#: featurebox.featurizers.extrastats.PropertyStats.avg_dev
-#: featurebox.featurizers.extrastats.PropertyStats.calc_stat
-#: featurebox.featurizers.extrastats.PropertyStats.geom_std_dev
-#: featurebox.featurizers.extrastats.PropertyStats.inverse_mean
-#: featurebox.featurizers.extrastats.PropertyStats.kurtosis
-#: featurebox.featurizers.extrastats.PropertyStats.maximum
-#: featurebox.featurizers.extrastats.PropertyStats.mean
-#: featurebox.featurizers.extrastats.PropertyStats.minimum
-#: featurebox.featurizers.extrastats.PropertyStats.mode
-#: featurebox.featurizers.extrastats.PropertyStats.quantile
-#: featurebox.featurizers.extrastats.PropertyStats.range
-#: featurebox.featurizers.extrastats.PropertyStats.skewness
-#: featurebox.featurizers.extrastats.PropertyStats.std_dev of
-msgid "Returns"
-msgstr ""
-
-#: featurebox.featurizers.base_graph_geo.BaseStructureGraphGEO:12
-#: featurebox.featurizers.base_transform.ConverterCat:6
-#: featurebox.featurizers.base_transform.ConverterSequence:12
-#: featurebox.featurizers.generator_geo.DatasetGEO:5
-#: featurebox.featurizers.generator_geo.InMemoryDatasetGeo:5
-#: featurebox.featurizers.generator_geo.SimpleDataset:4 of
-msgid "Examples"
-msgstr ""
-
-#: featurebox.featurizers.base_graph_geo.BaseStructureGraphGEO
-#: featurebox.featurizers.base_graph_geo.StructureGraphGEO
-#: featurebox.featurizers.base_transform.BaseFeature
-#: featurebox.featurizers.base_transform.BaseFeature.convert
-#: featurebox.featurizers.base_transform.BaseFeature.fit_transform
-#: featurebox.featurizers.base_transform.BaseFeature.transform
-#: featurebox.featurizers.base_transform.BaseFeature.transform2
-#: featurebox.featurizers.base_transform.ConverterCat
-#: featurebox.featurizers.base_transform.ConverterSequence
-#: featurebox.featurizers.base_transform.DummyConverter
-#: featurebox.featurizers.base_transform.DummyConverter.convert
-#: featurebox.featurizers.batch_feature.BatchFeature
-#: featurebox.featurizers.batch_feature.BatchFeature.convert
-#: featurebox.featurizers.extrastats.PropertyStats.calc_stat
-#: featurebox.featurizers.generator_geo.DatasetGEO
-#: featurebox.featurizers.generator_geo.InMemoryDatasetGeo
-#: featurebox.featurizers.generator_geo.SimpleDataset.shuffle of
-msgid "Parameters"
-msgstr ""
-
-#: featurebox.featurizers.base_graph_geo.BaseStructureGraphGEO:20
-#: featurebox.featurizers.base_graph_geo.StructureGraphGEO:34 of
-msgid ""
-"(BinaryMap) atom features converter. See Also: "
-":class:`featurebox.test_featurizers.atom.mapper.AtomTableMap` , "
-":class:`featurebox.test_featurizers.atom.mapper.AtomJsonMap` , "
-":class:`featurebox.test_featurizers.atom.mapper.AtomPymatgenPropMap`, "
-":class:`featurebox.test_featurizers.atom.mapper.AtomTableMap`"
-msgstr ""
-
-#: featurebox.featurizers.base_graph_geo.BaseStructureGraphGEO:23
-#: featurebox.featurizers.base_graph_geo.StructureGraphGEO:40 of
-msgid ""
-"(Converter) state features converter. See Also: "
-":class:`featurebox.test_featurizers.state.state_mapper.StructurePymatgenPropMap`"
-" :mod:`featurebox.test_featurizers.state.statistics` "
-":mod:`featurebox.test_featurizers.state.union`"
-msgstr ""
-
-#: featurebox.featurizers.base_graph_geo.StructureGraphGEO:1 of
-msgid ""
-"Bases: "
-":class:`featurebox.featurizers.base_graph_geo.BaseStructureGraphGEO`"
-msgstr ""
-
-#: featurebox.featurizers.base_graph_geo.StructureGraphGEO:9 of
-msgid ""
-"``edge_weight``: Edge feature matrix. np.ndarray,  with shape [num_edges,"
-" ]"
-msgstr ""
-
-#: featurebox.featurizers.base_graph_geo.StructureGraphGEO:21 of
-msgid ""
-"Examples: >>> from torch_geometric.data.dataloader import DataLoader >>> "
-"sg1 = BaseStructureGraphGEO() >>> data_list = "
-"sg1.transform_and_to_data(structures_checked) >>> loader = "
-"DataLoader(data_list, batch_size=3) >>> for i in loader: ...     print(i)"
-msgstr ""
-
-#: featurebox.featurizers.base_graph_geo.StructureGraphGEO:30 of
-msgid ""
-"(str) NearNeighbor strategy. [\"find_points_in_spheres\", "
-"\"find_xyz_in_spheres\", \"BrunnerNN_reciprocal\", \"BrunnerNN_real\", "
-"\"BrunnerNN_relative\", \"EconNN\", \"CrystalNN\", "
-"\"MinimumDistanceNNAll\", \"find_points_in_spheres\",\"UserVoronoiNN\"]"
-msgstr ""
-
-#: featurebox.featurizers.base_graph_geo.StructureGraphGEO:38 of
-msgid "(Converter) bond features converter, default=None."
-msgstr ""
-
-#: featurebox.featurizers.base_graph_geo.StructureGraphGEO:46 of
-msgid "(GEONNGet, str) bond features converter."
-msgstr ""
-
-#: featurebox.featurizers.base_graph_geo.StructureGraphGEO:48 of
-msgid "(float) Whether to use depends on the ``nn_strategy``."
 msgstr ""
 
 #: ../../src/featurebox.featurizers.rst:33
@@ -305,6 +116,21 @@ msgid ""
 " output of another."
 msgstr ""
 
+#: featurebox.featurizers.base_transform.BaseFeature
+#: featurebox.featurizers.base_transform.BaseFeature.convert
+#: featurebox.featurizers.base_transform.BaseFeature.fit_transform
+#: featurebox.featurizers.base_transform.BaseFeature.transform
+#: featurebox.featurizers.base_transform.BaseFeature.transform2
+#: featurebox.featurizers.base_transform.ConverterCat
+#: featurebox.featurizers.base_transform.ConverterSequence
+#: featurebox.featurizers.base_transform.DummyConverter
+#: featurebox.featurizers.base_transform.DummyConverter.convert
+#: featurebox.featurizers.batch_feature.BatchFeature
+#: featurebox.featurizers.batch_feature.BatchFeature.convert
+#: featurebox.featurizers.extrastats.PropertyStats.calc_stat of
+msgid "Parameters"
+msgstr ""
+
 #: featurebox.featurizers.base_transform.BaseFeature:49
 #: featurebox.featurizers.base_transform.DummyConverter:3 of
 msgid "size of batch."
@@ -339,6 +165,33 @@ msgstr ""
 
 #: featurebox.featurizers.base_transform.BaseFeature.authors:1 of
 msgid "List of implementors of the feature."
+msgstr ""
+
+#: featurebox.featurizers.base_transform.BaseFeature.authors
+#: featurebox.featurizers.base_transform.BaseFeature.citations
+#: featurebox.featurizers.base_transform.BaseFeature.convert
+#: featurebox.featurizers.base_transform.BaseFeature.feature_labels
+#: featurebox.featurizers.base_transform.BaseFeature.fit_transform
+#: featurebox.featurizers.base_transform.BaseFeature.set_feature_labels
+#: featurebox.featurizers.base_transform.BaseFeature.transform
+#: featurebox.featurizers.base_transform.BaseFeature.transform2
+#: featurebox.featurizers.batch_feature.BatchFeature.convert
+#: featurebox.featurizers.batch_feature.BatchFeature.feature_labels
+#: featurebox.featurizers.batch_feature.BatchFeature.set_feature_labels
+#: featurebox.featurizers.extrastats.PropertyStats.avg_dev
+#: featurebox.featurizers.extrastats.PropertyStats.calc_stat
+#: featurebox.featurizers.extrastats.PropertyStats.geom_std_dev
+#: featurebox.featurizers.extrastats.PropertyStats.inverse_mean
+#: featurebox.featurizers.extrastats.PropertyStats.kurtosis
+#: featurebox.featurizers.extrastats.PropertyStats.maximum
+#: featurebox.featurizers.extrastats.PropertyStats.mean
+#: featurebox.featurizers.extrastats.PropertyStats.minimum
+#: featurebox.featurizers.extrastats.PropertyStats.mode
+#: featurebox.featurizers.extrastats.PropertyStats.quantile
+#: featurebox.featurizers.extrastats.PropertyStats.range
+#: featurebox.featurizers.extrastats.PropertyStats.skewness
+#: featurebox.featurizers.extrastats.PropertyStats.std_dev of
+msgid "Returns"
 msgstr ""
 
 #: featurebox.featurizers.base_transform.BaseFeature.authors:3 of
@@ -543,6 +396,11 @@ msgid ""
 "Pack the converters in to one unified approach. The same type Converter "
 "would merged and different would order to run. Thus, keeping the same "
 "type is next to each other!"
+msgstr ""
+
+#: featurebox.featurizers.base_transform.ConverterCat:6
+#: featurebox.featurizers.base_transform.ConverterSequence:12 of
+msgid "Examples"
 msgstr ""
 
 #: featurebox.featurizers.base_transform.ConverterCat:13
@@ -827,122 +685,5 @@ msgstr ""
 
 #: ../../src/featurebox.featurizers.rst:57
 msgid "featurebox.featurizers.generator\\_geo module"
-msgstr ""
-
-#: featurebox.featurizers.generator_geo.DatasetGEO:1
-#: featurebox.featurizers.generator_geo.InMemoryDatasetGeo:1
-#: featurebox.featurizers.generator_geo.SimpleDataset:1 of
-msgid "Bases: :class:`~typing.Generic`\\ [:obj:`torch.utils.data.dataset.T_co`]"
-msgstr ""
-
-#: featurebox.featurizers.generator_geo.DatasetGEO:1 of
-msgid "For very very huge data. load data from local disk each epoth."
-msgstr ""
-
-#: featurebox.featurizers.generator_geo.DatasetGEO:12
-#: featurebox.featurizers.generator_geo.InMemoryDatasetGeo:12 of
-msgid ""
-"load from the independent data in different files: \"i\", load from the "
-"batch data in one overall file: \"o\"."
-msgstr ""
-
-#: featurebox.featurizers.generator_geo.DatasetGEO:15
-#: featurebox.featurizers.generator_geo.InMemoryDatasetGeo:15 of
-msgid ""
-"process raw data or not. if there is no raw data but processed data is "
-"offered. this parameter could be False."
-msgstr ""
-
-#: featurebox.featurizers.generator_geo.DatasetGEO:18
-#: featurebox.featurizers.generator_geo.InMemoryDatasetGeo:18 of
-msgid "Root directory where the dataset should be saved. (optional: :obj:`None`)"
-msgstr ""
-
-#: featurebox.featurizers.generator_geo.DatasetGEO:21
-#: featurebox.featurizers.generator_geo.InMemoryDatasetGeo:21 of
-msgid ""
-"A function/transform that takes in an :obj:`torch_geometric.data.Data` "
-"object and returns a transformed version. The data object will be "
-"transformed before every access. (default: :obj:`None`)"
-msgstr ""
-
-#: featurebox.featurizers.generator_geo.DatasetGEO:26
-#: featurebox.featurizers.generator_geo.InMemoryDatasetGeo:26 of
-msgid ""
-"A function/transform that takes in an :obj:`torch_geometric.data.Data` "
-"object and returns a transformed version. The data object will be "
-"transformed before being saved to disk. (default: :obj:`None`)"
-msgstr ""
-
-#: featurebox.featurizers.generator_geo.DatasetGEO:31
-#: featurebox.featurizers.generator_geo.InMemoryDatasetGeo:31 of
-msgid ""
-"A function that takes in an :obj:`torch_geometric.data.Data` object and "
-"returns a boolean value, indicating whether the data object should be "
-"included in the final dataset. (default: :obj:`None`)"
-msgstr ""
-
-#: featurebox.featurizers.generator_geo.DatasetGEO.get:1 of
-msgid "Gets the data object at index :obj:`idx`."
-msgstr ""
-
-#: featurebox.featurizers.generator_geo.DatasetGEO.process:1
-#: featurebox.featurizers.generator_geo.InMemoryDatasetGeo.process:1 of
-msgid "Processes the dataset to the :obj:`self.processed_dir` folder."
-msgstr ""
-
-#: featurebox.featurizers.generator_geo.DatasetGEO.processed_file_names:1
-#: featurebox.featurizers.generator_geo.InMemoryDatasetGeo.processed_file_names:1
-#: of
-msgid ""
-"The name of the files to find in the :obj:`self.processed_dir` folder in "
-"order to skip the processing."
-msgstr ""
-
-#: featurebox.featurizers.generator_geo.DatasetGEO.raw_file_names:1
-#: featurebox.featurizers.generator_geo.InMemoryDatasetGeo.raw_file_names:1 of
-msgid ""
-"The name of the files to find in the :obj:`self.raw_dir` folder in order "
-"to skip the download."
-msgstr ""
-
-#: featurebox.featurizers.generator_geo.DatasetGEO.re_process:1 of
-msgid "For temporary debug"
-msgstr ""
-
-#: featurebox.featurizers.generator_geo.InMemoryDatasetGeo:1 of
-msgid "For small data <= 2000. load data from local disk."
-msgstr ""
-
-#: featurebox.featurizers.generator_geo.InMemoryDatasetGeo.re_process:1 of
-msgid ""
-"Re-process for skip reset in 56 line in ``InMemoryDataset`` `self.data, "
-"self.slices = None, None` ."
-msgstr ""
-
-#: featurebox.featurizers.generator_geo.SimpleDataset:1 of
-msgid "Data list with shuffle (lazy)"
-msgstr ""
-
-#: featurebox.featurizers.generator_geo.SimpleDataset.num_edge_features:1 of
-msgid "Returns the number of features per edge in the dataset."
-msgstr ""
-
-#: featurebox.featurizers.generator_geo.SimpleDataset.num_features:1 of
-msgid "Alias for :py:attr:`~num_node_features`."
-msgstr ""
-
-#: featurebox.featurizers.generator_geo.SimpleDataset.num_node_features:1 of
-msgid "Returns the number of features per node in the dataset."
-msgstr ""
-
-#: featurebox.featurizers.generator_geo.SimpleDataset.shuffle:1 of
-msgid "Randomly shuffles the examples in the dataset."
-msgstr ""
-
-#: featurebox.featurizers.generator_geo.SimpleDataset.shuffle:3 of
-msgid ""
-"If set to :obj:`True`, will additionally return the random permutation "
-"used to shuffle the dataset. (default: :obj:`False`)"
 msgstr ""
 

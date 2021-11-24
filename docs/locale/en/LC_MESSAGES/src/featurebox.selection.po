@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: featurebox \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-06 20:12+0800\n"
+"POT-Creation-Date: 2021-11-24 10:33+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -128,7 +128,8 @@ msgstr ""
 #: featurebox.selection.backforward.BackForwardStable.fit
 #: featurebox.selection.backforward.BackForwardStable.predict
 #: featurebox.selection.backforward.BackForwardStable.score
-#: featurebox.selection.corr.Corr featurebox.selection.exhaustion.Exhaustion
+#: featurebox.selection.corr.Corr featurebox.selection.corr.Corr.transform
+#: featurebox.selection.exhaustion.Exhaustion
 #: featurebox.selection.exhaustion.Exhaustion.fit
 #: featurebox.selection.exhaustion.Exhaustion.predict
 #: featurebox.selection.exhaustion.Exhaustion.score featurebox.selection.ga.GA
@@ -229,6 +230,7 @@ msgstr ""
 
 #: featurebox.selection.backforward.BackForward.predict
 #: featurebox.selection.backforward.BackForwardStable.predict
+#: featurebox.selection.corr.Corr.transform
 #: featurebox.selection.exhaustion.Exhaustion.predict
 #: featurebox.selection.ga.eaSimple of
 msgid "Returns"
@@ -242,6 +244,7 @@ msgstr ""
 
 #: featurebox.selection.backforward.BackForward.predict
 #: featurebox.selection.backforward.BackForwardStable.predict
+#: featurebox.selection.corr.Corr.transform
 #: featurebox.selection.exhaustion.Exhaustion.predict of
 msgid "Return type"
 msgstr ""
@@ -458,6 +461,18 @@ msgstr ""
 
 #: featurebox.selection.corr.Corr.remove_coef:1 of
 msgid "Delete the index of feature with repeat coef."
+msgstr ""
+
+#: featurebox.selection.corr.Corr.transform:1 of
+msgid "Reduce X to the selected features."
+msgstr ""
+
+#: featurebox.selection.corr.Corr.transform:3 of
+msgid "The input samples."
+msgstr ""
+
+#: featurebox.selection.corr.Corr.transform:6 of
+msgid "**X_r** -- The input samples with only the selected features."
 msgstr ""
 
 #: ../../src/featurebox.selection.rst:29

@@ -27,42 +27,42 @@ msgstr "按下列格式读取表数据，并按成分组合。"
 
 #: ../../Examples/sample_fea2.rst:7
 msgid "Data"
-msgstr ""
+msgstr "Data"
 
 #: ../../Examples/sample_fea2.rst:7
 msgid "F0"
-msgstr ""
+msgstr "F0"
 
 #: ../../Examples/sample_fea2.rst:7
 msgid "F1"
-msgstr ""
+msgstr "F1"
 
 #: ../../Examples/sample_fea2.rst:7 ../../Examples/sample_fea2.rst:9
 #: ../../Examples/sample_fea2.rst:10 ../../Examples/sample_fea2.rst:11
 #: ../../Examples/sample_fea2.rst:12 ../../Examples/sample_fea2.rst:13
 msgid "..."
-msgstr ""
+msgstr "..."
 
 #: ../../Examples/sample_fea2.rst:9
 msgid "H"
-msgstr ""
+msgstr "H"
 
 #: ../../Examples/sample_fea2.rst:9 ../../Examples/sample_fea2.rst:10
 #: ../../Examples/sample_fea2.rst:11 ../../Examples/sample_fea2.rst:12
 msgid "V"
-msgstr ""
+msgstr "V"
 
 #: ../../Examples/sample_fea2.rst:10
 msgid "He"
-msgstr ""
+msgstr "He"
 
 #: ../../Examples/sample_fea2.rst:11
 msgid "Li"
-msgstr ""
+msgstr "Li"
 
 #: ../../Examples/sample_fea2.rst:12
 msgid "Be"
-msgstr ""
+msgstr "Be"
 
 #: ../../Examples/sample_fea2.rst:16
 msgid "Then run the code. ::"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: featurebox \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-06 15:30+0800\n"
+"POT-Creation-Date: 2021-11-24 10:33+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -230,10 +230,6 @@ msgstr ""
 msgid "featurebox.utils.predefined\\_typing module"
 msgstr ""
 
-#: featurebox.utils.predefined_typing:1 of
-msgid "Define several typing for convenient use"
-msgstr ""
-
 #: ../../src/featurebox.utils.rst:29
 msgid "featurebox.utils.quickmethod module"
 msgstr ""
@@ -253,4 +249,7 @@ msgstr ""
 #: featurebox.utils.quickmethod.method_pack:1 of
 msgid "return cv or gd."
 msgstr ""
+
+#~ msgid "Define several typing for convenient use"
+#~ msgstr ""
 
