@@ -48,19 +48,13 @@ There are two data should offer. (At least one)
     to directly get all the atomic information in compound).
 
 - The element periodic table data (optional).
-<<<<<<< HEAD
-    We have built-in some element periodic table ("element_table.csv", "ie.json", "oe.csv"),
-    To customize your element periodic table. you can offer (``.json``, ``.csv``) file or
-    any python data (``dict``, ``pandas.DataFrame``, ``numpy.ndarray``) in code.
-=======
     We have built-in some element periodic table ("ele_table.csv", "ie.json", "oe.csv"),
     To customize your element periodic table. you can offer (``.json``,``.csv``) file or
     any python data (``dict``,``pandas.DataFrame``,``numpy.ndarray``) in code.
->>>>>>> ce1481c (Changes)
 
-    where (``.json``, ``dict``) by :class:`featurebox.featurizers.atom.mapper.AtomJsonMap`,
+    where (``.json``,``dict``) by :class:`featurebox.featurizers.atom.mapper.AtomJsonMap`,
 
-    (``.csv``, ``pandas.DataFrame``, ``numpy.ndarray``) by :class:`featurebox.featurizers.atom.mapper.AtomTableMap`.
+    (``.csv``,``pandas.DataFrame``,``numpy.ndarray``) by :class:`featurebox.featurizers.atom.mapper.AtomTableMap`.
 
     And one specialized :class:`featurebox.featurizers.atom.mapper.AtomPymatgenPropMap`
     for fetch data from ``pymatgen.core.periodic_table.json``.
@@ -92,7 +86,7 @@ More Examples:
 :::::::::::::::::
 
 2. For bond features, use the structure data to extract information.
-The common structure data include the ``Structure`` of ``Pymatgen``, the ``Atoms`` of ``ase`` , etc.
+The common structure data include the ``Structure`` of ``Pymatgen``, the ``Atoms`` of ``ase``, etc.
 The ``Structure`` and ``Atoms`` could mutual transform by ``pymatgen.io.ase.AseAtomsAdaptor``.
 
 In general we don't just get the bond features, if you're sure you only need the bond information. please refer to
@@ -105,7 +99,7 @@ In general we don't just get the bond features, if you're sure you only need the
 
 There are two method to get State (overall compound) features.
 
-**Information extraction from structure data.**
+**Information extraction from structure data (``Structure`` of ``Pymatgen``).**
 
 For the ``Atoms`` of ``ase``, The ``Structure`` could transformed by ``pymatgen.io.ase.AseAtomsAdaptor``.
 
@@ -143,8 +137,8 @@ This is one key method to get state features!!!
 >>> x4 = [structurei]*5
 >>> wa.fit_transform(x4)
 
-More combination operation ``WeightedSum``, ``GeometricMean``, ``HarmonicMean``, ``WeightedVariance`` and so on
-can be found in :mod:`featurebox.featurizers.state.statistics` .
+More combination operation ``WeightedSum``,``GeometricMean``,``HarmonicMean``,``WeightedVariance`` and so on
+can be found in :mod:`featurebox.featurizers.state.statistics`.
 
 More:
 :doc:`../Examples/sample_fea3`
