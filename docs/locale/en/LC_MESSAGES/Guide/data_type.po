@@ -108,7 +108,7 @@ msgstr ""
 
 #: ../../Guide/data_type.rst:51
 msgid ""
-"We have built-in some element periodic table (\"element_table.csv\", "
+"We have built-in some element periodic table (\"ele_table.csv\", "
 "\"ie.json\", \"oe.csv\"), To customize your element periodic table. you "
 "can offer (``.json``,``.csv``) file or any python data "
 "(``dict``,``pandas.DataFrame``,``numpy.ndarray``) in code."

@@ -35,7 +35,7 @@ msgstr ""
 
 #: featurebox.featurizers.atom.mapper:3 of
 msgid ""
-"Embedded data: \"element_table.csv\", \"elemental_MEGNet.json\", "
+"Embedded data: \"ele_table.csv\", \"ele_megnet.json\", "
 "\"ie.json\", \"oe.csv\""
 msgstr ""
 
@@ -248,14 +248,14 @@ msgstr ""
 #: featurebox.featurizers.atom.mapper.AtomTableMap:40 of
 msgid ""
 "1. Name of table in bgnet.preprocessing.resources. if tablename is None, "
-"use the embedding \"element_table.csv\".  2. np.ndarray, search_tp = "
+"use the embedding \"ele_table.csv\".  2. np.ndarray, search_tp = "
 "\"number\".  3. pd.dataframe, search_tp = \"name\""
 msgstr ""
 
 #: featurebox.featurizers.atom.mapper.AtomTableMap:41 of
 msgid ""
 "1. Name of table in bgnet.preprocessing.resources. if tablename is None, "
-"use the embedding \"element_table.csv\"."
+"use the embedding \"ele_table.csv\"."
 msgstr ""
 
 #: featurebox.featurizers.atom.mapper.AtomTableMap:44 of

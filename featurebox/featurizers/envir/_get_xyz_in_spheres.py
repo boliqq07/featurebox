@@ -38,7 +38,7 @@ def get_xyz_in_spheres(structure: StructureOrMolecule, nn_strategy=None, cutoff:
         cutoff (float): cutoff radius
         pbc:bool or list of bool
         numerical_tol (float): numerical tolerance
-        nn_strategy(str):not used
+        nn_strategy(str,None):not used
     Returns:
         center_indices, neighbor_indices, images, distances,center_prop
     """

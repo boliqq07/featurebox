@@ -1,6 +1,6 @@
 """Get pure atom properties.
 
-Embedded data: "element_table.csv", "elemental_MEGNet.json", "ie.json", "oe.csv"
+Embedded data: "ele_table.csv", "ele_megnet.json", "ie.json", "oe.csv"
 
 """
 import functools
@@ -75,7 +75,7 @@ class AtomMap(Converter):
         super(AtomMap, self).__init__(n_jobs=n_jobs, on_errors=on_errors, return_type=return_type)
 
     @staticmethod
-    def get_json_embeddings(file_name: str = "elemental_MEGNet.json") -> Dict:
+    def get_json_embeddings(file_name: str = "ele_megnet.json") -> Dict:
         """get json preprocessing"""
         data = loadfn(MODULE_DIR / "data" / file_name)
         data = {i: np.array(j) for i, j in data.items()}
@@ -182,7 +182,7 @@ class AtomJsonMap(BinaryMap):
             embedding_dict = self.get_json_embeddings(embedding_dict)
 
         assert len(set([len(i) for i in embedding_dict.values()])) == 1, \
-            "The element number should be same with `elemental_MEGNet.json`, " \
+            "The element number should be same with `ele_megnet.json`, " \
             "which contains elemental features for 89 elements (up to Z=94, excluding Po, At, Rn, Fr, Ra) "
 
         self.embedding_dict = embedding_dict
@@ -271,7 +271,7 @@ class AtomTableMap(BinaryMap):
     ...
 
     >>> tmps = AtomTableMap(tablename=None) or
-    >>> tmps = AtomTableMap(tablename="element_table.csv")
+    >>> tmps = AtomTableMap(tablename="ele_table.csv")
     >>> s = [{"H": 2, }, {"Pd": 1}]
     >>> b = tmps.convert(s)
     ...
@@ -286,7 +286,7 @@ class AtomTableMap(BinaryMap):
         ----------
         tablename: str,np.ndarray, pd.Dateframe
             1. Name of table in bgnet.preprocessing.resources. if tablename is None,
-            use the embedding "element_table.csv".\n
+            use the embedding "ele_table.csv".\n
             2. np.ndarray, search_tp = "number".\n
             3. pd.dataframe, search_tp = "name"
 
@@ -297,12 +297,12 @@ class AtomTableMap(BinaryMap):
         super(AtomTableMap, self).__init__(search_tp=search_tp, **kwargs)
 
         if tablename is None:
-            self.da = self.get_ele_embeddings("element_table_norm.csv")
+            self.da = self.get_ele_embeddings("ele_table_norm.csv")
             self.dax = self.da.values
             self.da_columns = list(self.da.columns)
 
         elif isinstance(tablename, str):
-            if tablename in ["element_table.csv", "element_table_norm.csv"]:
+            if tablename in ["ele_table.csv", "ele_table_norm.csv"]:
                 self.da = self.get_ele_embeddings(tablename)
             else:
                 self.da = self.get_csv_embeddings(tablename)
@@ -329,7 +329,7 @@ class AtomTableMap(BinaryMap):
             self.ndim = 1
 
     @staticmethod
-    def get_ele_embeddings(name="element_table_norm.csv") -> pd.DataFrame:
+    def get_ele_embeddings(name="ele_table_norm.csv") -> pd.DataFrame:
         """get CSV preprocessing"""
         oedata = pd.read_csv(os.path.join(MODULE_DIR, "data", name), index_col=0, header=0, skiprows=0)
         oedata = oedata.drop(["abbrTex", "abbr"], axis=0)

@@ -14,7 +14,7 @@ from pymatgen.core.periodic_table import get_el_sp
 from pymatgen.util.string import formula_double_format
 
 from featurebox.featurizers.atom.mapper import AtomTableMap, BinaryMap
-from featurebox.featurizers.extrastats import PropertyStats
+from featurebox.featurizers.state.extrastats import PropertyStats
 
 
 class BaseCompositionFeature(BinaryMap):

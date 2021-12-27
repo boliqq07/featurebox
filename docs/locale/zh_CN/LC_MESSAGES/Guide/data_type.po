@@ -108,12 +108,12 @@ msgstr "元素周期表数据(可选)。"
 
 #: ../../Guide/data_type.rst:51
 msgid ""
-"We have built-in some element periodic table (\"element_table.csv\", "
+"We have built-in some element periodic table (\"ele_table.csv\", "
 "\"ie.json\", \"oe.csv\"), To customize your element periodic table. you "
 "can offer (``.json``,``.csv``) file or any python data "
 "(``dict``,``pandas.DataFrame``,``numpy.ndarray``) in code."
 msgstr ""
-"我们内置了一些元素周期表(\"element_table.csv\"， \"ie.json\", "
+"我们内置了一些元素周期表(\"ele_table.csv\"， \"ie.json\", "
 "\"oe.csv\")，若需要自定义元素周期表。你可以提供 (``.json``,``.csv``) "
 "文件或python数据类型(``dict``,``pandas.DataFrame``,``numpy.ndarray``)."
 

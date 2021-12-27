@@ -15,7 +15,7 @@ from sklearn.utils import check_array
 from sklearn.utils.validation import check_is_fitted
 
 from featurebox.featurizers.base_transform import BaseFeature
-from featurebox.featurizers.extrastats import PropertyStats
+from featurebox.featurizers.state.extrastats import PropertyStats
 from featurebox.featurizers.state.statistics import DepartElementFeature
 
 

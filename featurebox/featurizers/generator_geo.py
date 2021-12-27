@@ -11,7 +11,9 @@ from torch_geometric.data import InMemoryDataset
 
 
 class SimpleDataset(tD):
-    """Data list with shuffle (lazy)
+    """Data list with shuffle, for small data.
+    For small data <= 500.
+    Load data from Memory, and stored in Memory for use.
 
     Examples
     -----------
@@ -23,7 +25,7 @@ class SimpleDataset(tD):
     >>> import torch_geometric.transforms as T
     >>> dataset = [T.ToSparseTensor(Data.from_dict(di))) for di in data]
 
-    >>> SimpleDataset
+    >>> # with SimpleDataset
     >>> # with data.edge_index shape (2,num_edge)
     >>> dataset = SimpleDataset(data)
     >>> # SparseTensor: with data.edge_index shape (num_node,num_node)
@@ -34,6 +36,23 @@ class SimpleDataset(tD):
 
     def __init__(self, data: Union[List[Data], List[Dict]], pre_filter=None, pre_transform=None,
                  transform: Callable = None):
+        """
+
+        Args:
+            transform (callable, optional): A function/transform that takes in an
+                :obj:`torch_geometric.data.Data` object and returns a transformed
+                version. The data object will be transformed before every access.
+                (default: :obj:`None`)
+            pre_transform (callable, optional): A function/transform that takes in
+                an :obj:`torch_geometric.data.Data` object and returns a
+                transformed version. The data object will be transformed before
+                being saved to disk. (default: :obj:`None`)
+            pre_filter (callable, optional): A function that takes in an
+                :obj:`torch_geometric.data.Data` object and returns a boolean
+                value, indicating whether the data object should be included in the
+                final dataset. (default: :obj:`None`)
+
+        """
         super(SimpleDataset, self).__init__()
         self.transform = transform
         self.pre_filter = pre_filter
@@ -146,19 +165,19 @@ class SimpleDataset(tD):
 
 class InMemoryDatasetGeo(InMemoryDataset):
     """For small data <= 2000.
-    load data from local disk.
+    Load data from local disk, and stored in Memory for use.
 
     Examples
     -----------
     >>> # with data.edge_index shape (2,num_edge)
-    >>> dataset = SimpleDataset(root=",")
+    >>> dataset = InMemoryDatasetGeo(root=".")
     >>> # SparseTensor: with data.edge_index shape (num_node,num_node)
     >>> import torch_geometric.transforms as T
-    >>> dataset = SimpleDataset(root=",", pre_transform=T.ToSparseTensor())
+    >>> dataset = InMemoryDatasetGeo(root=".", pre_transform=T.ToSparseTensor())
 
     """
 
-    def __init__(self, root, transform=None, pre_transform=None, pre_filter=None, re_process_init=True, load_mode="i"):
+    def __init__(self, root, pre_transform=None, pre_filter=None, re_process_init=True,transform=None, load_mode="i"):
         """
 
         Args:
@@ -239,15 +258,15 @@ class InMemoryDatasetGeo(InMemoryDataset):
 
 class DatasetGEO(Dataset):
     """For very very huge data.
-    load data from local disk each epoth.
+    load data from local disk each epoth, and stored in Memory temporary.
 
     Examples
     -----------
     >>> # with data.edge_index shape (2,num_edge)
-    >>> dataset = DatasetGEO(root=",")
+    >>> dataset = DatasetGEO(root=".")
     >>> # SparseTensor: with data.edge_index shape (num_node,num_node)
     >>> import torch_geometric.transforms as T
-    >>> dataset = DatasetGEO(root=",", pre_transform=T.ToSparseTensor())
+    >>> dataset = DatasetGEO(root=".", pre_transform=T.ToSparseTensor())
 
     """
 
