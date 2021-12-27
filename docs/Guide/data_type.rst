@@ -48,9 +48,15 @@ There are two data should offer. (At least one)
     to directly get all the atomic information in compound).
 
 - The element periodic table data (optional).
+<<<<<<< HEAD
     We have built-in some element periodic table ("element_table.csv", "ie.json", "oe.csv"),
     To customize your element periodic table. you can offer (``.json``, ``.csv``) file or
     any python data (``dict``, ``pandas.DataFrame``, ``numpy.ndarray``) in code.
+=======
+    We have built-in some element periodic table ("ele_table.csv", "ie.json", "oe.csv"),
+    To customize your element periodic table. you can offer (``.json``,``.csv``) file or
+    any python data (``dict``,``pandas.DataFrame``,``numpy.ndarray``) in code.
+>>>>>>> ce1481c (Changes)
 
     where (``.json``, ``dict``) by :class:`featurebox.featurizers.atom.mapper.AtomJsonMap`,
 
@@ -152,7 +158,7 @@ Get the depart element feature first.
 >>> data_map = AtomJsonMap(search_tp="name", n_jobs=1) # keep this n_jobs=1
 >>> wa = DepartElementFeature(data_map,n_composition=2, n_jobs=2, return_type="df")
 >>> comp = [{"H": 2, "Pd": 1},{"He":1,"Al":4}]
->>> wa.set_feature_labels(["fea_{}".format(_) for _ in range(16)]) # 16 this the feature number of built-in "elemental_MEGNet.json"
+>>> wa.set_feature_labels(["fea_{}".format(_) for _ in range(16)]) # 16 this the feature number of built-in "ele_megnet.json"
 >>> couple_data = wa.fit_transform(comp)
 >>> comp2 = [structurei]*5
 >>> wa.fit_transform(comp2)

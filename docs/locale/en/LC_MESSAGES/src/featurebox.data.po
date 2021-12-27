@@ -27,7 +27,7 @@ msgstr ""
 
 #: featurebox.data:3 of
 msgid ""
-"Embedded data: \"element_table.csv\", \"elemental_MEGNet.json\", "
+"Embedded data: \"ele_table.csv\", \"ele_megnet.json\", "
 "\"ie.json\", \"oe.csv\""
 msgstr ""
 

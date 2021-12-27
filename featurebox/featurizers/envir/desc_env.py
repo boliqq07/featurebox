@@ -15,7 +15,6 @@ from featurebox.featurizers.descriptors.SOAP import SOAP
 from featurebox.featurizers.descriptors.behlerparrinello import BehlerParrinello
 from featurebox.featurizers.descriptors.wACSF import wACSF
 from featurebox.featurizers.envir._get_radius_in_spheres import get_radius_in_spheres
-from featurebox.featurizers.envir._get_xyz_in_spheres import get_xyz_in_spheres
 from featurebox.utils.general import aaa
 from featurebox.utils.look_json import mark_classes
 

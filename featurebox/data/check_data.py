@@ -130,7 +130,6 @@ class CheckElements:
                     self.mark.append(0)
         return structures_t
 
-
     def passed_idx(self) -> np.ndarray:
         """The mark for all structures, return np.ndarray index."""
         return np.where(np.array(self.mark) == 1)[0]

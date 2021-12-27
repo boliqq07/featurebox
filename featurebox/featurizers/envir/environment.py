@@ -355,7 +355,7 @@ class GEONNGet(_BaseEnvGet):
         ele_numbers = np.array(structure.atomic_numbers)
         result = self.refine(*result, ele_numbers=ele_numbers, **self.refined_strategy_param)
 
-        if len(result[0].tolist()) == len(structure.species) or not self.check_align:
+        if len(result[0]) == len(structure.species) or not self.check_align:
             return result
         else:
 

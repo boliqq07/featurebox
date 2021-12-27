@@ -7,7 +7,7 @@ Index by structure
 ::
 
 >>> from featurebox.featurizers.atom.mapper import AtomJsonMap
->>> tmps = AtomJsonMap(search_tp="number", embedding_dict="elemental_MEGNet.json")
+>>> tmps = AtomJsonMap(search_tp="number", embedding_dict="ele_megnet.json")
 >>> a = tmps.convert(structures)
 
 The return data are properties of 1, 76 elements.
@@ -16,7 +16,7 @@ Index by number, with your-self json
 ::
 
 >>> from featurebox.featurizers.atom.mapper import AtomJsonMap
->>> tmps = AtomJsonMap(search_tp="number",embedding_dict="elemental_MEGNet.json")
+>>> tmps = AtomJsonMap(search_tp="number",embedding_dict="ele_megnet.json")
 >>> s = [1,76]
 >>> # could from [i.specie.Z for i in structure]
 >>> a = tmps.convert(s)

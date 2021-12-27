@@ -18,7 +18,7 @@ Multiple strategy combinations::
 Custom atom Features::
 
     >>> appa1 = mapper.AtomPymatgenPropMap(prop_name=func_map, search_tp="number")
-    >>> appa2 = mapper.AtomTableMap(tablename="element_table.csv", search_tp="number")
+    >>> appa2 = mapper.AtomTableMap(tablename="ele_table.csv", search_tp="number")
     >>> appa = ConverterCat(appa1, appa2)
 
 Custom state Features::
