@@ -180,11 +180,11 @@ msgid "scikit-learn ::"
 msgstr ""
 
 #: ../../Install.rst:75
-msgid "mgetool::"
+msgid "featurebox::"
 msgstr ""
 
 #: ../../Install.rst:79
-msgid "Reference: https://github.com/Mgedata/mgetool"
+msgid "Reference: https://github.com/Mgedata/featurebox"
 msgstr ""
 
 #: ../../Install.rst:81
