@@ -1,4 +1,5 @@
 """Use descriptors form ``pyXtal_FF``, in :mod:`featurebox.test_featurizers.descriptors`
+all with ``calculate`` method.
 """
 import copy
 from typing import Dict, Tuple

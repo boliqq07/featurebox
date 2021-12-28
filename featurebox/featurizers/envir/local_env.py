@@ -1,4 +1,5 @@
 """Use NearNeighbors from ``pymatgen``.
+all with ``get_all_nn_info`` method.
 
 Most in :mod:`pymatgen.analysis.local_env` or
 in :func:`pymatgen.optimization.neighbors.find_points_in_spheres`
