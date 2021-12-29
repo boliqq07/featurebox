@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """以 featurebox 中版本为准，若在其它处更改，请更新 featurebox。"""
 import os
+import warnings
 
 from tqdm import tqdm
 
@@ -85,7 +86,7 @@ temps = {"lsf_python": lsf_python_template, "pbs_python": pbs_python_template,
 
 
 def upload(run_tem=None, pwd=None, filter_in=None,
-           filter_out=None, existed_run_tem=None, **kwargs):
+           filter_out=None, existed_run_tem=None, store_name="batch.sh", **kwargs):
     """
     产生批处理提交文件。
     最方便用法: 把该文件放到算例同一文件夹下，并提供 pbs or lsf 模板给 run_tem 参数.
@@ -143,21 +144,11 @@ def upload(run_tem=None, pwd=None, filter_in=None,
             "若子文件夹已经存在模板，提供使用它们的统一文件名如：\n" \
             " -e lsf.run \n"
 
-        assert os.path.isfile(existed_run_tem)
+        job_type = "pbs"
+        print("Job type is un-recognition, please modify the {} file manually, "
+              "such as change 'qsub' to  'bsub <' or not.".format(store_name))
 
-        try:
-            a = open(existed_run_tem)
-            con = a.readlines()
-            temp_run_tem = "".join(con)
-        except IOError:
-            raise IOError("We cannot import message from {} file".format(existed_run_tem))
-
-        if "SBATCH" in temp_run_tem:
-            job_type = "pbs"
-        else:
-            job_type = "lsf"
-
-    if os.path.isfile(run_tem):
+    elif os.path.isfile(run_tem):
         try:
             a = open(run_tem)
             con = a.readlines()
@@ -176,7 +167,7 @@ def upload(run_tem=None, pwd=None, filter_in=None,
 
     if pwd is None:
         pwd = os.getcwd()
-    os.chdir(pwd)
+
     files = os.listdir(pwd)  # 读入文件夹
     if isinstance(filter_in, str):
         files = [i for i in files if filter_in in i]
@@ -191,12 +182,14 @@ def upload(run_tem=None, pwd=None, filter_in=None,
     if len(files) == 0:
         raise FileNotFoundError("There is no directory left after filtering")
 
+    old = os.getcwd()
+
     for filei in tqdm(files):
         if run_tem is not None:
             try:
                 existed_run_tem = existed_run_tem if existed_run_tem else "run.lsfpbs"
                 os.chdir(os.path.join(pwd, str(filei)))
-                pwdpath = os.getcwd()
+
                 f = open(existed_run_tem, "w")
                 f.write(run_tem)
                 f.close()
@@ -214,7 +207,8 @@ def upload(run_tem=None, pwd=None, filter_in=None,
                 # pwdpath = os.getcwd()
                 # assert os.path.isfile(existed_run_tem), "老夫一瞅，你的{}下没有你说的这个{}文件".format(os.getcwd(),existed_run_tem)
                 assert os.path.isfile(os.path.join(os.getcwd(), existed_run_tem)), \
-                    "There is no {} in your {}".format(existed_run_tem, os.getcwd())
+                    "There is no {} in your {}, '{}' is the real name?".format(existed_run_tem, os.getcwd(),
+                                                                               existed_run_tem)
                 if INCAR is not None:
                     f = open("INCAR", "w")
                     f.write(INCAR)
@@ -222,6 +216,7 @@ def upload(run_tem=None, pwd=None, filter_in=None,
             except NotADirectoryError:
                 print(filei, "is a file and filtered")
                 files.remove(filei)
+        os.chdir(old)
 
     if job_type == "lsf":
         job_type = "bsub < {}".format(existed_run_tem)
@@ -245,19 +240,24 @@ done
     batch_str = batch_str.replace("[", "")
     batch_str = batch_str.replace("]", "")
     batch_str = batch_str.replace(",", "")
-    bach = open("batch.sh", "w")
+    bach = open(store_name, "w")
     bach.write(batch_str)
     bach.close()
-    print("###################################################")
+    print("{} are sored in {}".format(store_name, os.path.abspath(pwd)))
     print("OK")
 
 
-class CLICommand:
+def run(args, parser):
+    upload(run_tem=args.run_tem, pwd=args.path_name, filter_in=args.dir_include,
+           filter_out=args.dir_exclude, existed_run_tem=args.existed_run_tem, INCAR=args.INCAR,
+           store_name=args.store_name)
 
+
+class CLICommand:
     """
     '产生任务批处理文件,请保证 -r,-e 至少存在一个.'
     '最方便用法: '
-    '1.把该文件放到和算例同一文件夹下，并提供 pbs or lsf 等模板给 -r 参数.'
+    '1.把该文件放到算例文件夹们的 父文件夹下，并提供 pbs or lsf 等文件模板给 -r 参数.'
     "featurebox batchrun -p /***/data -r /***/pbs.run"
 
     原本的文件格式：
@@ -268,7 +268,7 @@ class CLICommand:
      |-- pbs.run
 
     "2.若算例中已经存在pbs or lsf 模板，请提供模板名字（不会包含路径）给 -e 参数."
-    "featurebox batchrun -p /***/data -e pbs.run "
+    "featurebox batchrun -p /***/data -e pbs.run"
 
     ---- data/
      |-- data1/
@@ -288,22 +288,19 @@ class CLICommand:
     def add_arguments(parser):
         parser.add_argument('-r', dest='run_tem', default=None,
                             help='{pbs,lsf}模板文件地址')
-        parser.add_argument('-p', dest='pwd', default=None,
-                            help='所有算例地址, 默认当前地址')
         parser.add_argument('-e', dest='existed_run_tem', default=None,
                             help='当子文件夹已经存在{pbs,lsf}模板文件，直接使用它。提供该统一模板文件的名字')
-        parser.add_argument('-i', dest='filter_in', default=None,
-                            help='过滤条件，当文件夹包含该字符串被选中')
-        parser.add_argument('-o', dest='filter_in', default=None,
-                            help='过滤条件，当文件夹包含该字符串被忽略')
         parser.add_argument('-incar', dest='INCAR', default=None,
                             help='该 INCAR 也批量复制。')
+        parser.add_argument('-p', '--path_name', type=str, default='.', help='所有算例地址, 默认当前地址')
+        parser.add_argument('-id', '--dir_include', help='include dir name.', type=str, default=None)
+        parser.add_argument('-ed', '--dir_exclude', help='exclude dir name.', type=str, default=None)
+        parser.add_argument('-o', '--store_name', help='out file name.', type=str, default="batch_run.sh")
 
     @staticmethod
     def run(args, parser):
         # args = args.parse_args()
-        upload(run_tem=args.run_tem, pwd=args.pwd, existed_run_tem=args.existed_run_tem, job_type=args.job_type,
-               INCAR=args.INCAR)
+        run(args, parser)
 
 
 ################################################################################################################
@@ -319,20 +316,16 @@ if __name__ == '__main__':
                                                  "python batchrun.py -e pbs.run \n")
     parser.add_argument('-r', dest='run_tem', default=None,
                         help='{pbs,lsf}模板文件地址')
-    parser.add_argument('-p', dest='pwd', default=None,
-                        help='所有算例地址, 默认当前地址')
     parser.add_argument('-e', dest='existed_run_tem', default=None,
                         help='当子文件夹已经存在{pbs,lsf}模板文件，直接使用它。提供该统一模板文件的名字')
-    parser.add_argument('-i', dest='filter_in', default=None,
-                        help='过滤条件，当文件夹包含该字符串被选中')
-    parser.add_argument('-o', dest='filter_in', default=None,
-                        help='过滤条件，当文件夹包含该字符串被忽略')
     parser.add_argument('-incar', dest='INCAR', default=None,
-                        help='该 INCAR 也批量复制。')
+                        help='该 INCAR 也批量复制')
+    parser.add_argument('-p', '--path_name', type=str, default='.', help='所有算例地址, 默认当前地址')
+    parser.add_argument('-id', '--dir_include', help='include dir name.', type=str, default=None)
+    parser.add_argument('-ed', '--dir_exclude', help='exclude dir name.', type=str, default=None)
+    parser.add_argument('-o', '--store_name', help='out file name.', type=str, default="batch_run.sh")
     args = parser.parse_args()
-
-    upload(run_tem=args.run_tem, pwd=args.pwd, existed_run_tem=args.existed_run_tem, job_type=args.job_type,
-           INCAR=args.INCAR)
+    run(args, parser)
 ##############################################################################################################
 # print(upload.__doc__)
 # upload(run_tem="/share/home/skk/wcx/cam3d/Instance/Instance1/others/run.lsf", pwd="/share/home/skk/wcx/test/")

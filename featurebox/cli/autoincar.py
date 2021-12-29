@@ -143,7 +143,7 @@ def _LORBIT(notes: str, params: Dict = None)->Dict:
 def _NBANDS(notes: str, params: Dict = None) -> Dict:
     if any([i in notes for i in ["DOS", "态密度", "能带", "bandgap", "band gap"]]):
         _a = {"LORBIT": 10}
-    elif any([i in notes for i in ["分波"]]):
+    if any([i in notes for i in ["分波","band centor"]]):
         _a = {"LORBIT": 11}
     else:
         _a={}
@@ -211,7 +211,7 @@ def _BADER(notes: str, params: Dict = None) -> Dict:
     """bader """
     if any([i in notes for i in ["bader", "巴德"]]):
         _a = {"LAECHG": True,
-              "LCHARG": True
+              "LCHARG": 11,
               }
     else:
         _a = {}

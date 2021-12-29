@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 from mgetool.imports import BatchFile
 
+
 # Due to the pymatgen is incorrect of band gap with 2 spin. we use vaspkit for extract data.
 
 def cal(d, store=False, store_name="temp.csv"):
@@ -50,34 +51,38 @@ def cal_all(d, repeat=0, store=False, store_name="temp_all.csv"):
 
     if store:
         result.to_csv(store_name)
+        print("'{}' are sored in '{}'".format(store_name, os.getcwd()))
 
     return data_all
 
 
-def cmd_sys(cmds=("vaspkit -task 911", )):
+def cmd_sys(cmds=("vaspkit -task 911",)):
     for i in cmds:
         os.system(i)
 
 
 def read(d, store=False, store_name="temp.csv"):
-        with open("BAND_GAP") as f:
-            res = f.readlines()
+    with open("BAND_GAP") as f:
+        res = f.readlines()
 
-        res = [i for i in res if "(eV)" in i]
+    res = [i for i in res if "(eV)" in i]
 
-        name = [i.split(":")[0].replace("  ", "") for i in res]
-        name = [i[1:] if i[0] == " " else i for i in name]
-        value = [float(i.split(" ")[-1].replace("\n", "")) for i in res]
-        result = {"File":str(d)}
-        for ni, vi in zip(name, value):
-            result.update({ni: vi})
+    name = [i.split(":")[0].replace("  ", "") for i in res]
+    name = [i[1:] if i[0] == " " else i for i in name]
+    value = [float(i.split(" ")[-1].replace("\n", "")) for i in res]
+    result = {"File": str(d)}
+    for ni, vi in zip(name, value):
+        result.update({ni: vi})
 
-        result = pd.DataFrame.from_dict(result)
+    result = {"0": result}
 
-        if store:
-            result.to_csv(store_name)
+    result = pd.DataFrame.from_dict(result).T
 
-        return result
+    if store:
+        result.to_csv(store_name)
+        print("'{}' are sored in '{}'".format(store_name, os.getcwd()))
+
+    return result
 
 
 def run(args, parser):
@@ -87,7 +92,7 @@ def run(args, parser):
         print(args.dir_name, res)
     else:
         assert args.job_type in ["M", "m"]
-        bf = BatchFile(args.path, suffix=args.suffix)
+        bf = BatchFile(args.path_name, suffix=args.suffix)
         bf.filter_dir_name(include=args.dir_include, exclude=args.dir_exclude, layer=args.layer)
         bf.filter_file_name(include=args.file_include, exclude=args.file_exclude)
         bf.merge()
@@ -103,17 +108,15 @@ def run(args, parser):
             absp = os.path.abspath(args.path)
             fdir = [i.replace(absp, ".") for i in fdir]
 
-        if "all" not in args.out_name:
-            name = args.out_name + "_all"
+        if "All" not in args.out_name or "all" not in args.out_name:
+            name = "All_" + args.out_name
         else:
             name = args.out_name
 
         cal_all(fdir, repeat=args.repeat, store=True, store_name=name)
 
 
-
 class CLICommand:
-
     """
     批量提取带隙,费米能级， 保存到当前工作文件夹。 查看参数帮助使用 -h。
     在 featurebox 中运行，请使用 featurebox bgefvk ...
@@ -122,11 +125,13 @@ class CLICommand:
     首先，请确保 运算子文件夹(sample_i_dir)包含应有 vasp 输入输出文件。
     parent_dir(为上层目录，或者上n层目录)
 
+    EIGENVAL is need for vaspkit.
+
     如果在 featurebox 中运行多个案例,请指定顶层文件夹:
 
     Example:
 
-        $ featurebox bgefvk -p /home/parent_dir -if POSCAR
+        $ featurebox bgefvk -p /home/parent_dir
 
     如果在 featurebox 中运行单个案例，请指定运算子文件夹:
 
@@ -143,7 +148,7 @@ class CLICommand:
         parser.add_argument('-s', '--suffix', help='suffix of file', type=str, default=None)
         parser.add_argument('-if', '--file_include', help='include file name.', type=str, default="EIGENVAL")
         parser.add_argument('-ef', '--file_exclude', help='exclude file name.', type=str, default=None)
-        parser.add_argument('-id', '--dir_include', help='include dir name.', type=str, default="static")
+        parser.add_argument('-id', '--dir_include', help='include dir name.', type=str, default=None)
         parser.add_argument('-ed', '--dir_exclude', help='exclude dir name.', type=str, default=None)
         parser.add_argument('-l', '--layer', help='dir depth,default the last layer', type=int, default=-1)
         parser.add_argument('-abspath', '--abspath', help='return abspath', type=bool, default=True)
@@ -152,23 +157,23 @@ class CLICommand:
 
     @staticmethod
     def run(args, parser):
-        run(args,parser)
+        run(args, parser)
 
 
 if __name__ == '__main__':
     """
     Example:
         
-        $ python bgefvk.py -p /home/dir_name -if POSCAR
+        $ python bgefvk.py -p /home/dir_name -if EIGENVAL
     """
     parser = argparse.ArgumentParser(description="Get band gaps. Examples：\n"
-                                                 "python bgefvk.py -p /home/dir_name -if POSCAR")
+                                                 "python bgefvk.py -p /home/dir_name -if EIGENVAL")
     parser.add_argument('-p', '--path_name', type=str, default='.')
     parser.add_argument('-t', '--job_type', type=str, default='m')
     parser.add_argument('-s', '--suffix', help='suffix of file', type=str, default=None)
     parser.add_argument('-if', '--file_include', help='include file name.', type=str, default="EIGENVAL")
     parser.add_argument('-ef', '--file_exclude', help='exclude file name.', type=str, default=None)
-    parser.add_argument('-id', '--dir_include', help='include dir name.', type=str, default="static")
+    parser.add_argument('-id', '--dir_include', help='include dir name.', type=str, default=None)
     parser.add_argument('-ed', '--dir_exclude', help='exclude dir name.', type=str, default=None)
     parser.add_argument('-l', '--layer', help='dir depth,default the last layer', type=int, default=-1)
     parser.add_argument('-abspath', '--abspath', help='return abspath', type=bool, default=True)
@@ -176,5 +181,3 @@ if __name__ == '__main__':
     parser.add_argument('-o', '--out_name', help='out file name.', type=str, default="bandgap_Ef.csv")
     args = parser.parse_args()
     run(args, parser)
-
-

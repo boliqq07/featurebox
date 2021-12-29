@@ -15,7 +15,8 @@ class CLIError(Exception):
 commands_ = [
 
     ('bgefvk', 'featurebox.cli.bgefvk'),
-    ('dbcvk', 'featurebox.cli.dbcvk'),
+    ('bader', 'featurebox.cli.bader'),
+    # ('dbcvk', 'featurebox.cli.dbcvk'),
     ('batchrun', 'featurebox.cli.batchrun'),
     ('autoincar', 'featurebox.cli.autoincar'),
     # ('run', 'ase.cli.run'),
