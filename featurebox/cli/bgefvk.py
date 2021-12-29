@@ -70,9 +70,15 @@ def read(d, store=False, store_name="temp.csv"):
     name = [i.split(":")[0].replace("  ", "") for i in res]
     name = [i[1:] if i[0] == " " else i for i in name]
     value = [float(i.split(" ")[-1].replace("\n", "")) for i in res]
+
     result = {"File": str(d)}
     for ni, vi in zip(name, value):
         result.update({ni: vi})
+
+    if round(value[1], 2) <= round(value[3], 2) <= round(value[2], 2):
+        result.update({'Fermi Energy (eV) Center': (value[1] + value[2]) / 2})
+    else:
+        result.update({'Fermi Energy (eV) Center': value[3]})
 
     result = {"0": result}
 
