@@ -1,41 +1,60 @@
-import argparse
 import os
-
-# Due to the pymatgen is incorrect of band gap with 2 spin. we use vaspkit for extract data.
+from typing import Callable
+import numpy as np
 import pandas as pd
-from mgetool.imports import BatchFile
-import os
 
 
-def from_vaspkit(d, result_name="D_BAND_CENTER", cmd="vaspkit -task 503", postprocessing=lambda x:x):
+def cal(d, read:Callable, cmds=("ls","pwd"),  store=False, store_name="temp.csv"):
     """Run linux cmd and return result, make sure the vaspkit is installed."""
+    old = os.getcwd()
+    os.chdir(d)
     try:
-        old = os.getcwd()
-        os.chdir(d)
-        os.system(cmd)
-
-        with open(result_name, mode="r") as f:
-            ress = f.readlines()
-
-        result = postprocessing(ress)
+        #
+        cmd_sys(cmds)
+        # >>>
+        result = read(d, store=store, store_name=store_name)
+        # <<<
 
         os.chdir(old)
-
         return result
     except BaseException as e:
         print(e)
         print("Error for:", d)
-        return {}
+
+        os.chdir(old)
+        return None
 
 
-def from_vaspkit_all(d, repeat=0):
-    data_all = {}
+def cal_all(d,read:Callable, cmds=("ls","pwd"), repeat=0, store=False, store_name="temp_all.csv"):
+    data_all = []
+    col = None
     for di in d:
-        res = from_vaspkit(di)
-        if repeat <=1 :
-            data_all.update({di: res})
+        res = cal(di,read=read,store=False)
+
+        if isinstance(res, pd.DataFrame):
+            col = res.columns
+            res = res.values
+            if repeat <= 1:
+                data_all.append(res)
+            else:
+                for i in range(repeat):
+                    res2 = res
+                    res2[:, 0] = res2[:, 0] + f"-S{i}"
+                    data_all.append(res2)
         else:
-            for i in range(repeat):
-                data_all.update({str(di)+f"S{i}": res})
+            pass
+    data_all = np.concatenate(data_all, axis=0)
+    result = pd.DataFrame(data_all, columns=col)
+
+    if store:
+        result.to_csv(store_name)
 
     return data_all
+
+
+def cmd_sys(cmds=("vaspkit -task 911", )):
+    if not cmds:
+        pass
+    else:
+        for i in cmds:
+            os.system(i)

@@ -1,0 +1,9 @@
+#!/bin/sh
+#BSUB -q normal
+#BSUB -n 48
+#BSUB -o %J.out
+#BSUB -e %J.err
+#BSUB -R "span[ptile=24]"
+PATH=/share/app/vasp.5.4.1-2018/bin/:$PATH
+source /share/intel/intel/bin/compilervars.sh intel64
+mpirun vasp_std > lg
