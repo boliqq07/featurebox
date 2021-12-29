@@ -91,7 +91,7 @@
 #     return data_all
 #
 #
-# def cmd_sys(cmds=("vaspkit&&5&&503&&y&&-5 5&&all",)):
+# def cmd_sys(cmds=("vaspkit -task 503",)):
 #     if not cmds:
 #         pass
 #     else:
