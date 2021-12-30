@@ -8,6 +8,7 @@
 #####################################
 import os
 import warnings
+
 try:
     from pymatgen import SETTINGS
 except ImportError:
@@ -19,7 +20,9 @@ from pymatgen.io.vasp import Potcar, Poscar
 def check_PMG_VASP_PSP_DIR():
     d = SETTINGS.get("PMG_VASP_PSP_DIR")
     if d is None:
-        warnings.warn("No POTCAR found. Please set the PMG_VASP_PSP_DIR environment in .pmgrc.yaml by `set_PMG_VASP_PSP_DIR function` or manually", UserWarning)
+        warnings.warn(
+            "No POTCAR found. Please set the PMG_VASP_PSP_DIR environment in .pmgrc.yaml by `set_PMG_VASP_PSP_DIR function` or manually",
+            UserWarning)
         return False
     else:
         return True
@@ -63,8 +66,6 @@ class Potcar2(Potcar):
         symbol = poscar.site_symbols
         return cls(symbols=symbol, functional=functional, sym_potcar_map=sym_potcar_map)
 
-
-
 # if __name__ == '__main__':
-    # 命令行模式
-    # set_PMG_VASP_PSP_DIR("/data/home/suyj/wcx/potcars_pmg/")
+# 命令行模式
+# set_PMG_VASP_PSP_DIR("/data/home/suyj/wcx/potcars_pmg/")

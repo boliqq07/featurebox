@@ -102,6 +102,5 @@ class TestGraph(unittest.TestCase):
         c = tmps.transform(s)
 
 
-
 if __name__ == '__main__':
     unittest.main()

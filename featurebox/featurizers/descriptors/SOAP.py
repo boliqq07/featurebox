@@ -666,6 +666,7 @@ def zero_4D_array(arr):
                     arr[i, j, k, l] = 0.0 + 0.0j
     return
 
+
 # @nb.njit(nb.void(nb.c16[:, :]), cache=True, fastmath=True, nogil=True)
 # def zero_2D_array(arr):
 #     '''
@@ -786,7 +787,7 @@ def get_power_spectrum_components(center_atoms, neighborlist, neighbor_indices, 
                 r = np.sqrt(x * x + y * y + z * z)
                 if r < 10 ** (-8):
                     continue
-                clist = np.full_like(clist,0.0 + 0.0j)
+                clist = np.full_like(clist, 0.0 + 0.0j)
 
                 compute_carray(x, y, z, r, alpha, rcut, nmax, lmax, w, clist)
 

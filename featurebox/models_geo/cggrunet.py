@@ -66,7 +66,8 @@ class NNConvNew(NNConv):
 class _Interactions(Module):
     """Auto attention."""
 
-    def __init__(self, um_node_hidden_channels=64, num_edge_gaussians=None, num_node_interaction_channels=64, n_conv=2,**kwargs
+    def __init__(self, um_node_hidden_channels=64, num_edge_gaussians=None, num_node_interaction_channels=64, n_conv=2,
+                 **kwargs
                  ):
         super(_Interactions, self).__init__()
         nf = num_node_interaction_channels
@@ -132,4 +133,4 @@ class CGGRUNet(BaseCrystalModel):
 
     def get_readout_layer(self):
         self.readout_layer = CGGRU_ReadOut(self.num_node_interaction_channels,
-                                           n_set2set=2, out_size=self.out_size,kwargs=self.readout_kwargs)
+                                           n_set2set=2, out_size=self.out_size, kwargs=self.readout_kwargs)

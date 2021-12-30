@@ -8,12 +8,19 @@ import os
 
 import numpy as np
 
+""""
+Note:
+    For some version,  vaspkit -task 503 was not cant run (in line mode but interactive mode.).
+    
+"""
+
+
 # LORBIT=2
 
 
-def read(d, store=False,store_name="temp.csv"):
+def read(d, store=False, store_name="temp.csv", file_name="D_BAND_CENTER"):
     """Run linux cmd and return result, make sure the vaspkit is installed."""
-    result_name = "BAND_CENTER"
+    result_name = file_name
     with open(result_name, mode="r") as f:
         ress = f.readlines()
 
@@ -28,10 +35,10 @@ def read(d, store=False,store_name="temp.csv"):
             res.append(i)
 
     res = np.array(res[1:])
-    res = np.concatenate((np.full(res.shape[0], fill_value=str(d)).reshape(-1,1),res),axis=1)
+    res = np.concatenate((np.full(res.shape[0], fill_value=str(d)).reshape(-1, 1), res), axis=1)
     result = pd.DataFrame(res,
-                       columns=["File", "Atom", "d-Band-Center (UP)", "d-Band-Center (DOWN)",
-                                "d-Band-Center (Average)"])
+                          columns=["File", "Atom", "d-Band-Center (UP)", "d-Band-Center (DOWN)",
+                                   "d-Band-Center (Average)"])
 
     if store:
         result.to_csv(store_name)
@@ -39,17 +46,14 @@ def read(d, store=False,store_name="temp.csv"):
     return result
 
 
-
-# Due to the pymatgen is incorrect of band gap with 2 spin. we use vaspkit for extract data.
-
-
-def cal(d, store=False, store_name="temp.csv"):
+def cal(d, store=False, store_name="temp.csv", run_cmd=True, cmds=None):
     """Run linux cmd and return result, make sure the vaspkit is installed."""
     old = os.getcwd()
     os.chdir(d)
     try:
         #
-        cmd_sys()
+        if run_cmd:
+            cmd_sys(cmds=cmds)
         # >>>
         result = read(d, store=store, store_name=store_name)
         # <<<
@@ -64,11 +68,11 @@ def cal(d, store=False, store_name="temp.csv"):
         return None
 
 
-def cal_all(d, repeat=0, store=False, store_name="temp_all.csv"):
+def cal_all(d, repeat=0, store=False, store_name="temp_all.csv", run_cmd=True, cmds=None):
     data_all = []
     col = None
     for di in d:
-        res = cal(di)
+        res = cal(di, run_cmd=run_cmd, cmds=cmds)
 
         if isinstance(res, pd.DataFrame):
             col = res.columns
@@ -88,15 +92,11 @@ def cal_all(d, repeat=0, store=False, store_name="temp_all.csv"):
     if store:
         result.to_csv(store_name)
         print("'{}' are sored in '{}'".format(store_name, os.getcwd()))
-    return data_all
+    return result
 
 
-def cmd_sys(cmds=("vaspkit -task 503",)):
-    if not cmds:
-        pass
-    else:
-        for i in cmds:
-            os.system(i)
+def cmd_sys(cmds=None):
+    os.system("vaspkit -task 503")
 
 
 def run(args, parser):
@@ -195,5 +195,3 @@ if __name__ == '__main__':
     parser.add_argument('-o', '--out_name', help='out file name.', type=str, default="dbc.csv")
     args = parser.parse_args()
     run(args, parser)
-
-

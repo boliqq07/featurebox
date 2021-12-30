@@ -51,8 +51,8 @@ def get_strategy2_in_spheres(structure, nn_strategy, cutoff, numerical_tol=None,
 
     a1, a2, a3, a4, _ = get_radius_in_spheres(structure, nn_strategy=None, cutoff=cutoff,
                                               numerical_tol=numerical_tol,
-                                           pbc=pbc,
-                                           )
+                                              pbc=pbc,
+                                              )
 
     return a1, a2, a3, a4, b5
 
@@ -76,7 +76,7 @@ def get_5_result(d: Dict, **kwargs) -> Tuple[np.ndarray, np.ndarray, np.ndarray,
         center_prop: np.ndarray 1d(N,l_c).\n
 
     """
-    center= d["x"]
+    center = d["x"]
     atom_len = center.shape[0]
 
     center_indices = np.array(range(atom_len))

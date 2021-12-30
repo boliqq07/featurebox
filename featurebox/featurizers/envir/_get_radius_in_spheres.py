@@ -71,12 +71,14 @@ def get_radius_in_spheres(
     return center_indices[exclude_self], neighbor_indices[exclude_self], images[exclude_self], \
            distances[exclude_self], np.array(None)
 
+
 if __name__ == "__main__":
     from mgetool.tool import tt
+
     structure = Structure.from_file("../../data/temp_test_structure/W2C.cif")
     tt.t
     get_points_ = get_radius_in_spheres(structure,
-                                     cutoff=5.0, pbc=True,
-                                     )
+                                        cutoff=5.0, pbc=True,
+                                        )
     tt.t  #
     tt.p

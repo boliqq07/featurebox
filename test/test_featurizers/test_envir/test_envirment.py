@@ -11,7 +11,7 @@ class TestGraph(unittest.TestCase):
     def setUp(self) -> None:
         ce = CheckElements.from_pymatgen_structures()
         self.data = data01
-        self.data2 =  data02
+        self.data2 = data02
         self.data0 = self.data[0]
         self.data0_3 = ce.check(self.data)[:10]
         self.data0_checked = ce.check(self.data)[:10]

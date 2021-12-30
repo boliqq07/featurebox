@@ -199,9 +199,9 @@ for i, j in NNDict.items():
 
 
 def get_strategy1_in_spheres(structure: StructureOrMolecule, nn_strategy: NearNeighbors,
-                            cutoff: float = 5.0, numerical_tol: float = 1e-8,
-                            pbc=True,
-                            ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+                             cutoff: float = 5.0, numerical_tol: float = 1e-8,
+                             pbc=True,
+                             ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     nn_strategy_ = copy.copy(nn_strategy)
 
     nn_strategy_.cutoff = cutoff

@@ -177,7 +177,7 @@ class InMemoryDatasetGeo(InMemoryDataset):
 
     """
 
-    def __init__(self, root, pre_transform=None, pre_filter=None, re_process_init=True,transform=None, load_mode="i"):
+    def __init__(self, root, pre_transform=None, pre_filter=None, re_process_init=True, transform=None, load_mode="i"):
         """
 
         Args:

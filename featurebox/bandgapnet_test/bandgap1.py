@@ -27,7 +27,7 @@ plt.plot(x[0:50], y[0:50])
 plt.title('原始部分波形（前50组样本）')
 plt.show()
 
-fft_y=fft(y)                          #快速傅里叶变换
+fft_y = fft(y)  # 快速傅里叶变换
 print(len(fft_y))
 print(fft_y[0:5])
 
@@ -36,11 +36,8 @@ x = np.arange(N)  # 频率个数
 abs_y = np.abs(fft_y)  # 取复数的绝对值，即复数的模(双边频谱)
 angle_y = np.angle(fft_y)  # 取复数的角度
 
-normalization_y=abs_y/N            #归一化处理（双边频谱）
+normalization_y = abs_y / N  # 归一化处理（双边频谱）
 plt.figure()
-plt.plot(x,normalization_y,'g')
-plt.title('双边频谱(归一化)',fontsize=9,color='green')
+plt.plot(x, normalization_y, 'g')
+plt.title('双边频谱(归一化)', fontsize=9, color='green')
 plt.show()
-
-
-

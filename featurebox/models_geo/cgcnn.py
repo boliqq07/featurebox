@@ -74,6 +74,7 @@ class _Interactions(Module):
 
         return out
 
+
 class CrystalGraphConvNet(BaseCrystalModel):
     """
     CrystalGraph.

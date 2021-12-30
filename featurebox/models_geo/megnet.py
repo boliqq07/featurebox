@@ -33,7 +33,7 @@ class MEGNet(BaseCrystalModel):
                                          self.num_node_interaction_channels,
                                          cutoff=self.cutoff,
                                          n_conv=self.num_interactions, num_state_features=self.num_state_features,
-                                         kwargs = self.interaction_kwargs
+                                         kwargs=self.interaction_kwargs
                                          )
 
 
@@ -48,7 +48,8 @@ class _Interaction(torch.nn.Module):
 
         for _ in range(self.n_conv):
             self.lin_list1.append(Linear(num_node_hidden_channels + num_state_features, num_node_hidden_channels))
-            block = Meg_InteractionBlock(num_node_hidden_channels, num_edge_gaussians, num_node_interaction_channels, cutoff)
+            block = Meg_InteractionBlock(num_node_hidden_channels, num_edge_gaussians, num_node_interaction_channels,
+                                         cutoff)
             self.interactions.append(block)
         self.num_state = num_state_features
 

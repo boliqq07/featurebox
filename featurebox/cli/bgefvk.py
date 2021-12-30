@@ -7,13 +7,15 @@ from mgetool.imports import BatchFile
 
 # Due to the pymatgen is incorrect of band gap with 2 spin. we use vaspkit for extract data.
 
-def cal(d, store=False, store_name="temp.csv"):
+
+def cal(d, store=False, store_name="temp.csv", run_cmd=True, cmds=None):
     """Run linux cmd and return result, make sure the vaspkit is installed."""
     old = os.getcwd()
     os.chdir(d)
     try:
         #
-        cmd_sys()
+        if run_cmd:
+            cmd_sys(cmds=cmds)
         # >>>
         result = read(d, store=store, store_name=store_name)
         # <<<
@@ -28,11 +30,11 @@ def cal(d, store=False, store_name="temp.csv"):
         return None
 
 
-def cal_all(d, repeat=0, store=False, store_name="temp_all.csv"):
+def cal_all(d, repeat=0, store=False, store_name="temp_all.csv", run_cmd=True, cmds=None):
     data_all = []
     col = None
     for di in d:
-        res = cal(di)
+        res = cal(di, run_cmd=run_cmd, cmds=cmds)
 
         if isinstance(res, pd.DataFrame):
             col = res.columns
@@ -52,17 +54,15 @@ def cal_all(d, repeat=0, store=False, store_name="temp_all.csv"):
     if store:
         result.to_csv(store_name)
         print("'{}' are sored in '{}'".format(store_name, os.getcwd()))
-
-    return data_all
-
-
-def cmd_sys(cmds=("vaspkit -task 911",)):
-    for i in cmds:
-        os.system(i)
+    return result
 
 
-def read(d, store=False, store_name="temp.csv"):
-    with open("BAND_GAP") as f:
+def cmd_sys(cmds=None):
+    os.system("vaspkit -task 911")
+
+
+def read(d, store=False, store_name="temp.csv", file_name="BAND_GAP"):
+    with open(file_name) as f:
         res = f.readlines()
 
     res = [i for i in res if "(eV)" in i]

@@ -545,7 +545,7 @@ class StructureGraphGEO(BaseStructureGraphGEO):
         if edge_attr.ndim <= 1:
             edge_attr = edge_attr.reshape(1, -1)
 
-        if center_prop is not None and np.all(np.isreal(center_prop)) and center_prop.size!=1:
+        if center_prop is not None and np.all(np.isreal(center_prop)) and center_prop.size != 1:
             center_prop = center_prop.astype(dtype=np.float32)
 
             return {'edge_index': edge_index, "edge_weight": edge_weight, "edge_attr": edge_attr, "x": center_prop}

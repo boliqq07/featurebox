@@ -25,7 +25,6 @@ commands_ = [
 
 
 def main(prog='featurebox', description='featurebox command line tool.', args=None):
-
     commands = commands_
     parser = argparse.ArgumentParser(prog=prog,
                                      description=description,

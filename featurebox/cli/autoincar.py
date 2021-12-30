@@ -131,23 +131,26 @@ def _ICHARG(notes: str, params: Dict = None) -> Dict:
         _a = {}
     return _a
 
+
 ######能带#######
 
-def _LORBIT(notes: str, params: Dict = None)->Dict:
+def _LORBIT(notes: str, params: Dict = None) -> Dict:
     if any([i in notes for i in ["DOS", "态密度", "能带", "bandgap", "band gap"]]):
         _a = {"LORBIT": 10}
     else:
-        _a= {}
+        _a = {}
     return _a
+
 
 def _NBANDS(notes: str, params: Dict = None) -> Dict:
     if any([i in notes for i in ["DOS", "态密度", "能带", "bandgap", "band gap"]]):
         _a = {"LORBIT": 10}
-    if any([i in notes for i in ["分波","band centor"]]):
+    if any([i in notes for i in ["分波", "band centor"]]):
         _a = {"LORBIT": 11}
     else:
-        _a={}
+        _a = {}
     return _a
+
 
 ####离子弛豫#################
 
@@ -162,7 +165,7 @@ def _IBRION(notes: str, params: Dict = None) -> Dict:
     """
     if any([i in notes for i in ["弛豫", "CG"]]):
         _a = {"IBRION": 2}
-    elif any([i in notes for i in ["静态", "固定原子","能带"]]):
+    elif any([i in notes for i in ["静态", "固定原子", "能带"]]):
         _a = {"IBRION": -1}
     elif any([i in notes for i in ["AIMD", ]]):
         _a = {"IBRION": 0}
@@ -292,7 +295,6 @@ def auto_incar_file(notes="", params: Dict[str, Any] = None, path=None):
 
 
 class CLICommand:
-
     """
     自动产生 INCAR 脚本（仅供参考）. (-n 内容不要留有空格)
     最方便用法:

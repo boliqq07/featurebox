@@ -8,6 +8,7 @@ import pathlib
 
 import pandas as pd
 from pymatgen.core import Structure
+
 path = pathlib.Path(__file__).parent
 data01 = pd.read_pickle(path / "data_structure.pkl_pd")
 data02 = pd.read_pickle(path / "data_structure2.pkl_pd")

@@ -24,7 +24,9 @@ def get_msgid(text_lines):
     return text_cuple
     # for i in text_cuple:
 
-        # j.split("\n")
+    # j.split("\n")
+
+
 f = open("featurebox.selection.po")
 text_ = f.readlines()
 get_msgid(text_lines=text_)

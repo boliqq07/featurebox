@@ -42,7 +42,7 @@ class Complete(object):
         edge_index, edge_attr = remove_self_loops(edge_index, edge_attr)
         data.edge_attr = edge_attr
         data.edge_index = edge_index
-        data.state_attr = torch.zeros((1,2))
+        data.state_attr = torch.zeros((1, 2))
 
         return data
 
@@ -82,10 +82,10 @@ scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min',
                                                        factor=0.7, patience=2,
                                                        min_lr=0.001)
 
-lf= LearningFlow(model, train_loader, validate_loader=val_loader, device= "cuda:1",
-                 optimizer=None, clf= False, loss_method=None, learning_rate = 1e-3, milestones=None,
-                 weight_decay= 0.01, checkpoint=True, scheduler=scheduler,
-                 loss_threshold= 0.1, print_freq= None, print_what="all")
+lf = LearningFlow(model, train_loader, validate_loader=val_loader, device="cuda:1",
+                  optimizer=None, clf=False, loss_method=None, learning_rate=1e-3, milestones=None,
+                  weight_decay=0.01, checkpoint=True, scheduler=scheduler,
+                  loss_threshold=0.1, print_freq=None, print_what="all")
 # lf.run(50)
 import unittest
 

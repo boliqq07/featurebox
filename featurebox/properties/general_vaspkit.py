@@ -4,13 +4,14 @@ import numpy as np
 import pandas as pd
 
 
-def cal(d, read:Callable, cmds=("ls","pwd"),  store=False, store_name="temp.csv"):
+def cal(d, read: Callable, cmds=("ls", "pwd"), store=False, store_name="temp.csv", run_cmd=True):
     """Run linux cmd and return result, make sure the vaspkit is installed."""
     old = os.getcwd()
     os.chdir(d)
     try:
         #
-        cmd_sys(cmds)
+        if run_cmd:
+            cmd_sys(cmds)
         # >>>
         result = read(d, store=store, store_name=store_name)
         # <<<
@@ -25,11 +26,11 @@ def cal(d, read:Callable, cmds=("ls","pwd"),  store=False, store_name="temp.csv"
         return None
 
 
-def cal_all(d,read:Callable, cmds=("ls","pwd"), repeat=0, store=False, store_name="temp_all.csv"):
+def cal_all(d, read: Callable, cmds=("ls", "pwd"), repeat=0, store=False, store_name="temp_all.csv", run_cmd=True):
     data_all = []
     col = None
     for di in d:
-        res = cal(di,read=read,store=False)
+        res = cal(di, read=read, store=False, cmds=cmds, run_cmd=run_cmd)
 
         if isinstance(res, pd.DataFrame):
             col = res.columns
@@ -52,7 +53,7 @@ def cal_all(d,read:Callable, cmds=("ls","pwd"), repeat=0, store=False, store_nam
     return data_all
 
 
-def cmd_sys(cmds=("vaspkit -task 911", )):
+def cmd_sys(cmds=("vaspkit -task 911",)):
     if not cmds:
         pass
     else:

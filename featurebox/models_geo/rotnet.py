@@ -29,9 +29,10 @@ class SLayer(nn.Module):
         r_m3 = r_mark > self.r_c
         r_m2 = ~(r_m3 & r_m1)
         x[r_m1] = 1 / x[r_m1]
-        x[r_m2] = 1 / x[r_m2]*(0.5 * torch.cos(torch.pi * (x[r_m2] - self.r_cs) / (self.r_c - self.r_cs)) + 0.5)
+        x[r_m2] = 1 / x[r_m2] * (0.5 * torch.cos(torch.pi * (x[r_m2] - self.r_cs) / (self.r_c - self.r_cs)) + 0.5)
         x[r_m3] = 0
         return x
+
 
 # nn.Embedding
 class GLayer(nn.Module):
@@ -55,20 +56,19 @@ class GLayer(nn.Module):
 
 class RotNet(MessagePassing):
 
-    def __init__(self,node_hidden_channels, num_node_interaction_channels, **kwargs):
-        super(RotNet, self).__init__(aggr= "mean",
-                 flow="source_to_target", node_dim= -2,
-                 decomposed_layers= 1)
+    def __init__(self, node_hidden_channels, num_node_interaction_channels, **kwargs):
+        super(RotNet, self).__init__(aggr="mean",
+                                     flow="source_to_target", node_dim=-2,
+                                     decomposed_layers=1)
         self.sl = SLayer(r_index_num=0, r_cs=0.3, r_c=6.0)
         self.gl = GLayer(num_embeddings=16, embedding_dim=100)
-
 
     def forward(self, x: Union[Tensor, PairTensor], edge_index: Adj, edge_weight=None,
                 edge_attr: OptTensor = None, size: Size = None) -> Tensor:
         """"""
         # if isinstance(x, Tensor):
         #     x: PairTensor = (x, x)
-        out = self.propagate(edge_index, x=x, edge_weight=edge_weight,edge_attr=edge_attr, size=size,)
+        out = self.propagate(edge_index, x=x, edge_weight=edge_weight, edge_attr=edge_attr, size=size, )
         return out
 
     def __collect__(self, args, edge_index, size, kwargs):
@@ -81,11 +81,10 @@ class RotNet(MessagePassing):
         x_j = self.sl(x_j)
         G = self.gl(x_j)
         # 分开做下面的部分。
-        t = torch.matmul(G.T,x_j)
-        t = torch.matmul(t,x_j.T)
-        t = torch.matmul(t,G)
+        t = torch.matmul(G.T, x_j)
+        t = torch.matmul(t, x_j.T)
+        t = torch.matmul(t, G)
         return t
-
 
 
 class _Interactions(Module):
@@ -100,7 +99,7 @@ class _Interactions(Module):
 
         self.lin0 = Linear(node_hidden_channels, num_node_interaction_channels)
         self.short = Linear(num_edge_gaussians, short_len)
-        self.conv = RotNet(100,100)
+        self.conv = RotNet(100, 100)
 
         # for _ in range(n_conv):
         #     cg = CGConvNew(channels=num_node_interaction_channels, dim=short_len,
@@ -119,7 +118,7 @@ class _Interactions(Module):
         out = F.softplus(self.lin0(h))
         edge_attr = F.softplus(self.short(edge_attr))
 
-        out = self.conv(x=out, edge_index=edge_index, edge_weight=edge_weight,edge_attr=edge_attr)
+        out = self.conv(x=out, edge_index=edge_index, edge_weight=edge_weight, edge_attr=edge_attr)
 
         return out
 

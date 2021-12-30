@@ -245,7 +245,6 @@ def get_marked_class(nn_strategy, env_dict: Dict = None, instantiation: bool = T
     except (KeyError, TypeError):
         raise TypeError("only accept str or object inherit from nn_dict.values()")
 
-
 # if __name__ == '__main__':
 #     class AD(MSONable):
 #         def __init__(self, a, b):

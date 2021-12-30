@@ -8,7 +8,7 @@ from deap import tools
 from deap.algorithms import varAnd
 from deap.tools import mutShuffleIndexes
 from mgetool.newclass import create
-from mgetool.tool import batch_parallelize, check_random_state,parallelize
+from mgetool.tool import batch_parallelize, check_random_state, parallelize
 from sklearn.base import BaseEstimator, MetaEstimatorMixin
 from sklearn.datasets import load_boston
 from sklearn.feature_selection import SelectorMixin

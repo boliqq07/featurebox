@@ -35,20 +35,22 @@ class SchNet(BaseCrystalModel):
 
 
 class _InteractionBlockLoop(torch.nn.Module):
-    def __init__(self, num_node_hidden_channels, num_edge_gaussians, num_node_interaction_channels, cutoff, n_conv=2, **kwargs):
+    def __init__(self, num_node_hidden_channels, num_edge_gaussians, num_node_interaction_channels, cutoff, n_conv=2,
+                 **kwargs):
         super(_InteractionBlockLoop, self).__init__()
         self.interactions = ModuleList()
         self.n_conv = n_conv
         self.out = Linear(num_node_hidden_channels, num_node_interaction_channels)
 
         for _ in range(self.n_conv):
-            block = SchNet_InteractionBlock(num_node_hidden_channels, num_edge_gaussians, num_node_hidden_channels, cutoff)
+            block = SchNet_InteractionBlock(num_node_hidden_channels, num_edge_gaussians, num_node_hidden_channels,
+                                            cutoff)
             self.interactions.append(block)
 
     def forward(self, h, edge_index, edge_weight, edge_attr, data=None):
 
         for interaction in self.interactions:
-            h = h+F.softplus(interaction(h, edge_index, edge_weight, edge_attr, data=data))
+            h = h + F.softplus(interaction(h, edge_index, edge_weight, edge_attr, data=data))
 
         h = self.out(h)
 
@@ -121,4 +123,3 @@ class _CFConv(MessagePassing):
 
     def message(self, x_j: Tensor, W: Tensor):  # [num_edge,]
         return x_j * W
-

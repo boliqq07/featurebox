@@ -9,7 +9,6 @@ import os
 
 import numpy as np
 
-
 # 1
 # LAECHG=.TRUE.
 # LCHARG = .TRUE.
@@ -23,13 +22,14 @@ import numpy as np
 from pymatgen.io.vasp import Potcar, Poscar
 
 
-def cal(d, store=False, store_name="temp.csv"):
+def cal(d, store=False, store_name="temp.csv", run_cmd=True, cmds=None):
     """Run linux cmd and return result, make sure the vaspkit is installed."""
     old = os.getcwd()
     os.chdir(d)
     try:
         #
-        cmd_sys()
+        if run_cmd:
+            cmd_sys(cmds=cmds)
         # >>>
         result = read(d, store=store, store_name=store_name)
         # <<<
@@ -44,11 +44,11 @@ def cal(d, store=False, store_name="temp.csv"):
         return None
 
 
-def cal_all(d, repeat=0, store=False, store_name="temp_all.csv"):
+def cal_all(d, repeat=0, store=False, store_name="temp_all.csv", run_cmd=True, cmds=None):
     data_all = []
     col = None
     for di in d:
-        res = cal(di)
+        res = cal(di, run_cmd=run_cmd, cmds=cmds)
 
         if isinstance(res, pd.DataFrame):
             col = res.columns
@@ -68,8 +68,7 @@ def cal_all(d, repeat=0, store=False, store_name="temp_all.csv"):
     if store:
         result.to_csv(store_name)
         print("'{}' are sored in '{}'".format(store_name, os.getcwd()))
-
-    return data_all
+    return result
 
 
 def read(d, store=False, store_name="temp.csv"):
@@ -113,12 +112,10 @@ def read(d, store=False, store_name="temp.csv"):
         return None
 
 
-def cmd_sys(cmds=("chgsum.pl AECCAR0 AECCAR2", "bader CHGCAR -ref CHGCAR_sum")):
-    if not cmds:
-        pass
-    else:
-        for i in cmds:
-            os.system(i)
+def cmd_sys(cmds=None):
+    cmds = ("chgsum.pl AECCAR0 AECCAR2", "bader CHGCAR -ref CHGCAR_sum")
+    for i in cmds:
+        os.system(i)
 
 
 def run(args, parser):

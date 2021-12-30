@@ -11,7 +11,6 @@ from test.structure_data.get_dataset import data01
 
 class TestGraph3(unittest.TestCase):
     def setUp(self) -> None:
-
         self.data = data01
         self.data0 = self.data[0]
         self.data0_3 = self.data[:3]
@@ -23,43 +22,39 @@ class TestGraph3(unittest.TestCase):
     def test_CrystalGraph(self):
         for i in self.data0_checked:
             sg1 = StructureGraphGEO(nn_strategy="find_points_in_spheres",
-                                        bond_generator=None,
-                                        atom_converter = None,
-                                        bond_converter = None,
-                                        state_converter = None,
-                                        cutoff = 5.0, )
+                                    bond_generator=None,
+                                    atom_converter=None,
+                                    bond_converter=None,
+                                    state_converter=None,
+                                    cutoff=5.0, )
             s12 = sg1(i)
             # print(s12)
             print(s12["edge_index"].shape[-1])
             print(s12["edge_attr"].shape)
 
-
     def test_CrystalGraph3(self):
-        imdg = InMemoryDatasetGeo(".",load_mode="i")
+        imdg = InMemoryDatasetGeo(".", load_mode="i")
 
         l = imdg[2]
-
 
     def test_CrystalGraph32(self):
-        imdg = InMemoryDatasetGeo(".",load_mode="i",re_process_init=False)
+        imdg = InMemoryDatasetGeo(".", load_mode="i", re_process_init=False)
 
         l = imdg[2]
-
-
 
     def test_CrystalGraph4(self):
         def_pwd("./raw", change=False)
 
         sg1 = StructureGraphGEO(nn_strategy="find_points_in_spheres",
-                                    bond_generator=None,
-                                    atom_converter=None,
-                                    bond_converter=None,
-                                    state_converter=None,
+                                bond_generator=None,
+                                atom_converter=None,
+                                bond_converter=None,
+                                state_converter=None,
 
-                                    cutoff=5.0, )
-        sg1.transform_and_save(self.data0_checked,save_mode="i")
+                                cutoff=5.0, )
+        sg1.transform_and_save(self.data0_checked, save_mode="i")
 
-        imdg = DatasetGEO(".",load_mode="i",re_process_init=True)
+        imdg = DatasetGEO(".", load_mode="i", re_process_init=True)
 
         l = imdg[2]
         l = imdg[2]
@@ -68,14 +63,14 @@ class TestGraph3(unittest.TestCase):
         def_pwd("./raw", change=False)
 
         sg1 = StructureGraphGEO(nn_strategy="find_xyz_in_spheres",
-                                    bond_generator=None,
-                                    atom_converter=None,
-                                    bond_converter=None,
-                                    state_converter=None,
+                                bond_generator=None,
+                                atom_converter=None,
+                                bond_converter=None,
+                                state_converter=None,
 
-                                    cutoff=2.0, )
-        sg1.transform_and_save(self.data0_checked,save_mode="i")
-        imdg = DatasetGEO(".",load_mode="i",re_process_init=False)
+                                cutoff=2.0, )
+        sg1.transform_and_save(self.data0_checked, save_mode="i")
+        imdg = DatasetGEO(".", load_mode="i", re_process_init=False)
 
         l = imdg[2]
         l = imdg[2]
@@ -84,14 +79,14 @@ class TestGraph3(unittest.TestCase):
         def_pwd("./raw", change=False)
 
         sg1 = StructureGraphGEO(nn_strategy="SOAP",
-                                    bond_generator=None,
-                                    atom_converter=None,
-                                    bond_converter=None,
-                                    state_converter=None,
+                                bond_generator=None,
+                                atom_converter=None,
+                                bond_converter=None,
+                                state_converter=None,
 
-                                    cutoff=2.0, )
-        sg1.transform_and_save(self.data0_checked,save_mode="i")
-        imdg = DatasetGEO(".",load_mode="i",re_process_init=False)
+                                cutoff=2.0, )
+        sg1.transform_and_save(self.data0_checked, save_mode="i")
+        imdg = DatasetGEO(".", load_mode="i", re_process_init=False)
 
         l = imdg[2]
         l = imdg[2]
@@ -100,17 +95,18 @@ class TestGraph3(unittest.TestCase):
         def_pwd("./raw", change=False)
 
         sg1 = StructureGraphGEO(nn_strategy="CrystalNN",
-                                    bond_generator=None,
-                                    atom_converter=None,
-                                    bond_converter=None,
-                                    state_converter=None,
+                                bond_generator=None,
+                                atom_converter=None,
+                                bond_converter=None,
+                                state_converter=None,
 
-                                    cutoff=2.0, )
-        sg1.transform_and_save(self.data0_checked,save_mode="i")
-        imdg = DatasetGEO(".",load_mode="i",re_process_init=False)
+                                cutoff=2.0, )
+        sg1.transform_and_save(self.data0_checked, save_mode="i")
+        imdg = DatasetGEO(".", load_mode="i", re_process_init=False)
 
         l = imdg[2]
         l = imdg[2]
+
 
 if __name__ == '__main__':
     unittest.main()

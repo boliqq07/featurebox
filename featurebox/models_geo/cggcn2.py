@@ -36,7 +36,8 @@ class _Interactions(Module):
     Auto attention.
     """
 
-    def __init__(self, num_node_hidden_channels=64, num_edge_gaussians=None, num_node_interaction_channels=64, n_conv=2, **kwargs,
+    def __init__(self, num_node_hidden_channels=64, num_edge_gaussians=None, num_node_interaction_channels=64, n_conv=2,
+                 **kwargs,
                  ):
         super(_Interactions, self).__init__()
         _ = num_edge_gaussians
