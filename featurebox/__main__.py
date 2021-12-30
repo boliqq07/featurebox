@@ -1,3 +1,3 @@
-from mgetool.cli.main import main
+from featurebox.cli.main import main
 
 main()
