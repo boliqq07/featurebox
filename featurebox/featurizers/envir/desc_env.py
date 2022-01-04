@@ -2,7 +2,7 @@
 all with ``calculate`` method.
 """
 import copy
-from typing import Dict, Tuple
+from typing import Dict, Tuple, List
 
 import numpy as np
 from pymatgen.core import Structure, Molecule
@@ -17,7 +17,11 @@ from featurebox.featurizers.descriptors.behlerparrinello import BehlerParrinello
 from featurebox.featurizers.descriptors.wACSF import wACSF
 from featurebox.featurizers.envir._get_radius_in_spheres import get_radius_in_spheres
 from featurebox.utils.general import aaa
-from featurebox.utils.look_json import mark_classes
+
+
+def mark_classes(classes: List):
+    return {i.__name__: i for i in classes}
+
 
 DesDict = mark_classes([
     ACSF,
@@ -29,9 +33,6 @@ DesDict = mark_classes([
     SO4_Bispectrum,
     wACSF,
 ])
-
-for i, j in DesDict.items():
-    locals()[i] = j
 
 
 def get_strategy2_in_spheres(structure, nn_strategy, cutoff, numerical_tol=None, cutoff_name="cutoff", pbc=True):

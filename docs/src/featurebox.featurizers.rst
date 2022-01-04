@@ -21,6 +21,14 @@ Subpackages
 Submodules
 ----------
 
+featurebox.featurizers.base\_feature module
+-------------------------------------------
+
+.. automodule:: featurebox.featurizers.base_feature
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 featurebox.featurizers.base\_graph\_geo module
 ----------------------------------------------
 
@@ -29,26 +37,10 @@ featurebox.featurizers.base\_graph\_geo module
    :undoc-members:
    :show-inheritance:
 
-featurebox.featurizers.base\_transform module
----------------------------------------------
-
-.. automodule:: featurebox.featurizers.base_transform
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 featurebox.featurizers.batch\_feature module
 --------------------------------------------
 
 .. automodule:: featurebox.featurizers.batch_feature
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-featurebox.featurizers.extrastats module
-----------------------------------------
-
-.. automodule:: featurebox.featurizers.extrastats
    :members:
    :undoc-members:
    :show-inheritance:

@@ -1,24 +1,28 @@
 Data Type
 ==================
 
+Before reading this part,
+make sure the you have already known ``Structure``
+:doc:`background` .
+
 Definition
 ---------------
 
 We divided the features into the following categories:
 
-1. atom feature
+1. **atom feature**
 
     The properties of atoms themselves.
 
-2. bond features:
+2. **bond features**
 
     The properties of inter-atomic bonds.
 
-3. state (overall compound) features
+3. **state (overall compound) features**
 
     The overall properties of the compound, include the properties that embody the overall crystal structure.
 
-4.  Crystal Structure features (Graph features)
+4. **Crystal Structure features (Graph features)**
 
     The total of atom feature, bond features, state (overall compound) features.
 
@@ -36,12 +40,22 @@ and ``fit_transform`` methods for case list.
 1. Atom Features
 :::::::::::::::::
 
+Example Graph 1:
+
 .. image:: input_data_type.png
     :scale: 85 %
     :align: center
 
+
+Example Graph 2:
+
+.. image:: data_type.jpg
+    :scale: 85 %
+    :align: center
+
+
 Atom features can be obtained by fetching periodic table data, using you input data.
-There are two data should offer. (At least one)
+There are two data should offer. (at least one).
 
 - Your input data. The type could be element number or element name.
     (or pymatgen ``Structure``, we have built-in conversion functions of ``Structure``,
@@ -49,15 +63,14 @@ There are two data should offer. (At least one)
 
 - The element periodic table data (optional).
     We have built-in some element periodic table ("ele_table.csv", "ie.json", "oe.csv"),
-    To customize your element periodic table. you can offer (``.json``,``.csv``) file or
-    any python data (``dict``,``pandas.DataFrame``,``numpy.ndarray``) in code.
+    To customize your element periodic table. you can offer ( ``.json`` , ``.csv`` ) file or
+    any python data ( ``dict`` , ``pandas.DataFrame`` , ``numpy.ndarray`` ) in code.
 
-    where (``.json``,``dict``) by :class:`featurebox.featurizers.atom.mapper.AtomJsonMap`,
+1. ( ``.json`` , ``dict`` ) by ``AtomJsonMap`` ,
 
-    (``.csv``,``pandas.DataFrame``,``numpy.ndarray``) by :class:`featurebox.featurizers.atom.mapper.AtomTableMap`.
+2. (``.csv``, ``pandas.DataFrame`` , ``numpy.ndarray`` ) by ``AtomTableMap`` .
 
-    And one specialized :class:`featurebox.featurizers.atom.mapper.AtomPymatgenPropMap`
-    for fetch data from ``pymatgen.core.periodic_table.json``.
+3. And one specialized ``AtomPymatgenPropMap`` for fetch data from "pymatgen.core.periodic_table.json".
 
 Example:
 
@@ -69,7 +82,7 @@ Example:
 >>> b = tmps.transform(multi_sample)
 
 >>> from featurebox.featurizers.atom.mapper import AtomJsonMap
->>> tmps = AtomJsonMap(search_tp="name",return_type="np")
+>>> tmps = AtomJsonMap(search_tp="name_dict",return_type="np")
 >>> single_sample = [{"H": 2}, {"Po": 1}]
 >>> single_sample2 = {"H": 2, "Po": 1}
 >>> multi_sample = [[{"H": 2}, {"Po": 1}],  [{"He": 3}, {"P": 4}]] # or
@@ -79,27 +92,24 @@ Example:
 >>> b = tmps.transform(multi_sample)
 >>> b = tmps.transform(multi_sample2)
 
-More Examples:
-:doc:`../Examples/sample_fea1`
+More:
+    :doc:`../Examples/sample_fea1`
 
 2. Bond Features
 :::::::::::::::::
 
-2. For bond features, use the structure data to extract information.
+1. For bond features, use the structure data to extract information.
 The common structure data include the ``Structure`` of ``Pymatgen``, the ``Atoms`` of ``ase``, etc.
 The ``Structure`` and ``Atoms`` could mutual transform by ``pymatgen.io.ase.AseAtomsAdaptor``.
-
-In general we don't just get the bond features, if you're sure you only need the bond information. please refer to
-:class:`featurebox.featurizers.envir.environment.BaseNNGet`,
-:class:`featurebox.featurizers.envir.environment.BaseDesGet`
 
 
 3. State (overall compound) Features
 ::::::::::::::::::::::::::::::::::::::::::::
 
-There are two method to get State (overall compound) features.
+There are two method to get state (overall compound) features.
 
-**Information extraction from structure data (``Structure`` of ``Pymatgen``).**
+
+- **1. Information extraction from structure data ( ``Structure`` of ``Pymatgen`` ).**
 
 For the ``Atoms`` of ``ase``, The ``Structure`` could transformed by ``pymatgen.io.ase.AseAtomsAdaptor``.
 
@@ -120,7 +130,8 @@ the name of properties is not apply for all compounds, and the data could not a 
     "row","group","atomic_radius_calculated","mendeleev_no","critical_temperature","density_of_solid",
     "average_ionic_radius","average_cationic_radius","average_anionic_radius",]
 
-**Combination or mathematical processing of atomic features according to composition ratio.**
+
+- **2. Combination or mathematical processing of atomic features according to composition ratio.**
 
 This is one key method to get state features!!!
 
@@ -130,26 +141,26 @@ This is one key method to get state features!!!
 >>> structurei =Structure.from_file(r"your_path/featurebox/data/W2C.cif")
 
 >>> from featurebox.featurizers.atom import AtomTableMap
->>> data_map = AtomTableMap(search_tp="name", n_jobs=1)
+>>> data_map = AtomTableMap(search_tp="name_dict", n_jobs=1)
 >>> wa = WeightedAverage(data_map, n_jobs=1,return_type="df")
 >>> x3 = [{"H": 2, "Pd": 1},{"He":1,"Al":4}]
 >>> wa.fit_transform(x3)
 >>> x4 = [structurei]*5
 >>> wa.fit_transform(x4)
 
-More combination operation ``WeightedSum``,``GeometricMean``,``HarmonicMean``,``WeightedVariance`` and so on
-can be found in :mod:`featurebox.featurizers.state.statistics`.
+More combination operation ``WeightedSum`` , ``GeometricMean`` , ``HarmonicMean`` , ``WeightedVariance``
+and so on can be found in :mod:`featurebox.featurizers.state.statistics`.
 
 More:
-:doc:`../Examples/sample_fea3`
+    :doc:`../Examples/sample_fea3`
 
-- Get State features by step (Just for compositions with same number of atomic types).
+Get State features by step (Just for compositions with same number of atomic types).
 
 Get the depart element feature first.
 
 >>> from featurebox.featurizers.atom.mapper import AtomJsonMap
 >>> from featurebox.featurizers.state.union import UnionFeature
->>> data_map = AtomJsonMap(search_tp="name", n_jobs=1) # keep this n_jobs=1
+>>> data_map = AtomJsonMap(search_tp="name_dict", n_jobs=1) # keep this n_jobs=1
 >>> wa = DepartElementFeature(data_map,n_composition=2, n_jobs=2, return_type="df")
 >>> comp = [{"H": 2, "Pd": 1},{"He":1,"Al":4}]
 >>> wa.set_feature_labels(["fea_{}".format(_) for _ in range(16)]) # 16 this the feature number of built-in "ele_megnet.json"
@@ -157,7 +168,7 @@ Get the depart element feature first.
 >>> comp2 = [structurei]*5
 >>> wa.fit_transform(comp2)
 
-Get the depart element feature first.
+Union the depart element feature.
 
 >>> # couple_data is the pd.Dataframe table.
 >>> # comp is the atomic ratio of composition.
@@ -165,11 +176,10 @@ Get the depart element feature first.
 >>> state_data = uf.fit_transform()
 
 .. note::
-    The ``UnionFeature`` could be used for your own table data!
+    The ``UnionFeature`` also could be used for your own table data!
 
 Addition:
-
-There one state features transformer to get Polynomial extension for table.
+    There one state features transformer to get Polynomial extension for table.
 
 >>> from featurebox.featurizers.state.union import PolyFeature
 >>> state_features = np.array([[0,1,2,3,4,5],[0.422068,0.360958,0.201433,-0.459164,-0.064783,-0.250939]]).T
@@ -178,6 +188,6 @@ There one state features transformer to get Polynomial extension for table.
 >>> pf.fit_transform(state_features)
 
 More:
-:doc:`../Examples/sample_fea4`, :doc:`../Examples/sample_fea5`.
+    :doc:`../Examples/sample_fea4`, :doc:`../Examples/sample_fea5`.
 
 

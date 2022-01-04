@@ -4,7 +4,7 @@ from pathlib import Path
 import numba
 import numpy as np
 
-from featurebox.featurizers.base_transform import BaseFeature
+from featurebox.featurizers.base_feature import BaseFeature
 
 MODULE_DIR = Path(__file__).parent.parent.parent.absolute()
 

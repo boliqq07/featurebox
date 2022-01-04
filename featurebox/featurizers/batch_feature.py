@@ -1,7 +1,7 @@
 from typing import List
 
 from featurebox.featurizers.atom.mapper import AtomPymatgenPropMap
-from featurebox.featurizers.base_transform import BaseFeature
+from featurebox.featurizers.base_feature import BaseFeature
 from featurebox.featurizers.state.state_mapper import StructurePymatgenPropMap
 from featurebox.featurizers.state.statistics import WeightedAverage
 
@@ -61,12 +61,12 @@ class BatchFeature(BaseFeature):
             "average_cationic_radius",
             "average_anionic_radius",
         ]
-        appm = AtomPymatgenPropMap(prop_name=func_map, n_jobs=1, search_tp="name")
+        appm = AtomPymatgenPropMap(prop_name=func_map, n_jobs=1, search_tp="name_dict")
         self.composition_c = WeightedAverage(appm, n_jobs=1, return_type="df")
         self.composition_c.set_feature_labels(func_map)
 
         self.element_c = AtomPymatgenPropMap(prop_name=func_map, n_jobs=1,
-                                             search_tp="name",
+                                             search_tp="name_dict",
                                              return_type="df")
 
         if user_convert is not None:

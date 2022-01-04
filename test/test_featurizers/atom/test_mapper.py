@@ -5,7 +5,7 @@ import pandas as pd
 
 from featurebox.data.check_data import CheckElements
 from featurebox.featurizers.atom.mapper import AtomTableMap, AtomJsonMap, AtomPymatgenPropMap
-from featurebox.featurizers.base_transform import ConverterCat
+from featurebox.featurizers.base_feature import ConverterCat
 from test.structure_data.get_dataset import data01
 
 
@@ -30,7 +30,7 @@ class TestGraph(unittest.TestCase):
         print(b.shape)
 
     def test_cat(self):
-        tmps = ConverterCat(AtomTableMap(search_tp="name"), AtomTableMap(search_tp="name"))
+        tmps = ConverterCat(AtomTableMap(search_tp="name_dict"), AtomTableMap(search_tp="name_dict"))
         s = [{"H": 2, }, {"Po": 1}]
         b = tmps.convert(s)
         assert b.shape[1] > 20
@@ -42,14 +42,14 @@ class TestGraph(unittest.TestCase):
         assert b.shape[1] > 20
 
     def test_cat3(self):
-        tmps = ConverterCat(AtomTableMap(search_tp="name"), AtomJsonMap())
+        tmps = ConverterCat(AtomTableMap(search_tp="name_dict"), AtomJsonMap())
         s = [{"H": 2, }, {"Pd": 1}]
         b = tmps.convert(s)
         print(b.shape)
         assert b.shape[1] > 20
 
     def test_cat4(self):
-        tmps = ConverterCat(AtomTableMap(search_tp="name"), AtomJsonMap("ie.json"))
+        tmps = ConverterCat(AtomTableMap(search_tp="name_dict"), AtomJsonMap("ie.json"))
         s = [{"H": 2, }, {"Pd": 1}]
         b = tmps.convert(s)
         print(b.shape)
@@ -72,7 +72,7 @@ class TestGraph(unittest.TestCase):
         self.assertTrue(np.all(np.equal(b, c)))
 
     def test_equal2(self):
-        tmps = AtomTableMap(search_tp="name")
+        tmps = AtomTableMap(search_tp="name_dict")
         s = [{"As": 1, }, {"U": 1}]
         b = tmps.convert(s)
         tmps = AtomTableMap(search_tp="number")
@@ -81,7 +81,7 @@ class TestGraph(unittest.TestCase):
         self.assertTrue(np.all(np.equal(b, c)))
 
     def test_equal3(self):
-        tmps = AtomPymatgenPropMap("X", search_tp="name")
+        tmps = AtomPymatgenPropMap("X", search_tp="name_dict")
         s = [{"As": 1, }, {"U": 1}]
         b = tmps.convert(s)
         tmps = AtomPymatgenPropMap("X", search_tp="number")
@@ -90,7 +90,7 @@ class TestGraph(unittest.TestCase):
         self.assertTrue(np.all(np.equal(b, c)))
 
     def test_equal4(self):
-        tmps = AtomPymatgenPropMap("X", search_tp="name")
+        tmps = AtomPymatgenPropMap("X", search_tp="name_dict")
         s = [{"As": 1, }, {"U": 1}]
         b = tmps.convert(s)
         tmps = AtomPymatgenPropMap("X", search_tp="number")
@@ -98,7 +98,7 @@ class TestGraph(unittest.TestCase):
         c = tmps.convert(s)
         s = [[{"As": 1, }, {"U": 1}], [{"As": 1, }, {"U": 1}]]
         self.assertTrue(np.all(np.equal(b, c)))
-        tmps = AtomPymatgenPropMap("X", search_tp="name")
+        tmps = AtomPymatgenPropMap("X", search_tp="name_dict")
         c = tmps.transform(s)
 
 

@@ -7,8 +7,12 @@ The costumed as following:
 """
 import copy
 from typing import Dict, List, Tuple
-
+from pymatgen.core import Element
+from pymatgen.core import Molecule
+from pymatgen.core.structure import Structure
+from featurebox.utils.predefined_typing import StructureOrMolecule
 import numpy as np
+
 from pymatgen.analysis.local_env import (
     NearNeighbors,
     VoronoiNN,
@@ -20,12 +24,10 @@ from pymatgen.analysis.local_env import (
     EconNN,
     CrystalNN,
 )
-from pymatgen.core import Element
-from pymatgen.core import Molecule
-from pymatgen.core.structure import Structure
 
-from featurebox.utils.look_json import mark_classes
-from featurebox.utils.predefined_typing import StructureOrMolecule
+
+def mark_classes(classes: List):
+    return {i.__name__: i for i in classes}
 
 
 def _is_in_targets(site, targets):
@@ -193,9 +195,6 @@ NNDict = mark_classes([
     # Critic2NN, #Critic2Caller requires the executable critic to be in the path.
     # Please follow the instructions at https://github.com/aoterodelaroza/critic2.
 ])
-
-for i, j in NNDict.items():
-    locals()[i] = j
 
 
 def get_strategy1_in_spheres(structure: StructureOrMolecule, nn_strategy: NearNeighbors,

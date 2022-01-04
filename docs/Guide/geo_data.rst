@@ -50,14 +50,14 @@ Example:
 
 >>> from featurebox.featurizers.base_graph_geo import StructureGraphGEO
 >>> gt = StructureGraphGEO(n_jobs=2)
->>> graph_data_list = gt.transform(pymatgen_structures_list,y=y)
+>>> graph_data_list = gt.transform(structures_list,y=y)
 
-and the ``x``, ( ``atom features``) get by :mod:`featurebox.featurizers.atom.mapper`,
-and the ``edge_weight``,``edge_attr``(``bond features``) get by :mod:`featurebox.featurizers.envir.environment`
+and the ``x``, ( ``atom features`` ) get by :mod:`featurebox.featurizers.atom.mapper` ,
+and the ``edge_weight``,``edge_attr``(``bond features``) get by :mod:`featurebox.featurizers.envir.environment` .
 
 .. seealso::
     :doc:`../Examples/sample_fea3`
 
 The usage of Graph data could find in `torch geometrics <https://pytorch-geometric.readthedocs.io/en/latest/>`_
-and examples: :doc:`../Examples/sample_stru2`, :doc:`../Examples/sample_stru3`.
+and examples: :doc:`../Examples/sample_stru2`, :doc:`../Examples/sample_stru3` .
 

@@ -36,7 +36,7 @@ def get_radius_in_spheres(
         structure (pymatgen Structure or molecule)
         cutoff (float): cutoff radius
         numerical_tol (float): numerical tolerance
-        nn_strategy(str):not used
+        nn_strategy(str,None):not used
     Returns:
         center_indices, neighbor_indices, images, distances, center_prop
 

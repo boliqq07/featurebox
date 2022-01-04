@@ -89,6 +89,14 @@ featurebox.models\_geo.megnet module
    :undoc-members:
    :show-inheritance:
 
+featurebox.models\_geo.rotnet module
+------------------------------------
+
+.. automodule:: featurebox.models_geo.rotnet
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 featurebox.models\_geo.schnet module
 ------------------------------------
 

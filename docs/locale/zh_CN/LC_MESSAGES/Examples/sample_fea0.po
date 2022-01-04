@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: featurebox \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-06 15:30+0800\n"
+"POT-Creation-Date: 2022-01-04 23:10+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,32 +23,33 @@ msgstr "批处理转换数据"
 
 #: ../../Examples/sample_fea0.rst:4
 msgid ""
-"If you don't have a preference for features or idea, just try "
-"BatchFeature, we using features from pymatgen."
-msgstr "如果你对目前的问题没有特殊想法或迷茫，那就试一试"
-"BatchFeature，它使用pymatgen中的特征。我们可以使用三种输入方式： 1.结构数据；2.化合物成分；3.元素列表。"
+"If you don't have a preference or idea for features, just try with "
+"``BatchFeature`` , We using features from pymatgen firstly."
+msgstr ""
+"如果你对目前的问题没有特殊想法或迷茫，那就试一试BatchFeature，它使用pymatgen中的特征。 "
+"我们可以使用三种输入方式： 1.结构数据；2.化合物成分；3.元素列表。"
 
 #: ../../Examples/sample_fea0.rst:7
-msgid "1.Transform structure list."
-msgstr "1.转换结构数据"
+msgid "Transform structure list."
+msgstr "转换结构数据"
 
 #: ../../Examples/sample_fea0.rst:13
 msgid "``structures_list`` is list of ``struceture`` of ``pymatgen``."
 msgstr "structures_list 是 ``pymatgen.Structure`` 的列表。"
 
-#: ../../Examples/sample_fea0.rst:17
-msgid "2.Transform composition list."
-msgstr "2.转换化合物列表"
+#: ../../Examples/sample_fea0.rst:18
+msgid "Transform composition list."
+msgstr "转换化合物列表"
 
-#: ../../Examples/sample_fea0.rst:27
-msgid "3.Transform element list."
-msgstr "3.转换元素列表"
+#: ../../Examples/sample_fea0.rst:29
+msgid "Transform element list."
+msgstr "转换元素列表"
 
-#: ../../Examples/sample_fea0.rst:37
+#: ../../Examples/sample_fea0.rst:39
 msgid "Note ::"
 msgstr "注意"
 
-#: ../../Examples/sample_fea0.rst:43
-msgid "Just go on !"
-msgstr ""
+#: ../../Examples/sample_fea0.rst:45
+msgid "Now, try it !"
+msgstr "运行一下试试吧 >>d(˙_˙)b<<"
 

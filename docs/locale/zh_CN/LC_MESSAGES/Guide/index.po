@@ -21,6 +21,4 @@ msgstr ""
 msgid "Guide"
 msgstr "快速指南"
 
-#~ msgid "Examples"
-#~ msgstr ""
 

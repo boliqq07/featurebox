@@ -9,6 +9,14 @@ featurebox.featurizers.state package
 Submodules
 ----------
 
+featurebox.featurizers.state.extrastats module
+----------------------------------------------
+
+.. automodule:: featurebox.featurizers.state.extrastats
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 featurebox.featurizers.state.kpath module
 -----------------------------------------
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: featurebox \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-06 20:12+0800\n"
+"POT-Creation-Date: 2022-01-04 23:47+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,7 +31,7 @@ msgstr ""
 
 #: featurebox.featurizers.bond.expander.BondGaussianConverter:1
 #: featurebox.featurizers.bond.smooth.Smooth:1 of
-msgid "Bases: :class:`featurebox.featurizers.base_transform.BaseFeature`"
+msgid "Bases: :class:`featurebox.featurizers.base_feature.BaseFeature`"
 msgstr ""
 
 #: featurebox.featurizers.bond.expander.BondGaussianConverter:1 of
@@ -76,4 +76,7 @@ msgstr ""
 #: featurebox.featurizers.bond.smooth.Smooth.convert:2 of
 msgid "``nbr_fea`` neighbor features for each center_index."
 msgstr ""
+
+#~ msgid "Bases: :class:`featurebox.featurizers.base_transform.BaseFeature`"
+#~ msgstr ""
 

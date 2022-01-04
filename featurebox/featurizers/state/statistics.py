@@ -33,9 +33,9 @@ class BaseCompositionFeature(BinaryMap):
         """
         Base class for composition feature.
         """
-        super().__init__(n_jobs, on_errors=on_errors, return_type=return_type)
+        super().__init__(n_jobs=n_jobs, on_errors=on_errors, return_type=return_type)
         if data_map is None:
-            data_map = AtomTableMap(tablename="oe.csv", search_tp="name")
+            data_map = AtomTableMap(tablename="oe.csv", search_tp="name_dict")
         self.data_map = data_map
         # change
         self.data_map.weight = False
@@ -69,7 +69,7 @@ class BaseCompositionFeature(BinaryMap):
         return self.mix_function(ele, numbers)
 
     @abstractmethod
-    def mix_function(self, elems: List, nums: List):
+    def mix_function(self, elems: List, nums: Union[List,np.ndarray]):
         """
 
         Parameters
@@ -90,7 +90,7 @@ class WeightedAverage(BaseCompositionFeature):
     Examples
     ---------
     >>> from featurebox.featurizers.atom import AtomTableMap, AtomJsonMap
-    >>> data_map = AtomJsonMap(search_tp="name", n_jobs=1)
+    >>> data_map = AtomJsonMap(search_tp="name_dict", n_jobs=1)
     >>> wa = WeightedAverage(data_map, n_jobs=1,return_type="df")
     >>> x3 = [{"H": 2, "Pd": 1},{"He":1,"Al":4}]
     >>> wa.fit_transform(x3)
@@ -123,7 +123,7 @@ class WeightedSum(BaseCompositionFeature):
     Examples
     --------
     >>> from featurebox.featurizers.atom import AtomTableMap, AtomJsonMap
-    >>> data_map = AtomJsonMap(search_tp="name", n_jobs=1)
+    >>> data_map = AtomJsonMap(search_tp="name_dict", n_jobs=1)
     >>> wa = WeightedSum(data_map, n_jobs=1,return_type="df")
     >>> x3 = [{"H": 2, "Pd": 1},{"He":1,"Al":4}]
     >>> wa.fit_transform(x3)
@@ -249,7 +249,7 @@ class DepartElementFeature(BaseCompositionFeature):
     Examples
     ----------
     >>> from featurebox.featurizers.atom import AtomTableMap, AtomJsonMap
-    >>> data_map = AtomJsonMap(search_tp="name", n_jobs=1)
+    >>> data_map = AtomJsonMap(search_tp="name_dict", n_jobs=1)
     >>> wa = DepartElementFeature(data_map,n_composition=2, n_jobs=1,return_type="df")
     >>> x3 = [{"H": 2, "Pd": 1},{"He":1,"Al":4}]
     >>> wa.set_feature_labels(["fea_{}".format(_) for _ in range(16)])

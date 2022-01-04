@@ -30,10 +30,12 @@ def pdos_column_names(lmax, ispin):
 class DBC:
     """
     Contains all the data in a VASP DOSCAR file, and methods for manipulating this.
+
     Examples
     -------------
     >>> dbc = DBC("DOSCAR")
     >>> d_band_center_up_and_down = dbc.calculate(orb="d")
+
     """
 
     number_of_header_lines = 6
@@ -43,15 +45,12 @@ class DBC:
         Create a Doscar object from a VASP DOSCAR file.
         Args:
             filename (str): Filename of the VASP DOSCAR file to read.
-            ispin (optional:int): ISPIN flag.
-                Set to 1 for non-spin-polarised or 2 for spin-polarised calculations.
-                Default = 2.
+            ispin (optional:int): ISPIN flag. Set to 1 for non-spin-polarised or 2 for spin-polarised calculations. Default = 2.
             lmax (optional:int): Maximum l angular momentum. (d=2, f=3). Default = 2.
             lorbit (optional:int): The VASP LORBIT flag. (Default=11).
             spin_orbit_coupling (optional:bool): Spin-orbit coupling (Default=False).
             read_pdos (optional:bool): Set to True to read the atom-projected density of states (Default=True).
-            species (optional:list(str)): List of atomic species strings, e.g. [ 'Fe', 'Fe', 'O', 'O', 'O' ].
-                Default=None.
+            species (optional:list(str)): List of atomic species strings, e.g. [ 'Fe', 'Fe', 'O', 'O', 'O' ]. Default=None.
         """
         self.filename = filename
         self.ispin = ispin
@@ -140,11 +139,11 @@ class DBC:
         to_return = self.pdos[atom_idx, :, :, :]
         if not spin:
             spin_idx = list(range(self.ispin))
-        elif spin is 'up':
+        elif spin == 'up':
             spin_idx = [0]
-        elif spin is 'down':
+        elif spin == 'down':
             spin_idx = [1]
-        elif spin is 'both':
+        elif spin == 'both':
             spin_idx = [0, 1]
         else:
             raise ValueError

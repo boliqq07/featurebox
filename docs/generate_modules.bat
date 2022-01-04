@@ -6,8 +6,11 @@ sphinx-quickstart
 sphinx-apidoc -f -M -o ./src ../featurebox    (按需要运行) or
 sphinx-apidoc -f -M -e -o  ./src ../featurebox    (按需要运行,每个文件夹自己的页面)
 
+删除 cli.rst 中的所有子模块，只保留总模块。
+
 3.# 产生网页
 make html
+或者 ：make -e SPHINXOPTS="-D language='en'" html
 
 4.# 发生报错时候清除
 make clean

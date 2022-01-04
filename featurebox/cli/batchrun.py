@@ -91,7 +91,9 @@ def upload(run_tem=None, pwd=None, filter_in=None,
     产生批处理提交文件。
     最方便用法: 把该文件放到算例同一文件夹下，并提供 pbs or lsf 模板给 run_tem 参数.
     Args:
-        run_tem: str, file,None
+        store_name: str
+            存储名称
+        run_tem: str, file, None
             pbs,lsf 模板。可以是文件，也可以是复制过来的字符串,该文件会复制到每个子文件夹.
 
         existed_run_tem: str,None

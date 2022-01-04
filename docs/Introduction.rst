@@ -3,7 +3,7 @@ Introduction
 
 .. image:: img.jpg
 
-Featurebox contains some tools for material feature **Generation** and **Selection**.
+Featurebox contains some tools (**Generation** and **Selection**) for material features.
 
 Generation tools
 -----------------------

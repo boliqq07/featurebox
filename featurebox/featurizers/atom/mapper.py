@@ -15,7 +15,7 @@ from monty.serialization import loadfn
 from pymatgen.core import Element, Structure, Lattice
 
 from featurebox.data.check_data import ALL_ELE_N_MAP, ALL_N_ELE_MAP
-from featurebox.featurizers.base_transform import Converter, BaseFeature
+from featurebox.featurizers.base_feature import BaseFeature
 
 MODULE_DIR = Path(__file__).parent.parent.parent.absolute()
 
@@ -66,7 +66,7 @@ def get_ion_fea_name(structure: Structure) -> List[dict]:
 
 ##############################################################
 
-class AtomMap(Converter):
+class AtomMap(BaseFeature):
     """
     Base class for atom converter. Map the element type and weight to element data.
     """
@@ -109,11 +109,11 @@ class BinaryMap(AtomMap):
         self.ndim = 1
 
     def _convert(self, d: Any) -> Any:
-        if self.search_tp == "name":
+        if self.search_tp == "name_dict":
             if isinstance(d, Structure):
                 d = get_atom_fea_name(d)
             return self.convert_dict(d)
-        elif self.search_tp == "ion_name":
+        elif self.search_tp == "ion_name_dict":
             if isinstance(d, Structure):
                 d = get_ion_fea_name(d)
             return self.convert_dict(d)
@@ -152,17 +152,17 @@ class AtomJsonMap(BinaryMap):
     >>> tmps = AtomJsonMap(search_tp="number")
     >>> s = [1,76]                   #[i.specie.Z for i in structure]
     >>> a = tmps.convert(s)
-    >>> tmps = AtomJsonMap(search_tp="name")
+    >>> tmps = AtomJsonMap(search_tp="name_dict")
     >>> s = [{"H": 2, }, {"Al": 1}]  #[i.species.as_dict() for i in pymatgen_structure.sites]
     >>> a = tmps.convert(s)
     >>>
-    >>> tmps = AtomJsonMap(search_tp="name")
+    >>> tmps = AtomJsonMap(search_tp="name_dict")
     >>> s = [[{"H": 2, }, {"Ce": 1}],[{"H": 2, }, {"Al": 1}]]
     >>> a = tmps.transform(s)
 
     """
 
-    def __init__(self, embedding_dict: Union[str, Dict] = None, search_tp: str = "name", **kwargs):
+    def __init__(self, embedding_dict: Union[str, Dict] = None, search_tp: str = "name_dict", **kwargs):
         """
 
         Args:
@@ -261,11 +261,11 @@ class AtomTableMap(BinaryMap):
     >>> s = [1,76]
     >>> a = tmps.convert(s)
     ...
-    >>> tmps = AtomTableMap(search_tp="name")
+    >>> tmps = AtomTableMap(search_tp="name_dict")
     >>> s = [{"H": 2, }, {"Po": 1}]  #[i.species.as_dict() for i in pymatgen.structure.sites]
     >>> a = tmps.convert(s)
     ...
-    >>> tmps = AtomTableMap(search_tp="name",tablename="oe.csv")
+    >>> tmps = AtomTableMap(search_tp="name_dict",tablename="oe.csv")
     >>> s = [[{"H": 2, }, {"Po": 1}],[{"H": 2, }, {"Po": 1}]]
     >>> a = tmps.transform(s)
     ...
@@ -279,7 +279,7 @@ class AtomTableMap(BinaryMap):
     """
 
     def __init__(self, tablename: Union[str, np.ndarray, pd.DataFrame] = "oe.csv",
-                 search_tp: str = "name", **kwargs):
+                 search_tp: str = "name_dict", **kwargs):
         """
 
         Parameters
@@ -522,16 +522,16 @@ class AtomPymatgenPropMap(BinaryMap):
     >>> tmps = AtomPymatgenPropMap(search_tp="number",prop_name=["X"])
     >>> s = [1,76]
     >>> a = tmps.convert(s)
-    >>> tmps = AtomPymatgenPropMap(search_tp="name",prop_name=["X"])
+    >>> tmps = AtomPymatgenPropMap(search_tp="name_dict",prop_name=["X"])
     >>> s = [{"H": 2, }, {"Po": 1}]  #[i.species.as_dict() for i in pymatgen.structure.sites]
     >>> a = tmps.convert(s)
-    >>> tmps = AtomPymatgenPropMap(search_tp="name",prop_name=["X"])
+    >>> tmps = AtomPymatgenPropMap(search_tp="name_dict",prop_name=["X"])
     >>> s = [[{"H": 2, }, {"Po": 1}],[{"H": 2, }, {"Po": 1}]]
     >>> a = tmps.transform(s)
 
     """
 
-    def __init__(self, prop_name: Union[str, List[str]], func: Callable = None, search_tp: str = "name", **kwargs):
+    def __init__(self, prop_name: Union[str, List[str]], func: Callable = None, search_tp: str = "name_dict", **kwargs):
         """
 
         Args:
@@ -568,7 +568,7 @@ class AtomPymatgenPropMap(BinaryMap):
             if j in after_treatment_func_map_ele:
                 self.func[i] = after_treatment_func_map_ele[j]
         self.da = [Element.from_Z(i) for i in range(1, 119)]
-        self.da.insert(0, None)  # for start from 1
+        self.da.insert(0, np.nan)  # for start from 1
         self.ele_map = []
 
     def convert_dict(self, atoms: List[Dict]) -> np.ndarray:

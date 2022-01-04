@@ -1,8 +1,8 @@
 Select by Corr
 ================
 
-1. Corr Automatically
-::
+
+- 1. Corr Automatically
 
 >>> from sklearn.datasets import load_boston
 >>> from featurebox.selection.corr import Corr
@@ -14,8 +14,8 @@ Select by Corr
 >>> #(506, 13)
 >>> #(506, 9)
 
-2. Corr Step
-::
+
+- 2. Corr Step
 
 >>> from sklearn.datasets import load_boston
 >>> from featurebox.selection.corr import Corr
@@ -33,8 +33,8 @@ Corresponding to the initial 13 feature.
 >>> group[1]
 >>> #[[0], [1], [2], [3], [4, 5], [4, 5], [6], [7], [8]]
 
+
 In this step, you could select manually, or filter automatically as following.
-::
 
 >>> co.remove_coef(group[1]) # Filter automatically by machine.
 >>> #[0, 1, 2, 3, 4, 6, 7, 8]

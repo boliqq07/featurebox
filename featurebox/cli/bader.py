@@ -180,13 +180,13 @@ class CLICommand:
 
     Example:
 
-        $ featurebox bader -p /home/parent_dir -if AECCAR0
+    $ featurebox bader -p /home/parent_dir -if AECCAR0
 
     如果在 featurebox 中运行单个案例，请指定运算子文件夹:
 
     Example:
 
-        $ featurebox bader -t s -p /home/parent_dir/***/sample_i_dir -if AECCAR0
+    $ featurebox bader -t s -p /home/parent_dir/***/sample_i_dir -if AECCAR0
 
     """
 

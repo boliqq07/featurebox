@@ -2,7 +2,7 @@ from math import tan, pi
 from typing import List
 from warnings import warn
 
-from featurebox.featurizers.base_transform import BaseFeature
+from featurebox.featurizers.base_feature import BaseFeature
 
 try:
     import kpcpu

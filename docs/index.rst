@@ -15,7 +15,7 @@ Welcome to featurebox's documentation!
 
 .. image:: img.jpg
 
-Featurebox is a open Python library that implements a comprehensive set of machine learning tools for materials informatics,
+Featurebox is an open Python library that implements a comprehensive set of machine learning tools for materials informatics,
 and aims to generate material features quickly and easily.
 
 Features:

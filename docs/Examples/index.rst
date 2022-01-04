@@ -1,5 +1,8 @@
 Examples
 ================
+Before reading this part, please make sure the you have already known ``pymatgen.core.Structure`` .
+:doc:`../Guide/background`
+
 
 .. toctree::
    :maxdepth: 2

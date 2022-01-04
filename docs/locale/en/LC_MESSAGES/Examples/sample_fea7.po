@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: featurebox \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-06 20:12+0800\n"
+"POT-Creation-Date: 2022-01-04 23:47+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,6 +22,11 @@ msgid "Use Yourself Data"
 msgstr ""
 
 #: ../../Examples/sample_fea7.rst:11
-msgid "where the search_tp is \"number\" or \"name\" depend on your data."
+msgid ""
+"where the search_tp is \"number\" or \"name_dict\" depend on your data, "
+"but advise use \"name_dict\" for json data."
 msgstr ""
+
+#~ msgid "where the search_tp is \"number\" or \"name\" depend on your data."
+#~ msgstr ""
 

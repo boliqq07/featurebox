@@ -3,19 +3,64 @@ from typing import Tuple, Union, Dict, List
 
 import numpy as np
 from ase import Atoms
-from pymatgen.analysis.local_env import NearNeighbors
 from pymatgen.core import Structure
 
-from featurebox.featurizers.base_transform import BaseFeature
+from featurebox.featurizers.base_feature import BaseFeature
 from featurebox.featurizers.envir._get_radius_in_spheres import get_radius_in_spheres
 from featurebox.featurizers.envir._get_xyz_in_spheres import get_xyz_in_spheres
 from featurebox.featurizers.envir.desc_env import DesDict, get_strategy2_in_spheres
 from featurebox.featurizers.envir.local_env import NNDict, get_strategy1_in_spheres
 from featurebox.utils.general import aaa
-from featurebox.utils.look_json import get_marked_class
+
 from featurebox.utils.predefined_typing import StructureOrMolecule, StructureOrMoleculeOrAtoms
 
 MODULE_DIR = Path(__file__).parent.parent.parent.absolute()
+
+
+def get_marked_class(nn_strategy, env_dict: Dict = None, instantiation: bool = True):
+    """
+
+
+    Parameters
+    ----------
+    nn_strategy:
+    env_dict:dict
+        dict of pre-definition, {"classname": class}.
+    instantiation:bool
+        return class of object.
+
+    Returns
+    -------
+    obj:
+        object or class in NNDict.
+
+    """
+    try:
+        # #####old type for compatibility ### #
+        if nn_strategy is None:
+            return nn_strategy
+        elif isinstance(nn_strategy, str) and nn_strategy in ["find_points_in_spheres", "find_xyz_in_spheres"]:
+            return nn_strategy
+        # ###########by str name############# #
+        if isinstance(nn_strategy, str):
+            Nei = env_dict[nn_strategy]()
+        else:
+            try:
+                nn_strategy = nn_strategy()
+            except TypeError:
+                pass
+            if nn_strategy.__class__.__name__ in env_dict:
+                Nei = nn_strategy
+            else:
+                raise TypeError("only accept str or object inherit from nn_dict.values()")
+
+        if instantiation:
+            return Nei
+        else:
+            return Nei.__class__
+
+    except (KeyError, TypeError):
+        raise TypeError("only accept str or object inherit from nn_dict.values()")
 
 
 def geo_refine_nn(center_indices, neighbor_indices, vectors, distances,
@@ -174,7 +219,7 @@ class GEONNGet(_BaseEnvGet):
         center properties.
     """
 
-    def __init__(self, nn_strategy: Union[NearNeighbors, str] = "UserVoronoiNN", refine: str = "geo_refine_nn",
+    def __init__(self, nn_strategy: str = "UserVoronoiNN", refine: str = "geo_refine_nn",
                  refined_strategy_param: Dict = None,
                  numerical_tol=1e-8, pbc: Union[List[int], bool] = False, cutoff=5.0, check_align=True,
                  cutoff_name="cutoff",
@@ -184,7 +229,8 @@ class GEONNGet(_BaseEnvGet):
 
         Parameters
         ----------
-        nn_strategy: Union[NearNeighbors,str]
+
+        nn_strategy: str
             ["find_points_in_spheres", "find_xyz_in_spheres",
             "BrunnerNN_reciprocal", "BrunnerNN_real", "BrunnerNN_relative",
             "EconNN", "CrystalNN", "MinimumDistanceNNAll", "find_points_in_spheres","UserVoronoiNN",

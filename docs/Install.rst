@@ -1,25 +1,6 @@
 Install
 ==================
 
-Requirements
-::::::::::::
-
-Packages:
-
-============= =================  ============
- Dependence   Name               Version
-------------- -----------------  ------------
- necessary    sympy              >=1.6
- necessary    deap               >=1.3.1
- necessary    scikit-learn       >=0.22.1
- necessary    torch              >=1.5.0
- necessary    ase                \
- necessary    pymatgen           \
- recommend    scikit-image       \
- recommend    minepy             \
- recommend    torch_geometric    \
-============= =================  ============
-
 Method 1
 ::::::::::::
 
@@ -35,6 +16,23 @@ Install with pip ::
 
 Method 2
 ::::::::::::
+
+Requirements Packages:
+
+============= =================  ============
+ Dependence   Name               Version
+------------- -----------------  ------------
+ necessary    sympy              >=1.6
+ necessary    deap               >=1.3.1
+ necessary    scikit-learn       >=0.22.1
+ necessary    torch              >=1.5.0
+ necessary    ase                \
+ necessary    pymatgen           \
+ recommend    scikit-image       \
+ recommend    minepy             \
+ recommend    torch_geometric    \
+============= =================  ============
+
 
 Install by step:
 

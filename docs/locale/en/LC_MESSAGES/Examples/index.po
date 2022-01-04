@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: featurebox \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-06 20:12+0800\n"
+"POT-Creation-Date: 2022-01-04 23:47+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,5 +19,11 @@ msgstr ""
 
 #: ../../Examples/index.rst:2
 msgid "Examples"
+msgstr ""
+
+#: ../../Examples/index.rst:3
+msgid ""
+"Before reading this part, please make sure the you have already known "
+"``pymatgen.core.Structure`` . :doc:`../Guide/background`"
 msgstr ""
 

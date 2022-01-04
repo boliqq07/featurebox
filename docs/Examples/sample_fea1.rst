@@ -1,47 +1,46 @@
 Json Data
 ==============
 
-The key json must be element name, such as {"H": ... ,"He": ... }, and The structures is pymatgen ``Structure`` list.
+The key json must be element name, such as {"H": ... ,"He": ... },
+and the structures is pymatgen ``Structure`` list.
 
-Index by structure
-::
+
+- Index by structure.
 
 >>> from featurebox.featurizers.atom.mapper import AtomJsonMap
 >>> tmps = AtomJsonMap(search_tp="number", embedding_dict="ele_megnet.json")
->>> a = tmps.convert(structures)
+>>> a = tmps.convert(structure_list)
 
 The return data are properties of 1, 76 elements.
 
-Index by number, with your-self json
-::
+
+- Index by number, with your-self json.
 
 >>> from featurebox.featurizers.atom.mapper import AtomJsonMap
 >>> tmps = AtomJsonMap(search_tp="number",embedding_dict="ele_megnet.json")
 >>> s = [1,76]
->>> # could from [i.specie.Z for i in structure]
 >>> a = tmps.convert(s)
 
 The return data are properties of 1, 76 elements.
 
 .. image:: 1_1.png
 
-Index by dict data
-::
+
+- Index by dict data.
 
 >>> from featurebox.featurizers.atom.mapper import AtomJsonMap
->>> tmps = AtomJsonMap(search_tp="name")
+>>> tmps = AtomJsonMap(search_tp="name_dict")
 >>> s = [{"H": 2, }, {"Al": 1}]
->>> # could from [i.species.as_dict() for i in pymatgen.structure.sites]
 >>> or [{i.element.symbol:1} for i in structure.species]
 >>> a = tmps.convert(s)
 
 .. image:: 1_3.png
 
-Batch data
-::
+
+- Batch data.
 
 >>> from featurebox.featurizers.atom.mapper import AtomJsonMap
->>> tmps = AtomJsonMap(search_tp="name")
+>>> tmps = AtomJsonMap(search_tp="name_dict")
 >>> s = [[{"H": 2, }, {"Ce": 1}],[{"H": 2, }, {"Al": 1}]]
 >>> a = tmps.transform(s)
 

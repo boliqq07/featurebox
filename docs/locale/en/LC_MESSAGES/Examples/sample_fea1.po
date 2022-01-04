@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: featurebox \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-06 20:12+0800\n"
+"POT-Creation-Date: 2022-01-04 23:47+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,30 +24,49 @@ msgstr ""
 #: ../../Examples/sample_fea1.rst:4
 msgid ""
 "The key json must be element name, such as {\"H\": ... ,\"He\": ... }, "
-"and The structures is pymatgen ``Structure`` list."
+"and the structures is pymatgen ``Structure`` list."
 msgstr ""
 
-#: ../../Examples/sample_fea1.rst:6
-msgid "Index by structure ::"
+#: ../../Examples/sample_fea1.rst:8
+msgid "Index by structure."
 msgstr ""
 
-#: ../../Examples/sample_fea1.rst:13 ../../Examples/sample_fea1.rst:24
+#: ../../Examples/sample_fea1.rst:14 ../../Examples/sample_fea1.rst:24
 msgid "The return data are properties of 1, 76 elements."
 msgstr ""
 
-#: ../../Examples/sample_fea1.rst:15
-msgid "Index by number, with your-self json ::"
+#: ../../Examples/sample_fea1.rst:17
+msgid "Index by number, with your-self json."
 msgstr ""
 
-#: ../../Examples/sample_fea1.rst:28
-msgid "Index by dict data ::"
+#: ../../Examples/sample_fea1.rst:29
+msgid "Index by dict data."
 msgstr ""
 
 #: ../../Examples/sample_fea1.rst:40
-msgid "Batch data ::"
+msgid "Batch data."
 msgstr ""
 
-#: ../../Examples/sample_fea1.rst:48
+#: ../../Examples/sample_fea1.rst:47
 msgid "The return data are list of 2 np.ndarray data."
 msgstr ""
+
+#~ msgid ""
+#~ "The key json must be element name,"
+#~ " such as {\"H\": ... ,\"He\": ... "
+#~ "}, and The structures is pymatgen "
+#~ "``Structure`` list."
+#~ msgstr ""
+
+#~ msgid "Index by structure ::"
+#~ msgstr ""
+
+#~ msgid "Index by number, with your-self json ::"
+#~ msgstr ""
+
+#~ msgid "Index by dict data ::"
+#~ msgstr ""
+
+#~ msgid "Batch data ::"
+#~ msgstr ""
 

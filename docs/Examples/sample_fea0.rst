@@ -1,10 +1,10 @@
 Batch Transform Data
 ======================
 
-If you don't have a preference for features or idea, just try BatchFeature,
-we using features from pymatgen.
+If you don't have a preference or idea for features, just try with ``BatchFeature`` ,
+We using features from pymatgen firstly.
 
-1.Transform structure list.
+- Transform structure list.
 
 >>> from featurebox.featurizers.batch_feature import BatchFeature
 >>> bf = BatchFeature(data_type="structures", return_type="df")
@@ -14,7 +14,8 @@ we using features from pymatgen.
 
 .. image:: structures0.gif
 
-2.Transform composition list.
+
+- Transform composition list.
 
 >>> from featurebox.featurizers.batch_feature import BatchFeature
 >>> bf = BatchFeature(data_type="composition")
@@ -24,7 +25,8 @@ we using features from pymatgen.
 
 .. image:: composition0.gif
 
-3.Transform element list.
+
+- Transform element list.
 
 >>> from featurebox.featurizers.batch_feature import BatchFeature
 >>> bf = BatchFeature(data_type="elements")
@@ -40,4 +42,4 @@ Note
     It is highly recommended that using this function as a beginner,
     Because we can customize more and more powerful converters.
 
-Just go on !
+Now, try it !

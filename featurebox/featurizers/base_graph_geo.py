@@ -35,9 +35,8 @@ import torch_geometric
 from mgetool.tool import parallelize, batch_parallelize
 from pymatgen.core import Structure
 
-from featurebox.featurizers.base_transform import DummyConverter, BaseFeature, Converter, ConverterCat
-from featurebox.featurizers.envir.environment import GEONNGet, env_method
-from featurebox.utils.look_json import get_marked_class
+from featurebox.featurizers.base_feature import DummyConverter, BaseFeature, ConverterCat
+from featurebox.featurizers.envir.environment import GEONNGet
 
 
 class _BaseStructureGraphGEO(BaseFeature):
@@ -317,7 +316,7 @@ class BaseStructureGraphGEO(_BaseStructureGraphGEO):
     ``z``: atom numbers. np.ndarray, with shape [num_nodes,]
 
     Examples:
-        >>> from torch_geometric.data.dataloader import DataLoader
+        >>> from torch_geometric.loader import DataLoader
         >>> sg1 = BaseStructureGraphGEO()
         >>> data_list = sg1.transform_and_to_data(structures_checked)
         >>> loader = DataLoader(data_list, batch_size=3)
@@ -328,8 +327,8 @@ class BaseStructureGraphGEO(_BaseStructureGraphGEO):
     """
 
     def __init__(self,
-                 atom_converter: Converter = None,
-                 state_converter: Converter = None,
+                 atom_converter: BaseFeature = None,
+                 state_converter: BaseFeature = None,
                  **kwargs):
         """
 
@@ -436,7 +435,7 @@ class StructureGraphGEO(BaseStructureGraphGEO):
     Where the state_attr is added newly.
 
     Examples:
-    >>> from torch_geometric.data.dataloader import DataLoader
+    >>> from torch_geometric.loader import DataLoader
     >>> sg1 = BaseStructureGraphGEO()
     >>> data_list = sg1.transform_and_to_data(structures_checked)
     >>> loader = DataLoader(data_list, batch_size=3)
@@ -447,7 +446,7 @@ class StructureGraphGEO(BaseStructureGraphGEO):
 
     def __init__(self, nn_strategy="find_points_in_spheres",
                  bond_generator=None,
-                 bond_converter: Converter = None,
+                 bond_converter: BaseFeature = None,
                  cutoff: float = 5.0,
                  pbc=True,
                  **kwargs):
@@ -479,12 +478,9 @@ class StructureGraphGEO(BaseStructureGraphGEO):
         super().__init__(**kwargs)
         self.cutoff = cutoff
 
-        nn_strategy = get_marked_class(nn_strategy, env_method)
-
         if bond_generator is None or bond_generator == "GEONNDict":  # default use GEONNDict
             self.bond_generator = GEONNGet(nn_strategy, numerical_tol=1e-8, pbc=pbc, cutoff=cutoff)
         else:
-            bond_generator.nn_strategy = nn_strategy
             self.bond_generator = bond_generator
 
         self.bond_converter = bond_converter or self._get_dummy_converter()

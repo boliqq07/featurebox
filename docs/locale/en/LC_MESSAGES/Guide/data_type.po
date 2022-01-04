@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: featurebox \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-24 10:33+0800\n"
+"POT-Creation-Date: 2022-01-05 00:05+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,222 +21,236 @@ msgstr ""
 msgid "Data Type"
 msgstr ""
 
-#: ../../Guide/data_type.rst:5
+#: ../../Guide/data_type.rst:4
+msgid ""
+"Before reading this part, please make sure the you have already known "
+"``pymatgen.core.Structure`` . :doc:`background`"
+msgstr ""
+
+#: ../../Guide/data_type.rst:8
 msgid "Definition"
 msgstr ""
 
-#: ../../Guide/data_type.rst:7
+#: ../../Guide/data_type.rst:10
 msgid "We divided the features into the following categories:"
 msgstr ""
 
-#: ../../Guide/data_type.rst:9
-msgid "atom feature"
+#: ../../Guide/data_type.rst:12
+msgid "**atom feature**"
 msgstr ""
 
-#: ../../Guide/data_type.rst:11
+#: ../../Guide/data_type.rst:14
 msgid "The properties of atoms themselves."
 msgstr ""
 
-#: ../../Guide/data_type.rst:13
-msgid "bond features:"
+#: ../../Guide/data_type.rst:16
+msgid "**bond features**"
 msgstr ""
 
-#: ../../Guide/data_type.rst:15
+#: ../../Guide/data_type.rst:18
 msgid "The properties of inter-atomic bonds."
 msgstr ""
 
-#: ../../Guide/data_type.rst:17
-msgid "state (overall compound) features"
+#: ../../Guide/data_type.rst:20
+msgid "**state (overall compound) features**"
 msgstr ""
 
-#: ../../Guide/data_type.rst:19
+#: ../../Guide/data_type.rst:22
 msgid ""
 "The overall properties of the compound, include the properties that "
 "embody the overall crystal structure."
 msgstr ""
 
-#: ../../Guide/data_type.rst:21
-msgid "Crystal Structure features (Graph features)"
+#: ../../Guide/data_type.rst:24
+msgid "**Crystal Structure features (Graph features)**"
 msgstr ""
 
-#: ../../Guide/data_type.rst:23
+#: ../../Guide/data_type.rst:26
 msgid ""
 "The total of atom feature, bond features, state (overall compound) "
 "features."
 msgstr ""
 
-#: ../../Guide/data_type.rst:28
+#: ../../Guide/data_type.rst:31
 msgid ""
 "Different from 1,2,3, The 4 is cannot be used directly for ``sklearn``, "
 "but suit for ``torch`` . More information can be found in :doc:`geo_data`"
 " ."
 msgstr ""
 
-#: ../../Guide/data_type.rst:32
+#: ../../Guide/data_type.rst:35
 msgid "Access"
 msgstr ""
 
-#: ../../Guide/data_type.rst:33
+#: ../../Guide/data_type.rst:36
 msgid ""
 "All the **Generation** tools with  ``convert`` method for single case, "
 "and ``fit_transform`` methods for case list."
 msgstr ""
 
-#: ../../Guide/data_type.rst:37
+#: ../../Guide/data_type.rst:40
 msgid "1. Atom Features"
 msgstr ""
 
-#: ../../Guide/data_type.rst:43
-msgid ""
-"Atom features can be obtained by fetching periodic table data, using you "
-"input data. There are two data should offer. (At least one)"
+#: ../../Guide/data_type.rst:42
+msgid "Example Graph 1:"
 msgstr ""
 
-#: ../../Guide/data_type.rst:48
+#: ../../Guide/data_type.rst:49
+msgid "Example Graph 2:"
+msgstr ""
+
+#: ../../Guide/data_type.rst:56
+msgid ""
+"Atom features can be obtained by fetching periodic table data, using you "
+"input data. There are two data should offer. (at least one)."
+msgstr ""
+
+#: ../../Guide/data_type.rst:61
 msgid "Your input data. The type could be element number or element name."
 msgstr ""
 
-#: ../../Guide/data_type.rst:47
+#: ../../Guide/data_type.rst:60
 msgid ""
 "(or pymatgen ``Structure``, we have built-in conversion functions of "
 "``Structure``, to directly get all the atomic information in compound)."
 msgstr ""
 
-#: ../../Guide/data_type.rst:60
+#: ../../Guide/data_type.rst:66
 msgid "The element periodic table data (optional)."
 msgstr ""
 
-#: ../../Guide/data_type.rst:51
+#: ../../Guide/data_type.rst:64
 msgid ""
 "We have built-in some element periodic table (\"ele_table.csv\", "
 "\"ie.json\", \"oe.csv\"), To customize your element periodic table. you "
-"can offer (``.json``, ``.csv``) file or any python data (``dict``, "
-"``pandas.DataFrame``, ``numpy.ndarray``) in code."
+"can offer ( ``.json`` , ``.csv`` ) file or any python data ( ``dict`` , "
+"``pandas.DataFrame`` , ``numpy.ndarray`` ) in code."
 msgstr ""
 
-#: ../../Guide/data_type.rst:55
+#: ../../Guide/data_type.rst:68
+msgid "( ``.json`` , ``dict`` ) by ``AtomJsonMap`` ,"
+msgstr ""
+
+#: ../../Guide/data_type.rst:70
 msgid ""
-"where (``.json``, ``dict``) by "
-":class:`featurebox.featurizers.atom.mapper.AtomJsonMap`,"
+"(``.csv``, ``pandas.DataFrame`` , ``numpy.ndarray`` ) by ``AtomTableMap``"
+" ."
 msgstr ""
 
-#: ../../Guide/data_type.rst:57
+#: ../../Guide/data_type.rst:72
 msgid ""
-"(``.csv``, ``pandas.DataFrame``, ``numpy.ndarray``) by "
-":class:`featurebox.featurizers.atom.mapper.AtomTableMap`."
+"And one specialized ``AtomPymatgenPropMap`` for fetch data from "
+"\"pymatgen.core.periodic_table.json\"."
 msgstr ""
 
-#: ../../Guide/data_type.rst:59
-msgid ""
-"And one specialized "
-":class:`featurebox.featurizers.atom.mapper.AtomPymatgenPropMap` for fetch"
-" data from ``pymatgen.core.periodic_table.json``."
-msgstr ""
-
-#: ../../Guide/data_type.rst:62 ../../Guide/data_type.rst:106
+#: ../../Guide/data_type.rst:74 ../../Guide/data_type.rst:115
 msgid "Example:"
 msgstr ""
 
-#: ../../Guide/data_type.rst:82
-msgid "More Examples: :doc:`../Examples/sample_fea1`"
+#: ../../Guide/data_type.rst:95 ../../Guide/data_type.rst:154
+#: ../../Guide/data_type.rst:191
+msgid "More:"
 msgstr ""
 
-#: ../../Guide/data_type.rst:86
-msgid "2. Bond Features"
-msgstr ""
-
-#: ../../Guide/data_type.rst:88
-msgid ""
-"2. For bond features, use the structure data to extract information. The "
-"common structure data include the ``Structure`` of ``Pymatgen``, the "
-"``Atoms`` of ``ase`` , etc. The ``Structure`` and ``Atoms`` could mutual "
-"transform by ``pymatgen.io.ase.AseAtomsAdaptor``."
-msgstr ""
-
-#: ../../Guide/data_type.rst:92
-msgid ""
-"In general we don't just get the bond features, if you're sure you only "
-"need the bond information. please refer to "
-":class:`featurebox.featurizers.envir.environment.BaseNNGet`, "
-":class:`featurebox.featurizers.envir.environment.BaseDesGet`"
+#: ../../Guide/data_type.rst:95
+msgid ":doc:`../Examples/sample_fea1`"
 msgstr ""
 
 #: ../../Guide/data_type.rst:98
-msgid "3. State (overall compound) Features"
+msgid "2. Bond Features"
 msgstr ""
 
 #: ../../Guide/data_type.rst:100
-msgid "There are two method to get State (overall compound) features."
+msgid ""
+"1. For bond features, use the structure data to extract information. The "
+"common structure data include the ``Structure`` of ``Pymatgen``, the "
+"``Atoms`` of ``ase``, etc. The ``Structure`` and ``Atoms`` could mutual "
+"transform by ``pymatgen.io.ase.AseAtomsAdaptor``."
 msgstr ""
 
-#: ../../Guide/data_type.rst:102
-msgid "**Information extraction from structure data.**"
+#: ../../Guide/data_type.rst:106
+msgid "3. State (overall compound) Features"
 msgstr ""
 
-#: ../../Guide/data_type.rst:104
+#: ../../Guide/data_type.rst:108
+msgid "There are two method to get state (overall compound) features."
+msgstr ""
+
+#: ../../Guide/data_type.rst:111
+msgid ""
+"**1. Information extraction from structure data ( ``Structure`` of "
+"``Pymatgen`` ).**"
+msgstr ""
+
+#: ../../Guide/data_type.rst:113
 msgid ""
 "For the ``Atoms`` of ``ase``, The ``Structure`` could transformed by "
 "``pymatgen.io.ase.AseAtomsAdaptor``."
 msgstr ""
 
-#: ../../Guide/data_type.rst:116
+#: ../../Guide/data_type.rst:125
 msgid ""
 "where the prop_name is the name of properties of in ``pymatgen``, the "
 "name of properties is not apply for all compounds, and the data could not"
 " a single number.::"
 msgstr ""
 
-#: ../../Guide/data_type.rst:123
+#: ../../Guide/data_type.rst:133
 msgid ""
-"**Combination or mathematical processing of atomic features according to "
-"composition ratio.**"
+"**2. Combination or mathematical processing of atomic features according "
+"to composition ratio.**"
 msgstr ""
 
-#: ../../Guide/data_type.rst:125
+#: ../../Guide/data_type.rst:135
 msgid "This is one key method to get state features!!!"
 msgstr ""
 
-#: ../../Guide/data_type.rst:127
+#: ../../Guide/data_type.rst:137
 msgid "Get State features directly."
 msgstr ""
 
-#: ../../Guide/data_type.rst:140
+#: ../../Guide/data_type.rst:150
 msgid ""
-"More combination operation ``WeightedSum``, ``GeometricMean``, "
-"``HarmonicMean``, ``WeightedVariance`` and so on can be found in "
-":mod:`featurebox.featurizers.state.statistics` ."
+"More combination operation ``WeightedSum`` , ``GeometricMean`` , "
+"``HarmonicMean`` , ``WeightedVariance`` and so on can be found in "
+":mod:`featurebox.featurizers.state.statistics`."
 msgstr ""
 
-#: ../../Guide/data_type.rst:143
-msgid "More: :doc:`../Examples/sample_fea3`"
+#: ../../Guide/data_type.rst:154
+msgid ":doc:`../Examples/sample_fea3`"
 msgstr ""
 
-#: ../../Guide/data_type.rst:146
+#: ../../Guide/data_type.rst:156
 msgid ""
 "Get State features by step (Just for compositions with same number of "
 "atomic types)."
 msgstr ""
 
-#: ../../Guide/data_type.rst:148 ../../Guide/data_type.rst:160
+#: ../../Guide/data_type.rst:158
 msgid "Get the depart element feature first."
 msgstr ""
 
-#: ../../Guide/data_type.rst:168
-msgid "The ``UnionFeature`` could be used for your own table data!"
+#: ../../Guide/data_type.rst:170
+msgid "Union the depart element feature."
 msgstr ""
 
-#: ../../Guide/data_type.rst:170
+#: ../../Guide/data_type.rst:178
+msgid "The ``UnionFeature`` also could be used for your own table data!"
+msgstr ""
+
+#: ../../Guide/data_type.rst:181
 msgid "Addition:"
 msgstr ""
 
-#: ../../Guide/data_type.rst:172
+#: ../../Guide/data_type.rst:181
 msgid ""
 "There one state features transformer to get Polynomial extension for "
 "table."
 msgstr ""
 
-#: ../../Guide/data_type.rst:180
-msgid "More: :doc:`../Examples/sample_fea4`, :doc:`../Examples/sample_fea5`."
+#: ../../Guide/data_type.rst:190
+msgid ":doc:`../Examples/sample_fea4`, :doc:`../Examples/sample_fea5`."
 msgstr ""
 
 #~ msgid ""
@@ -349,5 +363,101 @@ msgstr ""
 #~ "``WeightedSum``,``GeometricMean``,``HarmonicMean``,``WeightedVariance``"
 #~ " and so on can be found in "
 #~ ":mod:`featurebox.featurizers.state.statistics`."
+#~ msgstr ""
+
+#~ msgid "atom feature"
+#~ msgstr ""
+
+#~ msgid "bond features:"
+#~ msgstr ""
+
+#~ msgid "state (overall compound) features"
+#~ msgstr ""
+
+#~ msgid "Crystal Structure features (Graph features)"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Atom features can be obtained by "
+#~ "fetching periodic table data, using you"
+#~ " input data. There are two data "
+#~ "should offer. (At least one)"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "We have built-in some element "
+#~ "periodic table (\"ele_table.csv\", \"ie.json\", "
+#~ "\"oe.csv\"), To customize your element "
+#~ "periodic table. you can offer "
+#~ "(``.json``, ``.csv``) file or any python"
+#~ " data (``dict``, ``pandas.DataFrame``, "
+#~ "``numpy.ndarray``) in code."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "where (``.json``, ``dict``) by "
+#~ ":class:`featurebox.featurizers.atom.mapper.AtomJsonMap`,"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "(``.csv``, ``pandas.DataFrame``, ``numpy.ndarray``) "
+#~ "by :class:`featurebox.featurizers.atom.mapper.AtomTableMap`."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "And one specialized "
+#~ ":class:`featurebox.featurizers.atom.mapper.AtomPymatgenPropMap` "
+#~ "for fetch data from "
+#~ "``pymatgen.core.periodic_table.json``."
+#~ msgstr ""
+
+#~ msgid "More Examples: :doc:`../Examples/sample_fea1`"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "2. For bond features, use the "
+#~ "structure data to extract information. "
+#~ "The common structure data include the"
+#~ " ``Structure`` of ``Pymatgen``, the "
+#~ "``Atoms`` of ``ase`` , etc. The "
+#~ "``Structure`` and ``Atoms`` could mutual "
+#~ "transform by ``pymatgen.io.ase.AseAtomsAdaptor``."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "In general we don't just get the"
+#~ " bond features, if you're sure you"
+#~ " only need the bond information. "
+#~ "please refer to "
+#~ ":class:`featurebox.featurizers.envir.environment.BaseNNGet`, "
+#~ ":class:`featurebox.featurizers.envir.environment.BaseDesGet`"
+#~ msgstr ""
+
+#~ msgid "There are two method to get State (overall compound) features."
+#~ msgstr ""
+
+#~ msgid "**Information extraction from structure data.**"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "**Combination or mathematical processing of"
+#~ " atomic features according to composition"
+#~ " ratio.**"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "More combination operation ``WeightedSum``, "
+#~ "``GeometricMean``, ``HarmonicMean``, ``WeightedVariance``"
+#~ " and so on can be found in "
+#~ ":mod:`featurebox.featurizers.state.statistics` ."
+#~ msgstr ""
+
+#~ msgid "More: :doc:`../Examples/sample_fea3`"
+#~ msgstr ""
+
+#~ msgid "The ``UnionFeature`` could be used for your own table data!"
+#~ msgstr ""
+
+#~ msgid "More: :doc:`../Examples/sample_fea4`, :doc:`../Examples/sample_fea5`."
 #~ msgstr ""
 

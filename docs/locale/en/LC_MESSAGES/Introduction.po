@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: featurebox \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-07 23:36+0800\n"
+"POT-Creation-Date: 2022-01-04 23:47+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,8 +23,8 @@ msgstr ""
 
 #: ../../Introduction.rst:6
 msgid ""
-"Featurebox contains some tools for material feature **Generation** and "
-"**Selection**."
+"Featurebox contains some tools (**Generation** and **Selection**) for "
+"material features."
 msgstr ""
 
 #: ../../Introduction.rst:9
@@ -246,5 +246,11 @@ msgstr ""
 #~ "The **Graph neural network** employ "
 #~ "**base_graph_base**, **bond** and **atom** "
 #~ ".etc to build input data."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Featurebox contains some tools for "
+#~ "material feature **Generation** and "
+#~ "**Selection**."
 #~ msgstr ""
 

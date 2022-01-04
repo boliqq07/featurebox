@@ -1,19 +1,18 @@
 """Base"""
 import warnings
+from itertools import chain
 from multiprocessing import cpu_count
 from typing import List, Tuple, Iterable, Any
 
 import numpy as np
 import pandas as pd
 from mgetool.tool import parallelize
-from monty.json import MSONable
 
 
-class BaseFeature(MSONable):
+class BaseFeature:
     """
     **Using a BaseFeature Class**
 
-    Abstract class to calculate features from ``MSONable``.
     That means you can embed this feature directly into ``BaseFeature`` class implement.
     ::
 
@@ -31,7 +30,8 @@ class BaseFeature(MSONable):
     .. note::
 
         The ``convert`` method should be rewrite to deal with single case. And the ``transform`` and ``fit_transform``
-        Will be established for list of case automatically.
+        will be established for list of case automatically.
+
 
     **Adding references**
 
@@ -84,7 +84,7 @@ class BaseFeature(MSONable):
             The default is 'raise' which will raise up the exception.
         return_type: str
             Specific the return type.
-            Can be ``any``, ``array`` and ``df``.
+            Can be ``any``, ``np``,``array`` and ``df``.
             'array' and 'df' force return type to np.ndarray and pd.DataFrame respectively.
             If 'any', without type conversion .
             Default is 'any'
@@ -92,7 +92,7 @@ class BaseFeature(MSONable):
         self.return_type = return_type
         self.n_jobs = n_jobs
         self.on_errors = on_errors
-        self._kwargs = {}
+        self._kwargs = {"x_labels": None, "feature_labels_mark": None}
         self.support_ = []
         self.ndim = None
         self._feature_labels = []
@@ -120,7 +120,10 @@ class BaseFeature(MSONable):
     def fit(self, *args, **kwargs):
         """fit function in :class:`BaseFeature` are weakened and just pass parameter."""
         _ = args
-        self._kwargs = kwargs
+        if kwargs is {}:
+            pass
+        else:
+            self._kwargs.update(kwargs)
         return self
 
     def fit_transform(self, X: List, y=None, **kwargs) -> Any:
@@ -136,16 +139,18 @@ class BaseFeature(MSONable):
 
         Parameters
         ----------
-        X : list
+        X: list
             list of case.
-        y : None
+        y: None
             deprecated.
-        **kwargs : dict
+        **kwargs:
             Additional fit or transform parameters.
+            feature_labels_mark: str, mark for each feature_labes. for return_type =='pd'.
+            x_labels: list, mark for each row. for return_type =='pd'.
 
         Returns
         --------
-        X_new :
+        X_new:
             result data.
         """
         # non-optimized default implementation; override when a better
@@ -157,16 +162,19 @@ class BaseFeature(MSONable):
             # fit method of arity 2 (supervised transformation)
             return self.fit(X, y, **kwargs).transform(X)
 
-    def transform2(self, *args) -> Any:
+    def transform_with_zip(self, *args) -> Any:
         """
         Second transform, which convert Iterables to list and run transform.
 
+        first:
         p1s,p2s -> [(p1,p2),(p1,p2),(p1,p2),...,(p1,p2),(p1,p2)]\n
+        second:
+        run self.transform
 
         Parameters
         ----------
         args:Iterable
-            each of args must be Iterable
+            each of args must be Iterable.
 
         Returns
         ---------
@@ -181,7 +189,7 @@ class BaseFeature(MSONable):
         Transform a list of entries. Each iterable element of entries is corresponding to the parameter of ``convert``,
         If ``convert`` takes n multiple inputs, the transform inputs should be a list or tuple (size n),\n
         [(p1,p2),(p1,p2),(p1,p2),...,(p1,p2),(p1,p2)]\n
-        which can be from `zip`` or used the built-in ``transform2``.
+        which can be from `zip`` or used the built-in ``transform_with_zip``.
 
         Parameters
         ----------
@@ -223,9 +231,7 @@ class BaseFeature(MSONable):
             except (NotImplementedError, TypeError):
                 labels = None
 
-            if isinstance(entries, (pd.Series, pd.DataFrame)):
-                return pd.DataFrame(ret, index=entries.index, columns=labels)
-            return pd.DataFrame(ret, columns=labels)
+            return pd.DataFrame(ret, columns=labels, index=self._kwargs["x_labels"])
 
     def _wrapper(self, *args, **kwargs):
         """
@@ -318,25 +324,12 @@ class BaseFeature(MSONable):
                     return np.array([[self._convert(i) for i in di] for di in d])
                 elif now_dim - self_dim == 3:
                     return np.array([[[self._convert(i) for i in dii] for dii in di] for di in d])
-                elif now_dim < self_dim:
-                    warnings.warn(UserWarning, "The attribute `ndim` is {}, but the input data shape is {}, "
-                                               "which could be cause an error".format(self_dim, now_dim))
+                else:
+                    warnings.warn("The attribute `ndim` is {}, but the input data shape is {}, "
+                                  "which could be cause an error".format(self_dim, now_dim), UserWarning)
                     return np.array(self._convert(d))
-                # if d.ndim == 2:
-                #     if self.ndim:
-                #         return np.array(self._convert(d))
-                #     else:
-                #         return np.array([self._convert(i) for i in d])
-                #
-                # elif d.ndim == 1 or d.ndim == 0:
-                #     return np.array(self._convert(d))
-                #
-                # elif d.ndim == 3:
-                #     if self.d2:
-                #         return np.array([self._convert(di) for di in d])
-                #     else:
-                #         return np.array([[self._convert(i) for i in di] for di in d])
-            return np.array(self._convert(d))
+            else:
+                return np.array(self._convert(d))
         except BaseException as e:
             print(e)
             raise ValueError("Error when try to convert: \n {}".format(str(d)))
@@ -348,7 +341,11 @@ class BaseFeature(MSONable):
         Returns:
             ([str]) attribute labels.
         """
-        return self._feature_labels
+        mark = self._kwargs["feature_labels_mark"]
+        if mark is None:
+            return self._feature_labels
+        else:
+            return ["{}_{}".format(i, mark) for i in self._feature_labels]
 
     def set_feature_labels(self, values: List[str]):
         """Generate attribute names.
@@ -389,10 +386,7 @@ class BaseFeature(MSONable):
         raise TypeError("This method has no add")
 
 
-Converter = BaseFeature  # old name, # alias
-
-
-class DummyConverter(Converter):
+class DummyConverter(BaseFeature):
     """
     Dummy converter as a placeholder, Do nothing.
     """
@@ -418,19 +412,21 @@ class DummyConverter(Converter):
 class ConverterCat(BaseFeature):
     """Pack the converters in to one unified approach.
     The same type Converter would merged and different would order to run.
-    Thus, keeping the same type is next to each other!
+    Thus, keeping the same type is next to each other! such as A(),A(),B(),B().
 
     Examples
     ----------
+
     >>> tmps = ConverterCat(
     ...    AtomEmbeddingMap(),
     ...    AtomEmbeddingMap("ie.json")
-    ...    AtomTableMap(search_tp="name"))
+    ...    AtomTableMap(search_tp="name_dict"))
     >>> tmp.convert(x)
+    >>> tmp.tranmform(xs)
 
     """
 
-    def __init__(self, *args: Converter, force_concatenate=False,
+    def __init__(self, *args: BaseFeature, force_concatenate=False,
                  n_jobs: int = 1, on_errors: str = 'raise', return_type: str = 'any'):
         """
 
@@ -440,7 +436,15 @@ class ConverterCat(BaseFeature):
             List of Converter
         """
         super().__init__(n_jobs=n_jobs, on_errors=on_errors, return_type=return_type)
+        return_name = set([getattr(i, "return_type") for i in args])
+        assert len(return_name) == 1, "The return_type for each Converter must be same," \
+                                      " but there are {}".format(list(return_name))
+
+        if self.return_type in ["df", "pd", "np", "array"]:
+            assert force_concatenate is True, "force_concatenate=True is need to transform to table data."
+
         self.args = self.sums(list(args))
+        self._feature_labels = list(chain(*[i.feature_labels for i in self.args]))
         self.force_concatenate = force_concatenate
 
     @staticmethod
@@ -455,27 +459,30 @@ class ConverterCat(BaseFeature):
                 i += 1
         return args
 
-    def convert(self, d, raise_error=False):
-        """convert batched"""
+    def convert(self, d):
+        """convert and concatenate."""
         data = []
         for ci in self.args:
             data.append(ci.convert(d))
         if len(self.args) == 1:
-            return data[0]
+            raw_data = data[0]
         else:
             if not self.force_concatenate:
                 try:
-                    return np.concatenate(data, axis=-1)
+                    raw_data = np.concatenate(data, axis=-1)
                 except (ValueError, IndexError):
-                    return data
+                    raw_data = data
             else:
                 try:
-                    return np.concatenate(data, axis=-1)
+                    raw_data = np.concatenate(data, axis=-1)
                 except (ValueError, IndexError) as e:
                     tys = [ar.__class__.__name__ for ar in self.args]
                     print("Fall to concentrate the data from {}".format(str(tys)),
-                          "please set ``force_concatenate``=False, and concatenate them in your code manually")
+                          "The data are can not transformed to return_type={} data,".format(self.return_type),
+                          "please set ``force_concatenate``= False, and concatenate them in your code manually."
+                          )
                     raise e
+        return raw_data
 
 
 class ConverterSequence(BaseFeature):
@@ -491,6 +498,7 @@ class ConverterSequence(BaseFeature):
 
     Examples
     ----------
+
     >>> tmps = ConverterCat(
     ...    AtomEmbeddingMap(),
     ...    DummyConverter()
@@ -498,7 +506,7 @@ class ConverterSequence(BaseFeature):
 
     """
 
-    def __init__(self, *args: Converter, n_jobs: int = 1, on_errors: str = 'raise',
+    def __init__(self, *args: BaseFeature, n_jobs: int = 1, on_errors: str = 'raise',
                  return_type: str = 'any'):
         """
 
@@ -515,3 +523,6 @@ class ConverterSequence(BaseFeature):
         for ci in self.args:
             d = ci.convert(d)
         return d
+
+
+Converter = BaseFeature  # alias
