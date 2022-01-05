@@ -9,7 +9,7 @@ and the structures is pymatgen ``Structure`` list.
 
 >>> from featurebox.featurizers.atom.mapper import AtomJsonMap
 >>> tmps = AtomJsonMap(search_tp="number", embedding_dict="ele_megnet.json")
->>> a = tmps.convert(structure_list)
+>>> a = tmps.convert(structure_i)
 
 The return data are properties of 1, 76 elements.
 
