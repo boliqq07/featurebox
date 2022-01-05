@@ -111,7 +111,7 @@ There are two method to get state (overall compound) features.
 
 - **1. Information extraction from structure data ( ``Structure`` of ``Pymatgen`` ).**
 
-For the ``Atoms`` of ``ase``, The ``Structure`` could transformed by ``pymatgen.io.ase.AseAtomsAdaptor``.
+For the ``Atoms`` of ``ase`` , The ``Structure`` could transformed by ``pymatgen.io.ase.AseAtomsAdaptor``.
 
 Example:
 

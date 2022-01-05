@@ -30,11 +30,9 @@ We using features from pymatgen firstly.
 
 >>> from featurebox.featurizers.batch_feature import BatchFeature
 >>> bf = BatchFeature(data_type="elements")
->>> aa =[]
->>> aas = [[{str(i.symbol): 1} for i in structure.species] for structure in sturctures]
->>> [aa.extend(i) for i in aas]
->>> #where aa is element list
->>> data = bf.fit_transform([aa])
+>>> aas = [[i.specie.Z for i in structure] for structure in sturctures]
+>>> #where aas is element list
+>>> data = bf.fit_transform(aas)
 
 Note
 ::

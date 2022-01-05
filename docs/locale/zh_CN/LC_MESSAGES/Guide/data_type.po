@@ -200,7 +200,7 @@ msgid ""
 "For the ``Atoms`` of ``ase``, The ``Structure`` could transformed by "
 "``pymatgen.io.ase.AseAtomsAdaptor``."
 msgstr ""
-"对于 ``ase` `的 ``Atoms`` 来说，``Structure`` 可以通过 "
+"对于 ``ase`` 的 ``Atoms`` 来说，``Structure`` 可以通过 "
 "``pymatgen.io.ase.AseAtomsAdaptor`` 转换得到。"
 
 #: ../../Guide/data_type.rst:126
