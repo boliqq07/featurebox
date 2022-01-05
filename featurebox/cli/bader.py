@@ -187,7 +187,6 @@ class CLICommand:
     Example:
 
     $ featurebox bader -t s -p /home/parent_dir/***/sample_i_dir -if AECCAR0
-
     """
 
     @staticmethod

@@ -2,6 +2,12 @@ import argparse
 import textwrap
 from importlib import import_module
 
+title = """
+---------------------------
+|     Featurebox CLI      |
+---------------------------
+"""
+
 
 class CLIError(Exception):
     """Error for CLI commands.
@@ -25,6 +31,7 @@ commands_ = [
 
 
 def main(prog='featurebox', description='featurebox command line tool.', args=None):
+    print(title)
     commands = commands_
     parser = argparse.ArgumentParser(prog=prog,
                                      description=description,
@@ -69,10 +76,12 @@ def main(prog='featurebox', description='featurebox command line tool.', args=No
     args = parser.parse_args(args)
 
     if args.command == 'help':
+
         if args.helpcommand is None:
             parser.print_help()
         else:
             parsers[args.helpcommand].print_help()
+
     elif args.command is None:
         parser.print_usage()
     else:
@@ -100,6 +109,7 @@ class Formatter(argparse.HelpFormatter):
     """Improved help formatter."""
 
     def _fill_text(self, text, width, indent):
+
         assert indent == ''
         out = ''
         blocks = text.split('\n\n')

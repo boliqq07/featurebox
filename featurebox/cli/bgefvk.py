@@ -144,7 +144,6 @@ class CLICommand:
     Example:
 
         $ featurebox bgefvk -t s -p /home/parent_dir/***/sample_i_dir
-
     """
 
     @staticmethod

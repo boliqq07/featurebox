@@ -151,7 +151,6 @@ class CLICommand:
     Example:
 
         $ featurebox dbcvk -t s -p /home/parent_dir/***/sample_i_dir
-
     """
 
     @staticmethod

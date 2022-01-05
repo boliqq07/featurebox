@@ -69,7 +69,7 @@ class BaseCompositionFeature(BinaryMap):
         return self.mix_function(ele, numbers)
 
     @abstractmethod
-    def mix_function(self, elems: List, nums: Union[List,np.ndarray]):
+    def mix_function(self, elems: List, nums: Union[List, np.ndarray]):
         """
 
         Parameters

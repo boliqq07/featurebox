@@ -45,6 +45,8 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
     ],
 
     packages=find_packages(
@@ -52,5 +54,6 @@ setup(
                  "test*", "*.test*", "*.*.test*", "*.*.*.test*", "instances*", "Instances", "Instance*"],
     ),
     long_description=long_description,
-    long_description_content_type='text/markdown'
+    long_description_content_type='text/markdown',
+    entry_points={'console_scripts': ['featurebox = featurebox.cli.main:main', 'fb = featurebox.cli.main:main']}
 )

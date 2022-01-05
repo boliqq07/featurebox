@@ -257,29 +257,33 @@ def run(args, parser):
 
 class CLICommand:
     """
-    '产生任务批处理文件,请保证 -r,-e 至少存在一个.'
-    '最方便用法: '
-    '1.把该文件放到算例文件夹们的 父文件夹下，并提供 pbs or lsf 等文件模板给 -r 参数.'
-    "featurebox batchrun -p /***/data -r /***/pbs.run"
+    产生任务批处理文件,请保证 -r,-e 至少存在一个.
+    最方便用法:
+    1.把该文件放到算例文件夹们的 父文件夹下，并提供 pbs, lsf 等文件模板给 -r 参数.
 
-    原本的文件格式：
+    $ featurebox batchrun -p /***/data -r /***/pbs.run
 
-    ---- data/
-     |-- data1/
-     |-- data2/
-     |-- pbs.run
+    文件格式：
 
-    "2.若算例中已经存在pbs or lsf 模板，请提供模板名字（不会包含路径）给 -e 参数."
-    "featurebox batchrun -p /***/data -e pbs.run"
+    ---- data/ \n
+     |-- data1/ \n
+     |-- data2/ \n
+     |-- pbs.run \n
 
-    ---- data/
-     |-- data1/
-      ||- pbs.run
-      ||- POSCAR
-      ||- ....
-     |-- data2/
-      ||- pbs.run
-      ||- ....
+    2.若算例中已经存在pbs, lsf 模板，请提供模板名字（不会包含路径）给 -e 参数.
+
+    $ featurebox batchrun -p /***/data -e pbs.run
+
+    文件格式：
+
+    ---- data/ \n
+     |-- data1/ \n
+      ||- pbs.run \n
+      ||- POSCAR \n
+      ||- .... \n
+     |-- data2/ \n
+      ||- pbs.run \n
+      ||- .... \n
 
     Example:
 
