@@ -10,6 +10,7 @@
 Calculate the the correction of columns.
 """
 import copy
+import warnings
 from typing import List
 
 import numpy as np
@@ -30,7 +31,7 @@ class Corr(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
     Examples
     ---------
     >>> from sklearn.datasets import load_boston
-    >>> from featurebox import Corr
+    >>> from featurebox.selection import Corr
     >>> x, y = load_boston(return_X_y=True)
     >>> co = Corr(threshold=0.5)
     >>> nx = co.fit_transform(x)
@@ -41,7 +42,7 @@ class Corr(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
     ---------
 
     >>> from sklearn.datasets import load_boston
-    >>> from featurebox import Corr
+    >>> from featurebox.selection import Corr
     >>> x, y = load_boston(return_X_y=True)
     >>> co = Corr(threshold=0.7)
     >>> groups = co.count_cof(np.corrcoef(x[:,:7], rowvar=False))
@@ -57,7 +58,7 @@ class Corr(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
     Examples
     -----------
     >>> from sklearn.datasets import load_boston
-    >>> from featurebox import Corr
+    >>> from featurebox.selection import Corr
     >>> x, y = load_boston(return_X_y=True)
     >>> co = Corr(threshold=0.7)
     >>> co.fit(x)
@@ -75,7 +76,7 @@ class Corr(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
     Examples
     -----------
     >>> from sklearn.datasets import load_boston
-    >>> from featurebox import Corr
+    >>> from featurebox.selection import Corr
     >>> x, y = load_boston(return_X_y=True)
     >>> co = Corr(threshold=0.7,muti_index=[0,8],muti_grade=2)
     >>> # in range [0,8], the features are binding in to 2 sized: [[0,1],[2,3],[4,5],[6,7]]
@@ -116,6 +117,7 @@ class Corr(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
         self.cov_shrink = None
         self.shrink_list = []
         self.random_state = random_state
+        self.nan_index_mark = None
 
     def fit(self, data, pre_cal=None, method="mean"):
         if pre_cal is None:
@@ -126,7 +128,16 @@ class Corr(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
             cov = pre_cal
         else:
             raise TypeError("pre_cal is None or coef of data_cluster with shape(data_cluster[0],data_cluster[0])")
-        cov = np.nan_to_num(cov - 1) + 1
+
+        # for nan
+        self.nan_index_mark = ~np.array([np.all(np.isnan(cov[i])) for i in range(cov.shape[0])])
+        if not np.all(self.nan_index_mark):
+            warnings.warn("There are some NAN values in correlation coefficient matrix, \n"
+                          "which could be constant features. \n"
+                          "and the features would removed later. \n"
+                          "See more in 'nan_index_mark' attribute", UserWarning)
+
+        cov = np.nan_to_num(cov)
         self.cov = cov
         self.data = data
         self.shrink_list = list(range(self.cov.shape[0]))
@@ -222,7 +233,11 @@ class Corr(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
         index = self.remove_coef(list_count)
         support_ = [self.shrink_list[i] for i in index]
         support_ = self.feature_unfold(support_)
-        self.support_ = np.array([True if i in support_ else False for i in range(self.data.shape[1])])
+        support_ = np.array([True if i in support_ else False for i in range(self.data.shape[1])])
+        if self.nan_index_mark is None:
+            self.support_ = support_
+        else:
+            self.support_ = support_ * self.nan_index_mark
         return support_
 
     @staticmethod
@@ -249,27 +264,27 @@ class Corr(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
         check_is_fitted(self, 'support_')
         return self.support_
 
-    def transform_index(self, data):
-        if isinstance(data, int):
-            return self.shrink_list.index(data)
-        elif isinstance(data, (list, tuple)):
-            return [self.shrink_list.index(i) for i in data]
-
-    def inverse_transform_index(self, data):
-        if isinstance(data, int):
-            return self.shrink_list[data]
-        elif isinstance(data, (list, tuple)):
-            return [self.shrink_list[i] for i in data]
-        else:
-            pass
+    # def transform_index(self, data):
+    #     if isinstance(data, int):
+    #         return self.shrink_list.index(data)
+    #     elif isinstance(data, (list, tuple)):
+    #         return [self.shrink_list.index(i) for i in data]
+    #
+    # def inverse_transform_index(self, data):
+    #     if isinstance(data, int):
+    #         return self.shrink_list[data]
+    #     elif isinstance(data, (list, tuple)):
+    #         return [self.shrink_list[i] for i in data]
+    #     else:
+    #         pass
 
     def transform(self, data):
         if isinstance(data, (list, tuple)):
-            return data[self.shrink_list]
+            return data[self.support_]
         elif isinstance(data, np.ndarray) and data.ndim == 1:
-            return data[self.shrink_list]
+            return data[self.support_]
         elif isinstance(data, np.ndarray) and data.ndim == 2:
-            return data[:, self.shrink_list]
+            return data[:, self.support_]
         else:
             pass
 
