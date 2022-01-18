@@ -8,6 +8,7 @@ ase.constraints.
 # Copyright 2008, 2009 CAMd
 # (see accompanying license files for details).
 import argparse
+import pathlib
 import pickle
 import threading
 from math import cos, sin, sqrt
@@ -5003,6 +5004,20 @@ def cal(d, pos1,pos2,n,noidpp=True,pr=True,method=True):
 
             cmd_sys(cmds=["nebmake.pl {} {} {}".format(pos1,pos2,n),])
 
+        try:
+            p1 = pathlib.Path(pos1).parent
+            p2 = pathlib.Path(pos2).parent
+            copyfile(p1 / "OUTCAR", "OO/OUTCAR")
+            if n>=9:
+                copyfile(p2 / "OUTCAR", "{}/OUTCAR".format(n+1))
+            else:
+                copyfile(p2 / "OUTCAR", "0{}/OUTCAR".format(n+1))
+
+            copyfile(p1 / "KPOINTS", "KPOINTS")
+            copyfile(p1 / "POTCAR", "POTCAR")
+        except BaseException:
+            warnings.warn("Can't find the initial or final OUTCAR, or KPOINTS, POTCAR File.", UserWarning)
+
         os.chdir(old)
     except BaseException as e:
         print(e)
@@ -5014,6 +5029,7 @@ def cal_all(f_dir, *args, **kwargs):
 
     for di in f_dir:
         cal(di, *args, pr=False, **kwargs)
+        print('Ok, for:', di)
 
 
 def run(args, parser):
@@ -5022,7 +5038,8 @@ def run(args, parser):
         print(args.path_name)
     else:
         assert args.job_type in ["M", "m"]
-        bf = BatchFile(args.path_name, suffix=args.suffix)
+
+        bf = BatchFile(args.path_name, suffix=args.suffix, fdir_range=args.fdir_range)
         bf.filter_dir_name(include=args.dir_include, exclude=args.dir_exclude, layer=args.layer)
         bf.filter_file_name(include=args.file_include, exclude=args.file_exclude)
         bf.merge()
@@ -5077,7 +5094,28 @@ class CLICommand:
 
     Example:
 
-        $ featurebox nebmake -t m -p sample_i_dir -pos1 POSCAR1 -pos2 POSCAR2 -n 3 [-noidpp True]
+        $ featurebox nebmake -t s -p sample_i_dir -pos1 POSCAR1 -pos2 POSCAR2 -n 3 [-noidpp True]
+
+    Incar
+    （1）EDIFF=1E-7，这个参数非常关键！过渡态对力计算精度要求极高，更精准的电子
+         步收敛会有更精准的力，可以加速收敛。好多过渡态计算不收敛原因都是因为力
+         的精度不够。（注：粗收敛可以适当放宽到1E-5）
+
+    （2）EDIFFG = -0.03，过渡态可以适当放宽结构优化的收敛精度到-0.03，对于非常复
+             杂难以收敛的体系可以放宽到-0.05。
+
+    （3）IBRION = 3, POTIM = 0，这是VTST识别并启动VTST优化算法的标致。
+
+    （4）IOPT = 1，根据建议，选择优化算法：IOPT设置成1。IOPT推荐7，2，或1。
+    0意味着启用VASP自带的优化算法，(比如：IOPT=0，则IBRION=1, POTIM=0.1)
+
+    （5）ICHAIN=0开启NEB方法，
+
+    （6）LCLIMB = .TRUE. 爬坡即CI-NEB
+
+    （7）IMAGES = 1, 插点个数
+
+    （8）SPRING = -5, 弹簧力常数，用-5默认值即可
     """
 
     @staticmethod
@@ -5098,6 +5136,7 @@ class CLICommand:
         parser.add_argument('-abspath', '--abspath', help='return abspath', type=bool, default=True)
         parser.add_argument('-method', '--method', help='use the inner nebmake.py file (py) or nebmake.pl file '
                                                     'in system (pl, if exist)', type=str, default="py")
+        parser.add_argument('-fr', '--fdir_range', help='which layer to find, default the "next".', type=str, default="next")
 
 
     @staticmethod
@@ -5129,5 +5168,7 @@ if __name__ == '__main__':
     parser.add_argument('-abspath', '--abspath', help='return abspath.', type=bool, default=True)
     parser.add_argument('-method', '--method', help='use the inner nebmake.py file (py) or nebmake.pl file '
                                                     'in system (pl, if exist)', type=str, default="py")
+    parser.add_argument('-fr', '--fdir_range', help='which layer to find, default the "next".', type=str, default="next")
+
     args = parser.parse_args()
     run(args, parser)
