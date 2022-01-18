@@ -25,6 +25,7 @@ commands_ = [
     ('dbcvk', 'featurebox.cli.dbcvk'),
     ('batchrun', 'featurebox.cli.batchrun'),
     ('autoincar', 'featurebox.cli.autoincar'),
+    ('nebmake', 'featurebox.cli.nebmake'),
     # ('run', 'ase.cli.run'),
 
 ]

@@ -4,12 +4,12 @@
 # @Software : PyCharm
 # @License  : GNU General Public License v3.0
 # @Author   : xxx
-__all__ = ["autoincar", "batchrun", "main", "bgefvk", "bader", "dbcvk"]
+__all__ = ["autoincar", "batchrun", "main", "bgefvk", "bader", "dbcvk","nebmake"]
 
 __doc__ = """
 The ``cli`` part include:
 
-    "batchrun", "main", "bgefvk", "bader", "dbcvk",
+    "batchrun", "main", "bgefvk", "bader", "dbcvk","nebmake"
 
 which run in command line mode. All message (help) could get by ``'-h'`` .
 

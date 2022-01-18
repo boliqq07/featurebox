@@ -102,8 +102,7 @@ def cmd_sys(cmds=None):
 def run(args, parser):
     if args.job_type in ["S", "s"]:
         res = cal(args.path_name, store=True, store_name=args.out_name)
-
-        print(args.dir_name, res)
+        print(args.path_name, res)
     else:
         assert args.job_type in ["M", "m"]
         bf = BatchFile(args.path_name, suffix=args.suffix)
