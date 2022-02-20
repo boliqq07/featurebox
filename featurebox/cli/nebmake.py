@@ -5088,13 +5088,13 @@ class CLICommand:
 
     Example:
 
-        $ featurebox nebmake -p parent_dir -pos1 POSCAR1 -pos2 POSCAR2 -n 3 [-noidpp True]
+        $ featurebox nebmake -p parent_dir -pos1 CONTCAR -pos2 CONTCAR -n 3
 
     如果在 featurebox 中运行单个案例，请指定运算子文件夹:
 
     Example:
 
-        $ featurebox nebmake -t s -p sample_i_dir -pos1 POSCAR1 -pos2 POSCAR2 -n 3 [-noidpp True]
+        $ featurebox nebmake -t s -p sample_i_dir -pos1 CONTCAR -pos2 CONTCAR -n 3
 
     Incar
     （1）EDIFF=1E-7，这个参数非常关键！过渡态对力计算精度要求极高，更精准的电子
@@ -5148,7 +5148,8 @@ if __name__ == '__main__':
     """
     Example:
 
-        $ python nebmake.py -t s -pos1 POSCAR1 -pos2 POSCAR2 -n 3
+        $ python nebmake.py -t s -pos1 CONTCAR -pos2 CONTCAR -n 3
+        $ python nebmake.py -p parent_dir -pos1 CONTCAR -pos2 CONTCAR -n 3
     """
     parser = argparse.ArgumentParser(description="Get neb files. Example:\n"
                                                  "python nebmake.py -t s -pos1 POSCAR1 -pos2 POSCAR2 -n 3")
