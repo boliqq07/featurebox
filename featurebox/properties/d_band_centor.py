@@ -1,7 +1,11 @@
 # Ref: https://vasppy.readthedocs.io/en/latest/_modules/vasppy/doscar.html
 # Ref: https://github.com/hitarth64/d-band-center/blob/main/d_band.py
+import pathlib
+from typing import List
+
 import numpy as np
 import pandas as pd
+from pymatgen.io.vasp import Poscar
 from scipy.integrate import simps
 
 
@@ -40,7 +44,7 @@ class DBC:
 
     number_of_header_lines = 6
 
-    def __init__(self, filename, ispin=2, lmax=2, lorbit=11, spin_orbit_coupling=False, read_pdos=True, species=None):
+    def __init__(self, filename, ispin=2, lmax=2, lorbit=11, spin_orbit_coupling=False, read_pdos=True):
         """
         Create a Doscar object from a VASP DOSCAR file.
         Args:
@@ -50,7 +54,6 @@ class DBC:
             lorbit (optional:int): The VASP LORBIT flag. (Default=11).
             spin_orbit_coupling (optional:bool): Spin-orbit coupling (Default=False).
             read_pdos (optional:bool): Set to True to read the atom-projected density of states (Default=True).
-            species (optional:list(str)): List of atomic species strings, e.g. [ 'Fe', 'Fe', 'O', 'O', 'O' ]. Default=None.
         """
         self.filename = filename
         self.ispin = ispin
@@ -60,7 +63,6 @@ class DBC:
             raise NotImplementedError('Spin-orbit coupling is not yet implemented')
         self.lorbit = lorbit
         self.pdos = None
-        self.species = species
         self.read_header()
         self.read_total_dos()
         if read_pdos:
@@ -70,6 +72,9 @@ class DBC:
                 raise
         # if species is set, should check that this is consistent with the number of entries in the
         # projected_dos dataset
+
+        self.structure = Poscar.from_file(str(pathlib.Path(filename).parent / "CONTCAR"),check_for_POTCAR=False).structure
+        self.atoms_list = [i.name for i in self.structure.species]
 
     @property
     def number_of_channels(self):
@@ -157,17 +162,17 @@ class DBC:
             if not m:
                 channel_idx = [1, 2, 3]
             else:
-                channel_idx = [i for i, v in enumerate(valid_m_values['p']) if v in m]
+                channel_idx = [1+i for i, v in enumerate(valid_m_values['p']) if v in m]
         elif l == 'd':
             if not m:
                 channel_idx = [4, 5, 6, 7, 8]
             else:
-                channel_idx = [i for i, v in enumerate(valid_m_values['d']) if v in m]
+                channel_idx = [4+i for i, v in enumerate(valid_m_values['d']) if v in m]
         elif l == 'f':
             if not m:
                 channel_idx = [9, 10, 11, 12, 13, 14, 15]
             else:
-                channel_idx = [i for i, v in enumerate(valid_m_values['f']) if v in m]
+                channel_idx = [9+i for i, v in enumerate(valid_m_values['f']) if v in m]
         else:
             raise ValueError
 
@@ -176,19 +181,31 @@ class DBC:
     def pdos_sum(self, atoms=None, spin=None, l=None, m=None):
         return np.sum(self.pdos_select(atoms=atoms, spin=spin, l=l, m=m), axis=(0, 2, 3))
 
-    def calculate(self, orb="d"):
+    def calculate(self, orb="d", species: List[str]=None, atoms:List[int]=None, emax=2, emin=-10,m=None):
+        """species (optional:list(str)): List of atomic species strings, e.g. [ 'Fe', 'Fe', 'O', 'O', 'O' ]. Default=None."""
+
+        if species is None and atoms is None:
+            atoms = list(range(0, self.number_of_atoms))
+
+        elif species is not None and atoms is None:
+            atoms = [idx for idx,j in enumerate(self.atoms_list) if j in species ]
+        elif species is  None and atoms is not None:
+            pass
+        else:
+            print("species,atoms are assigned at the same time is not recommended." )
+            atoms = [idx for idx in atoms if self.atoms_list[idx] in species]
+
+        assert len(atoms)>0
         # calculation of d-band center
-        # Open doscar
-        atoms = list(range(15, 15))  # calculated atom ordinal
         # Set atoms for integration
-        up = self.pdos_sum(atoms, spin='up', l=orb)
-        down = self.pdos_sum(atoms, spin='down', l=orb)
+        up = self.pdos_sum(atoms, spin='up', l=orb,m=m)
+        down = self.pdos_sum(atoms, spin='down', l=orb,m=m)
 
         # Set intergrating range
         efermi = self.efermi - self.efermi
         energies = self.energy - self.efermi
-        # emin, emax = energies[0], energies[-1]
-        erange = (efermi - 8, efermi + 2)  # integral energy range
+
+        erange = (efermi + emin, efermi +emax)  # integral energy range
         emask = (energies <= erange[-1])
 
         # Calculating center of the orbital specified above in line 184

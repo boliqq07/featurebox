@@ -83,6 +83,12 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
             if estimator is sklearn model, used cv, else pass
         """
         super().__init__(muti_grade=muti_grade, muti_index=muti_index, must_index=must_index)
+        if hasattr(estimator, "max_features"):
+            print("For estimator with 'max_features' attribute, the 'max_features' would changed with "
+                          "each sub-data. that is, The 'refit estimator' which with fixed 'max_features' could be with different performance.\n"
+                          "Please change and define 'max_features' (with other parameters fixed) by manual testing after Backforward!!!!\n"
+                          "Please change and define 'max_features' (with other parameters fixed) by manual testing after Backforward!!!!",
+                          )
         self.estimator = estimator
         self.score_ = []
         self.n_jobs = n_jobs
@@ -119,12 +125,24 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
                 slices = self.feature_unfold(slices)
                 data_x0 = x0[:, slices]
 
-                if hasattr(estimator, "best_score_"):
-                    estimator.fit(data_x0, y0)
-                    score0 = np.mean(estimator.best_score_)  # score_test
+                if hasattr(self.estimator, "max_features"):
+                    if self.estimator.max_features>data_x0.shape[1]:
+                        estimator_ = clone(self.estimator)
+                        estimator_.max_features = data_x0.shape[1]
 
+                    else:
+                        estimator_ = estimator
                 else:
-                    score0 = cross_val_score(estimator, data_x0, y0, cv=self.cv)
+                    estimator_ = estimator
+
+                if hasattr(estimator_, "best_score_"):
+                    estimator_.fit(data_x0, y0)
+                    score0 = np.mean(estimator_.best_score_)  # score_test
+                elif self.cv ==0:
+                    estimator_.fit(data_x0, y0)
+                    score0 = estimator_.score(data_x0, y0)
+                else:
+                    score0 = cross_val_score(estimator_, data_x0, y0, cv=self.cv)
                     score0 = np.mean(score0)
                 # print(slices, score0)
             return score0

@@ -29,6 +29,7 @@ class MutiBase(object):
         self.muti_index = muti_index
         self.must_index = must_index
 
+
     @property
     def check_muti(self):
         muti_index = self.muti_index
@@ -105,3 +106,17 @@ class MutiBase(object):
             return np.sort(feature).astype(int)
         else:
             return np.sort(feature).astype(int)
+
+    def inverse_transform_index(self, index):
+        """inverse the selected index to origin index by support."""
+        if isinstance(index, np.ndarray) and index.dtype == np.bool_:
+            index = np.where(index)[0]
+        index = np.array(list(index))
+
+        return np.where(self.support_)[0][index]
+
+    def transform_index(self, index):
+        """Get support index."""
+        if isinstance(index, np.ndarray) and index.dtype == np.bool_:
+            index = np.where(index)[0]
+        return np.array([i for i in index if self.support_[i]])

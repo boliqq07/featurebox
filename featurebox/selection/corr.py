@@ -264,19 +264,20 @@ class Corr(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
         check_is_fitted(self, 'support_')
         return self.support_
 
-    # def transform_index(self, data):
-    #     if isinstance(data, int):
-    #         return self.shrink_list.index(data)
-    #     elif isinstance(data, (list, tuple)):
-    #         return [self.shrink_list.index(i) for i in data]
-    #
-    # def inverse_transform_index(self, data):
-    #     if isinstance(data, int):
-    #         return self.shrink_list[data]
-    #     elif isinstance(data, (list, tuple)):
-    #         return [self.shrink_list[i] for i in data]
-    #     else:
-    #         pass
+    def inverse_transform_index(self, index):
+        """inverse the selected index to origin index by support."""
+        if isinstance(index, np.ndarray) and index.dtype == np.bool_:
+            index = np.where(index)[0]
+        index = np.array(list(index))
+
+        return np.where(self.support_)[0][index]
+
+    def transform_index(self, index):
+        """Get support index."""
+        if isinstance(index, np.ndarray) and index.dtype == np.bool_:
+            index = np.where(index)[0]
+
+        return np.array([i for i in index if self.support_[i]])
 
     def transform(self, data):
         if isinstance(data, (list, tuple)):
