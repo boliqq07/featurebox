@@ -8,7 +8,7 @@ We using features from pymatgen firstly.
 
 >>> from featurebox.featurizers.batch_feature import BatchFeature
 >>> bf = BatchFeature(data_type="structures", return_type="df")
->>> data = bf.fit_transform(structures_list)
+>>> data = bf.fit_transform(structure_list)
 
 ``structures_list`` is list of ``struceture`` of ``pymatgen``.
 
@@ -18,8 +18,8 @@ We using features from pymatgen firstly.
 - Transform composition list.
 
 >>> from featurebox.featurizers.batch_feature import BatchFeature
->>> bf = BatchFeature(data_type="composition")
->>> com = [[{str(i.symbol): 1} for i in structure.species]  for structure in sturctures]
+>>> bf = BatchFeature(data_type="compositions")
+>>> com = [[{str(i.symbol): 1} for i in structurei.species]  for structurei in structure_list]
 >>> #where com is element list
 >>> data = bf.fit_transform(com)
 
@@ -30,8 +30,10 @@ We using features from pymatgen firstly.
 
 >>> from featurebox.featurizers.batch_feature import BatchFeature
 >>> bf = BatchFeature(data_type="elements")
->>> aas = [[i.specie.Z for i in structure] for structure in sturctures]
->>> #where aas is element list
+>>> aas = [[{str(i.symbol): 1} for i in structurei.species]  for structurei in structure_list]
+>>> data = bf.fit_transform(aas)
+>>> bf.element_c.search_tp="number"
+>>> aas = [[i.specie.Z for i in structure] for structure in structure_list]
 >>> data = bf.fit_transform(aas)
 
 Note

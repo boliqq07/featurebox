@@ -17,7 +17,7 @@ class MyTestCase(unittest.TestCase):
         self.data0_checked = ce.check(self.data)[:10]
 
     def test_WeightedAverage(self):
-        data_map = AtomTableMap(search_tp="name_dict", n_jobs=1)
+        data_map = AtomTableMap(search_tp="name", n_jobs=1)
         wa = WeightedAverage(data_map, n_jobs=1)
         x3 = [{"H": 2, }, {"Pd": 1}]
         x4 = wa.fit_transform(x3)
@@ -31,7 +31,7 @@ class MyTestCase(unittest.TestCase):
         print(x4)
 
     def test_WeightedSum2(self):
-        data_map = AtomJsonMap(search_tp="name_dict", n_jobs=1)
+        data_map = AtomJsonMap(search_tp="name", n_jobs=1)
         wa = WeightedSum(data_map, n_jobs=1)
         x3 = [{"H": 2, "Pd": 1}, {"He": 1, "Al": 4}]
         x4 = wa.fit_transform(x3)
@@ -44,7 +44,7 @@ class MyTestCase(unittest.TestCase):
         print(x4)
 
     def test_WeightedSum2_stru(self):
-        data_map = AtomJsonMap(search_tp="name_dict", n_jobs=1)
+        data_map = AtomJsonMap(search_tp="name", n_jobs=1)
         wa = WeightedSum(data_map, n_jobs=1)
         x4 = wa.fit_transform(self.data0_checked)
         print(x4)

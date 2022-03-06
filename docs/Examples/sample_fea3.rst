@@ -6,7 +6,10 @@ The data are using the inner periodical_data.json in pymatgen elemental data.
 ::
 
 >>> from featurebox.featurizers.atom.mapper import AtomPymatgenPropMap
->>> tmps = AtomPymatgenPropMap(search_tp="name_dict")
+>>> tmps = AtomPymatgenPropMap(search_tp="name",prop_name = [ "atomic_radius", "atomic_mass", "number", "max_oxidation_state",
+                                                         "min_oxidation_state", "row", "group", "atomic_radius_calculated",
+                                                         "mendeleev_no", "critical_temperature", "density_of_solid",
+                                                         "average_ionic_radius", "average_cationic_radius", "average_anionic_radius",])
 >>> s = [{"H": 2, }, {"Po": 1}, {"C": 2}] # [i.species.as_dict() for i in pymatgen.structure.sites]
 >>> a2 = tmps.convert(s) # or
 >>> a2 = tmps.convert(structurei)

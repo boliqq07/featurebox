@@ -9,7 +9,7 @@ and the structures is pymatgen ``Structure`` list.
 
 >>> from featurebox.featurizers.atom.mapper import AtomJsonMap
 >>> tmps = AtomJsonMap(search_tp="number", embedding_dict="ele_megnet.json")
->>> a = tmps.convert(structure_i)
+>>> a = tmps.convert(structurei)
 
 The return data are properties of 1, 76 elements.
 
@@ -29,9 +29,8 @@ The return data are properties of 1, 76 elements.
 - Index by dict data.
 
 >>> from featurebox.featurizers.atom.mapper import AtomJsonMap
->>> tmps = AtomJsonMap(search_tp="name_dict")
->>> s = [{"H": 2, }, {"Al": 1}]
->>> or [{i.element.symbol:1} for i in structure.species]
+>>> tmps = AtomJsonMap(search_tp="name")
+>>> s = [{"H": 2, }, {"Al": 1}] # or [{i.element.symbol:1} for i in structure.species]
 >>> a = tmps.convert(s)
 
 .. image:: 1_3.png
@@ -40,7 +39,7 @@ The return data are properties of 1, 76 elements.
 - Batch data.
 
 >>> from featurebox.featurizers.atom.mapper import AtomJsonMap
->>> tmps = AtomJsonMap(search_tp="name_dict")
+>>> tmps = AtomJsonMap(search_tp="name")
 >>> s = [[{"H": 2, }, {"Ce": 1}],[{"H": 2, }, {"Al": 1}]]
 >>> a = tmps.transform(s)
 

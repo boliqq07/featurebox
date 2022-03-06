@@ -133,10 +133,10 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
         super().__init__(muti_grade=muti_grade, muti_index=muti_index, must_index=must_index)
         if hasattr(estimator, "max_features"):
             print("For estimator with 'max_features' attribute, the 'max_features' would changed with "
-                              "each sub-data. that is, The 'refit estimator' which with fixed 'max_features' could be with different performance.\n"
-                              "Please change and define 'max_features' (with other parameters fixed) by manual testing after Backforward!!!!\n"
-                              "Please change and define 'max_features' (with other parameters fixed) by manual testing after Backforward!!!!",
-                          )
+                  "each sub-data. that is, The 'refit estimator' which with fixed 'max_features' could be with different performance.\n"
+                  "Please change and define 'max_features' (with other parameters fixed) by manual testing after Backforward!!!!\n"
+                  "Please change and define 'max_features' (with other parameters fixed) by manual testing after Backforward!!!!",
+                  )
         self.estimator = estimator
         self.n_type_feature_to_select = n_type_feature_to_select
         self.primary_feature = primary_feature
@@ -240,7 +240,7 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
                 data_x0 = x0[:, slices]
 
                 if hasattr(self.estimator, "max_features"):
-                    if self.estimator.max_features>data_x0.shape[1]:
+                    if self.estimator.max_features > data_x0.shape[1]:
                         estimator_ = clone(self.estimator)
                         estimator_.max_features = data_x0.shape[1]
 

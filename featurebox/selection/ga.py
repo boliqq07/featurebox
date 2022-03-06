@@ -161,7 +161,7 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
     """
 
     def __init__(self, estimator, n_jobs=2, pop_n=1000, hof_n=1, cxpb=0.6, mutpb=0.3, ngen=40, max_or_min="max",
-                 mut_indpb=0.05, max_=None, min_=2, random_state=None, muti_grade=2, muti_index=None,must_index=None):
+                 mut_indpb=0.05, max_=None, min_=2, random_state=None, muti_grade=2, muti_index=None, must_index=None):
         """
 
         Parameters
@@ -284,7 +284,7 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
         sss = []
         [sss.extend([i] * j) for i, j in zip(ind, self.x_space_fold)]
         if self.must_index is not None:
-            [sss.__setitem__(i,1) for i in self.must_index]
+            [sss.__setitem__(i, 1) for i in self.must_index]
         return sss
 
     def fitness_func(self, ind, model, x, y, return_model=False, cv=5):

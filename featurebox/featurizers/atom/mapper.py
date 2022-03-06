@@ -109,11 +109,11 @@ class BinaryMap(AtomMap):
         self.ndim = 1
 
     def _convert(self, d: Any) -> Any:
-        if self.search_tp == "name_dict":
+        if self.search_tp in ["name", "name_dict"]:
             if isinstance(d, Structure):
                 d = get_atom_fea_name(d)
             return self.convert_dict(d)
-        elif self.search_tp == "ion_name_dict":
+        elif self.search_tp == "ion_name":
             if isinstance(d, Structure):
                 d = get_ion_fea_name(d)
             return self.convert_dict(d)
@@ -152,17 +152,17 @@ class AtomJsonMap(BinaryMap):
     >>> tmps = AtomJsonMap(search_tp="number")
     >>> s = [1,76]                   #[i.specie.Z for i in structure]
     >>> a = tmps.convert(s)
-    >>> tmps = AtomJsonMap(search_tp="name_dict")
+    >>> tmps = AtomJsonMap(search_tp="name")
     >>> s = [{"H": 2, }, {"Al": 1}]  #[i.species.as_dict() for i in pymatgen_structure.sites]
     >>> a = tmps.convert(s)
     >>>
-    >>> tmps = AtomJsonMap(search_tp="name_dict")
+    >>> tmps = AtomJsonMap(search_tp="name")
     >>> s = [[{"H": 2, }, {"Ce": 1}],[{"H": 2, }, {"Al": 1}]]
     >>> a = tmps.transform(s)
 
     """
 
-    def __init__(self, embedding_dict: Union[str, Dict] = None, search_tp: str = "name_dict", **kwargs):
+    def __init__(self, embedding_dict: Union[str, Dict] = None, search_tp: str = "name", **kwargs):
         """
 
         Args:
@@ -261,11 +261,11 @@ class AtomTableMap(BinaryMap):
     >>> s = [1,76]
     >>> a = tmps.convert(s)
     ...
-    >>> tmps = AtomTableMap(search_tp="name_dict")
+    >>> tmps = AtomTableMap(search_tp="name")
     >>> s = [{"H": 2, }, {"Po": 1}]  #[i.species.as_dict() for i in pymatgen.structure.sites]
     >>> a = tmps.convert(s)
     ...
-    >>> tmps = AtomTableMap(search_tp="name_dict",tablename="oe.csv")
+    >>> tmps = AtomTableMap(search_tp="name",tablename="oe.csv")
     >>> s = [[{"H": 2, }, {"Po": 1}],[{"H": 2, }, {"Po": 1}]]
     >>> a = tmps.transform(s)
     ...
@@ -279,7 +279,7 @@ class AtomTableMap(BinaryMap):
     """
 
     def __init__(self, tablename: Union[str, np.ndarray, pd.DataFrame] = "oe.csv",
-                 search_tp: str = "name_dict", **kwargs):
+                 search_tp: str = "name", **kwargs):
         """
 
         Parameters
@@ -522,16 +522,16 @@ class AtomPymatgenPropMap(BinaryMap):
     >>> tmps = AtomPymatgenPropMap(search_tp="number",prop_name=["X"])
     >>> s = [1,76]
     >>> a = tmps.convert(s)
-    >>> tmps = AtomPymatgenPropMap(search_tp="name_dict",prop_name=["X"])
+    >>> tmps = AtomPymatgenPropMap(search_tp="name",prop_name=["X"])
     >>> s = [{"H": 2, }, {"Po": 1}]  #[i.species.as_dict() for i in pymatgen.structure.sites]
     >>> a = tmps.convert(s)
-    >>> tmps = AtomPymatgenPropMap(search_tp="name_dict",prop_name=["X"])
+    >>> tmps = AtomPymatgenPropMap(search_tp="name",prop_name=["X"])
     >>> s = [[{"H": 2, }, {"Po": 1}],[{"H": 2, }, {"Po": 1}]]
     >>> a = tmps.transform(s)
 
     """
 
-    def __init__(self, prop_name: Union[str, List[str]], func: Callable = None, search_tp: str = "name_dict", **kwargs):
+    def __init__(self, prop_name: Union[str, List[str]], func: Callable = None, search_tp: str = "name", **kwargs):
         """
 
         Args:

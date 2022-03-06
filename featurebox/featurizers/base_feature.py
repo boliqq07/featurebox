@@ -420,7 +420,7 @@ class ConverterCat(BaseFeature):
     >>> tmps = ConverterCat(
     ...    AtomEmbeddingMap(),
     ...    AtomEmbeddingMap("ie.json")
-    ...    AtomTableMap(search_tp="name_dict"))
+    ...    AtomTableMap(search_tp="name"))
     >>> tmp.convert(x)
     >>> tmp.tranmform(xs)
 

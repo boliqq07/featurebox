@@ -61,12 +61,12 @@ class BatchFeature(BaseFeature):
             "average_cationic_radius",
             "average_anionic_radius",
         ]
-        appm = AtomPymatgenPropMap(prop_name=func_map, n_jobs=1, search_tp="name_dict")
+        appm = AtomPymatgenPropMap(prop_name=func_map, n_jobs=1, search_tp="name")
         self.composition_c = WeightedAverage(appm, n_jobs=1, return_type="df")
         self.composition_c.set_feature_labels(func_map)
 
         self.element_c = AtomPymatgenPropMap(prop_name=func_map, n_jobs=1,
-                                             search_tp="name_dict",
+                                             search_tp="name",
                                              return_type="df")
 
         if user_convert is not None:

@@ -8,4 +8,4 @@ Use Yourself Data
 >>> tmps = AtomTableMap(search_tp="number",tablename="your.csv")
 >>> tmps = AtomJsonMap(search_tp="number",tablename=Your_pd_DataFrame)
 
-where the search_tp is "number" or "name_dict" depend on your data, but advise use "name_dict" for json data.
+where the search_tp is "number" or "name" depend on your data, but advise use "name" for json data.

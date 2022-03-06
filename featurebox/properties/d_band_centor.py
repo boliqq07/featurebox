@@ -73,7 +73,8 @@ class DBC:
         # if species is set, should check that this is consistent with the number of entries in the
         # projected_dos dataset
 
-        self.structure = Poscar.from_file(str(pathlib.Path(filename).parent / "CONTCAR"),check_for_POTCAR=False).structure
+        self.structure = Poscar.from_file(str(pathlib.Path(filename).parent / "CONTCAR"),
+                                          check_for_POTCAR=False).structure
         self.atoms_list = [i.name for i in self.structure.species]
 
     @property
@@ -162,17 +163,17 @@ class DBC:
             if not m:
                 channel_idx = [1, 2, 3]
             else:
-                channel_idx = [1+i for i, v in enumerate(valid_m_values['p']) if v in m]
+                channel_idx = [1 + i for i, v in enumerate(valid_m_values['p']) if v in m]
         elif l == 'd':
             if not m:
                 channel_idx = [4, 5, 6, 7, 8]
             else:
-                channel_idx = [4+i for i, v in enumerate(valid_m_values['d']) if v in m]
+                channel_idx = [4 + i for i, v in enumerate(valid_m_values['d']) if v in m]
         elif l == 'f':
             if not m:
                 channel_idx = [9, 10, 11, 12, 13, 14, 15]
             else:
-                channel_idx = [9+i for i, v in enumerate(valid_m_values['f']) if v in m]
+                channel_idx = [9 + i for i, v in enumerate(valid_m_values['f']) if v in m]
         else:
             raise ValueError
 
@@ -181,31 +182,31 @@ class DBC:
     def pdos_sum(self, atoms=None, spin=None, l=None, m=None):
         return np.sum(self.pdos_select(atoms=atoms, spin=spin, l=l, m=m), axis=(0, 2, 3))
 
-    def calculate(self, orb="d", species: List[str]=None, atoms:List[int]=None, emax=2, emin=-10,m=None):
+    def calculate(self, orb="d", species: List[str] = None, atoms: List[int] = None, emax=2, emin=-10, m=None):
         """species (optional:list(str)): List of atomic species strings, e.g. [ 'Fe', 'Fe', 'O', 'O', 'O' ]. Default=None."""
 
         if species is None and atoms is None:
             atoms = list(range(0, self.number_of_atoms))
 
         elif species is not None and atoms is None:
-            atoms = [idx for idx,j in enumerate(self.atoms_list) if j in species ]
-        elif species is  None and atoms is not None:
+            atoms = [idx for idx, j in enumerate(self.atoms_list) if j in species]
+        elif species is None and atoms is not None:
             pass
         else:
-            print("species,atoms are assigned at the same time is not recommended." )
+            print("species,atoms are assigned at the same time is not recommended.")
             atoms = [idx for idx in atoms if self.atoms_list[idx] in species]
 
-        assert len(atoms)>0
+        assert len(atoms) > 0
         # calculation of d-band center
         # Set atoms for integration
-        up = self.pdos_sum(atoms, spin='up', l=orb,m=m)
-        down = self.pdos_sum(atoms, spin='down', l=orb,m=m)
+        up = self.pdos_sum(atoms, spin='up', l=orb, m=m)
+        down = self.pdos_sum(atoms, spin='down', l=orb, m=m)
 
         # Set intergrating range
         efermi = self.efermi - self.efermi
         energies = self.energy - self.efermi
 
-        erange = (efermi + emin, efermi +emax)  # integral energy range
+        erange = (efermi + emin, efermi + emax)  # integral energy range
         emask = (energies <= erange[-1])
 
         # Calculating center of the orbital specified above in line 184

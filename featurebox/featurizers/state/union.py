@@ -26,7 +26,7 @@ class UnionFeature(BaseFeature):
     Examples
     ---------
     >>> from featurebox.featurizers.atom.mapper import AtomTableMap, AtomJsonMap
-    >>> data_map = AtomJsonMap(search_tp="name_dict", n_jobs=1)
+    >>> data_map = AtomJsonMap(search_tp="name", n_jobs=1)
     >>> wa = DepartElementFeature(data_map,n_composition=2, n_jobs=1,return_type="df")
     >>> x3 = [{"H": 2, "Pd": 1},{"He":1,"Al":4}]
     >>> wa.set_feature_labels(["fea_{}".format(_) for _ in range(16)])

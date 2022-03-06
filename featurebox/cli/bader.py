@@ -75,7 +75,7 @@ def read(d, store=False, store_name="temp.csv"):
     """Run linux cmd and return result, make sure the vaspkit is installed."""
     if os.path.isfile("POTCAR") and os.path.isfile("POSCAR"):
         potcar = Potcar.from_file("POTCAR")
-        symbols = Poscar.from_file("POSCAR",check_for_POTCAR=False).structure.atomic_numbers
+        symbols = Poscar.from_file("POSCAR", check_for_POTCAR=False).structure.atomic_numbers
 
         zval = []
         for i in symbols:

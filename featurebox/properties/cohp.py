@@ -9,10 +9,8 @@ from pymatgen.io.lobster import Cohpcar, Icohplist
 if __name__ == '__main__':
     os.chdir(r"D:\MoCMo-O-4")
 
-    ds_by_number = ["Sc",  "Ti",  "V",  "Cr",  "Mn",  "Fe",  "Co", "Ni", "Cu", "Zn", "Y", "Zr", "Nb", "Mo",
-                    "Ru", "Rh", "Pd", "Ag", "Cd", "Hf", "Ta", "W", "Re", "Os", "Ir", "Pt", "Au",]
-
-
+    ds_by_number = ["Sc", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Zn", "Y", "Zr", "Nb", "Mo",
+                    "Ru", "Rh", "Pd", "Ag", "Cd", "Hf", "Ta", "W", "Re", "Os", "Ir", "Pt", "Au", ]
 
     ###############################
 
@@ -21,7 +19,7 @@ if __name__ == '__main__':
         os.chdir(f"{i}/pure_static")
 
         if os.path.isfile("ICOHPLIST.lobster"):
-            icohplist = Icohplist(are_coops=False, are_cobis= False, filename= "ICOHPLIST.lobster")
+            icohplist = Icohplist(are_coops=False, are_cobis=False, filename="ICOHPLIST.lobster")
 
             data = np.array([
                 icohplist.icohplist["1"]["length"],
@@ -46,7 +44,7 @@ if __name__ == '__main__':
         os.chdir(f"{i}/pure_static")
 
         if os.path.isfile("COHPCAR.lobster"):
-            cohpcar = Cohpcar(are_coops=False, are_cobis= False, filename= "COHPCAR.lobster")
+            cohpcar = Cohpcar(are_coops=False, are_cobis=False, filename="COHPCAR.lobster")
 
             # import matplotlib.pyplot as plt
             # plt.plot(cohpcar.energies,cohpcar.cohp_data["average"]["COHP"][Spin.up])

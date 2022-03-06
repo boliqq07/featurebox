@@ -29,7 +29,6 @@ class MutiBase(object):
         self.muti_index = muti_index
         self.must_index = must_index
 
-
     @property
     def check_muti(self):
         muti_index = self.muti_index

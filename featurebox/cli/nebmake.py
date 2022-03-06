@@ -1340,7 +1340,6 @@ class Atoms(object):
 
         atoms = None
 
-
         if hasattr(symbols, 'get_positions'):
             atoms = symbols
             symbols = None
@@ -4970,17 +4969,18 @@ def interpolate(images, mic=False):
         except AttributeError:
             pass
 
+
 def cmd_sys(cmds):
     for i in cmds:
         os.system(i)
 
-def cal(d, pos1,pos2,n,noidpp=True,pr=True,method=True):
 
+def cal(d, pos1, pos2, n, noidpp=True, pr=True, method=True):
     old = os.getcwd()
     os.chdir(d)
     try:
 
-        if method =="py":
+        if method == "py":
 
             ini_atoms = read_vasp(pos1)
             fin_atoms = read_vasp(pos2)
@@ -5002,16 +5002,16 @@ def cal(d, pos1,pos2,n,noidpp=True,pr=True,method=True):
                 print('Ok, all set up here.')
         else:
 
-            cmd_sys(cmds=["nebmake.pl {} {} {}".format(pos1,pos2,n),])
+            cmd_sys(cmds=["nebmake.pl {} {} {}".format(pos1, pos2, n), ])
 
         try:
             p1 = pathlib.Path(pos1).parent
             p2 = pathlib.Path(pos2).parent
             copyfile(p1 / "OUTCAR", "OO/OUTCAR")
-            if n>=9:
-                copyfile(p2 / "OUTCAR", "{}/OUTCAR".format(n+1))
+            if n >= 9:
+                copyfile(p2 / "OUTCAR", "{}/OUTCAR".format(n + 1))
             else:
-                copyfile(p2 / "OUTCAR", "0{}/OUTCAR".format(n+1))
+                copyfile(p2 / "OUTCAR", "0{}/OUTCAR".format(n + 1))
 
             copyfile(p1 / "KPOINTS", "KPOINTS")
             copyfile(p1 / "POTCAR", "POTCAR")
@@ -5026,7 +5026,6 @@ def cal(d, pos1,pos2,n,noidpp=True,pr=True,method=True):
 
 
 def cal_all(f_dir, *args, **kwargs):
-
     for di in f_dir:
         cal(di, *args, pr=False, **kwargs)
         print('Ok, for:', di)
@@ -5034,7 +5033,7 @@ def cal_all(f_dir, *args, **kwargs):
 
 def run(args, parser):
     if args.job_type in ["S", "s"]:
-        cal(args.path_name,args.pos1,args.pos2,args.n,args.noidpp, pr=True, method=args.method)
+        cal(args.path_name, args.pos1, args.pos2, args.n, args.noidpp, pr=True, method=args.method)
         print(args.path_name)
     else:
         assert args.job_type in ["M", "m"]
@@ -5055,7 +5054,7 @@ def run(args, parser):
             absp = os.path.abspath(args.path)
             fdir = [i.replace(absp, ".") for i in fdir]
 
-        cal_all(fdir, args.pos1, args.pos2, args.n, noidpp=args.noidpp,method=args.method)
+        cal_all(fdir, args.pos1, args.pos2, args.n, noidpp=args.noidpp, method=args.method)
 
 
 class CLICommand:
@@ -5135,9 +5134,9 @@ class CLICommand:
         parser.add_argument('-noidpp', '--noidpp', help='No IDPP or not', type=bool, default=True)
         parser.add_argument('-abspath', '--abspath', help='return abspath', type=bool, default=True)
         parser.add_argument('-method', '--method', help='use the inner nebmake.py file (py) or nebmake.pl file '
-                                                    'in system (pl, if exist)', type=str, default="py")
-        parser.add_argument('-fr', '--fdir_range', help='which layer to find, default the "next".', type=str, default="next")
-
+                                                        'in system (pl, if exist)', type=str, default="py")
+        parser.add_argument('-fr', '--fdir_range', help='which layer to find, default the "next".', type=str,
+                            default="next")
 
     @staticmethod
     def run(args, parser):
@@ -5169,7 +5168,8 @@ if __name__ == '__main__':
     parser.add_argument('-abspath', '--abspath', help='return abspath.', type=bool, default=True)
     parser.add_argument('-method', '--method', help='use the inner nebmake.py file (py) or nebmake.pl file '
                                                     'in system (pl, if exist)', type=str, default="py")
-    parser.add_argument('-fr', '--fdir_range', help='which layer to find, default the "next".', type=str, default="next")
+    parser.add_argument('-fr', '--fdir_range', help='which layer to find, default the "next".', type=str,
+                        default="next")
 
     args = parser.parse_args()
     run(args, parser)

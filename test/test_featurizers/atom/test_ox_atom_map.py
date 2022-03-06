@@ -22,9 +22,9 @@ class TestGraph(unittest.TestCase):
             print(e)
 
     def test_convert2(self):
-        atm = AtomJsonMap(search_tp="name_dict")
+        atm = AtomJsonMap(search_tp="name")
         re = atm.convert(self.st)
 
     def test_tra(self):
-        atm = AtomJsonMap(search_tp="name_dict")
+        atm = AtomJsonMap(search_tp="name")
         re = atm.transform(self.st2)

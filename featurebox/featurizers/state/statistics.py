@@ -35,7 +35,7 @@ class BaseCompositionFeature(BinaryMap):
         """
         super().__init__(n_jobs=n_jobs, on_errors=on_errors, return_type=return_type)
         if data_map is None:
-            data_map = AtomTableMap(tablename="oe.csv", search_tp="name_dict")
+            data_map = AtomTableMap(tablename="oe.csv", search_tp="name")
         self.data_map = data_map
         # change
         self.data_map.weight = False
@@ -90,7 +90,7 @@ class WeightedAverage(BaseCompositionFeature):
     Examples
     ---------
     >>> from featurebox.featurizers.atom import AtomTableMap, AtomJsonMap
-    >>> data_map = AtomJsonMap(search_tp="name_dict", n_jobs=1)
+    >>> data_map = AtomJsonMap(search_tp="name", n_jobs=1)
     >>> wa = WeightedAverage(data_map, n_jobs=1,return_type="df")
     >>> x3 = [{"H": 2, "Pd": 1},{"He":1,"Al":4}]
     >>> wa.fit_transform(x3)
@@ -123,7 +123,7 @@ class WeightedSum(BaseCompositionFeature):
     Examples
     --------
     >>> from featurebox.featurizers.atom import AtomTableMap, AtomJsonMap
-    >>> data_map = AtomJsonMap(search_tp="name_dict", n_jobs=1)
+    >>> data_map = AtomJsonMap(search_tp="name", n_jobs=1)
     >>> wa = WeightedSum(data_map, n_jobs=1,return_type="df")
     >>> x3 = [{"H": 2, "Pd": 1},{"He":1,"Al":4}]
     >>> wa.fit_transform(x3)
@@ -248,12 +248,15 @@ class DepartElementFeature(BaseCompositionFeature):
 
     Examples
     ----------
-    >>> from featurebox.featurizers.atom import AtomTableMap, AtomJsonMap
-    >>> data_map = AtomJsonMap(search_tp="name_dict", n_jobs=1)
-    >>> wa = DepartElementFeature(data_map,n_composition=2, n_jobs=1,return_type="df")
-    >>> x3 = [{"H": 2, "Pd": 1},{"He":1,"Al":4}]
-    >>> wa.set_feature_labels(["fea_{}".format(_) for _ in range(16)])
-    >>> wa.fit_transform(x3)
+    >>> from featurebox.featurizers.atom.mapper import AtomJsonMap
+    >>> from featurebox.featurizers.state.union import UnionFeature
+    >>> from featurebox.featurizers.state.statistics import DepartElementFeature
+    >>> data_map = AtomJsonMap(search_tp="name",embedding_dict="ele_megnet.json", n_jobs=1) # keep this n_jobs=1 and return_type="np"
+    >>> wa = DepartElementFeature(data_map,n_composition=2, n_jobs=1, return_type="pd")
+    >>> comp = [{"H": 2, "Pd": 1},{"He":1, "Al":4}]
+    >>> wa.set_feature_labels(["fea_{}".format(_) for _ in range(16)]) # 16 this the feature number of built-in "ele_megnet.json"
+    >>> couple_data = wa.fit_transform(comp)
+
         fea_0_0   fea_0_1   fea_1_0  ...  fea_14_1  fea_15_0  fea_15_1
     0  0.352363  0.561478  0.635952  ... -0.236541 -0.270104 -0.212607
     1 -0.067220  0.025758  0.141113  ... -0.092577 -0.042185  0.080350
@@ -270,19 +273,36 @@ class DepartElementFeature(BaseCompositionFeature):
 
     def mix_function(self, elems: np.ndarray, nums=None):
 
-        return elems.ravel(order='F')
+        return np.array(elems).ravel(order='F')
 
-    def convert(self, comp: Union[Dict, PMGComp]):
-        elems_, nums_ = [], []
-        if isinstance(comp, PMGComp):
-            sym_amt = comp.get_el_amt_dict()
+    def convert_dict(self, atoms: [dict, PMGComp]) -> np.ndarray:
+        """
+        Convert atom {symbol: fraction} list to numeric features
+        """
+        if isinstance(atoms, PMGComp):
+            sym_amt = atoms.get_el_amt_dict()
             syms = sorted(sym_amt.keys(), key=lambda sym: get_el_sp(sym).X)
-            comp = {s: formula_double_format(sym_amt[s], False) for s in syms}
+            atoms = {s: formula_double_format(sym_amt[s], False) for s in syms}
+        if isinstance(atoms, dict):
+            atoms = [{k: v} for k, v in atoms.items()]
 
-        for e, n in comp.items():
-            elems_.append(e)
-            nums_.append(n)
-        return self.mix_function(elems_, nums_)
+        numbers = np.array([list(ai.values())[0] for ai in atoms])
+
+        ele = self.data_map.convert(atoms)
+        if len(atoms) == 1:
+            ele = np.array(ele).reshape((len(atoms), -1))
+        return self.mix_function(ele, numbers)
+
+    def convert_number(self, atoms: List) -> np.ndarray:
+        """
+        Convert atom {symbol: fraction} list to numeric features
+        """
+        numbers = np.ones(len(atoms))
+
+        ele = self.data_map.convert(atoms)
+        if len(atoms) == 1:
+            ele = np.array(ele).reshape((len(atoms), -1))
+        return self.mix_function(ele, numbers)
 
     def set_feature_labels(self, values):
         self._feature_labels = [str(s) + "_" + str(n) for s in values for n in range(self.n_composition)]

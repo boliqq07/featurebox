@@ -75,18 +75,18 @@ There are two data should offer. (at least one).
 Example:
 
 >>> from featurebox.featurizers.atom.mapper import AtomTableMap
->>> tmps = AtomTableMap(search_tp="number", return_type="df")
+>>> tmps = AtomTableMap(search_tp="number")
 >>> single_sample = [1,1,1,76,76]
 >>> multi_sample = [[1,1,1,76,76],[3,3,4,4]]
 >>> a = tmps.convert(single_sample)
 >>> b = tmps.transform(multi_sample)
 
 >>> from featurebox.featurizers.atom.mapper import AtomJsonMap
->>> tmps = AtomJsonMap(search_tp="name_dict",return_type="np")
+>>> tmps = AtomJsonMap(search_tp="name",return_type="np")
 >>> single_sample = [{"H": 2}, {"Po": 1}]
 >>> single_sample2 = {"H": 2, "Po": 1}
 >>> multi_sample = [[{"H": 2}, {"Po": 1}],  [{"He": 3}, {"P": 4}]] # or
->>> multi_sample2 = [{"H": 2, "Po": 1}],  {"He": 3, "P": 4}]
+>>> multi_sample2 = [{"H": 2, "Po": 1},  {"He": 3, "P": 4}]
 >>> a = tmps.convert(single_sample)
 >>> a = tmps.convert(single_sample2)
 >>> b = tmps.transform(multi_sample)
@@ -116,7 +116,7 @@ For the ``Atoms`` of ``ase`` , The ``Structure`` could transformed by ``pymatgen
 Example:
 
 >>> from pymatgen.core.structure import Structure
->>> structurei =Structure.from_file(r"your_path/featurebox/data/W2C.cif")
+>>> structurei =Structure.from_file(r"your_path/featurebox/data/temp_test_structure/W2C.cif")
 
 >>> from featurebox.featurizers.state.state_mapper import StructurePymatgenPropMap
 >>> tmps = StructurePymatgenPropMap(prop_name = ["density", "volume", "ntypesp"])
@@ -138,10 +138,11 @@ This is one key method to get state features!!!
 - Get State features directly.
 
 >>> from pymatgen.core.structure import Structure
+>>> from featurebox.featurizers.state.statistics import WeightedAverage
 >>> structurei =Structure.from_file(r"your_path/featurebox/data/W2C.cif")
 
->>> from featurebox.featurizers.atom import AtomTableMap
->>> data_map = AtomTableMap(search_tp="name_dict", n_jobs=1)
+>>> from featurebox.featurizers.atom.mapper import AtomTableMap
+>>> data_map = AtomTableMap(search_tp="name", n_jobs=1)
 >>> wa = WeightedAverage(data_map, n_jobs=1,return_type="df")
 >>> x3 = [{"H": 2, "Pd": 1},{"He":1,"Al":4}]
 >>> wa.fit_transform(x3)
@@ -160,13 +161,12 @@ Get the depart element feature first.
 
 >>> from featurebox.featurizers.atom.mapper import AtomJsonMap
 >>> from featurebox.featurizers.state.union import UnionFeature
->>> data_map = AtomJsonMap(search_tp="name_dict", n_jobs=1) # keep this n_jobs=1
->>> wa = DepartElementFeature(data_map,n_composition=2, n_jobs=2, return_type="df")
->>> comp = [{"H": 2, "Pd": 1},{"He":1,"Al":4}]
+>>> from featurebox.featurizers.state.statistics import DepartElementFeature
+>>> data_map = AtomJsonMap(search_tp="name",embedding_dict="ele_megnet.json", n_jobs=1) # keep this n_jobs=1 and return_type="np"
+>>> wa = DepartElementFeature(data_map,n_composition=2, n_jobs=1, return_type="pd")
+>>> comp = [{"H": 2, "Pd": 1},{"He":1, "Al":4}]
 >>> wa.set_feature_labels(["fea_{}".format(_) for _ in range(16)]) # 16 this the feature number of built-in "ele_megnet.json"
 >>> couple_data = wa.fit_transform(comp)
->>> comp2 = [structurei]*5
->>> wa.fit_transform(comp2)
 
 Union the depart element feature.
 
@@ -181,6 +181,7 @@ Union the depart element feature.
 Addition:
     There one state features transformer to get Polynomial extension for table.
 
+>>> import numpy as np
 >>> from featurebox.featurizers.state.union import PolyFeature
 >>> state_features = np.array([[0,1,2,3,4,5],[0.422068,0.360958,0.201433,-0.459164,-0.064783,-0.250939]]).T
 >>> state_features = pd.DataFrame(state_features,columns=["f1","f2"],index= ["x0","x1","x2","x3","x4","x5"])
