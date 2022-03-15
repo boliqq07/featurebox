@@ -18,7 +18,6 @@ from shutil import copyfile
 import numpy as np
 from ase.io import Trajectory
 from ase.parallel import barrier
-from mgetool.imports import BatchFile
 
 np.seterr(all='raise')
 import os
@@ -5032,6 +5031,7 @@ def cal_all(f_dir, *args, **kwargs):
 
 
 def run(args, parser):
+    from mgetool.imports import BatchFile
     if args.job_type in ["S", "s"]:
         cal(args.path_name, args.pos1, args.pos2, args.n, args.noidpp, pr=True, method=args.method)
         print(args.path_name)

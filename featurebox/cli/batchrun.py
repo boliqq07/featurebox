@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """以 featurebox 中版本为准，若在其它处更改，请更新 featurebox。"""
 import os
-import warnings
 
 from tqdm import tqdm
 
