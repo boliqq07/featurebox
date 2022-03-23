@@ -87,10 +87,10 @@ def get_atomtypes(fname):
 def atomtypes_outpot(posfname, numsyms):
     """Try to retreive chemical symbols from OUTCAR or POTCAR
     
-    If getting atomtypes from the first line in POSCAR/CONTCAR fails, it might
+    If getting atomtypes from the first line in POSCAR/Prim_Mo2CO2_CONTCAR fails, it might
     be possible to find the data in OUTCAR or POTCAR, if these files exist.
 
-    posfname -- The filename of the POSCAR/CONTCAR file we're trying to read
+    posfname -- The filename of the POSCAR/Prim_Mo2CO2_CONTCAR file we're trying to read
     
     numsyms -- The number of symbols we must find
 
@@ -99,10 +99,10 @@ def atomtypes_outpot(posfname, numsyms):
     import glob
 
     # First check files with exactly same name except POTCAR/OUTCAR instead
-    # of POSCAR/CONTCAR.
-    fnames = [posfname.replace('POSCAR', 'POTCAR').replace('CONTCAR',
+    # of POSCAR/Prim_Mo2CO2_CONTCAR.
+    fnames = [posfname.replace('POSCAR', 'POTCAR').replace('Prim_Mo2CO2_CONTCAR',
                                                            'POTCAR')]
-    fnames.append(posfname.replace('POSCAR', 'OUTCAR').replace('CONTCAR',
+    fnames.append(posfname.replace('POSCAR', 'OUTCAR').replace('Prim_Mo2CO2_CONTCAR',
                                                                'OUTCAR'))
     # Try the same but with compressed files
     fsc = []
@@ -144,11 +144,11 @@ def get_atomtypes_from_formula(formula):
     return atomtypes
 
 
-def read_vasp(filename='CONTCAR'):
-    """Import POSCAR/CONTCAR type file.
+def read_vasp(filename='Prim_Mo2CO2_CONTCAR'):
+    """Import POSCAR/Prim_Mo2CO2_CONTCAR type file.
 
-    Reads unitcell, atom positions and constraints from the POSCAR/CONTCAR
-    file and tries to read atom types from POSCAR/CONTCAR header, if this fails
+    Reads unitcell, atom positions and constraints from the POSCAR/Prim_Mo2CO2_CONTCAR
+    file and tries to read atom types from POSCAR/Prim_Mo2CO2_CONTCAR header, if this fails
     the atom types are read from OUTCAR or POTCAR file.
     """
 
@@ -162,7 +162,7 @@ def read_vasp(filename='CONTCAR'):
     # as later in the file (and POTCAR for the full vasp run)
     atomtypes = f.readline().split()
 
-    # Sometimes the first line in POSCAR/CONTCAR is of the form
+    # Sometimes the first line in POSCAR/Prim_Mo2CO2_CONTCAR is of the form
     # "CoP3_In-3.pos". Check for this case and extract atom types
     if len(atomtypes) == 1 and '_' in atomtypes[0]:
         atomtypes = get_atomtypes_from_formula(atomtypes[0])
@@ -198,7 +198,7 @@ def read_vasp(filename='CONTCAR'):
 
     numsyms = len(numofatoms)
     if len(atomtypes) < numsyms:
-        # First line in POSCAR/CONTCAR didn't contain enough symbols.
+        # First line in POSCAR/Prim_Mo2CO2_CONTCAR didn't contain enough symbols.
         atomtypes = atomtypes_outpot(f.name, numsyms)
     else:
         try:
@@ -264,10 +264,10 @@ def read_vasp_out(filename='OUTCAR', index='all'):
     """Import OUTCAR type file.
 
     Reads unitcell, atom positions, energies, and forces from the OUTCAR file
-    and attempts to read constraints (if any) from CONTCAR/POSCAR, if present. 
+    and attempts to read constraints (if any) from Prim_Mo2CO2_CONTCAR/POSCAR, if present.
     """
-    try:  # try to read constraints, first from CONTCAR, then from POSCAR
-        constr = read_vasp('CONTCAR').constraints
+    try:  # try to read constraints, first from Prim_Mo2CO2_CONTCAR, then from POSCAR
+        constr = read_vasp('Prim_Mo2CO2_CONTCAR').constraints
     except:
         try:
             constr = read_vasp('POSCAR').constraints
@@ -373,7 +373,7 @@ def read_vasp_out(filename='OUTCAR', index='all'):
 
 
 def write_vasp(filename, atoms, label='', direct=False, sort=None, symbol_count=None, long_format=True):
-    """Method to write VASP position (POSCAR/CONTCAR) files.
+    """Method to write VASP position (POSCAR/Prim_Mo2CO2_CONTCAR) files.
 
     Writes label, scalefactor, unitcell, # of various kinds of atoms,
     positions in cartesian or scaled coordinates (Direct), and constraints
@@ -5087,13 +5087,13 @@ class CLICommand:
 
     Example:
 
-        $ featurebox nebmake -p parent_dir -pos1 CONTCAR -pos2 CONTCAR -n 3
+        $ featurebox nebmake -p parent_dir -pos1 Prim_Mo2CO2_CONTCAR -pos2 Prim_Mo2CO2_CONTCAR -n 3
 
     如果在 featurebox 中运行单个案例，请指定运算子文件夹:
 
     Example:
 
-        $ featurebox nebmake -t s -p sample_i_dir -pos1 CONTCAR -pos2 CONTCAR -n 3
+        $ featurebox nebmake -t s -p sample_i_dir -pos1 Prim_Mo2CO2_CONTCAR -pos2 Prim_Mo2CO2_CONTCAR -n 3
 
     Incar
     （1）EDIFF=1E-7，这个参数非常关键！过渡态对力计算精度要求极高，更精准的电子
@@ -5147,8 +5147,8 @@ if __name__ == '__main__':
     """
     Example:
 
-        $ python nebmake.py -t s -pos1 CONTCAR -pos2 CONTCAR -n 3
-        $ python nebmake.py -p parent_dir -pos1 CONTCAR -pos2 CONTCAR -n 3
+        $ python nebmake.py -t s -pos1 Prim_Mo2CO2_CONTCAR -pos2 Prim_Mo2CO2_CONTCAR -n 3
+        $ python nebmake.py -p parent_dir -pos1 Prim_Mo2CO2_CONTCAR -pos2 Prim_Mo2CO2_CONTCAR -n 3
     """
     parser = argparse.ArgumentParser(description="Get neb files. Example:\n"
                                                  "python nebmake.py -t s -pos1 POSCAR1 -pos2 POSCAR2 -n 3")

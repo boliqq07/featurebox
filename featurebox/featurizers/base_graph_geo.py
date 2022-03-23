@@ -207,16 +207,16 @@ class _BaseStructureGraphGEO(BaseFeature):
             return names
 
     def transform_and_save(self, *args, root_dir=".", file_names="composition_name", save_mode="i", **kwargs):
-        r"""Save the data to 'root_dir/raw' """
+        r"""Save the data to 'root_dir/raw' if save_mode="i", else 'root_dir', conpact with InMemoryDatasetGeo"""
         raw_path = os.path.join(root_dir, "raw")
         if os.path.isdir(raw_path):
             rmtree(raw_path)
         os.makedirs(raw_path)
 
-        fns = self.check_dup(args[0], file_names=file_names)
         result = self.transform(*args, **kwargs)
         print("Save raw files to {}.".format(raw_path))
         if save_mode in ["I", "R", "i", "r", "Respective", "respective"]:
+            fns = self.check_dup(args[0], file_names=file_names)
             [self.save(i, j, root_dir) for i, j in zip(result, fns)]
         else:
             self.save(result, "raw_data", root_dir=root_dir)

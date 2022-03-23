@@ -73,7 +73,7 @@ class DBC:
         # if species is set, should check that this is consistent with the number of entries in the
         # projected_dos dataset
 
-        self.structure = Poscar.from_file(str(pathlib.Path(filename).parent / "CONTCAR"),
+        self.structure = Poscar.from_file(str(pathlib.Path(filename).parent / "Prim_Mo2CO2_CONTCAR"),
                                           check_for_POTCAR=False).structure
         self.atoms_list = [i.name for i in self.structure.species]
 

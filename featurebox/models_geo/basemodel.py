@@ -160,7 +160,7 @@ class BaseCrystalModel(Module):
         # 合并层 需要自定义
         if readout_layer is None:
             self.get_readout_layer()
-        elif isinstance(interactions, Module):
+        elif isinstance(readout_layer, Module):
             self.readout_layer = readout_layer
         else:
             raise NotImplementedError("please implement get_readout_layer function, "

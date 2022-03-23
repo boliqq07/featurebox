@@ -165,8 +165,9 @@ msgid ""
 " Extension Packages <https://www.lfd.uci.edu/~gohlke/pythonlibs/>`_ and "
 "pip install locally."
 msgstr ""
-"如果 ``Spblib`` 需要用vc++编译，请下载`Python扩展包 "
-"<https://www.lfd.uci.edu/~gohlke/pythonlibs/>'_ ， 并在本地安装。"
+"如果 ``Spblib`` 需要用vc++编译，请下载 `Python扩展包 "
+"<https://www.lfd.uci.edu/~gohlke/pythonlibs/>'_ ， 并"
+"在本地安装。"
 
 #: ../../Install.rst:63
 msgid "Such as ::"
@@ -181,7 +182,7 @@ msgid "mgetool::"
 msgstr ""
 
 #: ../../Install.rst:77
-msgid "Reference: https://github.com/Mgedata/mgetool"
+msgid "参考: https://github.com/Mgedata/mgetool"
 msgstr ""
 
 #: ../../Install.rst:79
@@ -196,7 +197,7 @@ msgstr ""
 msgid ""
 "Reference: https://pytorch-geometric.readthedocs.io/en/latest/ , not "
 "necessary, just for network."
-msgstr "Reference: https://wiki.fysik.dtu.dk/ase/ , 非必须, 仅使用于 神经网络。"
+msgstr "参考: https://wiki.fysik.dtu.dk/ase/ , 非必须, 仅使用于 神经网络。"
 
 #: ../../Install.rst:93
 msgid "ase::"
@@ -206,5 +207,5 @@ msgstr ""
 msgid ""
 "Reference: https://wiki.fysik.dtu.dk/ase/ , not necessary, just for "
 "network."
-msgstr "Reference: https://wiki.fysik.dtu.dk/ase/ , 非必须, 仅使用于 神经网络。"
+msgstr "参考: https://wiki.fysik.dtu.dk/ase/ , 非必须, 仅使用于 神经网络。"
 
