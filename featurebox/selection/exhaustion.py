@@ -58,7 +58,7 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
     ...
     """
 
-    def __init__(self, estimator: BaseEstimator, n_select: Tuple = (2, 3, 4), muti_grade: int = 2,
+    def __init__(self, estimator: BaseEstimator, n_select: Tuple = (2, 3, 4), muti_grade: int = None,
                  muti_index: List = None, must_index: List = None, n_jobs: int = 1,
                  refit: bool = False, cv: int = 5):
         """
@@ -83,11 +83,11 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
             if estimator is sklearn model, used cv, else pass
         """
         super().__init__(muti_grade=muti_grade, muti_index=muti_index, must_index=must_index)
-        if hasattr(estimator, "max_features"):
+        if hasattr(estimator, "max_features") and refit:
             print("For estimator with 'max_features' attribute, the 'max_features' would changed with "
                   "each sub-data. that is, The 'refit estimator' which with fixed 'max_features' could be with different performance.\n"
-                  "Please change and define 'max_features' (with other parameters fixed) by manual testing after Backforward!!!!\n"
-                  "Please change and define 'max_features' (with other parameters fixed) by manual testing after Backforward!!!!",
+                  "Please change and define 'max_features' (with other parameters fixed) by manual testing after Exhaustion!!!!\n"
+                  "Please change and define 'max_features' (with other parameters fixed) by manual testing after Exhaustion!!!!",
                   )
         self.estimator = estimator
         self.score_ = []
@@ -156,14 +156,13 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
         feature_list = list(range(x.shape[1]))
         fold_feature_list = self.feature_fold(feature_list)
         if self.check_must:
-            fold_feature_list = [i for i in fold_feature_list if i not in self.check_must]
-
+            fold_feature_list = [i for i in fold_feature_list if i not in self.must_unfold_add]
         slice_all = [combinations(fold_feature_list, i) for i in self.n_select]
-        slice_all = [list(self.feature_must_fold(_)) for i in slice_all for _ in i]
+        slice_all = [list(self.feature_unfold(_)) for i in slice_all for _ in i]
 
         scores = parallelize(n_jobs=self.n_jobs, func=score, iterable=slice_all)
 
-        feature_combination = [self.feature_unfold(_) for _ in slice_all]
+        feature_combination = slice_all
         index = np.argmax(scores)
         select_feature = feature_combination[int(index)]
         su = np.zeros(x.shape[1], dtype=np.bool)
@@ -182,6 +181,8 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
                 warnings.warn(UserWarning(
                     "The self.estimator_ :{} used all the X,y data.".format(self.estimator_.__class__.__name__),
                     "please be careful with the later 'score' and 'predict'."))
+            if hasattr(self.estimator_,"max_features"):
+                self.estimator_.max_features = np.array(select_feature).shape[0]
             self.estimator_.fit(x[:, select_feature], y)
         self.n_feature_ = len(select_feature)
         self.score_ex = list(zip(feature_combination, scores))

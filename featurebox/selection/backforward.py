@@ -103,7 +103,7 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
     """
 
     def __init__(self, estimator: BaseEstimator, n_type_feature_to_select: int = None, primary_feature: int = None,
-                 muti_grade: int = 2, muti_index: List = None, refit=False,
+                 muti_grade: int = 2, muti_index: List = None, refit=False,cv=5,
                  must_index: List = None, tolerant: float = 0.01, verbose: int = 0, random_state: int = None):
         """
 
@@ -131,7 +131,7 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
             refit or not. if refit, the model would use all data.
         """
         super().__init__(muti_grade=muti_grade, muti_index=muti_index, must_index=must_index)
-        if hasattr(estimator, "max_features"):
+        if hasattr(estimator, "max_features") and refit:
             print("For estimator with 'max_features' attribute, the 'max_features' would changed with "
                   "each sub-data. that is, The 'refit estimator' which with fixed 'max_features' could be with different performance.\n"
                   "Please change and define 'max_features' (with other parameters fixed) by manual testing after Backforward!!!!\n"
@@ -145,6 +145,7 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
         self.random_state = random_state
         self.tolerant = tolerant
         self.refit = refit
+        self.cv=cv
 
     @property
     def _estimator_type(self):
@@ -194,7 +195,7 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
             slice10 = list(slice10)
             ran.shuffle(slice10)
             if self.check_must:
-                slice10 = [_ for _ in slice10 if _ not in self.check_must]
+                slice10 = [_ for _ in slice10 if _ not in self.must_fold_add]
             for sub in list(slice10):
                 slice0.remove(sub)
                 test0 = score(slices=slice0)
@@ -214,7 +215,7 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
                 slice_all = []
                 slice10 = list(copy.deepcopy(slice0))
                 if self.check_must:
-                    slice10 = [_ for _ in slice10 if _ not in self.check_must]
+                    slice10 = [_ for _ in slice10 if _ not in self.must_fold_add]
                 le = len(slice10)
                 while le:
                     slice_all.append(copy.deepcopy(slice0))
@@ -254,7 +255,7 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
                 if hasattr(estimator_, 'best_score_'):
                     score0 = np.mean(estimator_.best_score_)
                 else:
-                    score0 = np.mean(cross_val_score(estimator_, data_x0, y0, cv=5))
+                    score0 = np.mean(cross_val_score(estimator_, data_x0, y0, cv=self.cv))
 
             return score0
 
@@ -278,7 +279,7 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
 
         ran = check_random_state(self.random_state)
         slice1 = ran.choice(fold_feature_list, primary_feature, replace=False)
-        slice1 = list(self.feature_must_fold(slice1))
+        slice1 = list(self.feature_fold(slice1))
         slice2 = list(set(fold_feature_list) - set(slice1))
         ran.shuffle(slice2)
 
@@ -301,6 +302,7 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
                 warnings.warn(UserWarning(
                     "The self.estimator_ :{} used all the X,y data.".format(self.estimator_.__class__.__name__),
                     "please be careful with the later 'score' and 'predict'."))
+            self.estimator_.max_features = select_feature.shape[0]
             self.estimator_.fit(x[:, select_feature], y)
         self.n_feature_ = len(select_feature)
 
@@ -526,6 +528,8 @@ class BackForwardStable(MetaEstimatorMixin, SelectorMixin, BaseEstimator):
                 warnings.warn(UserWarning(
                     "The self.estimator_ :{} used all the X,y data.".format(self.estimator_.__class__.__name__),
                     "please be careful with the later 'score' and 'predict'."))
+            if hasattr(self.estimator_,"max_features"):
+                self.estimator_.max_features = np.array(self.support_).shape[0]
             self.estimator_.fit(X[:, self.support_], y)
         self.n_feature_ = np.count_nonzero(support)
         return self
