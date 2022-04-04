@@ -293,6 +293,8 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
         x = x[:, index]
         if x.shape[1] > 1:
             svr = model
+            if hasattr(svr,"max_features"):
+                svr.max_features=x.shape[1]
             svr.fit(x, y)
             if hasattr(svr, "best_score_"):
                 sc = svr.best_score_
