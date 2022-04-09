@@ -10,11 +10,9 @@ import os
 import warnings
 
 try:
-    from pymatgen import SETTINGS
-except ImportError:
     from pymatgen.core import SETTINGS
-
-from pymatgen.io.vasp import Potcar, Poscar
+except (ImportError,TypeError):
+    SETTINGS =None
 
 
 def check_PMG_VASP_PSP_DIR():
@@ -38,34 +36,44 @@ def set_PMG_VASP_PSP_DIR(abspath):
 
     二. 如果直接有 poscar_pmg 文件夹，可使用此函数设置 poscar_pmg 路径，也可以直接用第二步。
     """
-    d = SETTINGS.get("PMG_VASP_PSP_DIR")
+    if SETTINGS is not None:
+        d = SETTINGS.get("PMG_VASP_PSP_DIR")
+    else:
+        d= None
+
     SETTINGS_FILE = os.path.join(os.path.expanduser("~"), ".pmgrc.yaml")
     if d is None:
         if os.path.isfile(SETTINGS_FILE):
             with open(SETTINGS_FILE, "a+") as f:
-                f.write("\nPMG_VASP_PSP_DIR: {}}".format(abspath))
-    else:
-        if os.path.isfile(SETTINGS_FILE):
-            with open(SETTINGS_FILE, "r") as f:
-                lines = f.readlines()
-            lines = [i for i in lines if "VASP_PSP_DIR" not in i]
-            with open(SETTINGS_FILE, "w+") as f:
-                f.writelines(lines)
                 f.write("\nPMG_VASP_PSP_DIR: {}".format(abspath))
+        else:
+            with open(SETTINGS_FILE, "w") as f:
+                f.write("\nPMG_VASP_PSP_DIR: {}".format(abspath))
+
+    else:
+        with open(SETTINGS_FILE, "r") as f:
+            lines = f.readlines()
+        lines = [i for i in lines if "VASP_PSP_DIR" not in i]
+
+        with open(SETTINGS_FILE, "w+") as f:
+            f.writelines(lines)
+            f.write("\nPMG_VASP_PSP_DIR: {}".format(abspath))
+
         print("PMG_VASP_PSP_DIR is refreshed to `{}`".format(abspath))
 
 
-class Potcar2(Potcar):
+# from pymatgen.io.vasp import Potcar, Poscar
+# class Potcar2(Potcar):
+#
+#     def __init__(self, symbols=None, functional=None, sym_potcar_map=None):
+#         assert check_PMG_VASP_PSP_DIR()
+#         super().__init__(symbols=symbols, functional=functional, sym_potcar_map=sym_potcar_map)
+#
+#     @classmethod
+#     def from_poscar(cls, poscar: Poscar, functional=None, sym_potcar_map=None):
+#         symbol = poscar.site_symbols
+#         return cls(symbols=symbol, functional=functional, sym_potcar_map=sym_potcar_map)
 
-    def __init__(self, symbols=None, functional=None, sym_potcar_map=None):
-        assert check_PMG_VASP_PSP_DIR()
-        super().__init__(symbols=symbols, functional=functional, sym_potcar_map=sym_potcar_map)
+if __name__ == '__main__':
 
-    @classmethod
-    def from_poscar(cls, poscar: Poscar, functional=None, sym_potcar_map=None):
-        symbol = poscar.site_symbols
-        return cls(symbols=symbol, functional=functional, sym_potcar_map=sym_potcar_map)
-
-# if __name__ == '__main__':
-# 命令行模式
-# set_PMG_VASP_PSP_DIR("/data/home/suyj/wcx/potcars_pmg/")
+    set_PMG_VASP_PSP_DIR("/data/home/suyj/wcx/potcars_pmg/")
