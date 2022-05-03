@@ -4,84 +4,84 @@ import os
 
 from tqdm import tqdm
 
-lsf_vasp_240 = """
-#BSUB -q normal
-#BSUB -n 32
-#BSUB -o %J.out
-#BSUB -e %J.err
-#BSUB -R "span[ptile=24]"
-PATH=/share/app/vasp.5.4.1-2018/bin/:$PATH
-source /share/intel/intel/bin/compilervars.sh intel64
-mpirun -np 36 vasp_std > log
-"""
-
-pbs_vasp_238_239 = """
-#SBATCH -N 1
-#SBATCH -n 36
-#SBATCH --ntasks-per-node=36
-#SBATCH --output=%j.out
-#SBATCH --error=%j.err
-source /data/home/qian1/intel/bin/compilervars.sh intel64
-source /data/home/qian1/intel/mkl/bin/mklvars.sh intel64
-export PATH=$PATH:/data/home/qian1/app/vasp/vasp.5.4.4/bin
-scontrol show hostname $SLURM_JOB_NODELIST > host
-mpirun -np 36 vasp_std >log
-"""
-
-pbs_python_template = """
-#SBATCH -N 1
-#SBATCH -n 16
-#SBATCH --ntasks-per-node=36
-#SBATCH --output=%j.out
-#SBATCH --error=%j.err
-python test.py run > log
-"""
-
-lsf_python_template = """
-#BSUB -q normal
-#BSUB -n 16
-#BSUB -o %J.out
-#BSUB -e %J.err
-#BSUB -R "span[ptile=24]"
-python test.py run > log
-"""
-
-slurm_vasp = """
-#!/bin/sh
-#SBATCH --partition=normal
-#SBATCH --job-name=smh
-#SBATCH --nodes=2
-#SBATCH --ntasks=28
-
-source /data/home/suyj/intel/bin/compilervars.sh intel64
-export PATH=/data/home/suyj/app/vasp.5.4.4-2018/bin:$PATH
-#mpirun -np $SLURM_NPROCS vasp_std | tee output
-mpirun -np 56 vasp_std | tee output
-"""
-
-static = """
-ALGO = Fast
-EDIFF = 1e-06
-ENCUT = 600
-IBRION = -1
-ICHARG = 1
-ISIF = 2
-ISMEAR = -5
-ISPIN = 2
-ISTART = 1
-KSPACING = 0.2
-LAECHG = True
-LCHARG = True
-LELF = True
-LORBIT = 11
-LREAL = Auto
-LWAVE = False
-NELM = 200
-PREC = Accurate
-SYMPREC = 1e-08"""
-
-temps = {"lsf_python": lsf_python_template, "pbs_python": pbs_python_template,
-         "pbs_vasp": pbs_vasp_238_239, "lsf_vasp": lsf_vasp_240}
+# lsf_vasp_240 = """
+# #BSUB -q normal
+# #BSUB -n 32
+# #BSUB -o %J.out
+# #BSUB -e %J.err
+# #BSUB -R "span[ptile=24]"
+# PATH=/share/app/vasp.5.4.1-2018/bin/:$PATH
+# source /share/intel/intel/bin/compilervars.sh intel64
+# mpirun -np 36 vasp_std > log
+# """
+#
+# pbs_vasp_238_239 = """
+# #SBATCH -N 1
+# #SBATCH -n 36
+# #SBATCH --ntasks-per-node=36
+# #SBATCH --output=%j.out
+# #SBATCH --error=%j.err
+# source /data/home/qian1/intel/bin/compilervars.sh intel64
+# source /data/home/qian1/intel/mkl/bin/mklvars.sh intel64
+# export PATH=$PATH:/data/home/qian1/app/vasp/vasp.5.4.4/bin
+# scontrol show hostname $SLURM_JOB_NODELIST > host
+# mpirun -np 36 vasp_std >log
+# """
+#
+# pbs_python_template = """
+# #SBATCH -N 1
+# #SBATCH -n 16
+# #SBATCH --ntasks-per-node=36
+# #SBATCH --output=%j.out
+# #SBATCH --error=%j.err
+# python test.py run > log
+# """
+#
+# lsf_python_template = """
+# #BSUB -q normal
+# #BSUB -n 16
+# #BSUB -o %J.out
+# #BSUB -e %J.err
+# #BSUB -R "span[ptile=24]"
+# python test.py run > log
+# """
+#
+# slurm_vasp = """
+# #!/bin/sh
+# #SBATCH --partition=normal
+# #SBATCH --job-name=smh
+# #SBATCH --nodes=2
+# #SBATCH --ntasks=28
+#
+# source /data/home/suyj/intel/bin/compilervars.sh intel64
+# export PATH=/data/home/suyj/app/vasp.5.4.4-2018/bin:$PATH
+# #mpirun -np $SLURM_NPROCS vasp_std | tee output
+# mpirun -np 56 vasp_std | tee output
+# """
+#
+# static = """
+# ALGO = Fast
+# EDIFF = 1e-06
+# ENCUT = 600
+# IBRION = -1
+# ICHARG = 1
+# ISIF = 2
+# ISMEAR = -5
+# ISPIN = 2
+# ISTART = 1
+# KSPACING = 0.2
+# LAECHG = True
+# LCHARG = True
+# LELF = True
+# LORBIT = 11
+# LREAL = Auto
+# LWAVE = False
+# NELM = 200
+# PREC = Accurate
+# SYMPREC = 1e-08"""
+#
+# temps = {"lsf_python": lsf_python_template, "pbs_python": pbs_python_template,
+#          "pbs_vasp": pbs_vasp_238_239, "lsf_vasp": lsf_vasp_240}
 
 
 def upload(run_tem=None, pwd=None, filter_in=None,
@@ -163,8 +163,8 @@ def upload(run_tem=None, pwd=None, filter_in=None,
         else:
             job_type = "lsf"
 
-    elif run_tem in temps:
-        run_tem = temps[run_tem]
+    # elif run_tem in temps:
+    #     run_tem = temps[run_tem]
 
     if pwd is None:
         pwd = os.getcwd()

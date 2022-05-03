@@ -5,27 +5,24 @@ following features: atom and atoms objects, some of ase.io and some of
 ase.constraints.
 '''
 
-# Copyright 2008, 2009 CAMd
-# (see accompanying license files for details).
-import argparse
-import pathlib
+
 import pickle
 import threading
 from math import cos, sin, sqrt
 import warnings
 from shutil import copyfile
-
 import numpy as np
-from ase.io import Trajectory
-from ase.parallel import barrier
-
-np.seterr(all='raise')
 import os
 import copy
 import sys
 import time
 from os.path import isfile
 import collections
+# from ase.io import Trajectory
+# from ase.parallel import barrier
+
+np.seterr(all='raise')
+
 
 
 def read_any(filename):
@@ -3689,6 +3686,7 @@ class Dynamics:
 
         if trajectory is not None:
             if isinstance(trajectory, str):
+                from ase.io import Trajectory
                 trajectory = Trajectory(trajectory, mode='w',
                                         atoms=atoms, master=master)
             self.attach(trajectory)
@@ -3766,6 +3764,7 @@ class Optimizer(Dynamics):
             self.initialize()
         else:
             self.read()
+            from ase.parallel import barrier
             barrier()
 
     def initialize(self):
@@ -5150,6 +5149,8 @@ if __name__ == '__main__':
         $ python nebmake.py -t s -pos1 Prim_Mo2CO2_CONTCAR -pos2 Prim_Mo2CO2_CONTCAR -n 3
         $ python nebmake.py -p parent_dir -pos1 Prim_Mo2CO2_CONTCAR -pos2 Prim_Mo2CO2_CONTCAR -n 3
     """
+    import argparse
+    import pathlib
     parser = argparse.ArgumentParser(description="Get neb files. Example:\n"
                                                  "python nebmake.py -t s -pos1 POSCAR1 -pos2 POSCAR2 -n 3")
     parser.add_argument('-p', '--path_name', type=str, default='.')

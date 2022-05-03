@@ -1,8 +1,7 @@
-import argparse
+
 # Due to the pymatgen is incorrect of band gap with 2 spin. we use vaspkit for extract data.
 import pandas as pd
 import os
-
 import numpy as np
 
 # 1
@@ -210,6 +209,7 @@ if __name__ == '__main__':
     Example:
         $ python bader.py -p /home/dir_name -if AECCAR0
     """
+    import argparse
     parser = argparse.ArgumentParser(description="Get d band centor.Examples:\n"
                                                  "python bader.py -p /home/dir_name -if AECCAR0")
     parser.add_argument('-p', '--path_name', type=str, default='.')

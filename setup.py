@@ -55,5 +55,5 @@ setup(
     ),
     long_description=long_description,
     long_description_content_type='text/markdown',
-    entry_points={'console_scripts': ['featurebox = featurebox.cli.main:main', 'fb = featurebox.cli.main:main']}
+    entry_points={'console_scripts': ['featurebox = featurebox.cli.main:main', 'fb = featurebox.cli.main:main', ]}
 )

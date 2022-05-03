@@ -2,8 +2,6 @@ import argparse
 import textwrap
 from importlib import import_module
 
-from mgetool.tool import tt
-
 title = """
 ---------------------------
 |     Featurebox CLI      |
