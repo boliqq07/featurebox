@@ -103,7 +103,7 @@ class LearningFlow:
         >>> test_loader = ...
         >>> val_loader = ...
 
-x
+
         >>>  model = CrystalGraphConvNet(num_node_features=91,
         ...  num_edge_features=3,
         ...  num_state_features=29,
