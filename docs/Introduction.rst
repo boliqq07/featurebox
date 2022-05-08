@@ -58,8 +58,6 @@ Featurebox integrated with **Graph neural network**.
 --------------------------------------------------------------------- -----------------------------------------
  :class:`featurebox.featurizers.base_graph_geo.StructureGraphGEO`     Integrated structure data tool. (high dimensional data)
  :class:`featurebox.models_geo.cgcnn.CrystalGraphConvNet`             Traditional graph neural network.
- :class:`featurebox.models_geo.schnet.SchNet`                         Graph neural network with state features.
- :class:`featurebox.models_geo.megnet.MEGNet`                         Graph neural network with state features.
  :class:`featurebox.models_geo.flow_geo.LearningFlow`                 Script for modeling (recommended customization by user).
  :class:`featurebox.featurizers.generator_geo.InMemoryDatasetGeo`     ``Dataset`` for data data in a non-uniform format. (Torch-like)
 ===================================================================== =========================================

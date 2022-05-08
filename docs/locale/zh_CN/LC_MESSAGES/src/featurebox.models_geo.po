@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: featurebox \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-04 23:10+0800\n"
+"POT-Creation-Date: 2022-05-08 11:09+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -57,10 +57,8 @@ msgstr ""
 #: featurebox.models_geo.basemodel.GeoResNet:1
 #: featurebox.models_geo.basemodel.ReadOutLayer:1
 #: featurebox.models_geo.basemodel.ShiftedSoftplus:1
-#: featurebox.models_geo.cggrunet.CGGRU_ReadOut:1
-#: featurebox.models_geo.megnet.Meg_InteractionBlock:1
 #: featurebox.models_geo.rotnet.GLayer:1 featurebox.models_geo.rotnet.SLayer:1
-#: featurebox.models_geo.schnet.SchNet_InteractionBlock:1 of
+#: of
 msgid "Bases: :class:`torch.nn.modules.module.Module`"
 msgstr ""
 
@@ -70,22 +68,12 @@ msgstr ""
 
 #: featurebox.models_geo.basemodel.BaseCrystalModel:3
 #: featurebox.models_geo.cgcnn.CrystalGraphConvNet:3
-#: featurebox.models_geo.cggat.CrystalGraphGAT:3
-#: featurebox.models_geo.cggcn.CrystalGraphGCN:3
-#: featurebox.models_geo.cggcn2.CrystalGraphGCN2:3
-#: featurebox.models_geo.cggrunet.CGGRUNet:4
-#: featurebox.models_geo.megnet.MEGNet:1
-#: featurebox.models_geo.rotnet.RotateNet:3
-#: featurebox.models_geo.schnet.SchNet:3 of
+#: featurebox.models_geo.rotnet.RotateNet:3 of
 msgid "Model for crystal problem."
 msgstr ""
 
 #: featurebox.models_geo.basemodel.BaseCrystalModel
 #: featurebox.models_geo.cgcnn.CrystalGraphConvNet
-#: featurebox.models_geo.cggat.CrystalGraphGAT
-#: featurebox.models_geo.cggcn.CrystalGraphGCN
-#: featurebox.models_geo.cggcn2.CrystalGraphGCN2
-#: featurebox.models_geo.cggrunet.CGGRUNet
 #: featurebox.models_geo.flow_geo.LearningFlow
 #: featurebox.models_geo.flow_geo.LearningFlow.predict
 #: featurebox.models_geo.flow_geo.LearningFlow.run
@@ -93,32 +81,19 @@ msgstr ""
 #: featurebox.models_geo.general.fast_label_binarize
 #: featurebox.models_geo.general.train_test_pack
 #: featurebox.models_geo.log_model.make_dot_
-#: featurebox.models_geo.megnet.MEGNet featurebox.models_geo.rotnet.RotateNet
-#: featurebox.models_geo.schnet.SchNet of
+#: featurebox.models_geo.rotnet.RotateNet of
 msgid "Parameters"
 msgstr ""
 
 #: featurebox.models_geo.basemodel.BaseCrystalModel:5
 #: featurebox.models_geo.cgcnn.CrystalGraphConvNet:5
-#: featurebox.models_geo.cggat.CrystalGraphGAT:5
-#: featurebox.models_geo.cggcn.CrystalGraphGCN:5
-#: featurebox.models_geo.cggcn2.CrystalGraphGCN2:5
-#: featurebox.models_geo.cggrunet.CGGRUNet:6
-#: featurebox.models_geo.megnet.MEGNet:3
-#: featurebox.models_geo.rotnet.RotateNet:5
-#: featurebox.models_geo.schnet.SchNet:5 of
+#: featurebox.models_geo.rotnet.RotateNet:5 of
 msgid "(int) input number of node feature (atom feature)."
 msgstr ""
 
 #: featurebox.models_geo.basemodel.BaseCrystalModel:6
 #: featurebox.models_geo.cgcnn.CrystalGraphConvNet:6
-#: featurebox.models_geo.cggat.CrystalGraphGAT:6
-#: featurebox.models_geo.cggcn.CrystalGraphGCN:6
-#: featurebox.models_geo.cggcn2.CrystalGraphGCN2:6
-#: featurebox.models_geo.cggrunet.CGGRUNet:7
-#: featurebox.models_geo.megnet.MEGNet:4
-#: featurebox.models_geo.rotnet.RotateNet:6
-#: featurebox.models_geo.schnet.SchNet:6 of
+#: featurebox.models_geo.rotnet.RotateNet:6 of
 msgid ""
 "(int) input number of bond feature. if ``num_edge_gaussians` offered, "
 "this parameter is neglect."
@@ -126,25 +101,13 @@ msgstr ""
 
 #: featurebox.models_geo.basemodel.BaseCrystalModel:7
 #: featurebox.models_geo.cgcnn.CrystalGraphConvNet:7
-#: featurebox.models_geo.cggat.CrystalGraphGAT:7
-#: featurebox.models_geo.cggcn.CrystalGraphGCN:7
-#: featurebox.models_geo.cggcn2.CrystalGraphGCN2:7
-#: featurebox.models_geo.cggrunet.CGGRUNet:8
-#: featurebox.models_geo.megnet.MEGNet:5
-#: featurebox.models_geo.rotnet.RotateNet:7
-#: featurebox.models_geo.schnet.SchNet:7 of
+#: featurebox.models_geo.rotnet.RotateNet:7 of
 msgid "(int) input number of state feature."
 msgstr ""
 
 #: featurebox.models_geo.basemodel.BaseCrystalModel:8
 #: featurebox.models_geo.cgcnn.CrystalGraphConvNet:8
-#: featurebox.models_geo.cggat.CrystalGraphGAT:8
-#: featurebox.models_geo.cggcn.CrystalGraphGCN:8
-#: featurebox.models_geo.cggcn2.CrystalGraphGCN2:8
-#: featurebox.models_geo.cggrunet.CGGRUNet:9
-#: featurebox.models_geo.megnet.MEGNet:6
-#: featurebox.models_geo.rotnet.RotateNet:8
-#: featurebox.models_geo.schnet.SchNet:8 of
+#: featurebox.models_geo.rotnet.RotateNet:8 of
 msgid ""
 "(int) number of embeddings, For generate the initial embedding matrix to "
 "on behalf of node feature."
@@ -152,49 +115,25 @@ msgstr ""
 
 #: featurebox.models_geo.basemodel.BaseCrystalModel:9
 #: featurebox.models_geo.cgcnn.CrystalGraphConvNet:9
-#: featurebox.models_geo.cggat.CrystalGraphGAT:9
-#: featurebox.models_geo.cggcn.CrystalGraphGCN:9
-#: featurebox.models_geo.cggcn2.CrystalGraphGCN2:9
-#: featurebox.models_geo.cggrunet.CGGRUNet:10
-#: featurebox.models_geo.megnet.MEGNet:7
-#: featurebox.models_geo.rotnet.RotateNet:9
-#: featurebox.models_geo.schnet.SchNet:9 of
+#: featurebox.models_geo.rotnet.RotateNet:9 of
 msgid "(int) num_node_hidden_channels for node feature."
 msgstr ""
 
 #: featurebox.models_geo.basemodel.BaseCrystalModel:10
 #: featurebox.models_geo.cgcnn.CrystalGraphConvNet:10
-#: featurebox.models_geo.cggat.CrystalGraphGAT:10
-#: featurebox.models_geo.cggcn.CrystalGraphGCN:10
-#: featurebox.models_geo.cggcn2.CrystalGraphGCN2:10
-#: featurebox.models_geo.cggrunet.CGGRUNet:11
-#: featurebox.models_geo.megnet.MEGNet:8
-#: featurebox.models_geo.rotnet.RotateNet:10
-#: featurebox.models_geo.schnet.SchNet:10 of
+#: featurebox.models_geo.rotnet.RotateNet:10 of
 msgid "(int) channels for node feature."
 msgstr ""
 
 #: featurebox.models_geo.basemodel.BaseCrystalModel:11
 #: featurebox.models_geo.cgcnn.CrystalGraphConvNet:11
-#: featurebox.models_geo.cggat.CrystalGraphGAT:11
-#: featurebox.models_geo.cggcn.CrystalGraphGCN:11
-#: featurebox.models_geo.cggcn2.CrystalGraphGCN2:11
-#: featurebox.models_geo.cggrunet.CGGRUNet:12
-#: featurebox.models_geo.megnet.MEGNet:9
-#: featurebox.models_geo.rotnet.RotateNet:11
-#: featurebox.models_geo.schnet.SchNet:11 of
+#: featurebox.models_geo.rotnet.RotateNet:11 of
 msgid "(int) conv number."
 msgstr ""
 
 #: featurebox.models_geo.basemodel.BaseCrystalModel:12
 #: featurebox.models_geo.cgcnn.CrystalGraphConvNet:12
-#: featurebox.models_geo.cggat.CrystalGraphGAT:12
-#: featurebox.models_geo.cggcn.CrystalGraphGCN:12
-#: featurebox.models_geo.cggcn2.CrystalGraphGCN2:12
-#: featurebox.models_geo.cggrunet.CGGRUNet:13
-#: featurebox.models_geo.megnet.MEGNet:10
-#: featurebox.models_geo.rotnet.RotateNet:12
-#: featurebox.models_geo.schnet.SchNet:12 of
+#: featurebox.models_geo.rotnet.RotateNet:12 of
 msgid ""
 "(int) number of gaussian Smearing number for radius. deprecated, keep "
 "this compact with your bond data."
@@ -202,73 +141,37 @@ msgstr ""
 
 #: featurebox.models_geo.basemodel.BaseCrystalModel:13
 #: featurebox.models_geo.cgcnn.CrystalGraphConvNet:13
-#: featurebox.models_geo.cggat.CrystalGraphGAT:13
-#: featurebox.models_geo.cggcn.CrystalGraphGCN:13
-#: featurebox.models_geo.cggcn2.CrystalGraphGCN2:13
-#: featurebox.models_geo.cggrunet.CGGRUNet:14
-#: featurebox.models_geo.megnet.MEGNet:11
-#: featurebox.models_geo.rotnet.RotateNet:13
-#: featurebox.models_geo.schnet.SchNet:13 of
+#: featurebox.models_geo.rotnet.RotateNet:13 of
 msgid "(float) cutoff for calculate neighbor bond."
 msgstr ""
 
 #: featurebox.models_geo.basemodel.BaseCrystalModel:14
 #: featurebox.models_geo.cgcnn.CrystalGraphConvNet:14
-#: featurebox.models_geo.cggat.CrystalGraphGAT:14
-#: featurebox.models_geo.cggcn.CrystalGraphGCN:14
-#: featurebox.models_geo.cggcn2.CrystalGraphGCN2:14
-#: featurebox.models_geo.cggrunet.CGGRUNet:15
-#: featurebox.models_geo.megnet.MEGNet:12
-#: featurebox.models_geo.rotnet.RotateNet:14
-#: featurebox.models_geo.schnet.SchNet:14 of
+#: featurebox.models_geo.rotnet.RotateNet:14 of
 msgid "(str) Merge node method. such as \"add\",\"mean\",\"max\",\"mean\"."
 msgstr ""
 
 #: featurebox.models_geo.basemodel.BaseCrystalModel:15
 #: featurebox.models_geo.cgcnn.CrystalGraphConvNet:15
-#: featurebox.models_geo.cggat.CrystalGraphGAT:15
-#: featurebox.models_geo.cggcn.CrystalGraphGCN:15
-#: featurebox.models_geo.cggcn2.CrystalGraphGCN2:15
-#: featurebox.models_geo.cggrunet.CGGRUNet:16
-#: featurebox.models_geo.megnet.MEGNet:13
-#: featurebox.models_geo.rotnet.RotateNet:15
-#: featurebox.models_geo.schnet.SchNet:15 of
+#: featurebox.models_geo.rotnet.RotateNet:15 of
 msgid "(float) mean for y."
 msgstr ""
 
 #: featurebox.models_geo.basemodel.BaseCrystalModel:16
 #: featurebox.models_geo.cgcnn.CrystalGraphConvNet:16
-#: featurebox.models_geo.cggat.CrystalGraphGAT:16
-#: featurebox.models_geo.cggcn.CrystalGraphGCN:16
-#: featurebox.models_geo.cggcn2.CrystalGraphGCN2:16
-#: featurebox.models_geo.cggrunet.CGGRUNet:17
-#: featurebox.models_geo.megnet.MEGNet:14
-#: featurebox.models_geo.rotnet.RotateNet:16
-#: featurebox.models_geo.schnet.SchNet:16 of
+#: featurebox.models_geo.rotnet.RotateNet:16 of
 msgid "(float) std for y."
 msgstr ""
 
 #: featurebox.models_geo.basemodel.BaseCrystalModel:17
 #: featurebox.models_geo.cgcnn.CrystalGraphConvNet:17
-#: featurebox.models_geo.cggat.CrystalGraphGAT:17
-#: featurebox.models_geo.cggcn.CrystalGraphGCN:17
-#: featurebox.models_geo.cggcn2.CrystalGraphGCN2:17
-#: featurebox.models_geo.cggrunet.CGGRUNet:18
-#: featurebox.models_geo.megnet.MEGNet:15
-#: featurebox.models_geo.rotnet.RotateNet:17
-#: featurebox.models_geo.schnet.SchNet:17 of
+#: featurebox.models_geo.rotnet.RotateNet:17 of
 msgid "(bool) False or True norm for y."
 msgstr ""
 
 #: featurebox.models_geo.basemodel.BaseCrystalModel:18
 #: featurebox.models_geo.cgcnn.CrystalGraphConvNet:18
-#: featurebox.models_geo.cggat.CrystalGraphGAT:18
-#: featurebox.models_geo.cggcn.CrystalGraphGCN:18
-#: featurebox.models_geo.cggcn2.CrystalGraphGCN2:18
-#: featurebox.models_geo.cggrunet.CGGRUNet:19
-#: featurebox.models_geo.megnet.MEGNet:16
-#: featurebox.models_geo.rotnet.RotateNet:18
-#: featurebox.models_geo.schnet.SchNet:18 of
+#: featurebox.models_geo.rotnet.RotateNet:18 of
 msgid ""
 "(torch.tensor shape (120,1)) properties for atom. such as target y is "
 "volumes of compound, atom_ref could be the atom volumes of all atom "
@@ -278,25 +181,13 @@ msgstr ""
 
 #: featurebox.models_geo.basemodel.BaseCrystalModel:21
 #: featurebox.models_geo.cgcnn.CrystalGraphConvNet:21
-#: featurebox.models_geo.cggat.CrystalGraphGAT:21
-#: featurebox.models_geo.cggcn.CrystalGraphGCN:21
-#: featurebox.models_geo.cggcn2.CrystalGraphGCN2:21
-#: featurebox.models_geo.cggrunet.CGGRUNet:22
-#: featurebox.models_geo.megnet.MEGNet:19
-#: featurebox.models_geo.rotnet.RotateNet:21
-#: featurebox.models_geo.schnet.SchNet:21 of
+#: featurebox.models_geo.rotnet.RotateNet:21 of
 msgid "(bool,str) just used \"z\" or used \"x\" to calculate."
 msgstr ""
 
 #: featurebox.models_geo.basemodel.BaseCrystalModel:22
 #: featurebox.models_geo.cgcnn.CrystalGraphConvNet:22
-#: featurebox.models_geo.cggat.CrystalGraphGAT:22
-#: featurebox.models_geo.cggcn.CrystalGraphGCN:22
-#: featurebox.models_geo.cggcn2.CrystalGraphGCN2:22
-#: featurebox.models_geo.cggrunet.CGGRUNet:23
-#: featurebox.models_geo.megnet.MEGNet:20
-#: featurebox.models_geo.rotnet.RotateNet:22
-#: featurebox.models_geo.schnet.SchNet:22 of
+#: featurebox.models_geo.rotnet.RotateNet:22 of
 msgid ""
 "(Callable) torch module for interactions dynamically: pass the torch "
 "module to interactions parameter.static: re-define the "
@@ -306,13 +197,7 @@ msgstr ""
 
 #: featurebox.models_geo.basemodel.BaseCrystalModel:24
 #: featurebox.models_geo.cgcnn.CrystalGraphConvNet:24
-#: featurebox.models_geo.cggat.CrystalGraphGAT:24
-#: featurebox.models_geo.cggcn.CrystalGraphGCN:24
-#: featurebox.models_geo.cggcn2.CrystalGraphGCN2:24
-#: featurebox.models_geo.cggrunet.CGGRUNet:25
-#: featurebox.models_geo.megnet.MEGNet:22
-#: featurebox.models_geo.rotnet.RotateNet:24
-#: featurebox.models_geo.schnet.SchNet:24 of
+#: featurebox.models_geo.rotnet.RotateNet:24 of
 msgid ""
 "(Callable) torch module for interactions  dynamically: pass the torch "
 "module to interactions parameter. static: re-define the "
@@ -322,25 +207,13 @@ msgstr ""
 
 #: featurebox.models_geo.basemodel.BaseCrystalModel:25
 #: featurebox.models_geo.cgcnn.CrystalGraphConvNet:25
-#: featurebox.models_geo.cggat.CrystalGraphGAT:25
-#: featurebox.models_geo.cggcn.CrystalGraphGCN:25
-#: featurebox.models_geo.cggcn2.CrystalGraphGCN2:25
-#: featurebox.models_geo.cggrunet.CGGRUNet:26
-#: featurebox.models_geo.megnet.MEGNet:23
-#: featurebox.models_geo.rotnet.RotateNet:25
-#: featurebox.models_geo.schnet.SchNet:25 of
+#: featurebox.models_geo.rotnet.RotateNet:25 of
 msgid "(bool) add state attribute before output."
 msgstr ""
 
 #: featurebox.models_geo.basemodel.BaseCrystalModel:26
 #: featurebox.models_geo.cgcnn.CrystalGraphConvNet:26
-#: featurebox.models_geo.cggat.CrystalGraphGAT:26
-#: featurebox.models_geo.cggcn.CrystalGraphGCN:26
-#: featurebox.models_geo.cggcn2.CrystalGraphGCN2:26
-#: featurebox.models_geo.cggrunet.CGGRUNet:27
-#: featurebox.models_geo.megnet.MEGNet:24
-#: featurebox.models_geo.rotnet.RotateNet:26
-#: featurebox.models_geo.schnet.SchNet:26 of
+#: featurebox.models_geo.rotnet.RotateNet:26 of
 msgid ""
 "(int) number of out size. for regression,is 1 and for classification "
 "should be defined."
@@ -351,11 +224,8 @@ msgstr ""
 #: featurebox.models_geo.basemodel.GeoResNet.forward:1
 #: featurebox.models_geo.basemodel.ReadOutLayer.forward:1
 #: featurebox.models_geo.basemodel.ShiftedSoftplus.forward:1
-#: featurebox.models_geo.cggrunet.CGGRU_ReadOut.forward:1
-#: featurebox.models_geo.megnet.Meg_InteractionBlock.forward:1
 #: featurebox.models_geo.rotnet.GLayer.forward:1
-#: featurebox.models_geo.rotnet.SLayer.forward:1
-#: featurebox.models_geo.schnet.SchNet_InteractionBlock.forward:1 of
+#: featurebox.models_geo.rotnet.SLayer.forward:1 of
 msgid "Defines the computation performed at every call."
 msgstr ""
 
@@ -364,11 +234,8 @@ msgstr ""
 #: featurebox.models_geo.basemodel.GeoResNet.forward:3
 #: featurebox.models_geo.basemodel.ReadOutLayer.forward:3
 #: featurebox.models_geo.basemodel.ShiftedSoftplus.forward:3
-#: featurebox.models_geo.cggrunet.CGGRU_ReadOut.forward:3
-#: featurebox.models_geo.megnet.Meg_InteractionBlock.forward:3
 #: featurebox.models_geo.rotnet.GLayer.forward:3
-#: featurebox.models_geo.rotnet.SLayer.forward:3
-#: featurebox.models_geo.schnet.SchNet_InteractionBlock.forward:3 of
+#: featurebox.models_geo.rotnet.SLayer.forward:3 of
 msgid "Should be overridden by all subclasses."
 msgstr ""
 
@@ -377,11 +244,8 @@ msgstr ""
 #: featurebox.models_geo.basemodel.GeoResNet.forward:6
 #: featurebox.models_geo.basemodel.ReadOutLayer.forward:6
 #: featurebox.models_geo.basemodel.ShiftedSoftplus.forward:6
-#: featurebox.models_geo.cggrunet.CGGRU_ReadOut.forward:6
-#: featurebox.models_geo.megnet.Meg_InteractionBlock.forward:6
 #: featurebox.models_geo.rotnet.GLayer.forward:6
-#: featurebox.models_geo.rotnet.SLayer.forward:6
-#: featurebox.models_geo.schnet.SchNet_InteractionBlock.forward:6 of
+#: featurebox.models_geo.rotnet.SLayer.forward:6 of
 msgid ""
 "Although the recipe for forward pass needs to be defined within this "
 "function, one should call the :class:`Module` instance afterwards instead"
@@ -391,13 +255,7 @@ msgstr ""
 
 #: featurebox.models_geo.basemodel.BaseCrystalModel.get_interactions_layer:1
 #: featurebox.models_geo.cgcnn.CrystalGraphConvNet.get_interactions_layer:1
-#: featurebox.models_geo.cggat.CrystalGraphGAT.get_interactions_layer:1
-#: featurebox.models_geo.cggcn.CrystalGraphGCN.get_interactions_layer:1
-#: featurebox.models_geo.cggcn2.CrystalGraphGCN2.get_interactions_layer:1
-#: featurebox.models_geo.cggrunet.CGGRUNet.get_interactions_layer:1
-#: featurebox.models_geo.megnet.MEGNet.get_interactions_layer:1
-#: featurebox.models_geo.rotnet.RotateNet.get_interactions_layer:1
-#: featurebox.models_geo.schnet.SchNet.get_interactions_layer:1 of
+#: featurebox.models_geo.rotnet.RotateNet.get_interactions_layer:1 of
 msgid "This part shloud re-defined. And must add the ``interactions`` attribute."
 msgstr ""
 
@@ -405,20 +263,11 @@ msgstr ""
 #: featurebox.models_geo.basemodel.BaseCrystalModel.get_readout_layer:3
 #: featurebox.models_geo.basemodel.BaseCrystalModel.get_readout_layer:7
 #: featurebox.models_geo.cgcnn.CrystalGraphConvNet.get_interactions_layer:3
-#: featurebox.models_geo.cggat.CrystalGraphGAT.get_interactions_layer:3
-#: featurebox.models_geo.cggcn.CrystalGraphGCN.get_interactions_layer:3
-#: featurebox.models_geo.cggcn2.CrystalGraphGCN2.get_interactions_layer:3
-#: featurebox.models_geo.cggrunet.CGGRUNet.get_interactions_layer:3
-#: featurebox.models_geo.cggrunet.CGGRUNet.get_readout_layer:3
-#: featurebox.models_geo.cggrunet.CGGRUNet.get_readout_layer:7
-#: featurebox.models_geo.megnet.MEGNet.get_interactions_layer:3
-#: featurebox.models_geo.rotnet.RotateNet.get_interactions_layer:3
-#: featurebox.models_geo.schnet.SchNet.get_interactions_layer:3 of
+#: featurebox.models_geo.rotnet.RotateNet.get_interactions_layer:3 of
 msgid "Examples::"
 msgstr ""
 
-#: featurebox.models_geo.basemodel.BaseCrystalModel.get_readout_layer:1
-#: featurebox.models_geo.cggrunet.CGGRUNet.get_readout_layer:1 of
+#: featurebox.models_geo.basemodel.BaseCrystalModel.get_readout_layer:1 of
 msgid "This part shloud re-defined. And must add the ``readout_layer`` attribute."
 msgstr ""
 
@@ -437,16 +286,8 @@ msgstr ""
 #: featurebox.models_geo.basemodel.ReadOutLayer:3
 #: featurebox.models_geo.basemodel.ShiftedSoftplus:3
 #: featurebox.models_geo.cgcnn.CGConvNew:1
-#: featurebox.models_geo.cggat.GATConvNew:1
-#: featurebox.models_geo.cggcn.GCNConvNew:1
-#: featurebox.models_geo.cggcn2.GCNConv2New:1
-#: featurebox.models_geo.cggrunet.CGGRU_ReadOut:1
-#: featurebox.models_geo.cggrunet.NNConvNew:1
-#: featurebox.models_geo.cggrunet.Set2SetNew:1
-#: featurebox.models_geo.megnet.Meg_InteractionBlock:1
 #: featurebox.models_geo.rotnet.GLayer:1 featurebox.models_geo.rotnet.RotNet:1
-#: featurebox.models_geo.rotnet.SLayer:1
-#: featurebox.models_geo.schnet.SchNet_InteractionBlock:1 of
+#: featurebox.models_geo.rotnet.SLayer:1 of
 msgid ""
 "Initializes internal Module state, shared by both nn.Module and "
 "ScriptModule."
@@ -468,9 +309,7 @@ msgstr ""
 msgid "featurebox.models\\_geo.cgcnn module"
 msgstr ""
 
-#: featurebox.models_geo.cgcnn:1 featurebox.models_geo.cggat:1
-#: featurebox.models_geo.cggcn:1 featurebox.models_geo.cggcn2:1
-#: featurebox.models_geo.cggrunet:1 featurebox.models_geo.rotnet:1 of
+#: featurebox.models_geo.cgcnn:1 featurebox.models_geo.rotnet:1 of
 msgid ""
 "This is one general script. For different data, you should re-write this "
 "and tune."
@@ -481,13 +320,7 @@ msgid "Bases: :class:`torch_geometric.nn.conv.cg_conv.CGConv`"
 msgstr ""
 
 #: featurebox.models_geo.cgcnn.CrystalGraphConvNet:1
-#: featurebox.models_geo.cggat.CrystalGraphGAT:1
-#: featurebox.models_geo.cggcn.CrystalGraphGCN:1
-#: featurebox.models_geo.cggcn2.CrystalGraphGCN2:1
-#: featurebox.models_geo.cggrunet.CGGRUNet:1
-#: featurebox.models_geo.megnet.MEGNet:1
-#: featurebox.models_geo.rotnet.RotateNet:1
-#: featurebox.models_geo.schnet.SchNet:1 of
+#: featurebox.models_geo.rotnet.RotateNet:1 of
 msgid "Bases: :class:`featurebox.models_geo.basemodel.BaseCrystalModel`"
 msgstr ""
 
@@ -497,58 +330,6 @@ msgid "CrystalGraph."
 msgstr ""
 
 #: ../../src/featurebox.models_geo.rst:29
-msgid "featurebox.models\\_geo.cggat module"
-msgstr ""
-
-#: featurebox.models_geo.cggat.CrystalGraphGAT:1 of
-msgid "CrystalGraph with GAT."
-msgstr ""
-
-#: featurebox.models_geo.cggat.GATConvNew:1 of
-msgid "Bases: :class:`torch_geometric.nn.conv.gat_conv.GATConv`"
-msgstr ""
-
-#: ../../src/featurebox.models_geo.rst:37
-msgid "featurebox.models\\_geo.cggcn module"
-msgstr ""
-
-#: featurebox.models_geo.cggcn.CrystalGraphGCN:1 of
-msgid "CrystalGraph with GCN."
-msgstr ""
-
-#: featurebox.models_geo.cggcn.GCNConvNew:1 of
-msgid "Bases: :class:`torch_geometric.nn.conv.gcn_conv.GCNConv`"
-msgstr ""
-
-#: ../../src/featurebox.models_geo.rst:45
-msgid "featurebox.models\\_geo.cggcn2 module"
-msgstr ""
-
-#: featurebox.models_geo.cggcn2.CrystalGraphGCN2:1 of
-msgid "CrystalGraph with GCN2."
-msgstr ""
-
-#: featurebox.models_geo.cggcn2.GCNConv2New:1 of
-msgid "Bases: :class:`torch_geometric.nn.conv.gcn2_conv.GCN2Conv`"
-msgstr ""
-
-#: ../../src/featurebox.models_geo.rst:53
-msgid "featurebox.models\\_geo.cggrunet module"
-msgstr ""
-
-#: featurebox.models_geo.cggrunet.CGGRUNet:1 of
-msgid "CrystalGraph with CGGRUN. weight_decay=0.001, best."
-msgstr ""
-
-#: featurebox.models_geo.cggrunet.NNConvNew:1 of
-msgid "Bases: :class:`torch_geometric.nn.conv.nn_conv.NNConv`"
-msgstr ""
-
-#: featurebox.models_geo.cggrunet.Set2SetNew:1 of
-msgid "Bases: :class:`torch_geometric.nn.glob.set2set.Set2Set`"
-msgstr ""
-
-#: ../../src/featurebox.models_geo.rst:61
 msgid "featurebox.models\\_geo.flow\\_geo module"
 msgstr ""
 
@@ -560,12 +341,9 @@ msgstr ""
 msgid "LearningFlow for training."
 msgstr ""
 
-#: featurebox.models_geo.flow_geo.LearningFlow:3 of
-msgid "Examples:"
-msgstr ""
-
-#: featurebox.models_geo.flow_geo.LearningFlow:49 of
-msgid "x"
+#: featurebox.models_geo.flow_geo.LearningFlow:4
+#: featurebox.models_geo.general.train_test_pack:39 of
+msgid "Examples"
 msgstr ""
 
 #: featurebox.models_geo.flow_geo.LearningFlow:48 of
@@ -574,39 +352,39 @@ msgid ""
 ":class:`featurebox.test_featurizers.base_graph_geo.StructureGraphGEO`"
 msgstr ""
 
-#: featurebox.models_geo.flow_geo.LearningFlow:57 of
+#: featurebox.models_geo.flow_geo.LearningFlow:56 of
 msgid "such as \"cuda:0\",\"cpu\""
 msgstr ""
 
-#: featurebox.models_geo.flow_geo.LearningFlow:61 of
+#: featurebox.models_geo.flow_geo.LearningFlow:60 of
 msgid "under exploit......"
 msgstr ""
 
-#: featurebox.models_geo.flow_geo.LearningFlow:63
-#: featurebox.models_geo.flow_geo.LearningFlow:65
-#: featurebox.models_geo.flow_geo.LearningFlow:67
-#: featurebox.models_geo.flow_geo.LearningFlow:69
-#: featurebox.models_geo.flow_geo.LearningFlow:73 of
+#: featurebox.models_geo.flow_geo.LearningFlow:62
+#: featurebox.models_geo.flow_geo.LearningFlow:64
+#: featurebox.models_geo.flow_geo.LearningFlow:66
+#: featurebox.models_geo.flow_geo.LearningFlow:68
+#: featurebox.models_geo.flow_geo.LearningFlow:72 of
 msgid "see more in torch"
 msgstr ""
 
-#: featurebox.models_geo.flow_geo.LearningFlow:71 of
+#: featurebox.models_geo.flow_geo.LearningFlow:70 of
 msgid "save checkpoint or not."
 msgstr ""
 
-#: featurebox.models_geo.flow_geo.LearningFlow:74 of
+#: featurebox.models_geo.flow_geo.LearningFlow:73 of
 msgid "print frequency"
 msgstr ""
 
-#: featurebox.models_geo.flow_geo.LearningFlow:76 of
+#: featurebox.models_geo.flow_geo.LearningFlow:75 of
 msgid "\"all\",\"train\",\"test\" log."
 msgstr ""
 
-#: featurebox.models_geo.flow_geo.LearningFlow:78 of
+#: featurebox.models_geo.flow_geo.LearningFlow:77 of
 msgid "scheduler, see more in torch"
 msgstr ""
 
-#: featurebox.models_geo.flow_geo.LearningFlow:79 of
+#: featurebox.models_geo.flow_geo.LearningFlow:78 of
 msgid "function to get y/label."
 msgstr ""
 
@@ -675,7 +453,7 @@ msgstr ""
 msgid "Computes the mean absolute error between prediction and target"
 msgstr ""
 
-#: ../../src/featurebox.models_geo.rst:69
+#: ../../src/featurebox.models_geo.rst:37
 msgid "featurebox.models\\_geo.general module"
 msgstr ""
 
@@ -840,11 +618,7 @@ msgid ""
 " -1)"
 msgstr ""
 
-#: featurebox.models_geo.general.train_test_pack:39 of
-msgid "Examples"
-msgstr ""
-
-#: ../../src/featurebox.models_geo.rst:77
+#: ../../src/featurebox.models_geo.rst:45
 msgid "featurebox.models\\_geo.log\\_model module"
 msgstr ""
 
@@ -945,17 +719,7 @@ msgid ""
 " given attribute."
 msgstr ""
 
-#: ../../src/featurebox.models_geo.rst:85
-msgid "featurebox.models\\_geo.megnet module"
-msgstr ""
-
-#: featurebox.models_geo.megnet:1 of
-msgid ""
-"This is a simple version for mgenet, where the bond update iteration is "
-"omitted."
-msgstr ""
-
-#: ../../src/featurebox.models_geo.rst:93
+#: ../../src/featurebox.models_geo.rst:53
 msgid "featurebox.models\\_geo.rotnet module"
 msgstr ""
 
@@ -972,16 +736,69 @@ msgid ""
 ":obj:`torch_sparse.SparseTensor`."
 msgstr ""
 
-#: ../../src/featurebox.models_geo.rst:101
-msgid "featurebox.models\\_geo.schnet module"
-msgstr ""
+#~ msgid "featurebox.models\\_geo.cggat module"
+#~ msgstr ""
 
-#: featurebox.models_geo.schnet:1 of
-msgid ""
-"This is a reconstitution version from  pytorch_geometric/ torch_geometric"
-" / nn / models_geo / schnet.py."
-msgstr ""
+#~ msgid "CrystalGraph with GAT."
+#~ msgstr ""
 
-#: featurebox.models_geo.schnet.SchNet:1 of
-msgid "SchNet."
-msgstr ""
+#~ msgid "Bases: :class:`torch_geometric.nn.conv.gat_conv.GATConv`"
+#~ msgstr ""
+
+#~ msgid "featurebox.models\\_geo.cggcn module"
+#~ msgstr ""
+
+#~ msgid "CrystalGraph with GCN."
+#~ msgstr ""
+
+#~ msgid "Bases: :class:`torch_geometric.nn.conv.gcn_conv.GCNConv`"
+#~ msgstr ""
+
+#~ msgid "featurebox.models\\_geo.cggcn2 module"
+#~ msgstr ""
+
+#~ msgid "CrystalGraph with GCN2."
+#~ msgstr ""
+
+#~ msgid "Bases: :class:`torch_geometric.nn.conv.gcn2_conv.GCN2Conv`"
+#~ msgstr ""
+
+#~ msgid "featurebox.models\\_geo.cggrunet module"
+#~ msgstr ""
+
+#~ msgid "CrystalGraph with CGGRUN. weight_decay=0.001, best."
+#~ msgstr ""
+
+#~ msgid "Bases: :class:`torch_geometric.nn.conv.nn_conv.NNConv`"
+#~ msgstr ""
+
+#~ msgid "Bases: :class:`torch_geometric.nn.glob.set2set.Set2Set`"
+#~ msgstr ""
+
+#~ msgid "Examples:"
+#~ msgstr ""
+
+#~ msgid "x"
+#~ msgstr ""
+
+#~ msgid "featurebox.models\\_geo.megnet module"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This is a simple version for "
+#~ "mgenet, where the bond update iteration"
+#~ " is omitted."
+#~ msgstr ""
+
+#~ msgid "featurebox.models\\_geo.schnet module"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This is a reconstitution version from"
+#~ "  pytorch_geometric/ torch_geometric / nn /"
+#~ " models_geo / schnet.py."
+#~ msgstr ""
+
+#~ msgid "SchNet."
+#~ msgstr ""
+

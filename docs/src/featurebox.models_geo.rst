@@ -25,38 +25,6 @@ featurebox.models\_geo.cgcnn module
    :undoc-members:
    :show-inheritance:
 
-featurebox.models\_geo.cggat module
------------------------------------
-
-.. automodule:: featurebox.models_geo.cggat
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-featurebox.models\_geo.cggcn module
------------------------------------
-
-.. automodule:: featurebox.models_geo.cggcn
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-featurebox.models\_geo.cggcn2 module
-------------------------------------
-
-.. automodule:: featurebox.models_geo.cggcn2
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-featurebox.models\_geo.cggrunet module
---------------------------------------
-
-.. automodule:: featurebox.models_geo.cggrunet
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 featurebox.models\_geo.flow\_geo module
 ---------------------------------------
 
@@ -81,26 +49,10 @@ featurebox.models\_geo.log\_model module
    :undoc-members:
    :show-inheritance:
 
-featurebox.models\_geo.megnet module
-------------------------------------
-
-.. automodule:: featurebox.models_geo.megnet
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 featurebox.models\_geo.rotnet module
 ------------------------------------
 
 .. automodule:: featurebox.models_geo.rotnet
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-featurebox.models\_geo.schnet module
-------------------------------------
-
-.. automodule:: featurebox.models_geo.schnet
    :members:
    :undoc-members:
    :show-inheritance:

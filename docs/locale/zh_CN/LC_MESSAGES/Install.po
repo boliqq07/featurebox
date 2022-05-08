@@ -5,12 +5,11 @@
 #
 # Translators:
 # changxin W <986798607@qq.com>, 2021
-
 msgid ""
 msgstr ""
 "Project-Id-Version:  featurebox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-04 23:10+0800\n"
+"POT-Creation-Date: 2022-05-08 11:09+0800\n"
 "PO-Revision-Date: 2021-08-06 06:13+0000\n"
 "Last-Translator: changxin W <986798607@qq.com>, 2021\n"
 "Language: zh\n"
@@ -49,7 +48,6 @@ msgid "Method 2"
 msgstr "方法2"
 
 #: ../../Install.rst:20
-
 msgid "Requirements Packages:"
 msgstr "要求"
 
@@ -166,8 +164,7 @@ msgid ""
 "pip install locally."
 msgstr ""
 "如果 ``Spblib`` 需要用vc++编译，请下载 `Python扩展包 "
-"<https://www.lfd.uci.edu/~gohlke/pythonlibs/>'_ ， 并"
-"在本地安装。"
+"<https://www.lfd.uci.edu/~gohlke/pythonlibs/>'_ ， 并在本地安装。"
 
 #: ../../Install.rst:63
 msgid "Such as ::"
@@ -182,7 +179,7 @@ msgid "mgetool::"
 msgstr ""
 
 #: ../../Install.rst:77
-msgid "参考: https://github.com/Mgedata/mgetool"
+msgid "Reference: https://github.com/Mgedata/mgetool"
 msgstr ""
 
 #: ../../Install.rst:79
@@ -208,4 +205,5 @@ msgid ""
 "Reference: https://wiki.fysik.dtu.dk/ase/ , not necessary, just for "
 "network."
 msgstr "参考: https://wiki.fysik.dtu.dk/ase/ , 非必须, 仅使用于 神经网络。"
+
 

@@ -5,12 +5,11 @@
 #
 # Translators:
 # changxin W <986798607@qq.com>, 2021
-
 msgid ""
 msgstr ""
 "Project-Id-Version:  featurebox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-04 23:10+0800\n"
+"POT-Creation-Date: 2022-05-08 11:09+0800\n"
 "PO-Revision-Date: 2021-08-06 06:13+0000\n"
 "Last-Translator: changxin W <986798607@qq.com>, 2021\n"
 "Language: zh\n"
@@ -188,44 +187,32 @@ msgid "Traditional graph neural network."
 msgstr "传统的图神经网络。"
 
 #: ../../Introduction.rst:61
-msgid ":class:`featurebox.models_geo.schnet.SchNet`"
-msgstr ""
-
-#: ../../Introduction.rst:61 ../../Introduction.rst:62
-msgid "Graph neural network with state features."
-msgstr "具有状态特征的图神经网络。"
-
-#: ../../Introduction.rst:62
-msgid ":class:`featurebox.models_geo.megnet.MEGNet`"
-msgstr ""
-
-#: ../../Introduction.rst:63
 msgid ":class:`featurebox.models_geo.flow_geo.LearningFlow`"
 msgstr ""
 
-#: ../../Introduction.rst:63
+#: ../../Introduction.rst:61
 msgid "Script for modeling (recommended customization by user)."
 msgstr "用于网络建模的脚本(推荐用户自定义)。"
 
-#: ../../Introduction.rst:64
+#: ../../Introduction.rst:62
 msgid ":class:`featurebox.featurizers.generator_geo.InMemoryDatasetGeo`"
 msgstr ""
 
-#: ../../Introduction.rst:64
+#: ../../Introduction.rst:62
 msgid "``Dataset`` for data data in a non-uniform format. (Torch-like)"
 msgstr "网络输入数据格式转换（对接torch_geometrics）。"
 
-#: ../../Introduction.rst:68
+#: ../../Introduction.rst:66
 msgid ""
 "The neural network tools are ``torch-type``, with ``forward`` methods "
 ".etc."
 msgstr "所有的网络是 ``torch-type``, 例如有 ``forward`` 方法等。"
 
-#: ../../Introduction.rst:70
+#: ../../Introduction.rst:68
 msgid "Guide: :doc:`Guide/geo_data`"
 msgstr "指南： :doc:`Guide/geo_data`"
 
-#: ../../Introduction.rst:74
+#: ../../Introduction.rst:72
 msgid ""
 "The **Graph neural network** employ **envir**, **bond** and **atom** .etc"
 " to build input data."

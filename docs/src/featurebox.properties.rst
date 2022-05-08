@@ -9,6 +9,14 @@ featurebox.properties package
 Submodules
 ----------
 
+featurebox.properties.cohp module
+---------------------------------
+
+.. automodule:: featurebox.properties.cohp
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 featurebox.properties.d\_band\_centor module
 --------------------------------------------
 

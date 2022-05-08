@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: featurebox \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-06 15:30+0800\n"
+"POT-Creation-Date: 2022-05-08 11:09+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,11 +27,25 @@ msgid ""
 "data. ::"
 msgstr "数据使用内部的periodical_data.json,(在pymatgen的元素数据)。"
 
-#: ../../Examples/sample_fea3.rst:14
+#: ../../Examples/sample_fea3.rst:10
+msgid ""
+"...                                                         "
+"\"min_oxidation_state\", \"row\", \"group\", "
+"\"atomic_radius_calculated\", ..."
+"                                                         "
+"\"mendeleev_no\", \"critical_temperature\", \"density_of_solid\", ..."
+"                                                         "
+"\"average_ionic_radius\", \"average_cationic_radius\", "
+"\"average_anionic_radius\",]) >>> s = [{\"H\": 2, }, {\"Po\": 1}, {\"C\":"
+" 2}] # [i.species.as_dict() for i in pymatgen.structure.sites] >>> a2 = "
+"tmps.convert(s) # or >>> a2 = tmps.convert(structurei)"
+msgstr ""
+
+#: ../../Examples/sample_fea3.rst:17
 msgid "In addition, we could get structure state data by structure. ::"
 msgstr "此外，我们还可以通过结构得到化合物总体状态特征。"
 
-#: ../../Examples/sample_fea3.rst:21
+#: ../../Examples/sample_fea3.rst:24
 msgid ""
 "This second class is for structure but for atoms, and the first one "
 "return the each atom features and the second return the whole feature of "

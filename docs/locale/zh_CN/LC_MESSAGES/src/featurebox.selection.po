@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: featurebox \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-24 10:33+0800\n"
+"POT-Creation-Date: 2022-05-08 11:09+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -459,6 +459,11 @@ msgstr ""
 msgid "Check cof and count the number."
 msgstr ""
 
+#: featurebox.selection.corr.Corr.inverse_transform_index:1
+#: featurebox.selection.mutibase.MutiBase.inverse_transform_index:1 of
+msgid "inverse the selected index to origin index by support."
+msgstr ""
+
 #: featurebox.selection.corr.Corr.remove_coef:1 of
 msgid "Delete the index of feature with repeat coef."
 msgstr ""
@@ -473,6 +478,11 @@ msgstr ""
 
 #: featurebox.selection.corr.Corr.transform:6 of
 msgid "**X_r** -- The input samples with only the selected features."
+msgstr ""
+
+#: featurebox.selection.corr.Corr.transform_index:1
+#: featurebox.selection.mutibase.MutiBase.transform_index:1 of
+msgid "Get support index."
 msgstr ""
 
 #: ../../src/featurebox.selection.rst:29

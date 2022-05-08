@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: featurebox \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-04 23:10+0800\n"
+"POT-Creation-Date: 2022-05-08 11:09+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,6 +26,14 @@ msgid "Submodules"
 msgstr ""
 
 #: ../../src/featurebox.properties.rst:13
+msgid "featurebox.properties.cohp module"
+msgstr ""
+
+#: featurebox.properties.cohp:1 of
+msgid "This is one script for ..."
+msgstr ""
+
+#: ../../src/featurebox.properties.rst:21
 msgid "featurebox.properties.d\\_band\\_centor module"
 msgstr ""
 
@@ -53,9 +61,13 @@ msgid ""
 "(optional: int): The VASP LORBIT flag. (Default=11). :param "
 "spin_orbit_coupling (optional: bool): Spin-orbit coupling "
 "(Default=False). :param read_pdos (optional: bool): Set to True to read "
-"the atom-projected density of states (Default=True). :param species "
-"(optional: list(str)): List of atomic species strings, e.g. [ 'Fe', 'Fe',"
-" 'O', 'O', 'O' ]. Default=None."
+"the atom-projected density of states (Default=True)."
+msgstr ""
+
+#: featurebox.properties.d_band_centor.DBC.calculate:1 of
+msgid ""
+"species (optional:list(str)): List of atomic species strings, e.g. [ "
+"'Fe', 'Fe', 'O', 'O', 'O' ]. Default=None."
 msgstr ""
 
 #: featurebox.properties.d_band_centor.DBC.pdos_select:1 of
@@ -66,11 +78,34 @@ msgstr ""
 msgid "Read the projected density of states data into"
 msgstr ""
 
-#: ../../src/featurebox.properties.rst:21
+#: ../../src/featurebox.properties.rst:29
 msgid "featurebox.properties.general\\_vaspkit module"
 msgstr ""
 
 #: featurebox.properties.general_vaspkit.cal:1 of
 msgid "Run linux cmd and return result, make sure the vaspkit is installed."
 msgstr ""
+
+#~ msgid ""
+#~ "Create a Doscar object from a VASP"
+#~ " DOSCAR file. :param filename: Filename "
+#~ "of the VASP DOSCAR file to read."
+#~ " :type filename: str :param ispin "
+#~ "(optional: int): ISPIN flag. Set to "
+#~ "1 for non-spin-polarised or 2 "
+#~ "for spin-polarised calculations. Default "
+#~ "= 2. :param lmax (optional: int): "
+#~ "Maximum l angular momentum. (d=2, f=3)."
+#~ " Default = 2. :param lorbit "
+#~ "(optional: int): The VASP LORBIT flag."
+#~ " (Default=11). :param spin_orbit_coupling "
+#~ "(optional: bool): Spin-orbit coupling "
+#~ "(Default=False). :param read_pdos (optional: "
+#~ "bool): Set to True to read the "
+#~ "atom-projected density of states "
+#~ "(Default=True). :param species (optional: "
+#~ "list(str)): List of atomic species "
+#~ "strings, e.g. [ 'Fe', 'Fe', 'O', "
+#~ "'O', 'O' ]. Default=None."
+#~ msgstr ""
 

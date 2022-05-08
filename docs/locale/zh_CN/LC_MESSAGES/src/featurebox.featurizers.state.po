@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: featurebox \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-04 23:10+0800\n"
+"POT-Creation-Date: 2022-05-08 11:09+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -92,7 +92,6 @@ msgstr ""
 #: featurebox.featurizers.state.kpath.SpacegroupAnalyzerUser.get_conventional_to_primitive_transformation_matrix
 #: featurebox.featurizers.state.kpath.SpacegroupAnalyzerUser.get_primitive_standard_structure
 #: featurebox.featurizers.state.statistics.BaseCompositionFeature.mix_function
-#: featurebox.featurizers.state.statistics.DepartElementFeature.convert
 #: featurebox.featurizers.state.statistics.DepartElementFeature.mix_function
 #: featurebox.featurizers.state.statistics.DepartElementFeature.set_feature_labels
 #: featurebox.featurizers.state.statistics.ExtraMix.mix_function
@@ -124,7 +123,6 @@ msgstr ""
 #: featurebox.featurizers.state.kpath.SpacegroupAnalyzerUser
 #: featurebox.featurizers.state.state_mapper.StructurePymatgenPropMap
 #: featurebox.featurizers.state.statistics.BaseCompositionFeature.mix_function
-#: featurebox.featurizers.state.statistics.DepartElementFeature.convert
 #: featurebox.featurizers.state.statistics.DepartElementFeature.mix_function
 #: featurebox.featurizers.state.statistics.ExtraMix.mix_function
 #: featurebox.featurizers.state.statistics.GeometricMean.mix_function
@@ -616,7 +614,7 @@ msgid ""
 msgstr ""
 
 #: featurebox.featurizers.state.statistics.BaseCompositionFeature:10
-#: featurebox.featurizers.state.statistics.DepartElementFeature:17
+#: featurebox.featurizers.state.statistics.DepartElementFeature:20
 #: featurebox.featurizers.state.statistics.ExtraMix:3
 #: featurebox.featurizers.state.statistics.GeometricMean:3
 #: featurebox.featurizers.state.statistics.HarmonicMean:3
@@ -630,6 +628,8 @@ msgstr ""
 
 #: featurebox.featurizers.state.statistics.BaseCompositionFeature.convert_dict:1
 #: featurebox.featurizers.state.statistics.BaseCompositionFeature.convert_number:1
+#: featurebox.featurizers.state.statistics.DepartElementFeature.convert_dict:1
+#: featurebox.featurizers.state.statistics.DepartElementFeature.convert_number:1
 #: of
 msgid "Convert atom {symbol: fraction} list to numeric features"
 msgstr ""
@@ -674,7 +674,6 @@ msgid "**descriptor**"
 msgstr ""
 
 #: featurebox.featurizers.state.statistics.BaseCompositionFeature.mix_function
-#: featurebox.featurizers.state.statistics.DepartElementFeature.convert
 #: featurebox.featurizers.state.statistics.DepartElementFeature.mix_function
 #: featurebox.featurizers.state.statistics.ExtraMix.mix_function
 #: featurebox.featurizers.state.statistics.GeometricMean.mix_function
@@ -709,38 +708,15 @@ msgstr ""
 msgid "Get the table of element data."
 msgstr ""
 
-#: featurebox.featurizers.state.statistics.DepartElementFeature.convert:1 of
+#: featurebox.featurizers.state.statistics.DepartElementFeature:14 of
+msgid "fea_0_0   fea_0_1   fea_1_0  ...  fea_14_1  fea_15_0  fea_15_1"
+msgstr ""
+
+#: featurebox.featurizers.state.statistics.DepartElementFeature:15 of
 msgid ""
-"Main feature function, which has to be implemented in any derived feature"
-" subclass."
-msgstr ""
-
-#: featurebox.featurizers.state.statistics.DepartElementFeature.convert:5 of
-msgid "Notes"
-msgstr ""
-
-#: featurebox.featurizers.state.statistics.DepartElementFeature.convert:6 of
-msgid "It cannot be passed np.array in default unless:"
-msgstr ""
-
-#: featurebox.featurizers.state.statistics.DepartElementFeature.convert:8 of
-msgid ""
-"1. useful for bond_converter. For np.array we check the ndim and for ndim"
-" 2, or 3. we decide whether to pass them the data to ``_converter`` "
-"together or separately by ``self.ndim`` attribute. Now max support 3d. "
-"due to for some functions, using ``ufunc`` in numpy is very efficient."
-msgstr ""
-
-#: featurebox.featurizers.state.statistics.DepartElementFeature.convert:14 of
-msgid "keep the size of data and simple the ``_convert``."
-msgstr ""
-
-#: featurebox.featurizers.state.statistics.DepartElementFeature.convert:16 of
-msgid "one input data (one sample, one case),"
-msgstr ""
-
-#: featurebox.featurizers.state.statistics.DepartElementFeature.convert:18 of
-msgid "new x."
+"0  0.352363  0.561478  0.635952  ... -0.236541 -0.270104 -0.212607 1 "
+"-0.067220  0.025758  0.141113  ... -0.092577 -0.042185  0.080350 "
+"<BLANKLINE> [2 rows x 32 columns]"
 msgstr ""
 
 #: featurebox.featurizers.state.statistics.DepartElementFeature.set_feature_labels:1
@@ -871,4 +847,37 @@ msgstr ""
 #: featurebox.featurizers.state.union.UnionFeature.set_feature_labels:3 of
 msgid "name"
 msgstr ""
+
+#~ msgid ""
+#~ "Main feature function, which has to "
+#~ "be implemented in any derived feature"
+#~ " subclass."
+#~ msgstr ""
+
+#~ msgid "Notes"
+#~ msgstr ""
+
+#~ msgid "It cannot be passed np.array in default unless:"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "1. useful for bond_converter. For "
+#~ "np.array we check the ndim and for"
+#~ " ndim 2, or 3. we decide "
+#~ "whether to pass them the data to"
+#~ " ``_converter`` together or separately by"
+#~ " ``self.ndim`` attribute. Now max support"
+#~ " 3d. due to for some functions, "
+#~ "using ``ufunc`` in numpy is very "
+#~ "efficient."
+#~ msgstr ""
+
+#~ msgid "keep the size of data and simple the ``_convert``."
+#~ msgstr ""
+
+#~ msgid "one input data (one sample, one case),"
+#~ msgstr ""
+
+#~ msgid "new x."
+#~ msgstr ""
 

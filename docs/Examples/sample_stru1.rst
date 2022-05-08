@@ -9,14 +9,8 @@ Build model with QM9 data
 >>> from torch_geometric.utils import remove_self_loops
 
 
->>> from Instances.old_net.featurebox import CrystalGraphConvNet
->>> from featurebox.models.models_geo.cggat import CrystalGraphGAT
->>> from featurebox.models.models_geo.cggcn import CrystalGraphGCN
->>> from featurebox.models.models_geo.cggcn2 import CrystalGraphGCN2
->>> from featurebox.models.models_geo.cggrunet import CGGRUNet
->>> from featurebox.models.models_geo.flow_geo import LearningFlow
->>> from featurebox.models.models_geo.megnet import MEGNet
->>> from featurebox.models.models_geo.schnet import SchNet
+>>> from featurebox.models_geo import CrystalGraphConvNet
+>>> from featurebox.models_geo.flow_geo import LearningFlow
 
 
 >>> target = 0
@@ -77,10 +71,10 @@ Build model with QM9 data
 
 >>> device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
 >>> # model = CGGRUNet(11, 5)
->>> # model = CrystalGraphConvNet(11, 5)
+>>> model = CrystalGraphConvNet(11, 5)
 >>> # model = CrystalGraphGCN(11, 5)
 >>> # model = CrystalGraphGCN2(11, 5)
->>> model = CrystalGraphGAT(11, 5).to(device)
+>>> # model = CrystalGraphGAT(11, 5).to(device)
 >>> # model = SchNet(0,5,simple_z=True)
 >>> # model = MEGNet(11, 5)
 >>> # model = SchNet(11,5)
@@ -94,6 +88,6 @@ Build model with QM9 data
 >>> lf= LearningFlow(model, train_loader, validate_loader=val_loader, device= "cuda:1",
 >>> optimizer=None, clf= False, loss_method=None, learning_rate = 1e-3, milestones=None,
 ... weight_decay= 0.01, checkpoint=True, scheduler=scheduler,
-... loss_threshold= 0.1, print_freq= None, print_what="all")
+... loss_threshold= 0.1, print_freq= 0, print_what="all")
 
 >>> # lf.run(50)
