@@ -197,7 +197,8 @@ class _BaseStructureGraphGEO(BaseFeature):
         """Check the names duplication"""
         names = [i.composition.reduced_formula for i in structures]
         if file_names == "composition_name" and len(names) != len(set(names)):
-            raise KeyError("There are same composition name for different structure, please use `rank_number`"
+            raise KeyError("There are same composition name for different structure, "
+                           "please use file_names='rank_number' "
                            "to definition or specific names list.")
         elif len(set(file_names)) == len(structures):
             return file_names
@@ -206,7 +207,7 @@ class _BaseStructureGraphGEO(BaseFeature):
         else:
             return names
 
-    def transform_and_save(self, *args, root_dir=".", file_names="composition_name", save_mode="i", **kwargs):
+    def transform_and_save(self, *args, root_dir=".", file_names="composition_name", save_mode="o", **kwargs):
         r"""Save the data to 'root_dir/raw' if save_mode="i", else 'root_dir', conpact with InMemoryDatasetGeo"""
         raw_path = os.path.join(root_dir, "raw")
         if os.path.isdir(raw_path):

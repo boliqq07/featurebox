@@ -101,12 +101,6 @@ class _Interactions(Module):
         self.short = Linear(num_edge_gaussians, short_len)
         self.conv = RotNet(100, 100)
 
-        # for _ in range(n_conv):
-        #     cg = CGConvNew(channels=num_node_interaction_channels, dim=short_len,
-        #                    aggr='add', batch_norm=True,
-        #                    bias=True, )
-        #     self.conv.append(cg)
-
         self.n_conv = n_conv
 
     def reset_parameters(self):
@@ -128,15 +122,17 @@ class RotateNet(BaseCrystalModel):
     CrystalGraph.
     """
 
-    def __init__(self, *args, num_edge_gaussians=None, num_node_interaction_channels=16, num_node_hidden_channels=8,
+    def __init__(self, *args, num_edge_features=3,num_node_interaction_channels=16, num_node_hidden_channels=8,
                  **kwargs):
-        super(RotateNet, self).__init__(*args, num_edge_gaussians=num_edge_gaussians,
+        super(RotateNet, self).__init__(*args,
+                                        num_edge_features=num_edge_features,
                                         num_node_interaction_channels=num_node_interaction_channels,
                                         num_node_hidden_channels=num_node_hidden_channels, **kwargs)
         self.num_state_features = None  # not used for this network.
 
     def get_interactions_layer(self):
-        self.interactions = _Interactions(self.num_node_hidden_channels, self.num_edge_gaussians,
+        self.interactions = _Interactions(self.num_node_hidden_channels,
                                           self.num_node_interaction_channels,
+                                          num_edge_features=self.num_edge_features,
                                           n_conv=self.num_interactions,
                                           kwargs=self.interaction_kwargs)

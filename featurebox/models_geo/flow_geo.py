@@ -2,6 +2,7 @@ import os
 import shutil
 import sys
 import time
+from typing import Union
 
 import numpy as np
 import torch
@@ -135,7 +136,7 @@ class LearningFlow:
     def __init__(self, model: Module, train_loader: DataLoader, validate_loader: DataLoader, device: str = "cpu",
                  optimizer=None, clf: bool = False, loss_method=None, learning_rate: float = 1e-3, milestones=None,
                  weight_decay: float = 0.0, checkpoint=True, scheduler=None, debug="", target_layers=(),
-                 loss_threshold: float = 0.1, print_freq: int = 10, print_what="all", process_label=None):
+                 loss_threshold: float = 0.1, print_freq: Union[int,str] = 10, print_what="all", process_label=None):
         """
 
         Parameters
@@ -192,7 +193,7 @@ class LearningFlow:
         if print_freq == "default" or print_freq is None:
             self.print_freq = self.train_batch_number
         else:
-            self.print_freq = self.train_batch_number if isinstance(print_freq, int) else print_freq
+            self.print_freq = self.train_batch_number if not isinstance(print_freq, int) else print_freq
 
         if self.optimizer is None or self.optimizer == "Adam":
             self.optimizer = torch.optim.Adam(self.model.parameters(), lr=learning_rate, weight_decay=weight_decay)
@@ -217,8 +218,9 @@ class LearningFlow:
         if self.milestones is None:
             self.milestones = [30, 50, 80]
         if scheduler is None:
-            self.scheduler = MultiStepLR(self.optimizer, gamma=0.2, milestones=self.milestones)
+            self.scheduler = MultiStepLR(self.optimizer, milestones=self.milestones)
         else:
+            self.optimizer = scheduler.optimizer
             self.scheduler = scheduler
         self.best_error = 1000000.0
         self.threshold = loss_threshold
