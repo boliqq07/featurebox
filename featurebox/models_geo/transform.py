@@ -19,7 +19,6 @@ class GaussianSmearing:
         if hasattr(data, "edge_attr") and data.edge_attr.shape[1] != 1:
             warnings.warn("The old edge_attr is covered by smearing edge_weight", UserWarning)
         data.edge_attr = torch.exp(self.coeff * torch.pow(dist, 2))
-
         return data
 
 
@@ -30,64 +29,15 @@ class AddEdge:
         self.cutoff = cutoff
 
     def __call__(self, data):
-
         edge_index = radius_graph(data.pos, r=self.cutoff, batch=data.batch)
         edge_index, _ = remove_self_loops(edge_index)
         row, col = edge_index[0], edge_index[1]
         edge_weight = (data.pos[row] - data.pos[col]).norm(dim=-1)
-        if hasattr(data, "edge_attr"):
-            pass
-        else:
-            data.edge_attr = edge_weight.reshape(-1, 1)
+
+        data.edge_edge_index = edge_index
+        data.edge_weight = edge_weight
+        data.edge_attr = edge_weight.reshape(-1, 1)
         return data
-
-
-class NormalizeStateAttr(object):
-
-    def __init__(self):
-        self.scale = None
-
-    def __call__(self, data):
-        if self.scale is None:
-            self.scale = data.state_attr.sum(1, keepdim=True)
-        data.state_attr = data.state_attr / self.scale.clamp(min=1)
-
-        return data
-
-    def __repr__(self):
-        return '{}()'.format(self.__class__.__name__)
-
-
-class NormalizeX(object):
-
-    def __init__(self):
-        self.scale = None
-
-    def __call__(self, data):
-        if self.scale is None:
-            self.scale = data.x.sum(1, keepdim=True)
-        data.x = data.x / self.scale.clamp(min=1)
-
-        return data
-
-    def __repr__(self):
-        return '{}()'.format(self.__class__.__name__)
-
-
-class NormalizeEdgeAttr(object):
-
-    def __init__(self):
-        self.scale = None
-
-    def __call__(self, data):
-        if self.scale is None:
-            self.scale = data.edge_attr.sum(1, keepdim=True)
-        data.edge_attr = data.edge_attr / self.scale.clamp(min=1)
-
-        return data
-
-    def __repr__(self):
-        return '{}()'.format(self.__class__.__name__)
 
 
 class DistributionEdgeAttr:

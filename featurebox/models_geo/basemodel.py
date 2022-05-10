@@ -9,8 +9,6 @@ import torch.nn.functional as F
 from torch import Tensor
 from torch.nn import Embedding, Linear, LayerNorm, ModuleList, Softplus, ReLU, Sequential, BatchNorm1d
 from torch.nn import Module
-from torch_geometric.nn import radius_graph
-from torch_geometric.utils import remove_self_loops
 from torch_scatter import segment_csr
 
 from featurebox.models_geo.general import get_ptr

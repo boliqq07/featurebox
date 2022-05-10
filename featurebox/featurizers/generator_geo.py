@@ -270,12 +270,11 @@ class DatasetGEO(Dataset):
 
     """
 
-    def __init__(self, root, transform=None, pre_transform=None, pre_filter=None, re_process_init=False, load_mode="o"):
+    def __init__(self, root, transform=None, pre_transform=None, pre_filter=None, re_process_init=True):
         """
+        "Just accept mode 'i' for ``DatasetGEO``."
 
         Args:
-            load_mode (str): load from the independent data in different files: "i",
-                load from the batch data in one overall file: "o".
             re_process_init (bool): process raw data or not. if there is no raw data but processed data is offered.
                 this parameter could be False.
             root (string, optional): Root directory where the dataset should be
@@ -293,10 +292,8 @@ class DatasetGEO(Dataset):
                 value, indicating whether the data object should be included in the
                 final dataset. (default: :obj:`None`)
 
-        """
-        if load_mode not in ["I", "R", "i", "r", "Respective", "respective"]:
-            raise NotImplementedError("Just accept mode 'i' for ``DatasetGEO``.")
 
+        """
         self.re_process_init = re_process_init
 
         super(DatasetGEO, self).__init__(root, transform, pre_transform, pre_filter=pre_filter)
