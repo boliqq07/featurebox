@@ -64,11 +64,3 @@ featurebox.cli.nebmake module
    :members:
    :undoc-members:
    :show-inheritance:
-
-featurebox.cli.see module
--------------------------
-
-.. automodule:: featurebox.cli.see
-   :members:
-   :undoc-members:
-   :show-inheritance:

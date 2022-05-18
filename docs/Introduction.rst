@@ -47,29 +47,10 @@ Guide: :doc:`Guide/bind_selection`
     Where the binding means treat the binding features as one feature.
     And the binding features are selected or deleted synchronously.
 
-
-Graph neural network tools
--------------------------------------------
-
-Featurebox integrated with **Graph neural network**.
-
-===================================================================== =========================================
- Name                                                                 Application
---------------------------------------------------------------------- -----------------------------------------
- :class:`featurebox.featurizers.base_graph_geo.StructureGraphGEO`     Integrated structure data tool. (high dimensional data)
- :class:`featurebox.models_geo.cgcnn.CrystalGraphConvNet`             Traditional graph neural network.
- :class:`featurebox.models_geo.flow_geo.LearningFlow`                 Script for modeling (recommended customization by user).
- :class:`featurebox.featurizers.generator_geo.InMemoryDatasetGeo`     ``Dataset`` for data data in a non-uniform format. (Torch-like)
-===================================================================== =========================================
-
-
-The neural network tools are ``torch-type``, with ``forward`` methods .etc.
-
-Guide: :doc:`Guide/geo_data`
-
 .. note::
 
-    The **Graph neural network** employ **envir**, **bond** and **atom** .etc to build input data.
+    The **Graph neural network** have been removed to ``pyg_extension`` package,
+    which employ **envir**, **bond** and **atom** .etc to build input data.
 
 
 

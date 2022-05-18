@@ -1,7 +1,6 @@
 deprecated
 pandas~=1.0.1
 numpy
-torch
 ase
 numba
 sympy>=1.6

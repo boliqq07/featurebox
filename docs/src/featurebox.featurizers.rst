@@ -29,26 +29,10 @@ featurebox.featurizers.base\_feature module
    :undoc-members:
    :show-inheritance:
 
-featurebox.featurizers.base\_graph\_geo module
-----------------------------------------------
-
-.. automodule:: featurebox.featurizers.base_graph_geo
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 featurebox.featurizers.batch\_feature module
 --------------------------------------------
 
 .. automodule:: featurebox.featurizers.batch_feature
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-featurebox.featurizers.generator\_geo module
---------------------------------------------
-
-.. automodule:: featurebox.featurizers.generator_geo
    :members:
    :undoc-members:
    :show-inheritance:

@@ -7,4 +7,3 @@ Guide
    background
    data_type
    bind_selection
-   geo_data

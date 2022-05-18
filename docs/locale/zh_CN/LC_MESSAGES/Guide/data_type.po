@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: featurebox \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-06 20:14+0800\n"
+"POT-Creation-Date: 2022-05-18 12:29+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -74,55 +74,55 @@ msgid ""
 msgstr "原子特征, 键特征, 状态特征的集合。"
 
 #: ../../Guide/data_type.rst:32
+#, fuzzy
 msgid ""
 "Different from 1,2,3, The 4 is cannot be used directly for ``sklearn``, "
-"but suit for ``torch`` . More information can be found in :doc:`geo_data`"
-" ."
-msgstr "与1、2、3不同，4不能直接用于 ``sklearn`` ，但适用于 ``torch`` 。更多信息请访问 :doc:`geo_data` 。"
+"but suit for ``torch`` ."
+msgstr "与1、2、3不同，4不能直接用于 ``sklearn`` ,但适用于 ``torch`` ."
 
-#: ../../Guide/data_type.rst:36
+#: ../../Guide/data_type.rst:35
 msgid "Access"
 msgstr "应用"
 
-#: ../../Guide/data_type.rst:37
+#: ../../Guide/data_type.rst:36
 msgid ""
 "All the **Generation** tools with  ``convert`` method for single case, "
 "and ``fit_transform`` methods for case list."
 msgstr "所有的特征产生工具，使用 ``convert`` 方法处理单一数据。``fit_transform`` 方法批量处理数据列表。"
 
-#: ../../Guide/data_type.rst:41
+#: ../../Guide/data_type.rst:40
 msgid "1. Atom Features"
 msgstr "1. 原子特征"
 
-#: ../../Guide/data_type.rst:43
+#: ../../Guide/data_type.rst:42
 msgid "Example Graph 1:"
 msgstr "示例1："
 
-#: ../../Guide/data_type.rst:50
+#: ../../Guide/data_type.rst:49
 msgid "Example Graph 2:"
 msgstr "示例2："
 
-#: ../../Guide/data_type.rst:57
+#: ../../Guide/data_type.rst:56
 msgid ""
 "Atom features can be obtained by fetching periodic table data, using you "
 "input data. There are two data should offer. (at least one)."
 msgstr "原子特征可以通过调取元素周期表数据获取输入为两类数据。(至少一类)"
 
-#: ../../Guide/data_type.rst:62
+#: ../../Guide/data_type.rst:61
 msgid "Your input data. The type could be element number or element name."
 msgstr "你的输入数据。类型可以是元素序号或元素名。"
 
-#: ../../Guide/data_type.rst:61
+#: ../../Guide/data_type.rst:60
 msgid ""
 "(or pymatgen ``Structure``, we have built-in conversion functions of "
 "``Structure``, to directly get all the atomic information in compound)."
 msgstr "(或pymatgen 的 ``Structure``，我们有内置了转换函数转换 ``Structure``，来直接得到化合物中的所有原子信息)。"
 
-#: ../../Guide/data_type.rst:67
+#: ../../Guide/data_type.rst:66
 msgid "The element periodic table data (optional)."
 msgstr "元素周期表数据(可选)。"
 
-#: ../../Guide/data_type.rst:65
+#: ../../Guide/data_type.rst:64
 msgid ""
 "We have built-in some element periodic table (\"ele_table.csv\", "
 "\"ie.json\", \"oe.csv\"), To customize your element periodic table. you "
@@ -133,11 +133,11 @@ msgstr ""
 "\"oe.csv\")，若需要自定义元素周期表。你可以提供 (``.json``, ``.csv``) "
 "文件或python数据类型(``dict``, ``pandas.DataFrame``, ``numpy.ndarray``)."
 
-#: ../../Guide/data_type.rst:69
+#: ../../Guide/data_type.rst:68
 msgid "( ``.json`` , ``dict`` ) by ``AtomJsonMap`` ,"
 msgstr "( ``.json`` , ``dict`` ) 用于 ``AtomJsonMap`` ,"
 
-#: ../../Guide/data_type.rst:71
+#: ../../Guide/data_type.rst:70
 msgid ""
 "(``.csv``, ``pandas.DataFrame`` , ``numpy.ndarray`` ) by ``AtomTableMap``"
 " ."
@@ -145,7 +145,7 @@ msgstr ""
 " ( ``.csv`` , ``pandas.DataFrame``, ``numpy.ndarray`` ) 用于 "
 ":class:`featurebox.featurizers.atom.mapper.AtomTableMap`  。"
 
-#: ../../Guide/data_type.rst:73
+#: ../../Guide/data_type.rst:72
 msgid ""
 "And one specialized ``AtomPymatgenPropMap`` for fetch data from "
 "\"pymatgen.core.periodic_table.json\"."
@@ -153,24 +153,24 @@ msgstr ""
 "并且我们提供了一个特殊的 ``AtomPymatgenPropMap`` 来调用 "
 "``pymatgen.core.periodic_table.json`` 的数据。"
 
-#: ../../Guide/data_type.rst:75 ../../Guide/data_type.rst:116
+#: ../../Guide/data_type.rst:74 ../../Guide/data_type.rst:115
 msgid "Example:"
 msgstr "示例："
 
-#: ../../Guide/data_type.rst:96 ../../Guide/data_type.rst:155
+#: ../../Guide/data_type.rst:95 ../../Guide/data_type.rst:155
 #: ../../Guide/data_type.rst:192
 msgid "More:"
 msgstr "更多参考："
 
-#: ../../Guide/data_type.rst:96
+#: ../../Guide/data_type.rst:95
 msgid ":doc:`../Examples/sample_fea1`"
 msgstr "示例：:doc:`../Examples/sample_fea3`"
 
-#: ../../Guide/data_type.rst:99
+#: ../../Guide/data_type.rst:98
 msgid "2. Bond Features"
 msgstr "2. 键特征"
 
-#: ../../Guide/data_type.rst:101
+#: ../../Guide/data_type.rst:100
 msgid ""
 "1. For bond features, use the structure data to extract information. The "
 "common structure data include the ``Structure`` of ``Pymatgen``, the "
@@ -181,22 +181,21 @@ msgstr ""
 "``Atoms`` 等等。 ``Structure`` 与 ``Atoms`` 可以用   "
 "``pymatgen.io.ase.AseAtomsAdaptor`` 相互转换。"
 
-#: ../../Guide/data_type.rst:107
+#: ../../Guide/data_type.rst:106
 msgid "3. State (overall compound) Features"
 msgstr "3. 状态(化合物整体)特征"
 
-#: ../../Guide/data_type.rst:109
+#: ../../Guide/data_type.rst:108
 msgid "There are two method to get state (overall compound) features."
 msgstr "两种方式获取状态(化合物整体)特征"
 
-#: ../../Guide/data_type.rst:112
+#: ../../Guide/data_type.rst:111
 msgid ""
 "**1. Information extraction from structure data ( ``Structure`` of "
 "``Pymatgen`` ).**"
 msgstr "**3.1 从结构数据中提取信息。**"
 
-#: ../../Guide/data_type.rst:114
-#, fuzzy
+#: ../../Guide/data_type.rst:113
 msgid ""
 "For the ``Atoms`` of ``ase`` , The ``Structure`` could transformed by "
 "``pymatgen.io.ase.AseAtomsAdaptor``."
@@ -204,7 +203,7 @@ msgstr ""
 "对于 ``ase`` 的 ``Atoms`` 来说，``Structure`` 可以通过 "
 "``pymatgen.io.ase.AseAtomsAdaptor`` 转换得到。"
 
-#: ../../Guide/data_type.rst:126
+#: ../../Guide/data_type.rst:125
 msgid ""
 "where the prop_name is the name of properties of in ``pymatgen``, the "
 "name of properties is not apply for all compounds, and the data could not"
@@ -213,17 +212,17 @@ msgstr ""
 "其中 prop_name 是 ``pymatgen`` "
 "中的内置的一些属性名，这些属性名称可能不适用于所有化合物，数据不能保证是一个数字，有缺失，甚至错误。"
 
-#: ../../Guide/data_type.rst:134
+#: ../../Guide/data_type.rst:133
 msgid ""
 "**2. Combination or mathematical processing of atomic features according "
 "to composition ratio.**"
 msgstr "**3.2 根据成分比例对原子特征的组合或数学运算。**"
 
-#: ../../Guide/data_type.rst:136
+#: ../../Guide/data_type.rst:135
 msgid "This is one key method to get state features!!!"
 msgstr "这是获取状态特征的一种关键方法！"
 
-#: ../../Guide/data_type.rst:138
+#: ../../Guide/data_type.rst:137
 msgid "Get State features directly."
 msgstr "直接获取状态特性。"
 
@@ -250,19 +249,19 @@ msgstr "分步获取状态特性(只针对具有相同原子种类数的组合)�
 msgid "Get the depart element feature first."
 msgstr "首先获取独立元素特性。"
 
-#: ../../Guide/data_type.rst:171
+#: ../../Guide/data_type.rst:170
 msgid "Union the depart element feature."
 msgstr "首先获取独立元素特性。"
 
-#: ../../Guide/data_type.rst:179
+#: ../../Guide/data_type.rst:178
 msgid "The ``UnionFeature`` also could be used for your own table data!"
 msgstr " ``UnionFeature`` 可以用于您自己的表数据 (强烈建议)"
 
-#: ../../Guide/data_type.rst:182
+#: ../../Guide/data_type.rst:181
 msgid "Addition:"
 msgstr "此外:"
 
-#: ../../Guide/data_type.rst:182
+#: ../../Guide/data_type.rst:181
 msgid ""
 "There one state features transformer to get Polynomial extension for "
 "table."

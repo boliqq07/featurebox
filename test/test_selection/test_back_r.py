@@ -12,7 +12,7 @@ class MyTestCase(unittest.TestCase):
         X, y = load_iris(return_X_y=True)
         svc = SVC()
         gd = GridSearchCV(svc, cv=5, param_grid=param_grid1)
-        bf = GA(estimator=gd, random_state=3, pop_n=200, ngen=10)
+        bf = GA(estimator=gd, random_state=3, pop_n=200, ngen=2)
         bf.fit(X[:, :5], y)
 
 

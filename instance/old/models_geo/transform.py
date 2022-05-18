@@ -40,7 +40,7 @@ class AddEdge:
         return data
 
 
-class DistributionEdgeAttr:
+class DistributeEdgeAttr:
     def __init__(self, r_index_num=0, r_cs=0.3, r_c=6.0):
         super().__init__()
         self.r_index_num = r_index_num

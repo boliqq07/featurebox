@@ -37,4 +37,4 @@ sphinx-intl update -p _build/gettext -l zh_CN -l en
 # 4
 make -e SPHINXOPTS="-D language='zh_CN'" html
 
-#重复23,4直到满意
+#重复2,3,4直到满意

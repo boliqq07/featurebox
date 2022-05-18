@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2021, boliqq07
 # This file is distributed under the same license as the featurebox package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: featurebox \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-04 23:47+0800\n"
+"POT-Creation-Date: 2022-05-18 12:29+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -179,31 +179,12 @@ msgid "featurebox::"
 msgstr ""
 
 #: ../../Install.rst:83
-msgid "torch-geometric::"
-msgstr ""
-
-#: ../../Install.rst:91
-msgid ""
-"Reference: https://pytorch-geometric.readthedocs.io/en/latest/ , not "
-"necessary, just for network."
-msgstr ""
-
-#: ../../Install.rst:93
 msgid "ase::"
 msgstr ""
 
-#: ../../Install.rst:97
+#: ../../Install.rst:87
 msgid ""
 "Reference: https://wiki.fysik.dtu.dk/ase/ , not necessary, just for "
 "network."
 msgstr ""
-
-#~ msgid "Requirements"
-#~ msgstr ""
-
-#~ msgid "Packages:"
-#~ msgstr ""
-
-#~ msgid "Reference: https://github.com/Mgedata/featurebox"
-#~ msgstr ""
 

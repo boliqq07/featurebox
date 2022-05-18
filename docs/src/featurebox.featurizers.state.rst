@@ -17,14 +17,6 @@ featurebox.featurizers.state.extrastats module
    :undoc-members:
    :show-inheritance:
 
-featurebox.featurizers.state.kpath module
------------------------------------------
-
-.. automodule:: featurebox.featurizers.state.kpath
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 featurebox.featurizers.state.state\_mapper module
 -------------------------------------------------
 

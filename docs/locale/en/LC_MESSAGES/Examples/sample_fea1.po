@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2021, boliqq07
 # This file is distributed under the same license as the featurebox package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: featurebox \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-04 23:47+0800\n"
+"POT-Creation-Date: 2022-05-18 12:29+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -43,30 +43,11 @@ msgstr ""
 msgid "Index by dict data."
 msgstr ""
 
-#: ../../Examples/sample_fea1.rst:40
+#: ../../Examples/sample_fea1.rst:39
 msgid "Batch data."
 msgstr ""
 
-#: ../../Examples/sample_fea1.rst:47
+#: ../../Examples/sample_fea1.rst:46
 msgid "The return data are list of 2 np.ndarray data."
 msgstr ""
-
-#~ msgid ""
-#~ "The key json must be element name,"
-#~ " such as {\"H\": ... ,\"He\": ... "
-#~ "}, and The structures is pymatgen "
-#~ "``Structure`` list."
-#~ msgstr ""
-
-#~ msgid "Index by structure ::"
-#~ msgstr ""
-
-#~ msgid "Index by number, with your-self json ::"
-#~ msgstr ""
-
-#~ msgid "Index by dict data ::"
-#~ msgstr ""
-
-#~ msgid "Batch data ::"
-#~ msgstr ""
 

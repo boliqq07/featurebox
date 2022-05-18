@@ -30,7 +30,6 @@ We divided the features into the following categories:
 .. note::
 
     Different from 1,2,3, The 4 is cannot be used directly for ``sklearn``, but suit for ``torch`` .
-    More information can be found in :doc:`geo_data` .
 
 Access
 ---------

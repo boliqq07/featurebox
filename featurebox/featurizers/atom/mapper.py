@@ -170,7 +170,7 @@ class AtomJsonMap(BinaryMap):
                 Name of file or dict,element to element vector dictionary
 
                 Provides the pre-trained elemental embeddings using formation energies,
-                which can be used to speed up the training of other models_geo. The embeddings
+                which can be used to speed up the training. The embeddings
                 are also extremely useful elemental descriptors that encode chemical
                 similarity that may be used in other ways.
         """
@@ -259,8 +259,18 @@ class AtomTableMap(BinaryMap):
     --------
     >>> tmps = AtomTableMap(search_tp="number")
     >>> s = [1,76]
-    >>> a = tmps.convert(s)
-    ...
+    >>> tmps.convert(s)
+    array([[2.245000e+01, 0.000000e+00, 0.000000e+00, 0.000000e+00,
+            0.000000e+00, 0.000000e+00, 0.000000e+00, 0.000000e+00,
+            0.000000e+00, 0.000000e+00, 0.000000e+00, 0.000000e+00,
+            0.000000e+00, 0.000000e+00, 0.000000e+00, 0.000000e+00,
+            0.000000e+00, 0.000000e+00, 0.000000e+00],
+           [2.383710e+03, 3.937715e+04, 3.783280e+03, 9.866700e+02,
+            8.349720e+03, 6.978800e+02, 1.861780e+03, 1.549970e+03,
+            9.784700e+02, 2.231900e+02, 2.633000e+02, 1.689800e+02,
+            2.854000e+01, 0.000000e+00, 1.841000e+01, 0.000000e+00,
+            0.000000e+00, 0.000000e+00, 0.000000e+00]])
+
     >>> tmps = AtomTableMap(search_tp="name")
     >>> s = [{"H": 2, }, {"Po": 1}]  #[i.species.as_dict() for i in pymatgen.structure.sites]
     >>> a = tmps.convert(s)
@@ -270,7 +280,7 @@ class AtomTableMap(BinaryMap):
     >>> a = tmps.transform(s)
     ...
 
-    >>> tmps = AtomTableMap(tablename=None) or
+    >>> tmps = AtomTableMap(tablename=None)
     >>> tmps = AtomTableMap(tablename="ele_table.csv")
     >>> s = [{"H": 2, }, {"Pd": 1}]
     >>> b = tmps.convert(s)

@@ -80,17 +80,7 @@ Reference: https://github.com/Mgedata/mgetool
 
     pip install featurebox
 
-7. torch-geometric::
-
-    pip install torch-scatter
-    pip install torch-sparse
-    pip install torch-cluster
-    pip install torch-spline-conv
-    pip install torch-geometric
-
-Reference: https://pytorch-geometric.readthedocs.io/en/latest/ , not necessary, just for network.
-
-8. ase::
+7. ase::
 
     pip install ase
 

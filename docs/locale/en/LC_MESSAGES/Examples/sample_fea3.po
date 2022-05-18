@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2021, boliqq07
 # This file is distributed under the same license as the featurebox package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: featurebox \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-06 20:12+0800\n"
+"POT-Creation-Date: 2022-05-18 12:29+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,11 +27,25 @@ msgid ""
 "data. ::"
 msgstr ""
 
-#: ../../Examples/sample_fea3.rst:14
+#: ../../Examples/sample_fea3.rst:10
+msgid ""
+"...                                                         "
+"\"min_oxidation_state\", \"row\", \"group\", "
+"\"atomic_radius_calculated\", ..."
+"                                                         "
+"\"mendeleev_no\", \"critical_temperature\", \"density_of_solid\", ..."
+"                                                         "
+"\"average_ionic_radius\", \"average_cationic_radius\", "
+"\"average_anionic_radius\",]) >>> s = [{\"H\": 2, }, {\"Po\": 1}, {\"C\":"
+" 2}] # [i.species.as_dict() for i in pymatgen.structure.sites] >>> a2 = "
+"tmps.convert(s) # or >>> a2 = tmps.convert(structurei)"
+msgstr ""
+
+#: ../../Examples/sample_fea3.rst:17
 msgid "In addition, we could get structure state data by structure. ::"
 msgstr ""
 
-#: ../../Examples/sample_fea3.rst:21
+#: ../../Examples/sample_fea3.rst:24
 msgid ""
 "This second class is for structure but for atoms, and the first one "
 "return the each atom features and the second return the whole feature of "

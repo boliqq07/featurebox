@@ -5,11 +5,12 @@
 #
 # Translators:
 # changxin W <986798607@qq.com>, 2021
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version:  featurebox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-08 11:09+0800\n"
+"POT-Creation-Date: 2022-05-18 11:39+0800\n"
 "PO-Revision-Date: 2021-08-06 06:13+0000\n"
 "Last-Translator: changxin W <986798607@qq.com>, 2021\n"
 "Language: zh\n"
@@ -35,12 +36,10 @@ msgid "Generation tools"
 msgstr "特征生成成工具"
 
 #: ../../Introduction.rst:12 ../../Introduction.rst:33
-#: ../../Introduction.rst:57
 msgid "Name"
 msgstr "名称"
 
 #: ../../Introduction.rst:12 ../../Introduction.rst:33
-#: ../../Introduction.rst:57
 msgid "Application"
 msgstr "应用"
 
@@ -163,58 +162,13 @@ msgid ""
 msgstr "其中绑定意味着将绑定特征视为一个整体，并同步筛选或删除绑定特征。"
 
 #: ../../Introduction.rst:52
-msgid "Graph neural network tools"
-msgstr "图神经网络工具"
-
-#: ../../Introduction.rst:54
-msgid "Featurebox integrated with **Graph neural network**."
-msgstr "Featurebox集成了 **图神经网络**。"
-
-#: ../../Introduction.rst:59
-msgid ":class:`featurebox.featurizers.base_graph_geo.StructureGraphGEO`"
-msgstr ""
-
-#: ../../Introduction.rst:59
-msgid "Integrated structure data tool. (high dimensional data)"
-msgstr "从pymatgen结构产生图神将网络输入数据（多种形式）。"
-
-#: ../../Introduction.rst:60
-msgid ":class:`featurebox.models_geo.cgcnn.CrystalGraphConvNet`"
-msgstr ""
-
-#: ../../Introduction.rst:60
-msgid "Traditional graph neural network."
-msgstr "传统的图神经网络。"
-
-#: ../../Introduction.rst:61
-msgid ":class:`featurebox.models_geo.flow_geo.LearningFlow`"
-msgstr ""
-
-#: ../../Introduction.rst:61
-msgid "Script for modeling (recommended customization by user)."
-msgstr "用于网络建模的脚本(推荐用户自定义)。"
-
-#: ../../Introduction.rst:62
-msgid ":class:`featurebox.featurizers.generator_geo.InMemoryDatasetGeo`"
-msgstr ""
-
-#: ../../Introduction.rst:62
-msgid "``Dataset`` for data data in a non-uniform format. (Torch-like)"
-msgstr "网络输入数据格式转换（对接torch_geometrics）。"
-
-#: ../../Introduction.rst:66
 msgid ""
-"The neural network tools are ``torch-type``, with ``forward`` methods "
-".etc."
-msgstr "所有的网络是 ``torch-type``, 例如有 ``forward`` 方法等。"
+"The **Graph neural network** have been removed to ``pyg_extension`` "
+"package, which employ **envir**, **bond** and **atom** .etc to build "
+"input data."
+msgstr ""
+"旧的神经网络部分 **Graph neural network** 已经被移到 ``pyg_extension`` "
+"包， 神经网络的输入建立在特征生成成工具的基础上，使用其中的 **envir** , **bond** , **atom** 等"
+"生成。"
 
-#: ../../Introduction.rst:68
-msgid "Guide: :doc:`Guide/geo_data`"
-msgstr "指南： :doc:`Guide/geo_data`"
-
-#: ../../Introduction.rst:72
-msgid ""
-"The **Graph neural network** employ **envir**, **bond** and **atom** .etc"
-" to build input data."
-msgstr "神经网络的输入建立在特征生成成工具的基础上，使用其中的 **envir** , **bond** , **atom** 等生成。"
 

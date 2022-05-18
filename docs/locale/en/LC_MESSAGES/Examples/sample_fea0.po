@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2021, boliqq07
 # This file is distributed under the same license as the featurebox package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: featurebox \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-04 23:47+0800\n"
+"POT-Creation-Date: 2022-05-18 12:29+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,23 +50,4 @@ msgstr ""
 #: ../../Examples/sample_fea0.rst:45
 msgid "Now, try it !"
 msgstr ""
-
-#~ msgid ""
-#~ "If you don't have a preference for"
-#~ " features or idea, just try "
-#~ "BatchFeature, we using features from "
-#~ "pymatgen."
-#~ msgstr ""
-
-#~ msgid "1.Transform structure list."
-#~ msgstr ""
-
-#~ msgid "2.Transform composition list."
-#~ msgstr ""
-
-#~ msgid "3.Transform element list."
-#~ msgstr ""
-
-#~ msgid "Just go on !"
-#~ msgstr ""
 

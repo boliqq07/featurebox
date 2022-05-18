@@ -40,11 +40,11 @@ such as for single case (used by ``convert`` ):
   >>> number_single = [i.specie.Z for i in structure_1]
 
 
-In this packages, we accept data with type like ``name_data`` , ``number_data``  as input data,
+In this packages, we accept data with type like ``name_data`` , ``number_data``  as input data.
+
 Meanwhile, The above extract are built in code, thus we could accept ``structure_1`` ,
 ``structure_list`` directly.
 
-The ``ase.Atoms`` could convert by Adaptor ``AseAtomsAdaptor`` from pymatgen.
-``featurebox.utils.general.AAA``
+The ``ase.Atoms`` could convert by Adaptor ``AseAtomsAdaptor`` from pymatgen or ``featurebox.utils.general.AAA`` .
 
-Of course, The data ``name`` data , ``number``  data could build by yourself from you code.
+Of course, The data ``name`` data , ``number`` data could build by yourself from you code.

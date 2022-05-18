@@ -135,7 +135,7 @@ class LearningFlow:
 
     def __init__(self, model: Module, train_loader: DataLoader, validate_loader: DataLoader, device: str = "cpu",
                  optimizer=None, clf: bool = False, loss_method=None, learning_rate: float = 1e-3, milestones=None,
-                 weight_decay: float = 0.0, checkpoint=True, scheduler=None, debug="", target_layers=(),
+                 weight_decay: float = 0.0, checkpoint=False, scheduler=None, debug="", target_layers=(),
                  loss_threshold: float = 0.1, print_freq: Union[int,str] = 10, print_what="all", process_label=None):
         """
 

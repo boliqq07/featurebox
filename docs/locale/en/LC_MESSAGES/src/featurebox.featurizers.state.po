@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2021, boliqq07
 # This file is distributed under the same license as the featurebox package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: featurebox \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-04 23:47+0800\n"
+"POT-Creation-Date: 2022-05-18 12:29+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,9 +33,7 @@ msgstr ""
 msgid "General methods for computing property statistics from a list of values"
 msgstr ""
 
-#: featurebox.featurizers.state.extrastats.PropertyStats:1
-#: featurebox.featurizers.state.kpath.HighSymPoints:1
-#: featurebox.featurizers.state.kpath.HighSymPointsCPP:1 of
+#: featurebox.featurizers.state.extrastats.PropertyStats:1 of
 msgid "Bases: :class:`object`"
 msgstr ""
 
@@ -88,11 +86,7 @@ msgstr ""
 #: featurebox.featurizers.state.extrastats.PropertyStats.range
 #: featurebox.featurizers.state.extrastats.PropertyStats.skewness
 #: featurebox.featurizers.state.extrastats.PropertyStats.std_dev
-#: featurebox.featurizers.state.kpath.SpacegroupAnalyzerUser.get_conventional_standard_structure
-#: featurebox.featurizers.state.kpath.SpacegroupAnalyzerUser.get_conventional_to_primitive_transformation_matrix
-#: featurebox.featurizers.state.kpath.SpacegroupAnalyzerUser.get_primitive_standard_structure
 #: featurebox.featurizers.state.statistics.BaseCompositionFeature.mix_function
-#: featurebox.featurizers.state.statistics.DepartElementFeature.convert
 #: featurebox.featurizers.state.statistics.DepartElementFeature.mix_function
 #: featurebox.featurizers.state.statistics.DepartElementFeature.set_feature_labels
 #: featurebox.featurizers.state.statistics.ExtraMix.mix_function
@@ -120,11 +114,8 @@ msgid "Compute a property statistic"
 msgstr ""
 
 #: featurebox.featurizers.state.extrastats.PropertyStats.calc_stat
-#: featurebox.featurizers.state.kpath.HSPConverter
-#: featurebox.featurizers.state.kpath.SpacegroupAnalyzerUser
 #: featurebox.featurizers.state.state_mapper.StructurePymatgenPropMap
 #: featurebox.featurizers.state.statistics.BaseCompositionFeature.mix_function
-#: featurebox.featurizers.state.statistics.DepartElementFeature.convert
 #: featurebox.featurizers.state.statistics.DepartElementFeature.mix_function
 #: featurebox.featurizers.state.statistics.ExtraMix.mix_function
 #: featurebox.featurizers.state.statistics.GeometricMean.mix_function
@@ -306,265 +297,6 @@ msgid "standard deviation"
 msgstr ""
 
 #: ../../src/featurebox.featurizers.state.rst:21
-msgid "featurebox.featurizers.state.kpath module"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HSPConverter:1
-#: featurebox.featurizers.state.union.UnionFeature:1 of
-msgid "Bases: :class:`featurebox.featurizers.base_feature.BaseFeature`"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HSPConverter:1 of
-msgid "Get K points."
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HSPConverter:3
-#: featurebox.featurizers.state.union.PolyFeature:20
-#: featurebox.featurizers.state.union.UnionFeature:35 of
-msgid "size of batch."
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HSPConverter:5
-#: featurebox.featurizers.state.union.PolyFeature:22
-#: featurebox.featurizers.state.union.UnionFeature:37 of
-msgid "batch_calculate or not."
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HSPConverter:7
-#: featurebox.featurizers.state.union.PolyFeature:24
-#: featurebox.featurizers.state.union.UnionFeature:39 of
-msgid "Parallel number."
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HSPConverter:9
-#: featurebox.featurizers.state.union.PolyFeature:26
-#: featurebox.featurizers.state.union.UnionFeature:41 of
-msgid ""
-"How to handle the exceptions in a feature calculations. Can be ``nan``, "
-"``keep``, ``raise``. When 'nan', return a column with np.nan. The length "
-"of column corresponding to the number of feature labs. The default is "
-"'raise' which will raise up the exception."
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HSPConverter:14
-#: featurebox.featurizers.state.union.PolyFeature:31
-#: featurebox.featurizers.state.union.UnionFeature:46 of
-msgid ""
-"Specific the return type. Can be ``any``, ``np``,``array`` and ``df``. "
-"'array' and 'df' force return type to np.ndarray and pd.DataFrame "
-"respectively. If 'any', without type conversion . Default is 'any'"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HSPConverter.convert:1 of
-msgid "Get kps shape (n,20,3)"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HighSymPoints:1 of
-msgid "Get High K point"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HighSymPoints.bcc:1 of
-msgid "BCC Path"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HighSymPoints.bctet1:1 of
-msgid "BCT1 Path"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HighSymPoints.bctet2:1 of
-msgid "BCT2 Path"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HighSymPoints.cubic:1 of
-msgid "CUB Path"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HighSymPoints.fcc:1 of
-msgid "FCC Path"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HighSymPoints.hex:1 of
-msgid "HEX Path"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HighSymPoints.mcl:1 of
-msgid "MCL Path"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HighSymPoints.mclc1:1 of
-msgid "MCLC1 Path"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HighSymPoints.mclc2:1 of
-msgid "MCLC2 Path"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HighSymPoints.mclc3:1 of
-msgid "MCLC3 Path"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HighSymPoints.mclc4:1 of
-msgid "MCLC4 Path"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HighSymPoints.mclc5:1 of
-msgid "MCLC5 Path"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HighSymPoints.orc:1 of
-msgid "ORC Path"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HighSymPoints.orcc:1 of
-msgid "ORCC Path"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HighSymPoints.orcf1:1 of
-msgid "ORFC1 Path"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HighSymPoints.orcf2:1 of
-msgid "ORFC2 Path"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HighSymPoints.orcf3:1 of
-msgid "ORFC3 Path"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HighSymPoints.orci:1 of
-msgid "ORCI Path"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HighSymPoints.rhl1:1 of
-msgid "RHL1 Path"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HighSymPoints.rhl2:1 of
-msgid "RHL2 Path"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HighSymPoints.tet:1 of
-msgid "TET Path"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HighSymPoints.tria:1 of
-msgid "TRI1a Path"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HighSymPoints.trib:1 of
-msgid "TRI1b Path"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HighSymPointsCPP:1 of
-msgid "Quick for get k points by cpp method."
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HighSymPointsCPP.kps:1 of
-msgid "Get kps shape(n,20,3)"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.HighSymPointsCPP.kps_tensor:1 of
-msgid "get kps shape(n,20,3)"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.SpacegroupAnalyzerUser:1 of
-msgid "Bases: :class:`pymatgen.symmetry.analyzer.SpacegroupAnalyzer`"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.SpacegroupAnalyzerUser:1 of
-msgid ""
-"A copy from pymatgen. The change is for quick return the preprocessing: "
-"[type_number,a, b, c, alpha_prim, alpha_conv]"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.SpacegroupAnalyzerUser:4 of
-msgid ""
-"The result of SpacegroupAnalyzerUser and input of HighSymPoints are "
-"matched."
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.SpacegroupAnalyzerUser:6 of
-msgid "(Structure)"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.SpacegroupAnalyzerUser:7
-#: featurebox.featurizers.state.kpath.SpacegroupAnalyzerUser:8 of
-msgid "(float)"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.SpacegroupAnalyzerUser.decide:1 of
-msgid "get type number by message"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.SpacegroupAnalyzerUser.get_conventional_standard_structure:1
-#: of
-msgid ""
-"Gives a structure with a conventional cell according to certain "
-"standards. The standards are defined in Setyawan, W., & Curtarolo, S. "
-"(2010). High-throughput electronic band structure calculations: "
-"Challenges and tools. Computational Materials Science, 49(2), 299-312. "
-"doi:10.1016/j.commatsci.2010.05.010 They basically enforce as much as "
-"possible norm(a1)<norm(a2)<norm(a3)"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.SpacegroupAnalyzerUser.get_conventional_standard_structure:9
-#: of
-msgid "The structure in a conventional standardized cell"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.SpacegroupAnalyzerUser.get_conventional_to_primitive_transformation_matrix:1
-#: of
-msgid ""
-"Gives the transformation matrix to transform a conventional unit cell to "
-"a primitive cell according to certain standards the standards are defined"
-" in Setyawan, W., & Curtarolo, S. (2010). High-throughput electronic band"
-" structure calculations: Challenges and tools. Computational Materials "
-"Science, 49(2), 299-312. doi:10.1016/j.commatsci.2010.05.010"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.SpacegroupAnalyzerUser.get_conventional_to_primitive_transformation_matrix:8
-#: of
-msgid "Transformation matrix to go from conventional to primitive cell"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.SpacegroupAnalyzerUser.get_primitive_standard_structure:1
-#: of
-msgid ""
-"Gives a structure with a primitive cell according to certain standards "
-"the standards are defined in Setyawan, W., & Curtarolo, S. (2010). High-"
-"throughput electronic band structure calculations: Challenges and tools. "
-"Computational Materials Science, 49(2), 299-312. "
-"doi:10.1016/j.commatsci.2010.05.010"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.SpacegroupAnalyzerUser.get_primitive_standard_structure:7
-#: of
-msgid "The structure in a primitive standardized cell"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.SpacegroupAnalyzerUser.get_sgt:1 of
-msgid "return 7 member. [type_number, a, b, c, alpha_prim, alpha_conv]"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.SpacegroupAnalyzerUser.message:1 of
-msgid ""
-"return lattice_type, spg_symbol, a, b, c, alpha_prim, alpha_conv, "
-"alpha_rec_lattice, beta_rec_lattice, gamma_rec_lattice]"
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.get_angles:1 of
-msgid "Returns the angles (alpha, beta, gamma) of the lattice."
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.get_lengths:1 of
-msgid "Return The lengths (a, b, c) of the lattice."
-msgstr ""
-
-#: featurebox.featurizers.state.kpath.reciprocal_lattice_angle:1 of
-msgid "Return the angle of reciprocal lattice."
-msgstr ""
-
-#: ../../src/featurebox.featurizers.state.rst:29
 msgid "featurebox.featurizers.state.state\\_mapper module"
 msgstr ""
 
@@ -601,7 +333,7 @@ msgid ""
 "same with prop_name."
 msgstr ""
 
-#: ../../src/featurebox.featurizers.state.rst:37
+#: ../../src/featurebox.featurizers.state.rst:29
 msgid "featurebox.featurizers.state.statistics module"
 msgstr ""
 
@@ -616,7 +348,7 @@ msgid ""
 msgstr ""
 
 #: featurebox.featurizers.state.statistics.BaseCompositionFeature:10
-#: featurebox.featurizers.state.statistics.DepartElementFeature:17
+#: featurebox.featurizers.state.statistics.DepartElementFeature:20
 #: featurebox.featurizers.state.statistics.ExtraMix:3
 #: featurebox.featurizers.state.statistics.GeometricMean:3
 #: featurebox.featurizers.state.statistics.HarmonicMean:3
@@ -630,6 +362,8 @@ msgstr ""
 
 #: featurebox.featurizers.state.statistics.BaseCompositionFeature.convert_dict:1
 #: featurebox.featurizers.state.statistics.BaseCompositionFeature.convert_number:1
+#: featurebox.featurizers.state.statistics.DepartElementFeature.convert_dict:1
+#: featurebox.featurizers.state.statistics.DepartElementFeature.convert_number:1
 #: of
 msgid "Convert atom {symbol: fraction} list to numeric features"
 msgstr ""
@@ -674,7 +408,6 @@ msgid "**descriptor**"
 msgstr ""
 
 #: featurebox.featurizers.state.statistics.BaseCompositionFeature.mix_function
-#: featurebox.featurizers.state.statistics.DepartElementFeature.convert
 #: featurebox.featurizers.state.statistics.DepartElementFeature.mix_function
 #: featurebox.featurizers.state.statistics.ExtraMix.mix_function
 #: featurebox.featurizers.state.statistics.GeometricMean.mix_function
@@ -709,38 +442,15 @@ msgstr ""
 msgid "Get the table of element data."
 msgstr ""
 
-#: featurebox.featurizers.state.statistics.DepartElementFeature.convert:1 of
+#: featurebox.featurizers.state.statistics.DepartElementFeature:14 of
+msgid "fea_0_0   fea_0_1   fea_1_0  ...  fea_14_1  fea_15_0  fea_15_1"
+msgstr ""
+
+#: featurebox.featurizers.state.statistics.DepartElementFeature:15 of
 msgid ""
-"Main feature function, which has to be implemented in any derived feature"
-" subclass."
-msgstr ""
-
-#: featurebox.featurizers.state.statistics.DepartElementFeature.convert:5 of
-msgid "Notes"
-msgstr ""
-
-#: featurebox.featurizers.state.statistics.DepartElementFeature.convert:6 of
-msgid "It cannot be passed np.array in default unless:"
-msgstr ""
-
-#: featurebox.featurizers.state.statistics.DepartElementFeature.convert:8 of
-msgid ""
-"1. useful for bond_converter. For np.array we check the ndim and for ndim"
-" 2, or 3. we decide whether to pass them the data to ``_converter`` "
-"together or separately by ``self.ndim`` attribute. Now max support 3d. "
-"due to for some functions, using ``ufunc`` in numpy is very efficient."
-msgstr ""
-
-#: featurebox.featurizers.state.statistics.DepartElementFeature.convert:14 of
-msgid "keep the size of data and simple the ``_convert``."
-msgstr ""
-
-#: featurebox.featurizers.state.statistics.DepartElementFeature.convert:16 of
-msgid "one input data (one sample, one case),"
-msgstr ""
-
-#: featurebox.featurizers.state.statistics.DepartElementFeature.convert:18 of
-msgid "new x."
+"0  0.352363  0.561478  0.635952  ... -0.236541 -0.270104 -0.212607 1 "
+"-0.067220  0.025758  0.141113  ... -0.092577 -0.042185  0.080350 "
+"<BLANKLINE> [2 rows x 32 columns]"
 msgstr ""
 
 #: featurebox.featurizers.state.statistics.DepartElementFeature.set_feature_labels:1
@@ -763,7 +473,7 @@ msgstr ""
 msgid ":class:`WeightedSum`"
 msgstr ""
 
-#: ../../src/featurebox.featurizers.state.rst:45
+#: ../../src/featurebox.featurizers.state.rst:37
 msgid "featurebox.featurizers.state.union module"
 msgstr ""
 
@@ -788,6 +498,38 @@ msgid ""
 "0.201433   4.0   0.402866  0.040575 3   3.0 -0.459164   9.0  -1.377492  "
 "0.210832 4   4.0 -0.064783  16.0  -0.259132  0.004197 5   5.0 -0.250939  "
 "25.0  -1.254695  0.062970"
+msgstr ""
+
+#: featurebox.featurizers.state.union.PolyFeature:20
+#: featurebox.featurizers.state.union.UnionFeature:35 of
+msgid "size of batch."
+msgstr ""
+
+#: featurebox.featurizers.state.union.PolyFeature:22
+#: featurebox.featurizers.state.union.UnionFeature:37 of
+msgid "batch_calculate or not."
+msgstr ""
+
+#: featurebox.featurizers.state.union.PolyFeature:24
+#: featurebox.featurizers.state.union.UnionFeature:39 of
+msgid "Parallel number."
+msgstr ""
+
+#: featurebox.featurizers.state.union.PolyFeature:26
+#: featurebox.featurizers.state.union.UnionFeature:41 of
+msgid ""
+"How to handle the exceptions in a feature calculations. Can be ``nan``, "
+"``keep``, ``raise``. When 'nan', return a column with np.nan. The length "
+"of column corresponding to the number of feature labs. The default is "
+"'raise' which will raise up the exception."
+msgstr ""
+
+#: featurebox.featurizers.state.union.PolyFeature:31
+#: featurebox.featurizers.state.union.UnionFeature:46 of
+msgid ""
+"Specific the return type. Can be ``any``, ``np``,``array`` and ``df``. "
+"'array' and 'df' force return type to np.ndarray and pd.DataFrame "
+"respectively. If 'any', without type conversion . Default is 'any'"
 msgstr ""
 
 #: featurebox.featurizers.state.union.PolyFeature.fit_transform:1 of
@@ -827,6 +569,10 @@ msgstr ""
 
 #: featurebox.featurizers.state.union.PolyFeature.fit_transform:18 of
 msgid "result data."
+msgstr ""
+
+#: featurebox.featurizers.state.union.UnionFeature:1 of
+msgid "Bases: :class:`featurebox.featurizers.base_feature.BaseFeature`"
 msgstr ""
 
 #: featurebox.featurizers.state.union.UnionFeature:1 of
@@ -871,28 +617,4 @@ msgstr ""
 #: featurebox.featurizers.state.union.UnionFeature.set_feature_labels:3 of
 msgid "name"
 msgstr ""
-
-#~ msgid "Bases: :class:`featurebox.featurizers.base_transform.BaseFeature`"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Specific the return type. Can be "
-#~ "``any``, ``array`` and ``df``. 'array' "
-#~ "and 'df' force return type to "
-#~ "np.ndarray and pd.DataFrame respectively. If"
-#~ " 'any', without type conversion . "
-#~ "Default is 'any'"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Bases: "
-#~ ":class:`featurebox.featurizers.base_transform.BaseFeature`, "
-#~ ":class:`abc.ABC`"
-#~ msgstr ""
-
-#~ msgid "Additional fit or transform parameters."
-#~ msgstr ""
-
-#~ msgid "which can be from `zip`` or used the built-in ``transform2``."
-#~ msgstr ""
 
