@@ -42,8 +42,5 @@ Index
 
 Support
 >>>>>>>>
-.. image:: ustbgjj.png
-    :scale: 50 %
-    :target: http://bjmge.ustb.edu.cn/
 .. image:: jetbrains.svg
     :scale: 40 %
