@@ -260,7 +260,7 @@ class BaseCrystalModel(Module):
         Examples::
 
             >>> ...
-            >>> self.interactions = YourNet()
+            >>> self.layer_interaction = YourNet()
         """
 
     def get_readout_layer(self):
@@ -268,12 +268,12 @@ class BaseCrystalModel(Module):
 
         Examples::
 
-            >>> self.readout_layer = torch.nn.Sequential(...)
+            >>> self.layer_readout = torch.nn.Sequential(...)
 
         Examples::
 
             >>> ...
-            >>> self.readout_layer = YourNet()
+            >>> self.layer_readout = YourNet()
         """
         if "readout_kwargs_layers_size" in self.readout_kwargs:
             self.readout_layer = GeneralReadOutLayer(**self.readout_kwargs)

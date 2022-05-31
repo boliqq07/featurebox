@@ -42,5 +42,6 @@ Index
 
 Support
 >>>>>>>>
+
 .. image:: jetbrains.svg
     :scale: 40 %
