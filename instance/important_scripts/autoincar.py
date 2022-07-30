@@ -7,7 +7,6 @@
 
 import os
 from typing import Dict, Any, Tuple
-
 from pymatgen.io.vasp.inputs import Incar
 
 
@@ -30,7 +29,7 @@ def _ISMEAR(notes: str, params: Dict = None) -> Dict:
         _a = {"ISMEAR": 0}
     elif any([i in notes for i in ["金属", "metal"]]):
         _a = {"ISMEAR": 1}
-    elif any([i in notes for i in ["精确能量", "DOS", "态密度", "能带", "bandgap", "band gap", "明确为半导体"]]):
+    elif any([i in notes for i in ["精确能量", "DOS", "态密度", "能带", "bandgap", "band gap", "半导体"]]):
         _a = {"ISMEAR": -5}
     elif any([i in notes for i in ["K点少", "K点小", "少K点", "小K点"]]):
         _a = {"ISMEAR": 0}
@@ -249,9 +248,9 @@ def _EDIFF(notes: str, params: Dict = None) -> Dict:
     return {}
 
 
-def auto_incar(params: Dict[str, Any] = None) -> Incar:
+def _auto_incar(params: Dict[str, Any] = None) -> Incar:
     # kk = grep 'entropy T'  OUTCAR
-    # rkk = kk/n_atom<0.001ev  检查
+    # rkk = kk/n_atom<0.001ev
     """"""
     if params is None:
         params = {}
@@ -279,31 +278,43 @@ def auto_incar(params: Dict[str, Any] = None) -> Incar:
 
 
 def auto_incar_file(notes="", params: Dict[str, Any] = None, path=None):
+    """
+    Get INCAR (VASP) file.
+
+    Examples:
+    >>> auto_incar_file(notes="静态计算")
+
+    Args:
+        notes: (str), description.
+        params: (dict,None), Direct and explicit parameters for INCAR file.
+        path: (str, Pathlike), store path, default work path.
+
+    """
     if params is None:
         params = {}
     if notes == "":
         pass
     else:
         params.update({"notes": notes})
-    incar = auto_incar(params)
+    incar = _auto_incar(params)
     if path is None:
         path = os.getcwd()
     path = os.path.abspath(path)
     path = os.path.join(path, 'INCAR')
     incar.write_file(path)
-    print("Incar file is stored in {}".format(path))
+    print("Incar file is stored in {}.".format(path))
 
 
 class CLICommand:
     """
-    自动产生 INCAR 脚本（仅供参考）. (-n 内容不要留有空格)
-    最方便用法:
-    featurebox autoincar -n 半导体静态计算 -p {"NSW":100}
-    featurebox autoincar -n 金属弛豫计算
-
+    自动产生 INCAR 脚本（仅供参考）. (-n 内容不要留有空格).
     Example:
 
-        $ featurebox autoincar -n 金属弛豫
+    $ featurebox autoincar -n 半导体静态计算 -p {"NSW":100}
+
+    $ featurebox autoincar -n 金属弛豫计算
+
+    $ featurebox autoincar -n 半导体静态计算
     """
 
     @staticmethod
@@ -353,7 +364,7 @@ if __name__ == '__main__':
     # 命令行模式
     import argparse
 
-    parser = argparse.ArgumentParser(description='自动产生 INCAR 脚本（仅供参考）.\n'
+    parser = argparse.ArgumentParser(description='自动产生 INCAR 脚本（仅供参考）。\n'
                                                  '最方便用法: \n'
                                                  'python autoincar.py -n 半导体静态计算 -p {"NSW":100} \n'
                                                  'python autoincar.py -n 金属弛豫计算 \n')
@@ -393,6 +404,3 @@ if __name__ == '__main__':
         assert isinstance(params_, dict)
 
     auto_incar_file(notes=notes, params=params_, path=path)
-##############################################################################################################
-# print(upload.__doc__)
-# upload(run_tem="/share/home/skk/wcx/cam3d/Instance/Instance1/others/run.lsf", pwd="/share/home/skk/wcx/test/")

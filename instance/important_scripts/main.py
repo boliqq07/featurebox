@@ -2,12 +2,6 @@ import argparse
 import textwrap
 from importlib import import_module
 
-title = """
----------------------------
-|     Featurebox CLI      |
----------------------------
-"""
-
 
 class CLIError(Exception):
     """Error for CLI commands.
@@ -20,19 +14,15 @@ class CLIError(Exception):
 # python3 -m ase.cli.completion to update autocompletion.
 commands_ = [
 
-    ('bandgap', 'featurebox.cli.vasp_bgp'),
-    ('bader', 'featurebox.cli.vasp_bader'),
-    ('dbc', 'featurebox.cli.vasp_dbc'),
-    ('cohp', 'featurebox.cli.vasp_cohp'),
-    ('dos', 'featurebox.cli.vasp_dos'),
-    ('general', 'featurebox.cli.vasp_general_single'),
-    ('diff', 'featurebox.cli.vasp_general_diff'),
+    ('findpath', 'mgetool.cli.findpath'),
+    ('makebatch', 'mgetool.cli.makebatch'),
+    ('cpbatch', 'mgetool.cli.cpbatch'),
+    # ('run', 'ase.cli.run'),
 
 ]
 
 
-def main(prog='featurebox', description='featurebox command line tool.', args=None):
-    print(title)
+def main(prog='mgetool', description='mgetool command line tool.', args=None):
     commands = commands_
     parser = argparse.ArgumentParser(prog=prog,
                                      description=description,
@@ -48,6 +38,7 @@ def main(prog='featurebox', description='featurebox command line tool.', args=No
                            nargs='?',
                            metavar='sub-command',
                            help='Provide help for sub-command.')
+
     functions = {}
     parsers = {}
     for command, module_name in commands:
@@ -74,13 +65,12 @@ def main(prog='featurebox', description='featurebox command line tool.', args=No
         parsers[command] = subparser
 
     args = parser.parse_args(args)
-    if args.command == 'help':
 
+    if args.command == 'help':
         if args.helpcommand is None:
             parser.print_help()
         else:
             parsers[args.helpcommand].print_help()
-
     elif args.command is None:
         parser.print_usage()
     else:
@@ -104,35 +94,26 @@ def main(prog='featurebox', description='featurebox command line tool.', args=No
                 parser.error(l1 + l2)
 
 
-
 class Formatter(argparse.HelpFormatter):
     """Improved help formatter."""
 
     def _fill_text(self, text, width, indent):
-
         assert indent == ''
         out = ''
         blocks = text.split('\n\n')
         for block in blocks:
-            if block != "":
-                if block[0] == '*':
-                    # List items:
-                    for item in block[2:].split('\n* '):
-                        out += textwrap.fill(item,
-                                             width=width - 2,
-                                             initial_indent='* ',
-                                             subsequent_indent='  ') + '\n'
-                elif block[0] == ' ':
-                    # Indented literal block:
-                    out += block + '\n'
-                else:
-                    # Block of text:
-                    out += textwrap.fill(block, width=width) + '\n'
-                out += '\n'
+            if block[0] == '*':
+                # List items:
+                for item in block[2:].split('\n* '):
+                    out += textwrap.fill(item,
+                                         width=width - 2,
+                                         initial_indent='* ',
+                                         subsequent_indent='  ') + '\n'
+            elif block[0] == ' ':
+                # Indented literal block:
+                out += block + '\n'
             else:
-                pass
+                # Block of text:
+                out += textwrap.fill(block, width=width) + '\n'
+            out += '\n'
         return out[:-1]
-
-
-if __name__ =="__main__":
-    main(args='h')

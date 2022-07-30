@@ -1,47 +1,20 @@
 
 # Due to the pymatgen is incorrect of band gap with 2 spin. we use vaspkit for extract data.
 import pandas as pd
-
 import os
-
 import numpy as np
 
-""""
-Note:
-    For some version,  vaspkit -task 503 was not cant run (in line mode but interactive mode.).
-    
-"""
+# 1
+# LAECHG=.TRUE.
+# LCHARG = .TRUE.
+# NSW = 0
+# IBRION = -1 (前面有了NSW = 0, 这个也可以不设置)
 
+# 2
+# chmod u+x ~/bin/chgsum.pl
+# chmod u+x ~/bin/bader
 
-# LORBIT=2
-
-
-def read(d, store=False, store_name="temp.csv", file_name="D_BAND_CENTER"):
-    """Run linux cmd and return result, make sure the vaspkit is installed."""
-    result_name = file_name
-    with open(result_name, mode="r") as f:
-        ress = f.readlines()
-
-    res = []
-    for i in ress:
-        if i == "\n":
-            break
-        else:
-            i = i.split(" ")
-            i = [i for i in i if i != ""]
-            i = [i[:-2] if "\n" in i else i for i in i]
-            res.append(i)
-
-    res = np.array(res[1:])
-    res = np.concatenate((np.full(res.shape[0], fill_value=str(d)).reshape(-1, 1), res), axis=1)
-    result = pd.DataFrame(res,
-                          columns=["File", "Atom", "d-Band-Center (UP)", "d-Band-Center (DOWN)",
-                                   "d-Band-Center (Average)"])
-
-    if store:
-        result.to_csv(store_name)
-        print("'{}' are sored in '{}'".format(store_name, os.getcwd()))
-    return result
+from pymatgen.io.vasp import Potcar, Poscar
 
 
 def cal(d, store=False, store_name="temp.csv", run_cmd=True, cmds=None):
@@ -93,14 +66,58 @@ def cal_all(d, repeat=0, store=False, store_name="temp_all.csv", run_cmd=True, c
     return result
 
 
+def read(d, store=False, store_name="temp.csv"):
+    """Run linux cmd and return result, make sure the vaspkit is installed."""
+    if os.path.isfile("POTCAR") and os.path.isfile("POSCAR"):
+        potcar = Potcar.from_file("POTCAR")
+        symbols = Poscar.from_file("POSCAR", check_for_POTCAR=False).structure.atomic_numbers
+
+        zval = []
+        for i in symbols:
+            for j in potcar:
+                if j.atomic_no == i:
+                    zval.append(j.ZVAL)
+                    break
+
+        zval = np.array(zval)
+
+        with open("ACF.dat", mode="r") as f:
+            msg = f.readlines()
+
+        msg = [i for i in msg if ":" not in i]
+        msg = [i for i in msg if "--" not in i]
+        msg = [i.replace("\n", "") if "\n" in i else i for i in msg]
+        msg = [i.split(" ") for i in msg[1:]]
+        msg = [[k for k in i if k != ""] for i in msg]
+        msg2 = np.array(msg).astype(float)
+
+        msg_append = (msg2[:, 4] - zval).reshape(-1, 1)
+        msg_f = np.full(msg2.shape[0], fill_value=str(d)).reshape(-1, 1)
+        msg2 = np.concatenate((msg_f, msg2, msg_append), axis=1)
+        ta = np.array(["File", "Atom Number", "X", "Y", "Z", "CHARGE", " MIN DIST", " ATOMIC VOL",
+                       "Bader Ele Move"])
+
+        result = pd.DataFrame(msg2, columns=ta)
+        if store:
+            result.to_csv(store_name)
+            print("'{}' are sored in '{}'".format(store_name, os.getcwd()))
+
+        return result
+    else:
+        return None
+
+
 def cmd_sys(cmds=None):
-    os.system("vaspkit -task 503")
+    cmds = ("chgsum.pl AECCAR0 AECCAR2", "bader CHGCAR -ref CHGCAR_sum")
+    for i in cmds:
+        os.system(i)
 
 
 def run(args, parser):
-    from mgetool.imports import BatchFile
+    from mgetool.imports import batchfile
     if args.job_type in ["S", "s"]:
         res = cal(args.path_name, store=True, store_name=args.out_name)
+
         print(args.path_name, res)
     else:
         assert args.job_type in ["M", "m"]
@@ -130,25 +147,42 @@ def run(args, parser):
 
 class CLICommand:
     """
-    批量提取d band centor， 保存到当前工作文件夹。 查看参数帮助使用 -h。
-
-    在 featurebox 中运行，请使用 featurebox dbcvk ...
-    若复制本脚本并单运行，请使用 python dbcvk ...
+    批量提取 bader，保存到当前工作文件夹。 查看参数帮助使用 -h。
+    在 featurebox 中运行，请使用 featurebox bader ...
+    若复制本脚本并单运行，请使用 python bader.py ...
 
     首先，请确保 运算子文件夹(sample_i_dir)包含应有 vasp 输入输出文件。
     parent_dir(为上层目录，或者上n层目录)
 
-    如果在 featurebox 中运行多个案例,请指定顶层文件夹:
+    Notes:
+        1. 前期准备
+        需要以下文件：~/bin/bader, ~/bin/chgsum.pl
+        并赋予权限:
+        # chmod u+x ~/bin/chgsum.pl
+        # chmod u+x ~/bin/bader
+
+        # INCAR文件参数要求：
+        # LAECHG= .TRUE.
+        # LCHARG = 11
+        # NSW = 0
+        # IBRION = -1
+
+        2.运行文件要求:
+        chgsum.pl,bader,
+        AECCAR0，AECCAR2，CHGCAR
+
+
+    如果在 featurebox 中运行多个案例，请指定顶层文件夹:
 
     Example:
 
-        $ featurebox dbcvk -p /home/parent_dir -if POSCAR
+    $ featurebox bader -p /home/parent_dir -if AECCAR0
 
     如果在 featurebox 中运行单个案例，请指定运算子文件夹:
 
     Example:
 
-        $ featurebox dbcvk -t s -p /home/parent_dir/***/sample_i_dir
+    $ featurebox bader -t s -p /home/parent_dir/***/sample_i_dir -if AECCAR0
     """
 
     @staticmethod
@@ -156,15 +190,14 @@ class CLICommand:
         parser.add_argument('-p', '--path_name', type=str, default='.')
         parser.add_argument('-t', '--job_type', type=str, default='m')
         parser.add_argument('-s', '--suffix', help='suffix of file', type=str, default=None)
-        # parser.add_argument('-if', '--file_include', help='include file name.', type=str, default="EIGENVAL")
-        parser.add_argument('-if', '--file_include', help='include file name.', type=str, default=None)
+        parser.add_argument('-if', '--file_include', help='include file name.', type=str, default="AECCAR0")
         parser.add_argument('-ef', '--file_exclude', help='exclude file name.', type=str, default=None)
         parser.add_argument('-id', '--dir_include', help='include dir name.', type=str, default=None)
         parser.add_argument('-ed', '--dir_exclude', help='exclude dir name.', type=str, default=None)
-        parser.add_argument('-l', '--layer', help='dir depth,default the last layer', type=int, default=-1)
+        parser.add_argument('-l', '--layer', help='dir depth, default the last layer', type=int, default=-1)
         parser.add_argument('-abspath', '--abspath', help='return abspath', type=bool, default=True)
         parser.add_argument('-repeat', '--repeat', help='repeat times', type=int, default=0)
-        parser.add_argument('-o', '--out_name', help='out file name.', type=str, default="dbc.csv")
+        parser.add_argument('-o', '--out_name', help='out file name.', type=str, default="bader.csv")
 
     @staticmethod
     def run(args, parser):
@@ -174,22 +207,21 @@ class CLICommand:
 if __name__ == '__main__':
     """
     Example:
-
-        $ python dbcvk.py -p /home/dir_name -if POSCAR
+        $ python bader.py -p /home/dir_name -if AECCAR0
     """
     import argparse
-    parser = argparse.ArgumentParser(description="Get d band centor. Example:\n"
-                                                 "python dbcvk.py -p /home/dir_name -if POSCAR")
+    parser = argparse.ArgumentParser(description="Get d band centor.Examples:\n"
+                                                 "python bader.py -p /home/dir_name -if AECCAR0")
     parser.add_argument('-p', '--path_name', type=str, default='.')
     parser.add_argument('-t', '--job_type', type=str, default='m')
     parser.add_argument('-s', '--suffix', help='suffix of file', type=str, default=None)
-    parser.add_argument('-if', '--file_include', help='include file name.', type=str, default=None)
+    parser.add_argument('-if', '--file_include', help='include file name.', type=str, default="AECCAR0")
     parser.add_argument('-ef', '--file_exclude', help='exclude file name.', type=str, default=None)
     parser.add_argument('-id', '--dir_include', help='include dir name.', type=str, default=None)
     parser.add_argument('-ed', '--dir_exclude', help='exclude dir name.', type=str, default=None)
-    parser.add_argument('-l', '--layer', help='dir depth,default the last layer', type=int, default=-1)
+    parser.add_argument('-l', '--layer', help='dir depth, default the last layer', type=int, default=-1)
     parser.add_argument('-abspath', '--abspath', help='return abspath', type=bool, default=True)
     parser.add_argument('-repeat', '--repeat', help='repeat times', type=int, default=3)
-    parser.add_argument('-o', '--out_name', help='out file name.', type=str, default="dbc.csv")
+    parser.add_argument('-o', '--out_name', help='out file name.', type=str, default="bader.csv")
     args = parser.parse_args()
     run(args, parser)

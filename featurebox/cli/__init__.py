@@ -4,23 +4,22 @@
 # @Software : PyCharm
 # @License  : GNU General Public License v3.0
 # @Author   : xxx
-__all__ = ["autoincar", "batchrun", "main", "bgefvk", "bader", "dbcvk", "nebmake"]
 
 __doc__ = """
 The ``cli`` part include:
 
-    "batchrun", "main", "bgefvk", "bader", "dbcvk","nebmake"
+    "bandgap", "dbc", "bader", "cohp", "dos", "general", "diff"
 
 which run in command line mode. All message (help) could get by ``'-h'`` .
 
-1.Run in featurebox: featurebox bgefvk -h
+1.Run in featurebox: featurebox bandgap -h
 
-2.Copy the script and run the single file: python bgefvk.py -h
+2.Copy the script and run the single file: python bandgap -h
 
 Example:
 
->>> $ featurebox bgefvk -p /home/parent_dir
+>>> $ featurebox bandgap -p /home/parent_dir
 
->>> $ python bgefvk.py -p /home/parent_dir
+>>> $ python bandgap.py -p /home/parent_dir
 
 """

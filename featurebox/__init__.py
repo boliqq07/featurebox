@@ -1,1 +1,1 @@
-__all__ = ["selection", "featurizers", "data", "utils", "properties", "cli", "__main__"]
+__all__ = ["selection", "featurizers", "data", "utils",  "cli"]

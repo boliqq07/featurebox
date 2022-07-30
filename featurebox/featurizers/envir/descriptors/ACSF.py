@@ -3,7 +3,7 @@ from itertools import combinations, combinations_with_replacement
 import numpy as np
 from ase.neighborlist import NeighborList
 
-from featurebox.featurizers.descriptors.cutoff import Cutoff
+from featurebox.featurizers.envir.descriptors.cutoff import Cutoff
 
 
 class ACSF:

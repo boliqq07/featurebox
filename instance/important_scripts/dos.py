@@ -1,12 +1,15 @@
-# Ref: https://vasppy.readthedocs.io/en/latest/_modules/vasppy/doscar.html
-# Ref: https://github.com/hitarth64/d-band-center/blob/main/d_band.py
+# -*- coding: utf-8 -*-
+
+# @Time  : 2022/6/3 22:42
+# @Author : boliqq07
+# @Software: PyCharm
+# @License: MIT License
+import os.path
 import pathlib
-from typing import List
 
 import numpy as np
 import pandas as pd
-from pymatgen.io.vasp import Poscar
-from scipy.integrate import simps
+from pymatgen.io.vasp import Poscar, Vasprun
 
 
 def pdos_column_names(lmax, ispin):
@@ -31,51 +34,86 @@ def pdos_column_names(lmax, ispin):
     return all_names
 
 
-class DBC:
+class Doscar:
     """
     Contains all the data in a VASP DOSCAR file, and methods for manipulating this.
 
     Examples
     -------------
-    >>> dbc = DBC("DOSCAR")
-    >>> d_band_center_up_and_down = dbc.calculate(orb="d")
+    >>> doscar = Doscar("DOSCAR")
+
 
     """
 
     number_of_header_lines = 6
 
-    def __init__(self, filename, ispin=2, lmax=2, lorbit=11, spin_orbit_coupling=False, read_pdos=True):
+    def __init__(self, doscar="DOSCAR", poscar="POSCAR", vasprun="vasprun.xml", ispin=2, lmax=2,
+                 lorbit=11, spin_orbit_coupling=False, read_pdos=True,max=8,min=-8):
         """
         Create a Doscar object from a VASP DOSCAR file.
         Args:
-            filename (str): Filename of the VASP DOSCAR file to read.
+            doscar (str): Filename of the VASP DOSCAR file to read.
             ispin (optional:int): ISPIN flag. Set to 1 for non-spin-polarised or 2 for spin-polarised calculations. Default = 2.
             lmax (optional:int): Maximum l angular momentum. (d=2, f=3). Default = 2.
             lorbit (optional:int): The VASP LORBIT flag. (Default=11).
             spin_orbit_coupling (optional:bool): Spin-orbit coupling (Default=False).
             read_pdos (optional:bool): Set to True to read the atom-projected density of states (Default=True).
         """
-        self.filename = filename
+        self.filename = doscar
+        self.min=min
+        self.max=max
+
         self.ispin = ispin
         self.lmax = lmax
         self.spin_orbit_coupling = spin_orbit_coupling
         if self.spin_orbit_coupling:
             raise NotImplementedError('Spin-orbit coupling is not yet implemented')
         self.lorbit = lorbit
-        self.pdos = None
         self.read_header()
-        self.read_total_dos()
+
+        start_to_read = self.number_of_header_lines
+        df = pd.read_csv(self.filename,
+                         skiprows=start_to_read,
+                         nrows=self.number_of_data_points,
+                         delim_whitespace=True,
+                         names=['energy', 'up', 'down', 'integral_up', 'integral_down'],
+                         index_col=False)
+
+        if os.path.isfile(vasprun):
+            vasprun = Vasprun(vasprun)
+            self.efermi = vasprun.efermi
+            df["energy"] = df["energy"]-self.efermi
+            self.energy =  df.energy.values
+            self.energy_name = "E-E_fermi"
+        else:
+            self.energy = df.energy.values
+            self.energy_name = "E"
+
+        df.drop('energy', axis=1)
+        df.rename(columns={"energy":self.energy_name}, inplace=True)
+
+        self.tdos = self.scale(df)
+
         if read_pdos:
             try:
-                self.read_projected_dos()
+                self.pdos_raw = self.read_projected_dos()
             except:
-                raise
+                self.pdos_raw=None
         # if species is set, should check that this is consistent with the number of entries in the
         # projected_dos dataset
 
-        self.structure = Poscar.from_file(str(pathlib.Path(filename).parent / "Prim_Mo2CO2_CONTCAR"),
-                                          check_for_POTCAR=False).structure
+        self.structure = Poscar.from_file(poscar, check_for_POTCAR=False).structure
         self.atoms_list = [i.name for i in self.structure.species]
+        self.starts = [0, ]
+        mark= self.atoms_list[0]
+        for n,i in enumerate(self.atoms_list):
+            if i==mark:
+                pass
+            else:
+                self.starts.append(n)
+            mark =i
+        self.starts.append(len(self.atoms_list))
+
 
     @property
     def number_of_channels(self):
@@ -96,18 +134,6 @@ class DBC:
         self.number_of_data_points = int(self.header[5].split()[2])
         self.efermi = float(self.header[5].split()[3])
 
-    def read_total_dos(self):  # assumes spin_polarised
-        start_to_read = self.number_of_header_lines
-        df = pd.read_csv(self.filename,
-                         skiprows=start_to_read,
-                         nrows=self.number_of_data_points,
-                         delim_whitespace=True,
-                         names=['energy', 'up', 'down', 'int_up', 'int_down'],
-                         index_col=False)
-        self.energy = df.energy.values
-        df.drop('energy', axis=1)
-        self.tdos = df
-
     def read_atomic_dos_as_df(self, atom_number):  # currently assume spin-polarised, no-SO-coupling, no f-states
         assert atom_number > 0 & atom_number <= self.number_of_atoms
         start_to_read = self.number_of_header_lines + atom_number * (self.number_of_data_points + 1)
@@ -119,6 +145,14 @@ class DBC:
                          index_col=False)
         return df.drop('energy', axis=1)
 
+    def scale(self,data):
+        e = data.iloc[:,0].values
+        mark1 = e>=self.min
+        mark2 = e<=self.max
+        mark = mark1*mark2
+        data = data.iloc[mark,:]
+        return data
+
     def read_projected_dos(self):
         """
         Read the projected density of states data into """
@@ -126,8 +160,8 @@ class DBC:
         for i in range(self.number_of_atoms):
             df = self.read_atomic_dos_as_df(i + 1)
             pdos_list.append(df)
-        # self.pdos  =   pdos_list
-        self.pdos = np.vstack([np.array(df) for df in pdos_list]).reshape(
+
+        return np.vstack([np.array(df) for df in pdos_list]).reshape(
             self.number_of_atoms, self.number_of_data_points, self.number_of_channels, self.ispin)
 
     def pdos_select(self, atoms=None, spin=None, l=None, m=None):
@@ -142,7 +176,7 @@ class DBC:
             atom_idx = list(range(self.number_of_atoms))
         else:
             atom_idx = atoms
-        to_return = self.pdos[atom_idx, :, :, :]
+        to_return = self.pdos_raw[atom_idx, :, :, :]
         if not spin:
             spin_idx = list(range(self.ispin))
         elif spin == 'up':
@@ -182,38 +216,71 @@ class DBC:
     def pdos_sum(self, atoms=None, spin=None, l=None, m=None):
         return np.sum(self.pdos_select(atoms=atoms, spin=spin, l=l, m=m), axis=(0, 2, 3))
 
-    def calculate(self, orb="d", species: List[str] = None, atoms: List[int] = None, emax=2, emin=-10, m=None):
-        """species (optional:list(str)): List of atomic species strings, e.g. [ 'Fe', 'Fe', 'O', 'O', 'O' ]. Default=None."""
-
-        if species is None and atoms is None:
-            atoms = list(range(0, self.number_of_atoms))
-
-        elif species is not None and atoms is None:
-            atoms = [idx for idx, j in enumerate(self.atoms_list) if j in species]
-        elif species is None and atoms is not None:
-            pass
+    def pdos_by_spdf_atom_num(self, spin=None, m=None):
+        data = {self.energy_name:self.energy}
+        if self.lmax==3:
+            ls = ["s", "p", "d", "f"]
         else:
-            print("species,atoms are assigned at the same time is not recommended.")
-            atoms = [idx for idx in atoms if self.atoms_list[idx] in species]
+            ls= ["s", "p", "d"]
 
-        assert len(atoms) > 0
-        # calculation of d-band center
-        # Set atoms for integration
-        up = self.pdos_sum(atoms, spin='up', l=orb, m=m)
-        down = self.pdos_sum(atoms, spin='down', l=orb, m=m)
+        atom_idx = list(range(self.number_of_atoms))
+        for atoms in atom_idx:
+            for l in ls:
+                datai = {f"{atoms}-{l}": np.sum(self.pdos_select(atoms=(atoms,), spin=spin, l=l, m=m), axis=(0, 2, 3))}
+                data.update(datai)
+        return self.scale(pd.DataFrame.from_dict(data))
 
-        # Set intergrating range
-        efermi = self.efermi - self.efermi
-        energies = self.energy - self.efermi
+    def pdos_by_spdf_atom_type(self, spin=None, m=None):
+        data = {self.energy_name:self.energy}
+        if self.lmax==3:
+            ls = ["s", "p", "d", "f"]
+        else:
+            ls= ["s", "p", "d"]
 
-        erange = (efermi + emin, efermi + emax)  # integral energy range
-        emask = (energies <= erange[-1])
+        atom_num = len(self.starts)-1
 
-        # Calculating center of the orbital specified above in line 184
-        x = energies[emask]
-        y1 = up[emask]
-        y2 = down[emask]
-        dbc_up = simps(y1 * x, x) / simps(y1, x)
-        dbc_down = simps(y2 * x, x) / simps(y2, x)
-        dbc_all = [dbc_up, dbc_down]
-        return dbc_all
+        for ai in range(atom_num):
+            atoms = list(range(self.starts[ai],self.starts[ai+1]))
+            name_atoms = self.atoms_list[self.starts[ai]]
+            for l in ls:
+                datai = {f"{name_atoms}-{l}": np.sum(self.pdos_select(atoms=atoms, spin=spin, l=l, m=m), axis=(0, 2, 3))}
+                data.update(datai)
+        return self.scale(pd.DataFrame.from_dict(data))
+
+    def pdos_by_atom_type(self, spin=None, l=None, m=None):
+        data = {self.energy_name:self.energy}
+
+        atom_num = len(self.starts)-1
+
+        for ai in range(atom_num):
+            atoms = list(range(self.starts[ai],self.starts[ai+1]))
+            name_atoms = self.atoms_list[self.starts[ai]]
+
+            datai = {f"{name_atoms}-{l}": np.sum(self.pdos_select(atoms=atoms, spin=spin, l=l, m=m), axis=(0, 2, 3))}
+            data.update(datai)
+        return self.scale(pd.DataFrame.from_dict(data))
+
+    def pdos_by_atom_num(self, spin=None,l=None, m=None):
+        data = {self.energy_name:self.energy}
+
+        atom_num = len(self.starts)-1
+
+        for ai in range(atom_num):
+            atoms = list(range(self.starts[ai],self.starts[ai+1]))
+            name_atoms = self.atoms_list[self.starts[ai]]
+
+            datai = {f"{name_atoms}-{l}": np.sum(self.pdos_select(atoms=atoms, spin=spin, l=l, m=m), axis=(0, 2, 3))}
+            data.update(datai)
+        return self.scale(pd.DataFrame.from_dict(data))
+
+    def pdos_by_spdf(self, atoms=None, spin=None, m=None):
+        data = {self.energy_name:self.energy}
+        if self.lmax==3:
+            ls = ["s", "p", "d", "f"]
+        else:
+            ls= ["s", "p", "d"]
+        for l in ls:
+            datai={l:np.sum(self.pdos_select(atoms=atoms, spin=spin, l=l, m=m), axis=(0, 2, 3))}
+            data.update(datai)
+        return self.scale(pd.DataFrame.from_dict(data))
+

@@ -7,7 +7,7 @@ import numpy as np
 from ase.neighborlist import NeighborList
 from numba import prange
 
-from featurebox.featurizers.descriptors.angular_momentum import Wigner_D
+from featurebox.featurizers.envir.descriptors.angular_momentum import Wigner_D
 
 
 class SOAP:

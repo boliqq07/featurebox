@@ -91,7 +91,7 @@ def read(d, store=False, store_name="temp.csv", file_name="BAND_GAP"):
 
 
 def run(args, parser):
-    from mgetool.imports import BatchFile
+    from mgetool.imports import batchfile
     if args.job_type in ["S", "s"]:
         res = cal(args.path_name, store=True, store_name=args.out_name)
 
