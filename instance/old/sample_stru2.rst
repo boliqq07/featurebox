@@ -12,6 +12,9 @@ Check structure elements in scope
 ---------------------------------
 >>> from featurebox.data.check_data import CheckElements
 >>> ce = CheckElements.from_pymatgen_structures()
+>>> checked_data = ce._check(data)
+>>> y = np.array(y)[ce.passed_idx()]
+>>> ce = CheckElements.from_pymatgen_structures()
 >>> checked_data = ce.check(data)
 >>> y = np.array(y)[ce.passed_idx()]
 

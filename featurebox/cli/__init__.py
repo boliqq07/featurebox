@@ -8,7 +8,7 @@
 __doc__ = """
 The ``cli`` part include:
 
-    "bandgap", "dbc", "bader", "cohp", "dos", "general", "diff"
+    "bandgap", "dbc", "bader", "cohp", "dos", "general", "diff", "converge"
 
 which run in command line mode. All message (help) could get by ``'-h'`` .
 

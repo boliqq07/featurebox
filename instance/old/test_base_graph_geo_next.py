@@ -17,7 +17,7 @@ class TestGraph3(unittest.TestCase):
         self.data0_3 = self.data[:3]
         ce = CheckElements.from_pymatgen_structures()
 
-        self.data0_checked = ce.check(self.data[:20])
+        self.data0_checked = ce._check(self.data[:20])
 
     def test_CrystalGraph(self):
         for i in self.data0_checked:

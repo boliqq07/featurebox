@@ -407,7 +407,7 @@ class CLICommand:
         pf = Path(args.paths_file)
         pn = Path(args.path_name)
         if pf.isfile():
-            bad = methods[args.job_type](n_jobs=4)
+            bad = methods[args.job_type](n_jobs=1)
             with open(pf) as f:
                 wd = f.readlines()
             bad.transform(wd)

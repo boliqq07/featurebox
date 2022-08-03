@@ -14,8 +14,8 @@ class TestGraph(unittest.TestCase):
         ce = CheckElements.from_pymatgen_structures()
         self.data = data01
         self.data0 = self.data[0]
-        self.data0_3 = ce.check(self.data)[:10]
-        self.data0_checked = ce.check(self.data)[:10]
+        self.data0_3 = ce._check(self.data)[:10]
+        self.data0_checked = ce._check(self.data)[:10]
 
     def test_get9(self):
         tmps = AtomTableMap(tablename=None)

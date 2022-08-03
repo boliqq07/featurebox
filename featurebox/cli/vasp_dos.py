@@ -794,7 +794,7 @@ class CLICommand:
         pf = Path(args.paths_file)
         pn = Path(args.path_name)
         if pf.isfile():
-            bad = methods[args.job_type](n_jobs=1, store_single=True)
+            bad = methods[args.job_type](n_jobs=4, store_single=True)
             with open(pf) as f:
                 wd = f.readlines()
             bad.transform(wd)
@@ -813,11 +813,13 @@ if __name__ == '__main__':
     """
     import argparse
 
+    # os.chdir(r"C:\Users\Administrator\PycharmProjects\samples\Instance\Instance_mo2co2\MoCMo-O-4")
+
     parser = argparse.ArgumentParser(description="Get DOS. Example:\n"
                                                  "python this.py -p /home/dir_name")
     parser.add_argument('-p', '--path_name', type=str, default='.')
     parser.add_argument('-f', '--paths_file', type=str, default='paths.temp')
-    parser.add_argument('-j', '--job_type', type=int, default=1)
+    parser.add_argument('-j', '--job_type', type=int, default=0)
 
     args = parser.parse_args()
     # run

@@ -13,8 +13,8 @@ class TestGraph(unittest.TestCase):
         self.data = data01
         self.data2 = data02
         self.data0 = self.data[0]
-        self.data0_3 = ce.check(self.data)[:10]
-        self.data0_checked = ce.check(self.data)[:10]
+        self.data0_3 = ce._check(self.data)[:10]
+        self.data0_checked = ce._check(self.data)[:10]
 
     def test_size_xyz(self):
         bag = GEONNGet(cutoff=5.0, nn_strategy="find_xyz_in_spheres")

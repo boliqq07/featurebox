@@ -58,12 +58,12 @@ class CheckElements:
         Examples
         ---------
         >>> ce = CheckElements.from_list(check_method="name",grouped=False)
-        >>> ce.check(["Na","Al","Ta"])
+        >>> ce._check(["Na","Al","Ta"])
         ['Na', 'Al', 'Ta']
         >>> ce = CheckElements.from_list(check_method="name",grouped=True)
-        >>> ce.check([["Na","Al"],["Na","Ta"]])
+        >>> ce._check([["Na","Al"],["Na","Ta"]])
         [['Na', 'Al'], ['Na', 'Ta']]
-        >>> ce.check([["Na","Al"],["Na","Ra"],["Zn","H"]])
+        >>> ce._check([["Na","Al"],["Na","Ra"],["Zn","H"]])
         The 1 (st,ed,th) sample ['Na', 'Ra'] is with element out of AVAILABLE_ELE_NAME
          please to check_data.py for more information.
         [['Na', 'Al'], ['Zn', 'H']]

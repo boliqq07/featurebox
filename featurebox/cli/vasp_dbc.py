@@ -19,6 +19,8 @@ from scipy.integrate import simps
 from tqdm import tqdm
 from typing import Union, Callable, List, Any
 
+warnings.filterwarnings("ignore", category=RuntimeWarning)
+
 
 class _BasePathOut:
     """
@@ -674,16 +676,16 @@ def get_ele_pdos_center(dos: CompleteDos = None, mark_orbital=None, mark_element
 
     spd_dos_center_all = {}
 
-    for mi in mark_element_num:
+    for rank_mi, mi in enumerate(mark_element_num):
         ci = [dos.structure.sites[i] for i in mi]
         for oi in mark_orbital:
             try:
                 dbc = dos.get_band_center(band=oi, sites=ci)
                 dbw = dos.get_band_width(band=oi, sites=ci)
                 dbf = dos.get_band_filling(band=oi, sites=ci)
-                spd_dos_center_all.update({f"{elements[mi[0]]}-{oi}-band_center": dbc})
-                spd_dos_center_all.update({f"{elements[mi[0]]}-{oi}-band_width": dbw})
-                spd_dos_center_all.update({f"{elements[mi[0]]}-{oi}-band_filling": dbf})
+                spd_dos_center_all.update({f"{elements[rank_mi]}-{oi}-band_center": dbc})
+                spd_dos_center_all.update({f"{elements[rank_mi]}-{oi}-band_width": dbw})
+                spd_dos_center_all.update({f"{elements[rank_mi]}-{oi}-band_filling": dbf})
             except:
                 pass
 
@@ -725,16 +727,8 @@ class DBCPy(_BasePathOut):
 
     def batch_after_treatment(self, paths, res_code):
         """4. Organize batch of data in tabular form, return one or more csv file. (force!!!)."""
-        data_all = []
-        col = None
-        for res in res_code:
-            if isinstance(res, pd.DataFrame):
-                col = res.columns
-                res = res.values
-                data_all.append(res)
 
-        data_all = np.concatenate(data_all, axis=0)
-        result = pd.DataFrame(data_all, columns=col, index=paths)
+        result = pd.concat(res_code, axis=0)
 
         result.to_csv(self.out_file)
         print("'{}' are sored in '{}'".format(self.out_file, os.getcwd()))
@@ -913,7 +907,7 @@ class CLICommand:
         pf = Path(args.paths_file)
         pn = Path(args.path_name)
         if pf.isfile():
-            bad = methods[args.job_type](n_jobs=1, store_single=True)
+            bad = methods[args.job_type](n_jobs=4, store_single=True)
             with open(pf) as f:
                 wd = f.readlines()
             bad.transform(wd)
@@ -932,11 +926,13 @@ if __name__ == '__main__':
     """
     import argparse
 
+    # os.chdir(r"C:\Users\Administrator\PycharmProjects\samples\Instance\Instance_mo2co2\MoCMo-O-4")
+
     parser = argparse.ArgumentParser(description="Get band centor. Example:\n"
                                                  "python this.py -p /home/dir_name")
     parser.add_argument('-p', '--path_name', type=str, default='.')
     parser.add_argument('-f', '--paths_file', type=str, default='paths.temp')
-    parser.add_argument('-j', '--job_type', type=int, default=3)
+    parser.add_argument('-j', '--job_type', type=int, default=4)
 
     args = parser.parse_args()
     # run

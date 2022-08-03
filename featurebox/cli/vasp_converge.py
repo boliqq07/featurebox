@@ -1,22 +1,24 @@
 # -*- coding: utf-8 -*-
-# @Time  : 2022/7/26 14:30
+
+# @Time  : 2022/8/3 14:00
 # @Author : boliqq07
 # @Software: PyCharm
 # @License: MIT License
 
 import multiprocessing
 import os
-import pandas as pd
 import pathlib
 import warnings
-
 from abc import abstractmethod
-from path import Path
-from tqdm import tqdm
 from typing import Union, Callable, List, Any
 
+import pandas as pd
+import path
+from path import Path
+from tqdm import tqdm
 
-class _BasePathOut2:
+
+class _BasePathOut:
     """
     The subclass should fill the follow properties and functions.
 
@@ -56,19 +58,19 @@ class _BasePathOut2:
             path = path.replace("\n", "")
         return Path(path).abspath() if not isinstance(path, Path) else path
 
-    def convert(self, path2: List[Union[os.PathLike, Path, pathlib.Path, str]]):
+    def convert(self, path: Union[os.PathLike, Path, pathlib.Path, str]):
         self.check_software()
-        path2 = [self._to_path(path) for path in path2]
-        path_bool = all([self.check_path_and_file(path) for path in path2])
+        path = self._to_path(path)
+        path_bool = self.check_path_and_file(path)
         if path_bool:
-            return self.wrapper(path2)
+            return self.wrapper(path)
         else:
             raise FileNotFoundError
 
-    def transform(self, paths: List[List[Union[os.PathLike, Path, pathlib.Path, str]]]):
+    def transform(self, paths: List[Union[os.PathLike, Path, pathlib.Path, str]]):
         self.check_software()
-        paths = [[self._to_path(pi) for pi in path] for path in paths]
-        paths_bool = [all([self.check_path_and_file(pi) for pi in path]) for path in paths]
+        paths = [self._to_path(pi) for pi in paths]
+        paths_bool = [self.check_path_and_file(pi) for pi in paths]
         if self.n_jobs == 1:
             res_code = [self.wrapper(pi) if pib is True else None for pi, pib in zip(paths, paths_bool)]
         else:
@@ -124,23 +126,31 @@ class _BasePathOut2:
                                           f"   such as, add 'export PATH=$PATH:~/bin/chgsum.pl' to '~/.bashrc' ;\n"
                                           f"2. keep access permission by such as, 'chmod u+x ~/bin/chgsum.pl' .")
 
-    def wrapper(self, paths: List[Path]):
+    def wrapper(self, path: Path):
         """For exception."""
+        if path.isfile():
+            files = [path, ]  # 单个文件
+        else:
+            files = [path / i for i in self.necessary_files]
 
+        old = os.getcwd()
+        os.chdir(path)
         try:
-            result = self.run(paths)
+            result = self.run(path, files)
             if result is None:
-                print("No return for:", paths)
+                print("No return for:", path)
                 if self.log:
                     print(self.log_txt)
             else:
-                print("Ok for:", paths)
+                print("Ok for:", path)
+            os.chdir(old)
             return result
         except BaseException as e:
             print(e)
-            print("Error for:", paths)
+            print("Error for:", path)
             if self.log:
                 print(self.log_txt)
+            os.chdir(old)
             return None
 
     @property
@@ -157,7 +167,7 @@ class _BasePathOut2:
         """
 
     @abstractmethod
-    def run(self, paths: List[Path], files: List = None) -> Any:  # fill
+    def run(self, path: Path, files: List = None) -> Any:  # fill
         """3.Run with software and necessary file and get data.
         (1) Return result in code, or (2) Both return file to each path and in code."""
 
@@ -169,10 +179,10 @@ class _BasePathOut2:
         # ef = vasprun.efermi
         # return {"efermi":ef}
 
-        return {"File": paths}
+        return {"File": path}
 
     @abstractmethod
-    def batch_after_treatment(self, paths: List[List[Path]], res_code):  # fill
+    def batch_after_treatment(self, paths, res_code):  # fill
         """4. Organize batch of data in tabular form, return one or more csv file. (force!!!)."""
         # 合并多个文件到一个csv.
 
@@ -185,97 +195,120 @@ class _BasePathOut2:
         return pd.DataFrame.from_dict({"File": paths}).T
 
 
-class GeneralDiff(_BasePathOut2):
-    """Get data from paths and return csv file."""
+def check_convergence(pt: Union[str, path.Path, os.PathLike, pathlib.Path], msg=None):
+    """
+    Check final energy.
 
-    def __init__(self, n_jobs: int = 1, tq: bool = True, store_single=False,
-                 mod="pymatgen.io.vasp", cmd="Vasprun", necessary_files="vasprun.xml", prop="final_energy"):
-        super(GeneralDiff, self).__init__(n_jobs=n_jobs, tq=tq, store_single=store_single)
-        from importlib import import_module
-        mod = import_module(mod)
-        self.cmd = getattr(mod, cmd)
-        self.necessary_files = [necessary_files, ]
-        self.prop = prop
-        self.out_file = f"{prop}-diff_all.csv"
+    检查结构是否收敛。
+
+    Args:
+        pt: (str, path.Path, os.PathLike,pathlib.Path), path
+        msg:(list of str), message.
+
+    Returns:
+        res:(tuple), bool and msg list
+
+    """
+    if msg is None:
+        msg = []
+    msg.append("\nCheck Convergence:")
+    key_sentence0 = ' reached required accuracy - stopping structural energy minimisation\n'
+    key_sentence1 = ' General timing and accounting informations for this job:\n'
+    if not isinstance(pt, path.Path):
+        pt = path.Path(pt)
+    try:
+        with open(pt / 'OUTCAR') as c:
+            outcar = c.readlines()
+
+        if key_sentence0 not in outcar[-40:] and key_sentence1 not in outcar[-20:]:
+            warnings.warn(f"Not converge and not get the final energy.",
+                          UnicodeWarning)
+            msg.append(f"Not converge and not get the final energy.")
+            res = False, msg
+        else:
+            res = True, msg
+
+    except BaseException:
+        warnings.warn(f"Error to read OUTCAR.",
+                      UnicodeWarning)
+        msg.append(f"Error to read OUTCAR.")
+
+        res = False, msg
+
+    return res
+
+
+class ConvergeChecker(_BasePathOut):
+    """Get d band center from paths and return csv file.
+    VASPKIT Version: 1.2.1  or below.
+    """
+
+    def __init__(self, n_jobs: int = 1, tq: bool = True, store_single=False):
+        super(ConvergeChecker, self).__init__(n_jobs=n_jobs, tq=tq, store_single=store_single)
+        self.necessary_files = ["OUTCAR"]
+        self.out_file = "Fail_paths.temp"
         self.software = []
+        self.key_help = "Check the outcar."
 
-    def run(self, paths: List[Path], files: List = None):
+    def run(self, path: Path, files: List = None):
         """3.Run with software and necessary file and get data.
         (1) Return result in code, or (2) Both return file to each path and in code."""
-        res = []
-        for path in paths:
-            try:
-                vasprun = self.cmd(path / self.necessary_files[0])
-            except BaseException:
-                vasprun = self.cmd.from_file(path / self.necessary_files[0])
-
-            data = getattr(vasprun, self.prop)
-
-            if isinstance(data, (float, int)):
-                res.append(data)
-            else:
-                raise NotImplementedError
-        data = {f"{self.prop}-diff": res[0] - res[1]}
-
-        if self.store_single:
-            result = pd.DataFrame.from_dict({f"{paths[0]}-{paths[1]}": data}).T
-            result.to_csv(f"{self.prop}-diff_single.csv")
-            print(f"Store {self.prop}-diff_single.csv to {os.getcwd()}.")
-            # This file would be covered！！！
-
-        return data
+        # 可以更简单的直接写命令，而不用此处的文件名 (files), 但是需要保证后续出现的文件、软件与 necessary_file, software 一致
+        # 函数强制返回除去None的对象，用于后续检查!!! (若返回None,则认为run转换错误)
+        res_bool=check_convergence(path)[0]
+        if res_bool:
+            pass
+        else:
+            if self.store_single:
+                with open("Fail_this_paths_single.temp", "w") as f:
+                    f.writelines(path)
+        return res_bool
 
     def batch_after_treatment(self, paths, res_code):
         """4. Organize batch of data in tabular form, return one or more csv file. (force!!!)."""
-        data_all = {f"{pi[1]}-{pi[0]}": ri for pi, ri in zip(paths, res_code)}
-        result = pd.DataFrame(data_all).T
-        result.to_csv(self.out_file)
-        print("'{}' are sored in '{}'".format(self.out_file, os.getcwd()))
-
+        res_fail = [pathi for pathi,resi in zip(paths,res_code) if resi is False]
+        with open(f"{self.out_file}", "w") as f:
+            f.writelines("\n".join(res_fail))
+        return res_code
 
 class CLICommand:
     """
-    批量获取性质差。 查看参数帮助使用 -h。
-    在 featurebox 中运行，请使用 featurebox diff ...
-    若复制本脚本并单运行，请使用 python diff ...
+    批量检查outcar，保存到当前工作文件夹。 查看参数帮助使用 -h。
+
+    在 featurebox 中运行，请使用 featurebox converge ...
+    若复制本脚本并单运行，请使用 python converge ...
 
     如果在 featurebox 中运行多个案例，请指定路径所在文件:
 
     Example:
 
-    $ featurebox diff -f /home/sdfa/paths1.temp /home/sdfa/paths2.temp -nec vasprun.xml -prop final_energy
+    $ featurebox converge -f /home/sdfa/paths.temp
 
     如果在 featurebox 中运行单个案例，请指定运算子文件夹:
 
     Example:
 
-    $ featurebox diff -p /home/sdfa/ /home/sdfa2/ -cmd Vasprun -nec vasprun.xml -prop final_energy
+    $ featurebox converge -p /home/parent_dir/***/sample_dir
     """
 
     @staticmethod
     def add_arguments(parser):
-        parser.add_argument('-p', '--path_name', type=str, default=("./data", "./data2"), nargs=2)
-        parser.add_argument('-f', '--paths_file', type=str, default=("paths1.temp", "paths2.temp"), nargs=2)
-        parser.add_argument('-mod', '--mod', type=str, default='pymatgen.io.vasp')
-        parser.add_argument('-cmd', '--cmd', type=str, default='Vasprun')
-        parser.add_argument('-nec', '--nec', type=str, default='vasprun.xml')
-        parser.add_argument('-prop', '--prop', type=str, default='final_energy')
-        # mod = "pymatgen.io.vasp", cmd = "Vasprun", necessary_files = "vasprun.xml", prop = "final_energy"
+        parser.add_argument('-p', '--path_name', type=str, default='.')
+        parser.add_argument('-f', '--paths_file', type=str, default='paths.temp')
+        parser.add_argument('-j', '--job_type', type=int, default=0)
 
     @staticmethod
     def run(args, parser):
-
-        pf = [Path(i) for i in args.paths_file]
-        pn = [Path(i) for i in args.path_name]
-        if pf[0].isfile():
-            bad = GeneralDiff(mod=args.mod, cmd=args.cmd, necessary_files=args.nec, prop=args.prop, n_jobs=4)
-            with open(pf[0]) as f1:
-                wd1 = f1.readlines()
-            with open(pf[1]) as f2:
-                wd2 = f2.readlines()
-            bad.transform([list(i) for i in zip(wd1, wd2)])
-        elif pn[0].isdir():
-            bad = GeneralDiff(mod=args.mod, cmd=args.cmd, necessary_files=args.nec, prop=args.prop, store_single=False)
+        methods = [ConvergeChecker]
+        pf = Path(args.paths_file)
+        pn = Path(args.path_name)
+        if pf.isfile():
+            bad = methods[args.job_type](n_jobs=1, store_single=False)
+            with open(pf) as f:
+                wd = f.readlines()
+            bad.transform(wd)
+        elif pn.isdir():
+            bad = methods[args.job_type](n_jobs=1, store_single=False)
             bad.convert(pn)
         else:
             raise NotImplementedError("Please set -f or -p parameter.")
@@ -284,36 +317,29 @@ class CLICommand:
 if __name__ == '__main__':
     """
     Example:
-        $ python this.py -p /home/dir_name /home/dir_name2
-        $ python this.py -f /home/dir_name/path.temp1  /home/dir_name/path.temp2  
+
+        $ python this.py -p /home/dir_name
     """
     import argparse
 
-    parser = argparse.ArgumentParser(description="Get d band centor.Examples:\n"
-                                                 "python this.py -p /home/dir_name /home/dir_name2")
-
-    parser.add_argument('-p', '--path_name', type=str, default=("./data", "./data2"), nargs=2)
-    parser.add_argument('-f', '--paths_file', type=str, default=("paths1.temp", "paths2.temp"), nargs=2)
-    parser.add_argument('-mod', '--mod', type=str, default='pymatgen.io.vasp')
-    parser.add_argument('-cmd', '--cmd', type=str, default='Vasprun')
-    parser.add_argument('-nec', '--nec', type=str, default='vasprun.xml')
-    parser.add_argument('-prop', '--prop', type=str, default='final_energy')
+    parser = argparse.ArgumentParser(description="Get converge failed path. Example:\n"
+                                                 "python this.py -p /home/dir_name")
+    parser.add_argument('-p', '--path_name', type=str, default='.')
+    parser.add_argument('-f', '--paths_file', type=str, default='paths.temp')
+    parser.add_argument('-j', '--job_type', type=int, default=0)
 
     args = parser.parse_args()
     # run
-    pf = [Path(i) for i in args.paths_file]
-    pn = [Path(i) for i in args.path_name]
-    if pf[0].isfile():
-        print(args.paths_file)
-        bad = GeneralDiff(mod=args.mod, cmd=args.cmd, necessary_files=args.nec, prop=args.prop, n_jobs=1)
-        with open(pf[0]) as f1:
-            wd1 = f1.readlines()
-        with open(pf[1]) as f2:
-            wd2 = f2.readlines()
-        bad.transform([list(i) for i in zip(wd1, wd2)])
-    elif pn[0].isdir():
-        print(args.path_name)
-        bad = GeneralDiff(mod=args.mod, cmd=args.cmd, necessary_files=args.nec, prop=args.prop, store_single=False)
+    methods = [ConvergeChecker, ]
+    pf = Path(args.paths_file)
+    pn = Path(args.path_name)
+    if pf.isfile():
+        bad = methods[args.job_type](n_jobs=1, store_single=False)
+        with open(pf) as f:
+            wd = f.readlines()
+        bad.transform(wd)
+    elif pn.isdir():
+        bad = methods[args.job_type](n_jobs=1, store_single=False)
         bad.convert(pn)
     else:
         raise NotImplementedError("Please set -f or -p parameter.")

@@ -9,17 +9,17 @@ from test.structure_data.get_dataset import data01
 class MyTestCase(unittest.TestCase):
     def test_something(self):
         ce = CheckElements.from_list(check_method="name", grouped=False)
-        res = ce.check(["Na", "Al", "Ta"])
+        res = ce._check(["Na", "Al", "Ta"])
         self.assertEqual(res, ['Na', 'Al', 'Ta'])
 
     def test_something2(self):
         ce = CheckElements.from_list(check_method="name", grouped=True)
-        res = ce.check([["Na", "Al"], ["Na", "Ta"]])
+        res = ce._check([["Na", "Al"], ["Na", "Ta"]])
         self.assertEqual(res, [['Na', 'Al'], ['Na', 'Ta']])
 
     def test_something3(self):
         ce = CheckElements.from_list(check_method="name", grouped=True)
-        res = ce.check([["Na", "Al"], ["Na", "Ra"], ["Zn", "H"]])
+        res = ce._check([["Na", "Al"], ["Na", "Ra"], ["Zn", "H"]])
         self.assertEqual(res, [['Na', 'Al'], ['Zn', 'H']])
 
         a = ce.passed_idx()
@@ -30,7 +30,7 @@ class MyTestCase(unittest.TestCase):
 
         self.data = data01
 
-        self.data0_checked200 = ce.check(self.data[:200])
+        self.data0_checked200 = ce._check(self.data[:200])
         a = ce.passed_idx()
         self.assertTrue(np.all(np.equal(a, [0, 1, 3, 4, 5, 6, 7, 8, 9, 10,
                                             11, 12, 13, 14, 15, 16, 17, 18

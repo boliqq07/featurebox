@@ -27,6 +27,7 @@ commands_ = [
     ('dos', 'featurebox.cli.vasp_dos'),
     ('general', 'featurebox.cli.vasp_general_single'),
     ('diff', 'featurebox.cli.vasp_general_diff'),
+    ('converge', 'featurebox.cli.vasp_converge'),
 
 ]
 
