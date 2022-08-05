@@ -105,7 +105,6 @@ def main(prog='featurebox', description='featurebox command line tool.', args=No
                 parser.error(l1 + l2)
 
 
-
 class Formatter(argparse.HelpFormatter):
     """Improved help formatter."""
 
@@ -135,5 +134,5 @@ class Formatter(argparse.HelpFormatter):
         return out[:-1]
 
 
-if __name__ =="__main__":
+if __name__ == "__main__":
     main(args='h')

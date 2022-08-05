@@ -43,4 +43,3 @@ echo $n1$n2-"CHGCAR_diff" "store in" $old_path
 
 done
 ########"""
-
