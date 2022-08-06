@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: featurebox \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-18 12:29+0800\n"
+"POT-Creation-Date: 2022-08-06 17:53+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.0\n"
+"Generated-By: Babel 2.9.1\n"
 
 #: ../../Introduction.rst:2
 msgid "Introduction"
@@ -52,7 +52,7 @@ msgid ":mod:`featurebox.featurizers.envir`"
 msgstr ""
 
 #: ../../Introduction.rst:15
-msgid "``bond`` Getting local environment data (bond and state) of compound."
+msgid "``bond`` Getting local environment data of compound."
 msgstr ""
 
 #: ../../Introduction.rst:16
@@ -163,4 +163,7 @@ msgid ""
 "package, which employ **envir**, **bond** and **atom** .etc to build "
 "input data."
 msgstr ""
+
+#~ msgid "``bond`` Getting local environment data (bond and state) of compound."
+#~ msgstr ""
 

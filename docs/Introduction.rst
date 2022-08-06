@@ -5,6 +5,8 @@ Introduction
 
 Featurebox contains some tools (**Generation** and **Selection**) for material features.
 
+And one **Extractor** in command line mode to obtain properties in batches.
+
 Generation tools
 -----------------------
 
@@ -12,7 +14,7 @@ Generation tools
  Name                                                    Application
 ------------------------------------------------         -----------------------------------------
  :mod:`featurebox.featurizers.atom.mapper`               ``atom`` Getting each element data of compound.
- :mod:`featurebox.featurizers.envir`                     ``bond`` Getting local environment data (bond and state) of compound.
+ :mod:`featurebox.featurizers.envir`                     ``bond`` Getting local environment data of compound.
  :mod:`featurebox.featurizers.state`                     ``state`` Getting holistic compound data.
  :mod:`featurebox.featurizers.bond.expander`             Tools to transforming pure bond data.
  :mod:`featurebox.featurizers.batch_feature`             A built-in goofy tool for generating features.
@@ -40,12 +42,34 @@ Binding selection tools
 
 All the selection tools are ``sklearn-type``, with ``fit``, ``fit_transform`` methods .etc.
 
-Guide: :doc:`Guide/bind_selection`
-
 .. note::
 
     Where the binding means treat the binding features as one feature.
     And the binding features are selected or deleted synchronously.
+
+
+Property batching extractor
+-----------------------------------------
+
+======================================================= =========================================
+ Name                                                   Application
+------------------------------------------------------- -----------------------------------------
+ :mod:`featurebox.cli.vasp_bader`                       Bader Charge
+ :mod:`featurebox.cli.vasp_cohp`                        COHP
+ :mod:`featurebox.cli.vasp_dbc`                         band center
+ :mod:`featurebox.cli.vasp_dos`                         DOS for plot
+ :mod:`featurebox.cli`                                  **More** ...
+======================================================= =========================================
+
+All the **Extractor**  tools with  ``convert`` method for single case.
+and ``fit_transform`` methods for case list.
+
+Guide: :doc:`Guide/command_mode`
+
+.. note::
+
+    The properties batching extractor are suggested to use ``Command line mode``.
+    But interactive model is still available for more customized operation.
 
 .. note::
 

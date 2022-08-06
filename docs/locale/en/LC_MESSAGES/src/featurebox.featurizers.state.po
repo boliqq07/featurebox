@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: featurebox \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-18 12:29+0800\n"
+"POT-Creation-Date: 2022-08-06 17:53+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.0\n"
+"Generated-By: Babel 2.9.1\n"
 
 #: ../../src/featurebox.featurizers.state.rst:2
 msgid "featurebox.featurizers.state package"
@@ -34,7 +34,7 @@ msgid "General methods for computing property statistics from a list of values"
 msgstr ""
 
 #: featurebox.featurizers.state.extrastats.PropertyStats:1 of
-msgid "Bases: :class:`object`"
+msgid "Bases: :py:class:`object`"
 msgstr ""
 
 #: featurebox.featurizers.state.extrastats.PropertyStats:1 of
@@ -100,7 +100,6 @@ msgstr ""
 #: featurebox.featurizers.state.union.PolyFeature.fit_transform
 #: featurebox.featurizers.state.union.PolyFeature.set_feature_labels
 #: featurebox.featurizers.state.union.UnionFeature.convert
-#: featurebox.featurizers.state.union.UnionFeature.set_feature_labels
 #: featurebox.featurizers.state.union.UnionFeature.transform of
 msgid "Returns"
 msgstr ""
@@ -303,7 +302,7 @@ msgstr ""
 #: featurebox.featurizers.state.state_mapper.StructurePymatgenPropMap:1 of
 msgid ""
 "Bases: "
-":class:`featurebox.featurizers.atom.mapper._StructurePymatgenPropMap`"
+":py:class:`featurebox.featurizers.atom.mapper._StructurePymatgenPropMap`"
 msgstr ""
 
 #: featurebox.featurizers.state.state_mapper.StructurePymatgenPropMap:1 of
@@ -338,7 +337,7 @@ msgid "featurebox.featurizers.state.statistics module"
 msgstr ""
 
 #: featurebox.featurizers.state.statistics.BaseCompositionFeature:1 of
-msgid "Bases: :class:`featurebox.featurizers.atom.mapper.BinaryMap`"
+msgid "Bases: :py:class:`featurebox.featurizers.atom.mapper.BinaryMap`"
 msgstr ""
 
 #: featurebox.featurizers.state.statistics.BaseCompositionFeature:1 of
@@ -348,7 +347,7 @@ msgid ""
 msgstr ""
 
 #: featurebox.featurizers.state.statistics.BaseCompositionFeature:10
-#: featurebox.featurizers.state.statistics.DepartElementFeature:20
+#: featurebox.featurizers.state.statistics.DepartElementFeature:19
 #: featurebox.featurizers.state.statistics.ExtraMix:3
 #: featurebox.featurizers.state.statistics.GeometricMean:3
 #: featurebox.featurizers.state.statistics.HarmonicMean:3
@@ -435,22 +434,11 @@ msgstr ""
 #: featurebox.featurizers.state.statistics.WeightedVariance:1 of
 msgid ""
 "Bases: "
-":class:`featurebox.featurizers.state.statistics.BaseCompositionFeature`"
+":py:class:`featurebox.featurizers.state.statistics.BaseCompositionFeature`"
 msgstr ""
 
 #: featurebox.featurizers.state.statistics.DepartElementFeature:1 of
 msgid "Get the table of element data."
-msgstr ""
-
-#: featurebox.featurizers.state.statistics.DepartElementFeature:14 of
-msgid "fea_0_0   fea_0_1   fea_1_0  ...  fea_14_1  fea_15_0  fea_15_1"
-msgstr ""
-
-#: featurebox.featurizers.state.statistics.DepartElementFeature:15 of
-msgid ""
-"0  0.352363  0.561478  0.635952  ... -0.236541 -0.270104 -0.212607 1 "
-"-0.067220  0.025758  0.141113  ... -0.092577 -0.042185  0.080350 "
-"<BLANKLINE> [2 rows x 32 columns]"
 msgstr ""
 
 #: featurebox.featurizers.state.statistics.DepartElementFeature.set_feature_labels:1
@@ -479,8 +467,8 @@ msgstr ""
 
 #: featurebox.featurizers.state.union.PolyFeature:1 of
 msgid ""
-"Bases: :class:`featurebox.featurizers.base_feature.BaseFeature`, "
-":class:`abc.ABC`"
+"Bases: :py:class:`featurebox.featurizers.base_feature.BaseFeature`, "
+":py:class:`abc.ABC`"
 msgstr ""
 
 #: featurebox.featurizers.state.union.PolyFeature:1 of
@@ -532,47 +520,55 @@ msgid ""
 "respectively. If 'any', without type conversion . Default is 'any'"
 msgstr ""
 
-#: featurebox.featurizers.state.union.PolyFeature.fit_transform:1 of
+#: featurebox.featurizers.state.union.PolyFeature.fit_transform:1
+#: featurebox.featurizers.state.union.UnionFeature.transform:1 of
 msgid "If `convert` takes multiple inputs, supply inputs as a list of tuples."
 msgstr ""
 
-#: featurebox.featurizers.state.union.PolyFeature.fit_transform:3 of
+#: featurebox.featurizers.state.union.PolyFeature.fit_transform:3
+#: featurebox.featurizers.state.union.UnionFeature.transform:3 of
 msgid ""
 "Copy from Mixin class for all transformers in scikit-learn. "
 "TransformerMixin"
 msgstr ""
 
-#: featurebox.featurizers.state.union.PolyFeature.fit_transform:5 of
+#: featurebox.featurizers.state.union.PolyFeature.fit_transform:5
+#: featurebox.featurizers.state.union.UnionFeature.transform:5 of
 msgid "Fit to data, then transform it."
 msgstr ""
 
-#: featurebox.featurizers.state.union.PolyFeature.fit_transform:7 of
+#: featurebox.featurizers.state.union.PolyFeature.fit_transform:7
+#: featurebox.featurizers.state.union.UnionFeature.transform:7 of
 msgid ""
 "Fits transformer to `X` and `y` with optional parameters `fit_params` and"
 " returns a transformed version of `X`."
 msgstr ""
 
-#: featurebox.featurizers.state.union.PolyFeature.fit_transform:10 of
+#: featurebox.featurizers.state.union.PolyFeature.fit_transform:10
+#: featurebox.featurizers.state.union.UnionFeature.transform:10 of
 msgid "list of case."
 msgstr ""
 
-#: featurebox.featurizers.state.union.PolyFeature.fit_transform:12 of
+#: featurebox.featurizers.state.union.PolyFeature.fit_transform:12
+#: featurebox.featurizers.state.union.UnionFeature.transform:12 of
 msgid "deprecated."
 msgstr ""
 
-#: featurebox.featurizers.state.union.PolyFeature.fit_transform:14 of
+#: featurebox.featurizers.state.union.PolyFeature.fit_transform:14
+#: featurebox.featurizers.state.union.UnionFeature.transform:14 of
 msgid ""
 "Additional fit or transform parameters. feature_labels_mark: str, mark "
 "for each feature_labes. for return_type =='pd'. x_labels: list, mark for "
 "each row. for return_type =='pd'."
 msgstr ""
 
-#: featurebox.featurizers.state.union.PolyFeature.fit_transform:18 of
+#: featurebox.featurizers.state.union.PolyFeature.fit_transform:18
+#: featurebox.featurizers.state.union.UnionFeature.transform:18 of
 msgid "result data."
 msgstr ""
 
 #: featurebox.featurizers.state.union.UnionFeature:1 of
-msgid "Bases: :class:`featurebox.featurizers.base_feature.BaseFeature`"
+msgid "Bases: :py:class:`featurebox.featurizers.base_feature.BaseFeature`"
 msgstr ""
 
 #: featurebox.featurizers.state.union.UnionFeature:1 of
@@ -589,6 +585,10 @@ msgstr ""
 
 #: featurebox.featurizers.state.union.UnionFeature.convert:5 of
 msgid "Specified property statistics of features :param comp_number:"
+msgstr ""
+
+#: featurebox.featurizers.state.union.UnionFeature.set_feature_labels:3 of
+msgid "name"
 msgstr ""
 
 #: featurebox.featurizers.state.union.UnionFeature.transform:1 of
@@ -614,7 +614,38 @@ msgstr ""
 msgid "**result** -- features for each entry."
 msgstr ""
 
-#: featurebox.featurizers.state.union.UnionFeature.set_feature_labels:3 of
-msgid "name"
-msgstr ""
+#~ msgid "Bases: :class:`object`"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Bases: "
+#~ ":class:`featurebox.featurizers.atom.mapper._StructurePymatgenPropMap`"
+#~ msgstr ""
+
+#~ msgid "Bases: :class:`featurebox.featurizers.atom.mapper.BinaryMap`"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Bases: "
+#~ ":class:`featurebox.featurizers.state.statistics.BaseCompositionFeature`"
+#~ msgstr ""
+
+#~ msgid "fea_0_0   fea_0_1   fea_1_0  ...  fea_14_1  fea_15_0  fea_15_1"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "0  0.352363  0.561478  0.635952  ... "
+#~ "-0.236541 -0.270104 -0.212607 1 -0.067220  "
+#~ "0.025758  0.141113  ... -0.092577 -0.042185"
+#~ "  0.080350 <BLANKLINE> [2 rows x 32"
+#~ " columns]"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Bases: :class:`featurebox.featurizers.base_feature.BaseFeature`,"
+#~ " :class:`abc.ABC`"
+#~ msgstr ""
+
+#~ msgid "Bases: :class:`featurebox.featurizers.base_feature.BaseFeature`"
+#~ msgstr ""
 

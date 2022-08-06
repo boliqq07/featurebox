@@ -66,6 +66,7 @@ class _BasePathOut:
         else:
             raise FileNotFoundError
 
+
     def transform(self, paths: List[Union[os.PathLike, Path, pathlib.Path, str]]):
         self.check_software()
         paths = [self._to_path(pi) for pi in paths]
@@ -78,6 +79,8 @@ class _BasePathOut:
             res_code = self.parallelize_imap(self.wrapper, iterable=list(trues), n_jobs=self.n_jobs, tq=self.tq)
 
         return self.batch_after_treatment(paths, res_code)
+
+    fit_transform = transform
 
     @staticmethod
     def parallelize_imap(func: Callable, iterable: List, n_jobs: int = 1, tq: bool = True):
@@ -155,25 +158,25 @@ class _BasePathOut:
     @property
     def log_txt(self):
         return f"""
-        ##### HELP START for Method <{self.__class__.__name__}>#######"
-        1.Check the input paths:
-        If paths is offered by '-f', please make sure the file such as 'paths.temp' exits and not empty.
-        Generated one file by 'findpath' command is suggest. use 'findpath -h' for more help.
-        If one path is offered by '-p' (default workpath) directly, please make sure the necessary files 
+    ##### HELP START for Method <{self.__class__.__name__}> #######"
+    1.Check the input paths:
+    
+        If paths is offered by '-f' for 'Batching', please make sure the file such as 'paths.temp' exits and not empty.
+        Generated one file by 'findpath' command in mgetool package is suggest. use 'findpath' command 
+        directly now, to get all sub-folder in current path. Or use 'findpath -h' for more help.
+        
+        If one path is offered by '-p' for 'Single Case' (default, and in WORKPATH), please make sure the necessary files 
         under the path exists, as following.
-        
-        1.Check the necessary files, and software:
-        {self.necessary_files}, {self.software}
-        
-        2.Check the necessary files from key parameter:
-        {self.key_help}
-        
-        3.Check the intermediate temporary files are generated in path:
-        {self.inter_temp_files}
-        
-        use '-h' from more examples.
-        "##### HELP END #######"
-        """
+    
+    2.Check the necessary files, and software:
+    {self.necessary_files}, {self.software}
+    3.Check the necessary files from key parameter:
+    {self.key_help}
+    4.Check the intermediate temporary files are generated in each path:
+    {self.inter_temp_files}
+    
+    Add '-h' from more examples.
+    ##### HELP END #######"""
 
     @abstractmethod
     def run(self, path: Path, files: List = None) -> Any:  # fill

@@ -1,5 +1,5 @@
-Data Type
-==================
+Data Type for Generation
+=========================
 
 Before reading this part,
 make sure the you have already known ``Structure``

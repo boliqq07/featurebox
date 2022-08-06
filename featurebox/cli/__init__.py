@@ -8,18 +8,24 @@
 __doc__ = """
 The ``cli`` part include:
 
-    "bandgap", "dbc", "bader", "cohp", "dos", "general", "diff", "converge"
+    ``bandgap``, ``dbc``, ``bader``, ``cohp``, ``dos``, ``general``, ``diff``, ``converge``
 
-which run in command line mode. All message (help) could get by ``'-h'`` .
+1. Run in command line mode (suggested). All message (help) could get by ``'-h'`` .
 
-1.Run in featurebox: featurebox bandgap -h
+Examples::
 
-2.Copy the script and run the single file: python bandgap -h
+    $ featurebox bandgap -h 
+    
+    $ fbx bandgap -h
+    
+    $ featurebox bandgap -p /home/parent_dir
+    
+    $ featurebox bandgap -f /home/parent_dir/paths.temp
 
-Example:
+2. Run in python.
 
->>> $ featurebox bandgap -p /home/parent_dir
-
->>> $ python bandgap.py -p /home/parent_dir
+>>> from featurebox.cli.vasp_dos import DosxyzPathOut
+>>> dosxyz = DosxyzPathOut(n_jobs=4, store_single=True)
+>>> result = dosxyz.transfrom(paths_list)
 
 """

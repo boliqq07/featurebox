@@ -16,7 +16,16 @@ from featurebox.cli._basepathout import _BasePathOut
 
 
 class General(_BasePathOut):
-    """Get data from paths and return csv file."""
+    """Get data from paths and return csv file.
+
+    Notes::
+
+        mod="pymatgen.io.vasp"         # Module to get class.
+        cmd="Vasprun"                  # class to get object.
+        necessary_files="vasprun.xml"  # class input file.
+        prop="final_energy"            # class.property name.
+
+    """
 
     def __init__(self, n_jobs: int = 1, tq: bool = True, store_single=False,
                  mod="pymatgen.io.vasp", cmd="Vasprun", necessary_files="vasprun.xml", prop="final_energy"):
@@ -69,11 +78,11 @@ class General(_BasePathOut):
         print("'{}' are sored in '{}'".format(self.out_file, os.getcwd()))
 
 
-class CLICommand:
+class _CLICommand:
     """
     批量获取性质（默认vasp.xml能量）。 查看参数帮助使用 -h。
 
-    补充：
+    补充:
 
         在 featurebox 中运行，请使用 featurebox general ...
 
@@ -98,6 +107,10 @@ class CLICommand:
         parser.add_argument('-prop', '--prop', type=str, default='final_energy')
 
         # mod = "pymatgen.io.vasp", cmd = "Vasprun", necessary_files = "vasprun.xml", prop = "final_energy"
+
+    @staticmethod
+    def parse_args(parser):
+        return parser.parse_args()
 
     @staticmethod
     def run(args, parser):
@@ -125,29 +138,9 @@ if __name__ == '__main__':
     """
     import argparse
 
-    parser = argparse.ArgumentParser(description="Get d band centor.Examples:\n"
-                                                 "python this.py -p /home/dir_name")
-
-    parser.add_argument('-p', '--path_name', type=str, default='.')
-    parser.add_argument('-f', '--paths_file', type=str, default='paths.temp')
-    parser.add_argument('-mod', '--mod', type=str, default='pymatgen.io.vasp')
-    parser.add_argument('-cmd', '--cmd', type=str, default='Vasprun')
-    parser.add_argument('-nec', '--nec', type=str, default='vasprun.xml')
-    parser.add_argument('-prop', '--prop', type=str, default='final_energy')
-
-    args = parser.parse_args()
-    # run
-    pf = Path(args.paths_file)
-    pn = Path(args.path_name)
-    if pf.isfile():
-        bad = General(mod=args.mod, cmd=args.cmd, necessary_files=args.nec, prop=args.prop, n_jobs=1)
-        with open(pf) as f:
-            wd = f.readlines()
-        assert len(wd) > 0, f"No path in file {pf}"
-
-        bad.transform(wd)
-    elif pn.isdir():
-        bad = General(mod=args.mod, cmd=args.cmd, necessary_files=args.nec, prop=args.prop, store_single=True)
-        bad.convert(pn)
-    else:
-        raise NotImplementedError("Please set -f or -p parameter.")
+    parser = argparse.ArgumentParser(description=f"Get data by {__file__}. Examples:\n"
+                                                 "python this.py -p /home/dir_name , or\n"
+                                                 "python this.py -f /home/dir_name/paths.temp")
+    _CLICommand.add_arguments(parser=parser)
+    args = _CLICommand.parse_args(parser=parser)
+    _CLICommand.run(args=args, parser=parser)

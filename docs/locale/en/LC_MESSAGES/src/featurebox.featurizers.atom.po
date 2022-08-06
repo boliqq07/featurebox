@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: featurebox \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-18 12:29+0800\n"
+"POT-Creation-Date: 2022-08-06 17:53+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.0\n"
+"Generated-By: Babel 2.9.1\n"
 
 #: ../../src/featurebox.featurizers.atom.rst:2
 msgid "featurebox.featurizers.atom package"
@@ -42,7 +42,7 @@ msgstr ""
 #: featurebox.featurizers.atom.mapper.AtomJsonMap:1
 #: featurebox.featurizers.atom.mapper.AtomPymatgenPropMap:1
 #: featurebox.featurizers.atom.mapper.AtomTableMap:1 of
-msgid "Bases: :class:`featurebox.featurizers.atom.mapper.BinaryMap`"
+msgid "Bases: :py:class:`featurebox.featurizers.atom.mapper.BinaryMap`"
 msgstr ""
 
 #: featurebox.featurizers.atom.mapper.AtomJsonMap:1 of
@@ -99,7 +99,7 @@ msgid "convert list of number to data"
 msgstr ""
 
 #: featurebox.featurizers.atom.mapper.AtomMap:1 of
-msgid "Bases: :class:`featurebox.featurizers.base_feature.BaseFeature`"
+msgid "Bases: :py:class:`featurebox.featurizers.base_feature.BaseFeature`"
 msgstr ""
 
 #: featurebox.featurizers.atom.mapper.AtomMap:1 of
@@ -279,7 +279,7 @@ msgid "get CSV preprocessing"
 msgstr ""
 
 #: featurebox.featurizers.atom.mapper.BinaryMap:1 of
-msgid "Bases: :class:`featurebox.featurizers.atom.mapper.AtomMap`"
+msgid "Bases: :py:class:`featurebox.featurizers.atom.mapper.AtomMap`"
 msgstr ""
 
 #: featurebox.featurizers.atom.mapper.BinaryMap:1 of
@@ -355,4 +355,13 @@ msgstr ""
 #: featurebox.featurizers.atom.mapper.process_uni:1 of
 msgid "Post-processing for bool preprocessing General properties."
 msgstr ""
+
+#~ msgid "Bases: :class:`featurebox.featurizers.atom.mapper.BinaryMap`"
+#~ msgstr ""
+
+#~ msgid "Bases: :class:`featurebox.featurizers.base_feature.BaseFeature`"
+#~ msgstr ""
+
+#~ msgid "Bases: :class:`featurebox.featurizers.atom.mapper.AtomMap`"
+#~ msgstr ""
 

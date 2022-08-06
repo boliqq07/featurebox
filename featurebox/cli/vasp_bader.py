@@ -18,6 +18,13 @@ from featurebox.cli._basepathout import _BasePathOut
 
 class BaderStartZero(_BasePathOut):
     """Get bader from paths and return csv file.
+
+    1.Download bader from
+    http://theory.cm.utexas.edu/henkelman/code/bader/
+
+    2. Download chgsum.pl from
+    http://theory.cm.utexas.edu/vtsttools/download.html
+
     """
 
     def __init__(self, n_jobs: int = 1, tq: bool = True, store_single=False):
@@ -101,31 +108,43 @@ class BaderStartZero(_BasePathOut):
 
 
 class BaderStartInter(BaderStartZero):
-    """
-    For some system can't run BaderStartZero.
+    r"""Get bader from paths and return csv file. For some system can't run BaderStartZero.
+
+    Download bader from
+    http://theory.cm.utexas.edu/henkelman/code/bader/
+
+    Download chgsum.pl from
+    http://theory.cm.utexas.edu/vtsttools/download.html
 
     1. Copy follow code to form one ”badertoACF.sh“ file, and 'sh badertoACF.sh':
-    ############
-    #!/bin/bash
-    old_path=$(cd "$(dirname "$0")"; pwd)
-    for i in $(cat paths.temp)
-    do
-    cd $i
-    echo $(cd "$(dirname "$0")"; pwd)
 
-    chgsum.pl AECCAR0 AECCAR2
-    bader CHGCAR -ref CHGCAR_sum
+    Notes::
+        
+        #!/bin/bash
 
-    cd $old_path
-    done
-    ########
+        old_path=$(cd "$(dirname "$0")"; pwd)
 
-    2. tar -zcvf data.tar.gz */*/ACF.dat */*/POTCAR */*/POSCAR
+        for i in $(cat paths.temp)
 
-    3. move to other system and 'tar -zxvf data.tar.gz'
+        do
 
-    4. Run with this class.
+        cd $i
 
+        echo $(cd "$(dirname "$0")"; pwd)
+
+        chgsum.pl AECCAR0 AECCAR2
+
+        bader CHGCAR -ref CHGCAR_sum
+
+        cd $old_path
+
+        done
+
+    2. tar -zcvf data.tar.gz ACF.dat POTCAR POSCAR.
+
+    3. Move to other system and run  'tar -zxvf data.tar.gz'.
+
+    4. Run with this class (-j 1).
     """
 
     def __init__(self, n_jobs: int = 1, tq: bool = True, store_single=False):
@@ -142,7 +161,8 @@ class BaderStartInter(BaderStartZero):
 
 
 class BaderStartSingleResult(BaderStartZero):
-    """Avoid Double Calculation. Just reproduce the 'results_all' from a 'result_single' files.
+    """Get bader from paths and return csv file.
+    Avoid Double Calculation. Just reproduce the 'results_all' from a 'result_single' files.
     keeping the 'result_single.csv' files exists.
     """
 
@@ -167,7 +187,7 @@ class BaderStartSingleResult(BaderStartZero):
         return self.read(path)
 
 
-class CLICommand:
+class _CLICommand:
     """
     批量提取 bader，保存到当前工作文件夹。 查看参数帮助使用 -h。
 
@@ -199,7 +219,7 @@ class CLICommand:
         1: 调用bader软件分析结果运行。（热启动）
         2: 调用单个bader_single.csv运行。（热启动）
 
-    补充：
+    补充:
 
         在 featurebox 中运行，请使用 featurebox bader ...
 
@@ -219,6 +239,10 @@ class CLICommand:
         parser.add_argument('-p', '--path_name', type=str, default='.')
         parser.add_argument('-f', '--paths_file', type=str, default='paths.temp')
         parser.add_argument('-j', '--job_type', type=int, default=0)
+
+    @staticmethod
+    def parse_args(parser):
+        return parser.parse_args()
 
     @staticmethod
     def run(args, parser):
@@ -246,25 +270,9 @@ if __name__ == '__main__':
     """
     import argparse
 
-    parser = argparse.ArgumentParser(description="Get bader charge. Examples:\n"
+    parser = argparse.ArgumentParser(description=f"Get data by {__file__}. Examples:\n"
                                                  "python this.py -p /home/dir_name , or\n"
                                                  "python this.py -f /home/dir_name/paths.temp")
-    parser.add_argument('-p', '--path_name', type=str, default='.')
-    parser.add_argument('-f', '--paths_file', type=str, default='paths.temp')
-    parser.add_argument('-j', '--job_type', type=int, default=0)
-    args = parser.parse_args()
-    # run
-    methods = [BaderStartZero, BaderStartInter, BaderStartSingleResult]
-    pf = Path(args.paths_file)
-    pn = Path(args.path_name)
-    if pf.isfile():
-        bad = methods[args.job_type](n_jobs=1, store_single=True)
-        with open(pf) as f:
-            wd = f.readlines()
-        assert len(wd) > 0, f"No path in file {pf}"
-        res_all = bad.transform(wd)
-    elif pn.isdir():
-        bad = methods[args.job_type](n_jobs=1, store_single=True)
-        res = bad.convert(pn)
-    else:
-        raise NotImplementedError("Please set -f or -p parameter.")
+    _CLICommand.add_arguments(parser=parser)
+    args = _CLICommand.parse_args(parser=parser)
+    _CLICommand.run(args=args, parser=parser)

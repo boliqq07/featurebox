@@ -560,6 +560,8 @@ class DBCPy(_BasePathOut):
 class DBCStartZero(_BasePathOut):
     """Get d band center from paths and return csv file.
     VASPKIT Version: 1.2.1  or below.
+    Download vaspkit from
+    https://vaspkit.com/installation.html#download
     """
 
     def __init__(self, n_jobs: int = 1, tq: bool = True, store_single=False):
@@ -630,26 +632,36 @@ class DBCStartZero(_BasePathOut):
 
 class DBCStartInter(DBCStartZero):
     """
-    For some system can't run this DandcenterStartZero.
+    For some system can't run this DBCStartZero.
 
-    1. Copy follow code to form one ”dbc.sh“ file, and 'sh dbc.sh':
-    ############
-    #!/bin/bash
-    old_path=$(cd "$(dirname "$0")"; pwd)
-    for i in $(cat paths.temp)
-    do
-    cd $i
-    echo $(cd "$(dirname "$0")"; pwd)
+    Download vaspkit from
+    https://vaspkit.com/installation.html#download
 
-    vaspkit -task 503
+    1. Copy follow code to form one ”dbc.sh“ file, and run 'sh dbc.sh':
 
-    cd $old_path
-    done
-    ########
+    Notes::
 
-    2. tar -zcvf data.tar.gz D_BAND_CENTER
+        #!/bin/bash
 
-    3. move to other system and 'tar -zxvf data.tar.gz'
+        old_path=$(cd "$(dirname "$0")"; pwd)
+
+        for i in $(cat paths.temp)
+
+        do
+
+        cd $i
+
+        echo $(cd "$(dirname "$0")"; pwd)
+
+        vaspkit -task 503
+
+        cd $old_path
+
+        done
+
+    2. tar -zcvf data.tar.gz D_BAND_CENTER.
+
+    3. Move to other system and run  'tar -zxvf data.tar.gz'.
 
     4. Run with this class.
 
@@ -690,7 +702,7 @@ class DBCStartSingleResult(DBCStartZero):
         return self.read(path)
 
 
-class CLICommand:
+class _CLICommand:
     """
     批量提取 band center，保存到当前工作文件夹。 查看参数帮助使用 -h。
 
@@ -713,7 +725,7 @@ class CLICommand:
         3: 调用此python代码运行。
         4: 调用pymatgen运行。
 
-    补充：
+    补充:
 
         在 featurebox 中运行，请使用 featurebox dbc ...
 
@@ -733,6 +745,10 @@ class CLICommand:
         parser.add_argument('-p', '--path_name', type=str, default='.')
         parser.add_argument('-f', '--paths_file', type=str, default='paths.temp')
         parser.add_argument('-j', '--job_type', type=int, default=3)
+
+    @staticmethod
+    def parse_args(parser):
+        return parser.parse_args()
 
     @staticmethod
     def run(args, parser):
@@ -755,32 +771,14 @@ class CLICommand:
 if __name__ == '__main__':
     """
     Example:
-
         $ python this.py -p /home/dir_name
+        $ python this.py -f /home/dir_name/path.temp
     """
     import argparse
 
-    os.chdir(r"C:\Users\Administrator\PycharmProjects\samples\Instance\Instance_mo2co2\MoCMo-O-4\Hf")
-
-    parser = argparse.ArgumentParser(description="Get band centor. Example:\n"
-                                                 "python this.py -p /home/dir_name")
-    parser.add_argument('-p', '--path_name', type=str, default='.')
-    parser.add_argument('-f', '--paths_file', type=str, default='paths.temp')
-    parser.add_argument('-j', '--job_type', type=int, default=3)
-
-    args = parser.parse_args()
-    # run
-    methods = [DBCStartZero, DBCStartInter, DBCStartSingleResult, DBCxyzPathOut, DBCPy]
-    pf = Path(args.paths_file)
-    pn = Path(args.path_name)
-    if pf.isfile():
-        bad = methods[args.job_type](n_jobs=1, store_single=True)
-        with open(pf) as f:
-            wd = f.readlines()
-        assert len(wd) > 0, f"No path in file {pf}"
-        bad.transform(wd)
-    elif pn.isdir():
-        bad = methods[args.job_type](n_jobs=1, store_single=True)
-        bad.convert(pn)
-    else:
-        raise NotImplementedError("Please set -f or -p parameter.")
+    parser = argparse.ArgumentParser(description=f"Get data by {__file__}. Examples:\n"
+                                                 "python this.py -p /home/dir_name , or\n"
+                                                 "python this.py -f /home/dir_name/paths.temp")
+    _CLICommand.add_arguments(parser=parser)
+    args = _CLICommand.parse_args(parser=parser)
+    _CLICommand.run(args=args, parser=parser)

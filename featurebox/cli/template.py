@@ -11,6 +11,6 @@ This is a template for properties extract.
 1. core function (force)
 2. class with classmethod from (files, or path).
 3. processing batch
-4. CLICommand. (force)
+4. _CLICommand. (force)
 5. argparse. (force)
 """

@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  featurebox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-18 11:39+0800\n"
+"POT-Creation-Date: 2022-08-06 17:53+0800\n"
 "PO-Revision-Date: 2021-08-06 06:13+0000\n"
 "Last-Translator: changxin W <986798607@qq.com>, 2021\n"
 "Language: zh\n"
@@ -19,7 +19,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.0\n"
+"Generated-By: Babel 2.9.1\n"
 
 #: ../../Introduction.rst:2
 msgid "Introduction"
@@ -56,8 +56,8 @@ msgid ":mod:`featurebox.featurizers.envir`"
 msgstr ""
 
 #: ../../Introduction.rst:15
-msgid "``bond`` Getting local environment data (bond and state) of compound."
-msgstr "获取化合物的局域环境特征（包括元素，键和状态）。"
+msgid "``bond`` Getting local environment data of compound."
+msgstr "获取化合物的局域环境特征。"
 
 #: ../../Introduction.rst:16
 msgid ":mod:`featurebox.featurizers.state`"
@@ -167,8 +167,6 @@ msgid ""
 "package, which employ **envir**, **bond** and **atom** .etc to build "
 "input data."
 msgstr ""
-"旧的神经网络部分 **Graph neural network** 已经被移到 ``pyg_extension`` "
-"包， 神经网络的输入建立在特征生成成工具的基础上，使用其中的 **envir** , **bond** , **atom** 等"
-"生成。"
-
+"旧的神经网络部分 **Graph neural network** 已经被移到 ``pyg_extension`` 包， "
+"神经网络的输入建立在特征生成成工具的基础上，使用其中的 **envir** , **bond** , **atom** 等生成。"
 

@@ -9,58 +9,74 @@ featurebox.cli package
 Submodules
 ----------
 
-featurebox.cli.autoincar module
+featurebox.cli.vasp\_bader module
+---------------------------------
+
+.. automodule:: featurebox.cli.vasp_bader
+   :members:
+   :undoc-members: CLICommand
+   :show-inheritance:
+
+featurebox.cli.vasp\_bgp module
 -------------------------------
 
-.. automodule:: featurebox.cli.autoincar
+.. automodule:: featurebox.cli.vasp_bgp
    :members:
-   :undoc-members:
+   :undoc-members: CLICommand
    :show-inheritance:
 
-featurebox.cli.bader module
----------------------------
+featurebox.cli.vasp\_chg\_diff module
+-------------------------------------
 
-.. automodule:: featurebox.cli.bader
+.. automodule:: featurebox.cli.vasp_chg_diff
    :members:
-   :undoc-members:
+   :undoc-members: CLICommand
    :show-inheritance:
 
-featurebox.cli.batchrun module
-------------------------------
+featurebox.cli.vasp\_cohp module
+--------------------------------
 
-.. automodule:: featurebox.cli.batchrun
+.. automodule:: featurebox.cli.vasp_cohp
    :members:
-   :undoc-members:
+   :undoc-members: CLICommand
    :show-inheritance:
 
-featurebox.cli.bgefvk module
-----------------------------
+featurebox.cli.vasp\_converge module
+------------------------------------
 
-.. automodule:: featurebox.cli.bgefvk
+.. automodule:: featurebox.cli.vasp_converge
    :members:
-   :undoc-members:
+   :undoc-members: CLICommand
    :show-inheritance:
 
-featurebox.cli.dbcvk module
----------------------------
+featurebox.cli.vasp\_dbc module
+-------------------------------
 
-.. automodule:: featurebox.cli.dbcvk
+.. automodule:: featurebox.cli.vasp_dbc
    :members:
-   :undoc-members:
+   :undoc-members: CLICommand
    :show-inheritance:
 
-featurebox.cli.main module
---------------------------
+featurebox.cli.vasp\_dos module
+-------------------------------
 
-.. automodule:: featurebox.cli.main
+.. automodule:: featurebox.cli.vasp_dos
    :members:
-   :undoc-members:
+   :undoc-members: CLICommand
    :show-inheritance:
 
-featurebox.cli.nebmake module
------------------------------
+featurebox.cli.vasp\_general\_diff module
+-----------------------------------------
 
-.. automodule:: featurebox.cli.nebmake
+.. automodule:: featurebox.cli.vasp_general_diff
    :members:
-   :undoc-members:
+   :undoc-members: CLICommand
+   :show-inheritance:
+
+featurebox.cli.vasp\_general\_single module
+-------------------------------------------
+
+.. automodule:: featurebox.cli.vasp_general_single
+   :members:
+   :undoc-members: CLICommand
    :show-inheritance:

@@ -15,6 +15,5 @@ Subpackages
    featurebox.cli
    featurebox.data
    featurebox.featurizers
-   featurebox.properties
    featurebox.selection
    featurebox.utils

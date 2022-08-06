@@ -20,8 +20,6 @@ def check_convergence(pt: Union[str, path.Path, os.PathLike, pathlib.Path], msg=
     """
     Check final energy.
 
-    检查结构是否收敛。
-
     Args:
         pt: (str, path.Path, os.PathLike,pathlib.Path), path
         msg:(list of str), message.
@@ -62,7 +60,7 @@ def check_convergence(pt: Union[str, path.Path, os.PathLike, pathlib.Path], msg=
 
 
 class ConvergeChecker(_BasePathOut):
-    """Get d band center from paths and return csv file.
+    """Get energy from paths and return csv file.
     VASPKIT Version: 1.2.1  or below.
     """
 
@@ -95,11 +93,11 @@ class ConvergeChecker(_BasePathOut):
         return res_code
 
 
-class CLICommand:
+class _CLICommand:
     """
     批量检查outcar，保存到当前工作文件夹。 查看参数帮助使用 -h。
 
-    补充：
+    补充:
 
         在 featurebox 中运行，请使用 featurebox converge ...
 
@@ -112,6 +110,7 @@ class CLICommand:
         如果在 featurebox 中运行单个案例，请指定运算子文件夹:
 
         $ featurebox converge -p /home/parent_dir/***/sample_dir
+
     """
 
     @staticmethod
@@ -121,12 +120,16 @@ class CLICommand:
         parser.add_argument('-j', '--job_type', type=int, default=0)
 
     @staticmethod
+    def parse_args(parser):
+        return parser.parse_args()
+
+    @staticmethod
     def run(args, parser):
         methods = [ConvergeChecker]
         pf = Path(args.paths_file)
         pn = Path(args.path_name)
         if pf.isfile():
-            bad = methods[args.job_type](n_jobs=1, store_single=False)
+            bad = methods[args.job_type](n_jobs=4, store_single=False)
             with open(pf) as f:
                 wd = f.readlines()
             assert len(wd) > 0, f"No path in file {pf}"
@@ -141,30 +144,14 @@ class CLICommand:
 if __name__ == '__main__':
     """
     Example:
-
         $ python this.py -p /home/dir_name
+        $ python this.py -f /home/dir_name/path.temp
     """
     import argparse
 
-    parser = argparse.ArgumentParser(description="Get converge failed path. Example:\n"
-                                                 "python this.py -p /home/dir_name")
-    parser.add_argument('-p', '--path_name', type=str, default='.')
-    parser.add_argument('-f', '--paths_file', type=str, default='paths.temp')
-    parser.add_argument('-j', '--job_type', type=int, default=0)
-
-    args = parser.parse_args()
-    # run
-    methods = [ConvergeChecker, ]
-    pf = Path(args.paths_file)
-    pn = Path(args.path_name)
-    if pf.isfile():
-        bad = methods[args.job_type](n_jobs=1, store_single=False)
-        with open(pf) as f:
-            wd = f.readlines()
-        assert len(wd) > 0, f"No path in file {pf}"
-        bad.transform(wd)
-    elif pn.isdir():
-        bad = methods[args.job_type](n_jobs=1, store_single=False)
-        bad.convert(pn)
-    else:
-        raise NotImplementedError("Please set -f or -p parameter.")
+    parser = argparse.ArgumentParser(description=f"Get data by {__file__}. Examples:\n"
+                                                 "python this.py -p /home/dir_name , or\n"
+                                                 "python this.py -f /home/dir_name/paths.temp")
+    _CLICommand.add_arguments(parser=parser)
+    args = _CLICommand.parse_args(parser=parser)
+    _CLICommand.run(args=args, parser=parser)

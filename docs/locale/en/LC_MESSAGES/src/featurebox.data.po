@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: featurebox \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-18 12:29+0800\n"
+"POT-Creation-Date: 2022-08-06 17:53+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.0\n"
+"Generated-By: Babel 2.9.1\n"
 
 #: ../../src/featurebox.data.rst:2
 msgid "featurebox.data package"
@@ -40,9 +40,9 @@ msgid "featurebox.data.check\\_data module"
 msgstr ""
 
 #: featurebox.data.check_data.CheckElements:1
-#: featurebox.data.mp_access.MpAccess:1 featurebox.data.namesplit.NameSplit:1
-#: of
-msgid "Bases: :class:`object`"
+#: featurebox.data.data_sep.DataSameSep:1 featurebox.data.mp_access.MpAccess:1
+#: featurebox.data.namesplit.NameSplit:1 of
+msgid "Bases: :py:class:`object`"
 msgstr ""
 
 #: featurebox.data.check_data.CheckElements:1 of
@@ -67,6 +67,13 @@ msgstr ""
 
 #: featurebox.data.check_data.CheckElements
 #: featurebox.data.check_data.CheckElements.check
+#: featurebox.data.data_sep.DataSameSep
+#: featurebox.data.data_sep.DataSameSep.replace_entry
+#: featurebox.data.data_sep.DataSameSep.settle
+#: featurebox.data.data_sep.DataSameSep.settle_to_pd
+#: featurebox.data.data_sep.DataSameSep.update
+#: featurebox.data.data_sep.DataSameSep.update_entry
+#: featurebox.data.data_sep.DataSameSep.update_entry_kv
 #: featurebox.data.mp_access.MpAccess
 #: featurebox.data.mp_access.MpAccess.data_fetcher
 #: featurebox.data.namesplit.NameSplit.transform of
@@ -100,6 +107,8 @@ msgid "Names or numbers, or list of pymatgen.Structure"
 msgstr ""
 
 #: featurebox.data.check_data.CheckElements.check
+#: featurebox.data.data_sep.DataSameSep.settle
+#: featurebox.data.data_sep.DataSameSep.settle_to_pd
 #: featurebox.data.mp_access.MpAccess.data_fetcher
 #: featurebox.data.namesplit.NameSplit.transform of
 msgid "Returns"
@@ -110,6 +119,8 @@ msgid "**result** -- List of filtered structures."
 msgstr ""
 
 #: featurebox.data.check_data.CheckElements.check
+#: featurebox.data.data_sep.DataSameSep.settle
+#: featurebox.data.data_sep.DataSameSep.settle_to_pd
 #: featurebox.data.mp_access.MpAccess.data_fetcher
 #: featurebox.data.namesplit.NameSplit.transform of
 msgid "Return type"
@@ -128,6 +139,113 @@ msgid "The mark for all structures, return np.ndarray index."
 msgstr ""
 
 #: ../../src/featurebox.data.rst:21
+msgid "featurebox.data.data\\_sep module"
+msgstr ""
+
+#: featurebox.data.data_sep.DataSameSep:1 of
+msgid "Settle data, dispatch data with \"all\" mark to each site."
+msgstr ""
+
+#: featurebox.data.data_sep.DataSameSep:27 of
+msgid ""
+"Make sure the key of data are formatted by {label}-{Si or Sall} !!! and "
+"all values is dict type. The 'S' is the same with sites_name."
+msgstr ""
+
+#: featurebox.data.data_sep.DataSameSep:30 of
+msgid "first key are formated by {label}{sep}{Si or Sall}."
+msgstr ""
+
+#: featurebox.data.data_sep.DataSameSep:32 of
+msgid "default \"-\"."
+msgstr ""
+
+#: featurebox.data.data_sep.DataSameSep:34 of
+msgid "default \"S\"."
+msgstr ""
+
+#: featurebox.data.data_sep.DataSameSep:36 of
+msgid "default 3."
+msgstr ""
+
+#: featurebox.data.data_sep.DataSameSep:38 of
+msgid "the class prefix of one batch data."
+msgstr ""
+
+#: featurebox.data.data_sep.DataSameSep.replace_entry:1 of
+msgid "Replace entry!! This would cover the old entry."
+msgstr ""
+
+#: featurebox.data.data_sep.DataSameSep.replace_entry:3
+#: featurebox.data.data_sep.DataSameSep.update_entry:3
+#: featurebox.data.data_sep.DataSameSep.update_entry_kv:3 of
+msgid "label name."
+msgstr ""
+
+#: featurebox.data.data_sep.DataSameSep.replace_entry:5
+#: featurebox.data.data_sep.DataSameSep.update_entry:5
+#: featurebox.data.data_sep.DataSameSep.update_entry_kv:5 of
+msgid "number small than self.dup, or \"all\"."
+msgstr ""
+
+#: featurebox.data.data_sep.DataSameSep.replace_entry:7
+#: featurebox.data.data_sep.DataSameSep.update_entry:7 of
+msgid "entry data."
+msgstr ""
+
+#: featurebox.data.data_sep.DataSameSep.replace_entry:9
+#: featurebox.data.data_sep.DataSameSep.update_entry:9
+#: featurebox.data.data_sep.DataSameSep.update_entry_kv:11 of
+msgid "prefix name for batch of data."
+msgstr ""
+
+#: featurebox.data.data_sep.DataSameSep.settle:1 of
+msgid "Settle data and return a formed dict."
+msgstr ""
+
+#: featurebox.data.data_sep.DataSameSep.settle:3
+#: featurebox.data.data_sep.DataSameSep.settle_to_pd:3 of
+msgid "sort the entry keys or not."
+msgstr ""
+
+#: featurebox.data.data_sep.DataSameSep.settle:6 of
+msgid "**data_settled** -- new dict."
+msgstr ""
+
+#: featurebox.data.data_sep.DataSameSep.settle_to_pd:1 of
+msgid "Settle data and return a formed pd.Dataframe."
+msgstr ""
+
+#: featurebox.data.data_sep.DataSameSep.settle_to_pd:6 of
+msgid "**data_settled** -- new table."
+msgstr ""
+
+#: featurebox.data.data_sep.DataSameSep.spilt:1 of
+msgid "Try to get prefix,label,site_number."
+msgstr ""
+
+#: featurebox.data.data_sep.DataSameSep.update:1 of
+msgid "Add dict data."
+msgstr ""
+
+#: featurebox.data.data_sep.DataSameSep.update:3 of
+msgid "{entry_key: entry}."
+msgstr ""
+
+#: featurebox.data.data_sep.DataSameSep.update_entry:1
+#: featurebox.data.data_sep.DataSameSep.update_entry_kv:1 of
+msgid "Add dict data to entry."
+msgstr ""
+
+#: featurebox.data.data_sep.DataSameSep.update_entry_kv:7 of
+msgid "name of property."
+msgstr ""
+
+#: featurebox.data.data_sep.DataSameSep.update_entry_kv:9 of
+msgid "value (float, int, str)"
+msgstr ""
+
+#: ../../src/featurebox.data.rst:29
 msgid "featurebox.data.mp\\_access module"
 msgstr ""
 
@@ -199,7 +317,7 @@ msgid ""
 "'_Materials Project.csv', which contains \"Materials Id\" columns."
 msgstr ""
 
-#: ../../src/featurebox.data.rst:29
+#: ../../src/featurebox.data.rst:37
 msgid "featurebox.data.namesplit module"
 msgstr ""
 
@@ -234,4 +352,7 @@ msgstr ""
 #: featurebox.data.namesplit.NameSplit.transform:8 of
 msgid "return tables.csv."
 msgstr ""
+
+#~ msgid "Bases: :class:`object`"
+#~ msgstr ""
 

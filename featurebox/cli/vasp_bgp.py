@@ -56,7 +56,8 @@ class BandGapPy(_BasePathOut):
 
 class BandGapStartZero(_BasePathOut):
     """Get band gap from paths and return csv file.
-    VASPKIT Version: 1.2.1 or below.
+    VASPKIT Version: 1.2.1 or below. Download vaspkit from
+    https://vaspkit.com/installation.html#download
 
     """
 
@@ -132,25 +133,34 @@ class BandGapStartZero(_BasePathOut):
 class BandGapStartInter(BandGapStartZero):
     """
     For some system can't run this BandGapStartZero.
+    Download vaspkit from
+    https://vaspkit.com/installation.html#download
 
     1. Copy follow code to form one ”bg.sh“ file, and 'sh bg.sh':
-    ############
-    #!/bin/bash
-    old_path=$(cd "$(dirname "$0")"; pwd)
-    for i in $(cat paths.temp)
-    do
-    cd $i
-    echo $(cd "$(dirname "$0")"; pwd)
 
-    vaspkit -task 911 > BAND_GAP
+    Notes::
 
-    cd $old_path
-    done
-    ########
+        #!/bin/bash
 
-    2. tar -zcvf data.tar.gz BAND_GAP
+        old_path=$(cd "$(dirname "$0")"; pwd)
 
-    3. move to other system and 'tar -zxvf data.tar.gz'
+        for i in $(cat paths.temp)
+
+        do
+
+        cd $i
+
+        echo $(cd "$(dirname "$0")"; pwd)
+
+        vaspkit -task 911 > BAND_GAP
+
+        cd $old_path
+
+        done
+
+    2. tar -zcvf data.tar.gz BAND_GAP.
+
+    3. Move to other system and run  'tar -zxvf data.tar.gz'.
 
     4. Run with this class.
 
@@ -194,7 +204,7 @@ class BandGapStartSingleResult(BandGapStartZero):
         return self.read(path)
 
 
-class CLICommand:
+class _CLICommand:
     """
     批量提取 band gap center，保存到当前工作文件夹。 查看参数帮助使用 -h。
 
@@ -216,7 +226,7 @@ class CLICommand:
         2: 调用单个bandgap_single.csv运行。（热启动）
         3: 调用pymatgen运行。
 
-    补充：
+    补充:
 
         在 featurebox 中运行，请使用 featurebox bandgap ...
 
@@ -238,12 +248,16 @@ class CLICommand:
         parser.add_argument('-j', '--job_type', type=int, default=3)
 
     @staticmethod
+    def parse_args(parser):
+        return parser.parse_args()
+
+    @staticmethod
     def run(args, parser):
         methods = [BandGapStartZero, BandGapStartInter, BandGapStartSingleResult, BandGapPy]
         pf = Path(args.paths_file)
         pn = Path(args.path_name)
         if pf.isfile():
-            bad = methods[args.job_type](n_jobs=4)
+            bad = methods[args.job_type](n_jobs=4, store_single=True)
             with open(pf) as f:
                 wd = f.readlines()
             assert len(wd) > 0, f"No path in file {pf}"
@@ -258,31 +272,14 @@ class CLICommand:
 if __name__ == '__main__':
     """
     Example:
-
         $ python this.py -p /home/dir_name
+        $ python this.py -f /home/dir_name/path.temp
     """
     import argparse
 
-    # os.chdir("./data")
-    parser = argparse.ArgumentParser(description="Get band gaps. Examples：\n"
-                                                 "python this.py -p /home/dir_name")
-    parser.add_argument('-p', '--path_name', type=str, default='.')
-    parser.add_argument('-f', '--paths_file', type=str, default='paths.temp')
-    parser.add_argument('-j', '--job_type', type=int, default=3)
-
-    args = parser.parse_args()
-    # run
-    methods = [BandGapStartZero, BandGapStartInter, BandGapStartSingleResult, BandGapPy]
-    pf = Path(args.paths_file)
-    pn = Path(args.path_name)
-    if pf.isfile():
-        bad = methods[args.job_type](n_jobs=1, store_single=True)
-        with open(pf) as f:
-            wd = f.readlines()
-        assert len(wd) > 0, f"No path in file {pf}"
-        bad.transform(wd)
-    elif pn.isdir():
-        bad = methods[args.job_type](n_jobs=1, store_single=True)
-        bad.convert(pn)
-    else:
-        raise NotImplementedError("Please set -f or -p parameter.")
+    parser = argparse.ArgumentParser(description=f"Get data by {__file__}. Examples:\n"
+                                                 "python this.py -p /home/dir_name , or\n"
+                                                 "python this.py -f /home/dir_name/paths.temp")
+    _CLICommand.add_arguments(parser=parser)
+    args = _CLICommand.parse_args(parser=parser)
+    _CLICommand.run(args=args, parser=parser)

@@ -24,8 +24,16 @@ Select by Corr
 
 Nn range [0,8], the features are binding in to 2 sized: [[0,1],[2,3],[4,5],[6,7]]
 Corresponding to the initial 13 feature.
-[0,1] -> 0; [2,3] -> 1; [4,5]->2; [6,7]->3, 8->4; 9->5; 10->6; 11->7; 12->8; 13->9;
-::
+[0,1] -> 0;
+[2,3] -> 1;
+[4,5]->2;
+[6,7]->3;
+8->4;
+9->5;
+10->6;
+11->7;
+12->8;
+13->9;
 
 >>> co.fit(x)
 >>> Corr(muti_index=[0, 8], threshold=0.7)
@@ -40,4 +48,4 @@ In this step, you could select manually, or filter automatically as following.
 >>> #[0, 1, 2, 3, 4, 6, 7, 8]
 
 where 2 is filtered, Corresponding to the initial feature 14.
-[0,1] -> 0; [2,3] -> 1; [4,5]->2; [6,7]->3, 8->4; ``[9->5]``; 10->6; 11->7; 12->8; ``13->9``;
+[0,1] -> 0; [2,3] -> 1; [4,5]->2; [6,7]->3; 8->4; ``[9->5]``; 10->6; 11->7; 12->8; ``13->9``;

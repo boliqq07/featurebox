@@ -13,8 +13,6 @@ Subpackages
    :maxdepth: 4
 
    featurebox.featurizers.atom
-   featurebox.featurizers.bond
-   featurebox.featurizers.descriptors
    featurebox.featurizers.envir
    featurebox.featurizers.state
 

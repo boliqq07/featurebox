@@ -32,12 +32,12 @@ class Dosxyz:
                  ispin=2, lmax=2, lorbit=11, spin_orbit_coupling=False, read_pdos=True, max=10, min=-10):
         """
         Create a Doscar object from a VASP DOSCAR file.
+
         Args:
             doscar (str): Filename of the VASP DOSCAR file to read.
             poscar (str): File POSCAR/CONTCAR
             vasprun (str): File vasprun.xml
-            ispin (optional:int): ISPIN flag. Set to 1 for non-spin-polarised or 2 for spin-polarised calculations.
-            Default = 2.
+            ispin (optional:int): ISPIN flag. Set to 1 for non-spin-polarised or 2 for spin-polarised calculations. (Default = 2.)
             lmax (optional:int): Maximum l angular momentum. (d=2, f=3). Default = 2.
             lorbit (optional:int): The VASP LORBIT flag. (Default=11).
             max (optional:int): max value
@@ -398,7 +398,7 @@ class Dosxyz:
 
 
 class DosxyzPathOut(_BasePathOut):
-    """Get d band center from paths and return csv file."""
+    """Get dos from paths and return csv file."""
 
     def __init__(self, n_jobs: int = 1, tq: bool = True, store_single=False, method="ele"):
         super(DosxyzPathOut, self).__init__(n_jobs=n_jobs, tq=tq, store_single=store_single)
@@ -518,18 +518,6 @@ def get_atom_pdos(dos: CompleteDos = None, mark_orbital=None, mark_atom_numbers=
     return spd_dos_res
 
 
-def get_atom_dos():
-    pass
-
-
-# def get_pdos_percent(spd_dos):
-#     dos_energy = spd_dos["energy"]
-#     total = spd_dos["total"]
-#     index = np.argmin(np.abs(np.array(dos_energy)))
-#     percent = {k: np.sum(v[index - 1:index + 1]) / np.sum(total[index - 1:index + 1]) for k, v in spd_dos.items()}
-#     return percent
-
-
 class DosPy(_BasePathOut):
     """Get d band center from paths and return csv file."""
 
@@ -576,7 +564,7 @@ class DosPy(_BasePathOut):
         return result
 
 
-class CLICommand:
+class _CLICommand:
     """
     批量提取 DOS，保存到当前工作文件夹。 查看参数帮助使用 -h。
 
@@ -586,7 +574,7 @@ class CLICommand:
         INCAR, CONTCAR, DOSCAR
 
         2.运行文件要求:
-        vaspkit <= 1.2.1, for -j in (0,1,2)
+        vaspkit <= 1.2.1, for -j in (0,1)
 
     -j 参数说明：
 
@@ -596,7 +584,7 @@ class CLICommand:
         0: 调用pymatgen运行。
         1: 调用此python代码运行。
 
-    补充：
+    补充:
 
         在 featurebox 中运行，请使用 featurebox dos ...
 
@@ -616,6 +604,10 @@ class CLICommand:
         parser.add_argument('-p', '--path_name', type=str, default='.')
         parser.add_argument('-f', '--paths_file', type=str, default='paths.temp')
         parser.add_argument('-j', '--job_type', type=int, default=0)
+
+    @staticmethod
+    def parse_args(parser):
+        return parser.parse_args()
 
     @staticmethod
     def run(args, parser):
@@ -638,32 +630,14 @@ class CLICommand:
 if __name__ == '__main__':
     """
     Example:
-
         $ python this.py -p /home/dir_name
+        $ python this.py -f /home/dir_name/path.temp
     """
     import argparse
 
-    # os.chdir(r"C:\Users\Administrator\PycharmProjects\samples\Instance\Instance_mo2co2\MoCMo-O-4")
-
-    parser = argparse.ArgumentParser(description="Get DOS. Example:\n"
-                                                 "python this.py -p /home/dir_name")
-    parser.add_argument('-p', '--path_name', type=str, default='.')
-    parser.add_argument('-f', '--paths_file', type=str, default='paths.temp')
-    parser.add_argument('-j', '--job_type', type=int, default=0)
-
-    args = parser.parse_args()
-    # run
-    methods = [DosPy, DosxyzPathOut]
-    pf = Path(args.paths_file)
-    pn = Path(args.path_name)
-    if pf.isfile():
-        bad = methods[args.job_type](n_jobs=1, store_single=True)
-        with open(pf) as f:
-            wd = f.readlines()
-        assert len(wd) > 0, f"No path in file {pf}"
-        bad.transform(wd)
-    elif pn.isdir():
-        bad = methods[args.job_type](n_jobs=1, store_single=True)
-        bad.convert(pn)
-    else:
-        raise NotImplementedError("Please set -f or -p parameter.")
+    parser = argparse.ArgumentParser(description=f"Get data by {__file__}. Examples:\n"
+                                                 "python this.py -p /home/dir_name , or\n"
+                                                 "python this.py -f /home/dir_name/paths.temp")
+    _CLICommand.add_arguments(parser=parser)
+    args = _CLICommand.parse_args(parser=parser)
+    _CLICommand.run(args=args, parser=parser)

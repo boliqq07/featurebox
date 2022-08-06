@@ -256,7 +256,6 @@ class DepartElementFeature(BaseCompositionFeature):
     >>> comp = [{"H": 2, "Pd": 1},{"He":1, "Al":4}]
     >>> wa.set_feature_labels(["fea_{}".format(_) for _ in range(16)]) # 16 this the feature number of built-in "ele_megnet.json"
     >>> couple_data = wa.fit_transform(comp)
-
         fea_0_0   fea_0_1   fea_1_0  ...  fea_14_1  fea_15_0  fea_15_1
     0  0.352363  0.561478  0.635952  ... -0.236541 -0.270104 -0.212607
     1 -0.067220  0.025758  0.141113  ... -0.092577 -0.042185  0.080350
@@ -275,7 +274,7 @@ class DepartElementFeature(BaseCompositionFeature):
 
         return np.array(elems).ravel(order='F')
 
-    def convert_dict(self, atoms: [dict, PMGComp]) -> np.ndarray:
+    def convert_dict(self, atoms: Union[dict, PMGComp]) -> np.ndarray:
         """
         Convert atom {symbol: fraction} list to numeric features
         """
