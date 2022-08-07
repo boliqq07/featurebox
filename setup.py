@@ -23,7 +23,7 @@ setup(
                 'Some of code are non-originality, just copy for use. All the referenced code are marked,'
                 'details can be shown in their sources',
     install_requires=['pandas', 'numpy', 'sympy', 'scipy', 'scikit-learn', 'joblib', 'matplotlib', 'deprecated',
-                      'requests', 'tqdm', 'six', "pymatgen", "deap", "numba", "ase", "mgetool>=0.0.53"],
+                      'requests', 'tqdm', 'six', "pymatgen", "deap", "numba", "ase", "mgetool>=0.0.54"],
     include_package_data=True,
     author='wangchangxin',
     author_email='986798607@qq.com',
