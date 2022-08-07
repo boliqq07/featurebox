@@ -29,7 +29,7 @@ class BaderStartZero(_BasePathOut):
 
     def __init__(self, n_jobs: int = 1, tq: bool = True, store_single=False):
         super(BaderStartZero, self).__init__(n_jobs=n_jobs, tq=tq, store_single=store_single)
-        self.necessary_files = ["AECCAR0", "AECCAR2", "CHGCAR", "POTCAR", "POSCAR"]
+        self.necessary_files = ["AECCAR0", "AECCAR2", "CHGCAR", "POTCAR", "CONTCAR"]
         self.out_file = "bader_all.csv"
         self.software = ["chgsum.pl", "bader"]
         self.inter_temp_files = ["ACF.dat", "CHGCAR_sum"]
@@ -38,9 +38,9 @@ class BaderStartZero(_BasePathOut):
     @staticmethod
     def read(path, store=False, store_name="bader_single.csv"):
         """Run linux cmd and return result, make sure the bader is installed."""
-        if (path / "POTCAR").isfile() and (path / "POSCAR").isfile:
+        if (path / "POTCAR").isfile() and (path / "CONTCAR").isfile:
             potcar = Potcar.from_file("POTCAR")
-            symbols = Poscar.from_file("POSCAR", check_for_POTCAR=False).structure.atomic_numbers
+            symbols = Poscar.from_file("CONTCAR", check_for_POTCAR=False).structure.atomic_numbers
 
             zval = []
             for i in symbols:
@@ -149,7 +149,7 @@ class BaderStartInter(BaderStartZero):
 
     def __init__(self, n_jobs: int = 1, tq: bool = True, store_single=False):
         super(BaderStartInter, self).__init__(n_jobs=n_jobs, tq=tq, store_single=store_single)
-        self.necessary_files = ["ACF.dat", "POTCAR", "POSCAR"]
+        self.necessary_files = ["ACF.dat", "POTCAR", "CONTCAR"]
         self.out_file = "bader_all.csv"
         self.software = []
         self.key_help = self.__doc__

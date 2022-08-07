@@ -56,8 +56,8 @@ Reference: https://github.com/materialsproject/pymatgen
 
 .. note::
 
-    If ``Spblib`` needed, which need C++ to compiled, please
-    download `Python Extension Packages <https://www.lfd.uci.edu/~gohlke/pythonlibs/>`_
+    If ``Spblib`` needed, which need C++ to compiled, please download
+    `Python Extension Packages <https://www.lfd.uci.edu/~gohlke/pythonlibs/>`_
     and pip install locally.
 
 Such as ::

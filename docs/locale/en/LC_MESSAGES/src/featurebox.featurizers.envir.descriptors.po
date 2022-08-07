@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: featurebox \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-18 12:29+0800\n"
+"POT-Creation-Date: 2022-08-06 17:53+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,13 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.9.1\n"
 
-#: ../../src/modules.rst:2
-msgid "featurebox"
+#: ../../src/featurebox.featurizers.envir.descriptors.rst:2
+msgid "featurebox.featurizers.envir.descriptors package"
+msgstr ""
+
+#: featurebox.featurizers.envir.descriptors:1 of
+msgid ""
+"This is copy from ``pyXtal_FF``. Contains atom features and bond features"
+" method."
 msgstr ""
 

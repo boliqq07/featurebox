@@ -5,12 +5,11 @@
 #
 # Translators:
 # changxin W <986798607@qq.com>, 2021
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version:  featurebox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-06 17:53+0800\n"
+"POT-Creation-Date: 2022-08-07 14:36+0800\n"
 "PO-Revision-Date: 2021-08-06 06:13+0000\n"
 "Last-Translator: changxin W <986798607@qq.com>, 2021\n"
 "Language: zh\n"
@@ -28,140 +27,222 @@ msgstr "介绍"
 #: ../../Introduction.rst:6
 msgid ""
 "Featurebox contains some tools (**Generation** and **Selection**) for "
-"material features."
-msgstr "Featurebox包含了一些工具，用于材料特征的 **生成** 和 **选择** 。 "
+"material features. **Generation** is used for feature generation in batch"
+" model. **Selection** is used for feature selection."
+msgstr ""
+"Featurebox 包含了一些工具，用于材料特征的 **生成** 和 **选择** "
+"。其中 **生成** 工具通用于批量产生特征及相关辅助工具，**筛选** 工具通用于特征筛选。"
 
 #: ../../Introduction.rst:9
+msgid ""
+"And one **Extractor** in command line mode is add to obtain some special "
+"properties in batch model. The special properties need certain subsequent"
+" computational processing or third-party software participation."
+msgstr ""
+"此外，包含一种通过命令行调用的性质 **提取** "
+"工具，用于处理需要一定的后续复杂计算，或第三方软件参与计算的某些特殊性质。此工具目前主要针对vasp第一性原理计算分析，其他软件支持陆续开发中。"
+
+#: ../../Introduction.rst:12
+msgid ""
+"In total, ``Batching`` is the central idea of this module. All works are "
+"for convenient data manipulation."
+msgstr ""
+"总之，  ``Batching`` 是 featurebox 的核心思想, 从频繁的重复性操作中解放双手，更好的关注于数据本身。"
+
+#: ../../Introduction.rst:15
 msgid "Generation tools"
 msgstr "特征生成成工具"
 
-#: ../../Introduction.rst:12 ../../Introduction.rst:33
+#: ../../Introduction.rst:18 ../../Introduction.rst:39
+#: ../../Introduction.rst:61
 msgid "Name"
 msgstr "名称"
 
-#: ../../Introduction.rst:12 ../../Introduction.rst:33
+#: ../../Introduction.rst:18 ../../Introduction.rst:39
+#: ../../Introduction.rst:61
 msgid "Application"
 msgstr "应用"
 
-#: ../../Introduction.rst:14
+#: ../../Introduction.rst:20
 msgid ":mod:`featurebox.featurizers.atom.mapper`"
 msgstr ""
 
-#: ../../Introduction.rst:14
+#: ../../Introduction.rst:20
 msgid "``atom`` Getting each element data of compound."
 msgstr "获取化合物的每个元素数据特征。"
 
-#: ../../Introduction.rst:15
+#: ../../Introduction.rst:21
 msgid ":mod:`featurebox.featurizers.envir`"
 msgstr ""
 
-#: ../../Introduction.rst:15
+#: ../../Introduction.rst:21
 msgid "``bond`` Getting local environment data of compound."
 msgstr "获取化合物的局域环境特征。"
 
-#: ../../Introduction.rst:16
+#: ../../Introduction.rst:22
 msgid ":mod:`featurebox.featurizers.state`"
 msgstr ""
 
-#: ../../Introduction.rst:16
+#: ../../Introduction.rst:22
 msgid "``state`` Getting holistic compound data."
 msgstr "获得化合物整体的状态特征。"
 
-#: ../../Introduction.rst:17
+#: ../../Introduction.rst:23
 msgid ":mod:`featurebox.featurizers.bond.expander`"
 msgstr ""
 
-#: ../../Introduction.rst:17
+#: ../../Introduction.rst:23
 msgid "Tools to transforming pure bond data."
 msgstr "转换键特征。"
 
-#: ../../Introduction.rst:18
+#: ../../Introduction.rst:24
 msgid ":mod:`featurebox.featurizers.batch_feature`"
 msgstr ""
 
-#: ../../Introduction.rst:18
+#: ../../Introduction.rst:24
 msgid "A built-in goofy tool for generating features."
 msgstr "生成特征的一键式”傻瓜“工具。"
 
-#: ../../Introduction.rst:19
+#: ../../Introduction.rst:25
 msgid ":class:`featurebox.data.namesplit.NameSplit`"
 msgstr ""
 
-#: ../../Introduction.rst:19
+#: ../../Introduction.rst:25
 msgid "Dividing compound names to elemental proportion table."
 msgstr "将复杂的纯文本化学式名称分割成元素比例表格。"
 
-#: ../../Introduction.rst:20
+#: ../../Introduction.rst:26
 msgid ":class:`featurebox.data.mp_access.MpAccess`"
 msgstr ""
 
-#: ../../Introduction.rst:20
+#: ../../Introduction.rst:26
 msgid "Getting data from pymatgen conveniently."
 msgstr "pymatgen API 数据工具。"
 
-#: ../../Introduction.rst:23
+#: ../../Introduction.rst:29
 msgid ""
 "All the **Generation** tools with  ``convert`` method for single case. "
 "and ``fit_transform`` methods for case list."
 msgstr "所有的特征产生工具，使用 ``convert`` 方法处理单一数据。并且使用 ``fit_transform`` 方法批量处理数据列表。"
 
-#: ../../Introduction.rst:26
+#: ../../Introduction.rst:32
 msgid "Guide: :doc:`Guide/data_type`"
 msgstr "指南： :doc:`Guide/data_type`"
 
-#: ../../Introduction.rst:30
+#: ../../Introduction.rst:36
 msgid "Binding selection tools"
 msgstr "绑定选择工具"
 
-#: ../../Introduction.rst:35
+#: ../../Introduction.rst:41
 msgid ":class:`featurebox.selection.backforward.BackForward`"
 msgstr ""
 
-#: ../../Introduction.rst:35
+#: ../../Introduction.rst:41
 msgid "Backforward selection"
 msgstr "前进后退筛选"
 
-#: ../../Introduction.rst:36
+#: ../../Introduction.rst:42
 msgid ":class:`featurebox.selection.corr.Corr`"
 msgstr ""
 
-#: ../../Introduction.rst:36
+#: ../../Introduction.rst:42
 msgid "Correlation selection."
 msgstr "相关系数筛选"
 
-#: ../../Introduction.rst:37
+#: ../../Introduction.rst:43
 msgid ":class:`featurebox.selection.exhaustion.Exhaustion`"
 msgstr ""
 
-#: ../../Introduction.rst:37
+#: ../../Introduction.rst:43
 msgid "Exhaustion selection."
 msgstr "穷举筛选"
 
-#: ../../Introduction.rst:38
+#: ../../Introduction.rst:44
 msgid ":class:`featurebox.selection.ga.GA`"
 msgstr ""
 
-#: ../../Introduction.rst:38
+#: ../../Introduction.rst:44
 msgid "Genetic algorithm selection."
 msgstr "遗传算法筛选"
 
-#: ../../Introduction.rst:41
+#: ../../Introduction.rst:47
 msgid ""
-"All the selection tools are ``sklearn-type``, with ``fit``, "
+"All the **Selection** tools are ``sklearn-type``, with ``fit``, "
 "``fit_transform`` methods .etc."
 msgstr "所有的选择类工具为 ``sklearn-type``，有 ``fit``，``fit_transform`` 等方法。"
 
-#: ../../Introduction.rst:43
-msgid "Guide: :doc:`Guide/bind_selection`"
-msgstr "指南： :doc:`Guide/bind_selection`"
-
-#: ../../Introduction.rst:47
+#: ../../Introduction.rst:51
 msgid ""
 "Where the binding means treat the binding features as one feature. And "
 "the binding features are selected or deleted synchronously."
 msgstr "其中绑定意味着将绑定特征视为一个整体，并同步筛选或删除绑定特征。"
 
-#: ../../Introduction.rst:52
+#: ../../Introduction.rst:54
+msgid "Guide: :doc:`Guide/bind_selection`"
+msgstr "指南： :doc:`Guide/bind_selection`"
+
+#: ../../Introduction.rst:58
+msgid "Property batching extractor"
+msgstr "性质批量提取器"
+
+#: ../../Introduction.rst:63
+msgid ":mod:`featurebox.cli.vasp_bader`"
+msgstr ""
+
+#: ../../Introduction.rst:63
+msgid "Bader Charge"
+msgstr "bader 电荷"
+
+#: ../../Introduction.rst:64
+msgid ":mod:`featurebox.cli.vasp_cohp`"
+msgstr ""
+
+#: ../../Introduction.rst:64
+msgid "COHP"
+msgstr "COHP 成键"
+
+#: ../../Introduction.rst:65
+msgid ":mod:`featurebox.cli.vasp_dbc`"
+msgstr ""
+
+#: ../../Introduction.rst:65
+msgid "band center"
+msgstr "能带中心（d,p）"
+
+#: ../../Introduction.rst:66
+msgid ":mod:`featurebox.cli.vasp_dos`"
+msgstr ""
+
+#: ../../Introduction.rst:66
+msgid "DOS for plot"
+msgstr "态密度"
+
+#: ../../Introduction.rst:67
+msgid ":mod:`featurebox.cli`"
+msgstr ""
+
+#: ../../Introduction.rst:67
+msgid "**More** ..."
+msgstr "**更多** ..."
+
+#: ../../Introduction.rst:70
+msgid ""
+"All the **Extractor**  tools with  ``convert`` method for single case. "
+"and ``fit_transform`` methods for case list."
+msgstr "所有的特征提取工具，使用 ``convert`` 方法处理单一数据。并且使用 ``fit_transform`` 方法批量处理数据列表。"
+
+#: ../../Introduction.rst:73
+msgid "Guide: :doc:`Guide/command_mode`"
+msgstr "指南： :doc:`Guide/command_mode`"
+
+#: ../../Introduction.rst:77
+msgid ""
+"The properties batching extractor are suggested to use ``Command line "
+"mode`` . But interactive model is still available for more customized "
+"operation."
+msgstr "建议使用 ``命令行`` 方式调用提取器，当然，也能使用python交互模式完成更多复杂功能。"
+
+#: ../../Introduction.rst:82
 msgid ""
 "The **Graph neural network** have been removed to ``pyg_extension`` "
 "package, which employ **envir**, **bond** and **atom** .etc to build "
@@ -169,4 +250,3 @@ msgid ""
 msgstr ""
 "旧的神经网络部分 **Graph neural network** 已经被移到 ``pyg_extension`` 包， "
 "神经网络的输入建立在特征生成成工具的基础上，使用其中的 **envir** , **bond** , **atom** 等生成。"
-

@@ -2,42 +2,41 @@ Data Type for Generation
 =========================
 
 Before reading this part,
-make sure the you have already known ``Structure``
-:doc:`background` .
+make sure the you have already known ``Structure`` from :doc:`background`.
 
 Definition
 ---------------
 
 We divided the features into the following categories:
 
-1. **atom feature**
+1. **atom/element feature** *
 
-    The properties of atoms themselves.
+    The properties of atoms/elements themselves.
 
 2. **bond features**
 
     The properties of inter-atomic bonds.
 
-3. **state (overall compound) features**
+3. **state (overall compound) features** *
 
     The overall properties of the compound, include the properties that embody the overall crystal structure.
 
-4. **Crystal Structure features (Graph features)**
+4. **crystal structure features (graph features)**
 
-    The total of atom feature, bond features, state (overall compound) features.
+    The total of atom/element feature, bond features, state (overall compound) features.
 
 
 .. note::
 
-    Different from 1,2,3, The 4 is cannot be used directly for ``sklearn``, but suit for ``torch`` .
+    Different from 1,3, The 2,4 is cannot be used directly for ``sklearn``, but suit for ``torch`` .
 
 Access
 ---------
 All the **Generation** tools with  ``convert`` method for single case,
 and ``fit_transform`` methods for case list.
 
-1. Atom Features
-:::::::::::::::::
+1. Atom/Element Features
+:::::::::::::::::::::::::
 
 Example Graph 1:
 
@@ -53,11 +52,11 @@ Example Graph 2:
     :align: center
 
 
-Atom features can be obtained by fetching periodic table data, using you input data.
+Atom/Element features can be obtained by fetching periodic table data, using you input data.
 There are two data should offer. (at least one).
 
-- Your input data. The type could be element number or element name.
-    (or pymatgen ``Structure``, we have built-in conversion functions of ``Structure``,
+- Your input data. The type could be atom number ( ``list`` ) or element name ( ``dict`` ) or pymatgen ``Structure``.
+    (we have built-in conversion functions of ``Structure``,
     to directly get all the atomic information in compound).
 
 - The element periodic table data (optional).
@@ -65,13 +64,15 @@ There are two data should offer. (at least one).
     To customize your element periodic table. you can offer ( ``.json`` , ``.csv`` ) file or
     any python data ( ``dict`` , ``pandas.DataFrame`` , ``numpy.ndarray`` ) in code.
 
-1. ( ``.json`` , ``dict`` ) by ``AtomJsonMap`` ,
+    1. ( ``.json`` , ``dict`` ) by ``AtomJsonMap`` ,
 
-2. (``.csv``, ``pandas.DataFrame`` , ``numpy.ndarray`` ) by ``AtomTableMap`` .
+    2. (``.csv``, ``pandas.DataFrame`` , ``numpy.ndarray`` ) by ``AtomTableMap`` .
 
-3. And one specialized ``AtomPymatgenPropMap`` for fetch data from "pymatgen.core.periodic_table.json".
+    3. And one specialized ``AtomPymatgenPropMap`` for fetch data from "pymatgen.core.periodic_table.json".
 
 Example:
+
+**Input atom list**
 
 >>> from featurebox.featurizers.atom.mapper import AtomTableMap
 >>> tmps = AtomTableMap(search_tp="number")
@@ -79,6 +80,8 @@ Example:
 >>> multi_sample = [[1,1,1,76,76],[3,3,4,4]]
 >>> a = tmps.convert(single_sample)
 >>> b = tmps.transform(multi_sample)
+
+**Input element dict**
 
 >>> from featurebox.featurizers.atom.mapper import AtomJsonMap
 >>> tmps = AtomJsonMap(search_tp="name",return_type="np")
@@ -90,6 +93,13 @@ Example:
 >>> a = tmps.convert(single_sample2)
 >>> b = tmps.transform(multi_sample)
 >>> b = tmps.transform(multi_sample2)
+
+**Input structure type**
+
+>>> from featurebox.featurizers.atom.mapper import AtomJsonMap
+>>> tmps = AtomJsonMap(search_tp="name",return_type="np")
+>>> a = tmps.convert(structurei)
+>>> b = tmps.transform(structure_list)
 
 More:
     :doc:`../Examples/sample_fea1`
@@ -108,21 +118,19 @@ The ``Structure`` and ``Atoms`` could mutual transform by ``pymatgen.io.ase.AseA
 There are two method to get state (overall compound) features.
 
 
-- **1. Information extraction from structure data ( ``Structure`` of ``Pymatgen`` ).**
-
-For the ``Atoms`` of ``ase`` , The ``Structure`` could transformed by ``pymatgen.io.ase.AseAtomsAdaptor``.
+- **1. Information extraction from structure data.**
 
 Example:
 
 >>> from pymatgen.core.structure import Structure
->>> structurei =Structure.from_file(r"your_path/featurebox/data/temp_test_structure/W2C.cif")
+>>> structurei = Structure.from_file(r"your_path/featurebox/data/temp_test_structure/W2C.cif")
 
 >>> from featurebox.featurizers.state.state_mapper import StructurePymatgenPropMap
 >>> tmps = StructurePymatgenPropMap(prop_name = ["density", "volume", "ntypesp"])
 >>> a = tmps.convert(structurei)
 >>> b = tmps.transform([structurei]*10)
 
-where the prop_name is the name of properties of in ``pymatgen``,
+where the prop_name is the name of properties of in ``pymatgen`` ,
 the name of properties is not apply for all compounds, and the data could not a single number.::
 
     prop_name = ["atomic_radius","atomic_mass","number","max_oxidation_state","min_oxidation_state",
@@ -132,7 +140,7 @@ the name of properties is not apply for all compounds, and the data could not a 
 
 - **2. Combination or mathematical processing of atomic features according to composition ratio.**
 
-This is one key method to get state features!!!
+This is one key method to get state features!!! We can get the results directly or in two step as needed.
 
 - Get State features directly.
 
@@ -149,12 +157,9 @@ This is one key method to get state features!!!
 >>> wa.fit_transform(x4)
 
 More combination operation ``WeightedSum`` , ``GeometricMean`` , ``HarmonicMean`` , ``WeightedVariance``
-and so on can be found in :mod:`featurebox.featurizers.state.statistics`.
+and so on can be found in :mod:`featurebox.featurizers.state.statistics`. More: :doc:`../Examples/sample_fea3`.
 
-More:
-    :doc:`../Examples/sample_fea3`
-
-Get State features by step (Just for compositions with same number of atomic types).
+- Get State features by step (Just for compositions with same number of atomic types).
 
 Get the depart element feature first.
 
@@ -175,6 +180,7 @@ Union the depart element feature.
 >>> state_data = uf.fit_transform()
 
 .. note::
+
     The ``UnionFeature`` also could be used for your own table data!
 
 Addition:

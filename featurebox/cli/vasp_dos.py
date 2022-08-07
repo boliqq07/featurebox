@@ -28,7 +28,7 @@ class Dosxyz:
 
     number_of_header_lines = 6
 
-    def __init__(self, doscar="DOSCAR", poscar="POSCAR", vasprun="vasprun.xml",
+    def __init__(self, doscar="DOSCAR", poscar="CONTCAR", vasprun="vasprun.xml",
                  ispin=2, lmax=2, lorbit=11, spin_orbit_coupling=False, read_pdos=True, max=10, min=-10):
         """
         Create a Doscar object from a VASP DOSCAR file.
@@ -402,7 +402,7 @@ class DosxyzPathOut(_BasePathOut):
 
     def __init__(self, n_jobs: int = 1, tq: bool = True, store_single=False, method="ele"):
         super(DosxyzPathOut, self).__init__(n_jobs=n_jobs, tq=tq, store_single=store_single)
-        self.necessary_files = ["vasprun.xml", "DOSCAR", "POSCAR"]
+        self.necessary_files = ["vasprun.xml", "DOSCAR", "CONTCAR"]
         self.out_file = "dos_xyz_py_all.csv"
         self.software = []
         self.method = method
@@ -413,7 +413,7 @@ class DosxyzPathOut(_BasePathOut):
         # 可以更简单的直接写命令，而不用此处的文件名 (files), 但是需要保证后续出现的文件、软件与 necessary_file, software 一致
         # 函数强制返回除去None的对象，用于后续检查!!! (若返回None,则认为run转换错误)
 
-        dos = Dosxyz(doscar="DOSCAR", poscar="POSCAR", vasprun="vasprun.xml", ispin=2, lmax=2,
+        dos = Dosxyz(doscar="DOSCAR", poscar="CONTCAR", vasprun="vasprun.xml", ispin=2, lmax=2,
                      lorbit=11, read_pdos=True, max=10, min=-10)
 
         if self.method == "ele":

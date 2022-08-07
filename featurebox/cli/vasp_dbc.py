@@ -29,7 +29,7 @@ class _Dosxyz:
 
     number_of_header_lines = 6
 
-    def __init__(self, doscar="DOSCAR", poscar="POSCAR", vasprun="vasprun.xml",
+    def __init__(self, doscar="DOSCAR", poscar="CONTCAR", vasprun="vasprun.xml",
                  ispin=2, lmax=2, lorbit=11, spin_orbit_coupling=False, read_pdos=True, max=10, min=-10):
         """
         Create a Doscar object from a VASP DOSCAR file.
@@ -566,7 +566,7 @@ class DBCStartZero(_BasePathOut):
 
     def __init__(self, n_jobs: int = 1, tq: bool = True, store_single=False):
         super(DBCStartZero, self).__init__(n_jobs=n_jobs, tq=tq, store_single=store_single)
-        self.necessary_files = ["INCAR", "DOSCAR", "POSCAR"]
+        self.necessary_files = ["INCAR", "DOSCAR", "CONTCAR"]
         self.out_file = "dbc_all.csv"
         self.software = ["vaspkit"]
         self.key_help = "Make sure the 'LORBIT=11' in vasp INCAR file."
