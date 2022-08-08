@@ -200,7 +200,7 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
             if self.check_must:
                 slice10 = [_ for _ in slice10 if _ not in self.must_fold_add]
 
-            if len(slice10) <= self.min_type_feature_to_select:
+            if len(slice0) <= self.min_type_feature_to_select:
                 pass
             else:
                 for sub in list(slice10):
