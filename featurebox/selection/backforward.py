@@ -103,7 +103,7 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
     """
 
     def __init__(self, estimator: BaseEstimator, n_type_feature_to_select: int = None, primary_feature: int = None,
-                 muti_grade: int = 2, muti_index: List = None, refit=False,cv=5,
+                 muti_grade: int = 2, muti_index: List = None, refit=False, cv=5, min_type_feature_to_select: int = 3,
                  must_index: List = None, tolerant: float = 0.01, verbose: int = 0, random_state: int = None):
         """
 
@@ -113,6 +113,8 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
             sklearn.estimator
         n_type_feature_to_select:int
             force select number max
+        min_type_feature_to_select:int
+            force select number min
         primary_feature:int
              primary features to start loop, default n_features//2.
         muti_grade: int
@@ -145,7 +147,8 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
         self.random_state = random_state
         self.tolerant = tolerant
         self.refit = refit
-        self.cv=cv
+        self.min_type_feature_to_select = min_type_feature_to_select
+        self.cv = cv
 
     @property
     def _estimator_type(self):
@@ -196,14 +199,18 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
             ran.shuffle(slice10)
             if self.check_must:
                 slice10 = [_ for _ in slice10 if _ not in self.must_fold_add]
-            for sub in list(slice10):
-                slice0.remove(sub)
-                test0 = score(slices=slice0)
-                if test0 > best0 - self.tolerant:
-                    best0 = test0
-                else:
-                    slice0.append(sub)
-                # print(slice0, best)
+
+            if len(slice10) <= self.min_type_feature_to_select:
+                pass
+            else:
+                for sub in list(slice10):
+                    slice0.remove(sub)
+                    test0 = score(slices=slice0)
+                    if test0 > best0 - self.tolerant:
+                        best0 = test0
+                    else:
+                        slice0.append(sub)
+                    # print(slice0, best)
             return slice0, best0
 
         def sub_slice_force(slice10):
@@ -425,7 +432,7 @@ class BackForwardStable(MetaEstimatorMixin, SelectorMixin, BaseEstimator):
     ...
     """
 
-    def __init__(self, estimator: BaseEstimator, n_type_feature_to_select: int = None,
+    def __init__(self, estimator: BaseEstimator, n_type_feature_to_select: int = None,min_type_feature_to_select:int=3,
                  primary_feature: int = None, muti_grade: int = 2, muti_index: List = None,
                  must_index: List = None, verbose: int = 0, random_state: int = None,
                  times: int = 5, scoring: str = "r2", n_jobs: int = None, refit=False):
@@ -437,6 +444,8 @@ class BackForwardStable(MetaEstimatorMixin, SelectorMixin, BaseEstimator):
             sklearn.estimator
         n_type_feature_to_select:int
             force select number max
+        min_type_feature_to_select:int
+            force select number min
         primary_feature:int
              expectation select number
         muti_grade: int
@@ -466,6 +475,7 @@ class BackForwardStable(MetaEstimatorMixin, SelectorMixin, BaseEstimator):
         self.verbose = verbose
         self.n_jobs = n_jobs
         self.n_type_feature_to_select = n_type_feature_to_select
+        self.min_type_feature_to_select = min_type_feature_to_select
         self.primary_feature = primary_feature
         self.muti_grade = muti_grade
         self.muti_index = muti_index
@@ -499,6 +509,7 @@ class BackForwardStable(MetaEstimatorMixin, SelectorMixin, BaseEstimator):
 
         baf = BackForward(estimator=estimator,
                           n_type_feature_to_select=self.n_type_feature_to_select,
+                          min_type_feature_to_select=self.min_type_feature_to_select,
                           verbose=self.verbose, primary_feature=self.primary_feature,
                           muti_grade=self.muti_grade, muti_index=self.muti_index,
                           must_index=self.must_index, random_state=ran)

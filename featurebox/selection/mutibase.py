@@ -88,7 +88,7 @@ class MutiBase(object):
         else:
             return []
 
-    def _feature_fold(self, feature,raw=False):
+    def _feature_fold(self, feature, raw=False):
         muti_grade, muti_index = self.muti_grade, self.muti_index
         if self.check_muti:
             feature = np.sort(feature)
@@ -109,7 +109,7 @@ class MutiBase(object):
         fea2.extend(add)
         return np.array(list(set(fea2)))
 
-    def _feature_unfold(self, feature,raw=False):
+    def _feature_unfold(self, feature, raw=False):
         muti_grade, muti_index = self.muti_grade, self.muti_index
         if self.check_muti:
             single = np.array([_ for _ in feature if _ < muti_index[0] or _ >= muti_index[1]])
@@ -127,7 +127,7 @@ class MutiBase(object):
             return res.astype(int)
 
     def feature_unfold(self, feature):
-        fea2 = list(self._feature_unfold(feature,raw=True))
+        fea2 = list(self._feature_unfold(feature, raw=True))
         add = self.must_unfold_add
         fea2.extend(add)
         return np.array(list(set(fea2)))
