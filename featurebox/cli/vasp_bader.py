@@ -199,7 +199,7 @@ class _CLICommand:
         chmod u+x ~/bin/chgsum.pl
         chmod u+x ~/bin/bader
 
-        1.2 前期准备
+        1.2 INCAR准备
         INCAR文件参数要求：
         LAECHG = .TRUE.
         LCHARG = .TRUE.
@@ -223,7 +223,7 @@ class _CLICommand:
 
         在 featurebox 中运行，请使用 featurebox bader ...
 
-        若复制本脚本并单运行，请使用 python bader.py ...
+        若复制本脚本并单运行，请使用 python {this}.py ...
 
         如果在 featurebox 中运行多个案例，请指定路径所在文件:
 

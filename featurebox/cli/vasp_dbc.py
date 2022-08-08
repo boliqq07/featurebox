@@ -716,7 +716,7 @@ class _CLICommand:
 
     -j 参数说明：
 
-        0               1               2                   3              4
+        0              1              2                     3              4
         [DBCStartZero, DBCStartInter, DBCStartSingleResult, DBCxyzPathOut, DBCPy]
 
         0: 调用vaspkit软件运行。（首次启动）
@@ -729,7 +729,7 @@ class _CLICommand:
 
         在 featurebox 中运行，请使用 featurebox dbc ...
 
-        若复制本脚本并单运行，请使用 python dbc ...
+        若复制本脚本并单运行，请使用 python {this}.py ...
 
         如果在 featurebox 中运行多个案例，请指定路径所在文件:
 
