@@ -72,7 +72,21 @@ class GeneralDiff(_BasePathOut2):
 
 class _CLICommand:
     """
-    批量获取性质差（默认两个vasprun.xml能量差）。 查看参数帮助使用 -h。
+    批量获取性质差。
+    本脚本可适用于调取绝大多数pymatgen对象的性质差，请自由搭配。（默认两个vasprun.xml能量差）。
+    本脚本较为特殊， -f 或者-p 必须输入两组参数 -f /home/sdfa/paths1.temp /home/sdfa/paths2.temp， 查看参数帮助使用 -h。
+
+    扩展阅读:
+
+        >>> # 实际操作步骤如下所示，默认四个关键参数如下。
+        >>> # mod="pymatgen.io.vasp", cmd="Vasprun", necessary_files="vasprun.xml", prop="final_energy"
+        >>> from pymatgen.io.vasp import Vasprun
+        >>> vr= Vasprun("vasprun.xml") # or
+        >>> vr= Vasprun.from_file("vasprun.xml") # or
+        >>> result = vr.final_energy
+
+    扩展案例:
+        featurebox diff -prop efermi -f /home/sdfa/paths.temp
 
     补充:
 
@@ -80,23 +94,30 @@ class _CLICommand:
 
         若复制本脚本并单运行，请使用 python diff ...
 
-        如果在 featurebox 中运行多个案例，请指定路径所在文件:
+        如果在 featurebox 中运行多个案例，请指定两组路径所在文件:
 
         $ featurebox diff -f /home/sdfa/paths1.temp /home/sdfa/paths2.temp
 
-        如果在 featurebox 中运行单个案例，请指定运算子文件夹:
+        如果在 featurebox 中运行单个案例，请指定两个运算子文件夹:
 
-        $ featurebox diff -p /home/sdfa/ /home/sdfa2/ -cmd Vasprun -nec vasprun.xml -prop final_energy
+        $ featurebox diff -p /home/sdfa/ /home/sdfa2/
     """
 
     @staticmethod
     def add_arguments(parser):
-        parser.add_argument('-p', '--path_name', type=str, default=("./data", "./data2"), nargs=2)
-        parser.add_argument('-f', '--paths_file', type=str, default=("paths1.temp", "paths2.temp"), nargs=2)
-        parser.add_argument('-mod', '--mod', type=str, default='pymatgen.io.vasp')
-        parser.add_argument('-cmd', '--cmd', type=str, default='Vasprun')
-        parser.add_argument('-nec', '--nec', type=str, default='vasprun.xml')
-        parser.add_argument('-prop', '--prop', type=str, default='final_energy')
+        parser.add_argument('-p', '--path_name', type=str, default=("./data", "./data2"), nargs=2,
+                            help="two paths")
+        parser.add_argument('-f', '--paths_file', type=str, default=("paths1.temp", "paths2.temp"), nargs=2,
+                            help="two files containing paths.")
+        parser.add_argument('-mod', '--mod', type=str, default='pymatgen.io.vasp',
+                            help="which module to import. such as: 'pymatgen.io.vasp'.")
+
+        parser.add_argument('-cmd', '--cmd', type=str, default='Vasprun',
+                            help="which python class to call the necessary file. such as: 'Vasprun'.")
+        parser.add_argument('-nec', '--nec', type=str, default='vasprun.xml',
+                            help="necessary file. such as: 'vasprun.xml'.")
+        parser.add_argument('-prop', '--prop', type=str, default='final_energy',
+                            help="property name. such as: 'final_energy'.")
         # mod = "pymatgen.io.vasp", cmd = "Vasprun", necessary_files = "vasprun.xml", prop = "final_energy"
 
     @staticmethod
