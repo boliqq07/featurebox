@@ -73,7 +73,9 @@ class GeneralDiff(_BasePathOut2):
 class _CLICommand:
     """
     批量获取性质差。
+
     本脚本可适用于调取绝大多数pymatgen对象的性质差，请自由搭配。（默认两个vasprun.xml能量差）。
+
     本脚本较为特殊， -f 或者-p 必须输入两组参数 -f /home/sdfa/paths1.temp /home/sdfa/paths2.temp， 查看参数帮助使用 -h。
 
     扩展阅读:
@@ -86,6 +88,7 @@ class _CLICommand:
         >>> result = vr.final_energy
 
     扩展案例:
+
         featurebox diff -prop efermi -f /home/sdfa/paths.temp
 
     补充:

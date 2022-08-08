@@ -81,7 +81,9 @@ class General(_BasePathOut):
 class _CLICommand:
     """
     批量获取性质。
+
     本脚本可适用于调取绝大多数pymatgen对象的性质，请自由搭配。
+
     （默认调用vasprun.xml）。 查看参数帮助使用 -h。
 
     扩展阅读:
@@ -94,6 +96,7 @@ class _CLICommand:
         >>> result = vr.final_energy
 
     扩展案例:
+
         featurebox diff -mod 'pymatgen.core.structure' -cmd Structure -nec CONTCAR -prop volume
 
     补充:
