@@ -66,7 +66,6 @@ class _BasePathOut:
         else:
             raise FileNotFoundError
 
-
     def transform(self, paths: List[Union[os.PathLike, Path, pathlib.Path, str]]):
         self.check_software()
         paths = [self._to_path(pi) for pi in paths]
@@ -250,7 +249,6 @@ class _BasePathOut2(_BasePathOut):
 
         return self.batch_after_treatment(paths, res_code)
 
-
     def wrapper(self, paths: List[Path]):
         """For exception."""
 
@@ -269,7 +267,6 @@ class _BasePathOut2(_BasePathOut):
             if self.log:
                 print(self.log_txt)
             return None
-
 
     @abstractmethod
     def run(self, paths: List[Path], files: List = None) -> Any:  # fill

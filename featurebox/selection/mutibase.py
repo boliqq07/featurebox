@@ -59,9 +59,10 @@ class MutiBase(object):
             must_index = self.must_index
             if self.check_muti:
                 def ff(mi):
-                    data = mi-self.muti_index[0]
-                    data = (data//self.muti_grade)*self.muti_grade+self.muti_index[0]
+                    data = mi - self.muti_index[0]
+                    data = (data // self.muti_grade) * self.muti_grade + self.muti_index[0]
                     return data
+
                 com_mark = [self.muti_index[0] <= mi < self.muti_index[1] for mi in must_index]
                 must_feature = [ff(mi) if com_mark is True else mi for com_mark_i, mi in zip(com_mark, must_index)]
                 return must_feature
@@ -76,11 +77,12 @@ class MutiBase(object):
             must_index = self.must_index
             if self.check_muti:
                 def ff2(mi):
-                    data = mi-self.muti_index[0]
-                    data = (data//self.muti_grade)*self.muti_grade+self.muti_index[0]
-                    return list(range(data,data+self.muti_grade))
+                    data = mi - self.muti_index[0]
+                    data = (data // self.muti_grade) * self.muti_grade + self.muti_index[0]
+                    return list(range(data, data + self.muti_grade))
+
                 com_mark = [self.muti_index[0] <= mi < self.muti_index[1] for mi in must_index]
-                must_feature = [ff2(mi) if com_mark is True else [mi,] for com_mark_i, mi in zip(com_mark, must_index)]
+                must_feature = [ff2(mi) if com_mark is True else [mi, ] for com_mark_i, mi in zip(com_mark, must_index)]
                 must_feature = list(itertools.chain(*must_feature))
                 return must_feature
             else:
@@ -104,7 +106,7 @@ class MutiBase(object):
             return res.astype(int)
 
     def feature_fold(self, feature):
-        fea2 = list(self._feature_fold(feature,raw=True))
+        fea2 = list(self._feature_fold(feature, raw=True))
         add = self.must_fold_add
         fea2.extend(add)
         return np.array(list(set(fea2)))

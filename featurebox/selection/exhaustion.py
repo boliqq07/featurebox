@@ -12,7 +12,6 @@ from itertools import combinations
 from typing import Tuple, List
 
 import numpy as np
-from mgetool.tool import parallelize
 from sklearn.base import BaseEstimator
 from sklearn.base import MetaEstimatorMixin
 from sklearn.base import clone
@@ -22,6 +21,7 @@ from sklearn.utils.metaestimators import if_delegate_has_method
 from sklearn.utils.validation import check_is_fitted, check_X_y
 
 from featurebox.selection.mutibase import MutiBase
+from mgetool.tool import parallelize
 
 warnings.filterwarnings("ignore")
 
@@ -181,7 +181,7 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
                 warnings.warn(UserWarning(
                     "The self.estimator_ :{} used all the X,y data.".format(self.estimator_.__class__.__name__),
                     "please be careful with the later 'score' and 'predict'."))
-            if hasattr(self.estimator_,"max_features"):
+            if hasattr(self.estimator_, "max_features"):
                 self.estimator_.max_features = np.array(select_feature).shape[0]
             self.estimator_.fit(x[:, select_feature], y)
         self.n_feature_ = len(select_feature)

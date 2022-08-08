@@ -11,7 +11,6 @@ from featurebox.featurizers.envir._get_xyz_in_spheres import get_xyz_in_spheres
 from featurebox.featurizers.envir.desc_env import DesDict, get_strategy2_in_spheres
 from featurebox.featurizers.envir.local_env import NNDict, get_strategy1_in_spheres
 from featurebox.utils.general import aaa
-
 from featurebox.utils.predefined_typing import StructureOrMolecule, StructureOrMoleculeOrAtoms
 
 MODULE_DIR = Path(__file__).parent.parent.parent.absolute()

@@ -7,6 +7,7 @@ from typing import Dict, Tuple, List
 import numpy as np
 from pymatgen.core import Structure, Molecule
 
+from featurebox.featurizers.envir._get_radius_in_spheres import get_radius_in_spheres
 from featurebox.featurizers.envir.descriptors.ACSF import ACSF
 from featurebox.featurizers.envir.descriptors.EAD import EAD
 from featurebox.featurizers.envir.descriptors.EAMD import EAMD
@@ -15,7 +16,6 @@ from featurebox.featurizers.envir.descriptors.SO4 import SO4_Bispectrum
 from featurebox.featurizers.envir.descriptors.SOAP import SOAP
 from featurebox.featurizers.envir.descriptors.behlerparrinello import BehlerParrinello
 from featurebox.featurizers.envir.descriptors.wACSF import wACSF
-from featurebox.featurizers.envir._get_radius_in_spheres import get_radius_in_spheres
 from featurebox.utils.general import aaa
 
 

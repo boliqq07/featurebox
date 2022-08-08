@@ -14,7 +14,6 @@ from functools import partial
 from typing import List
 
 import numpy as np
-from mgetool.tool import parallelize
 from sklearn.base import BaseEstimator
 from sklearn.base import MetaEstimatorMixin
 from sklearn.base import clone
@@ -25,6 +24,7 @@ from sklearn.utils.metaestimators import if_delegate_has_method, _safe_split
 from sklearn.utils.validation import check_is_fitted, check_X_y, check_random_state
 
 from featurebox.selection.mutibase import MutiBase
+from mgetool.tool import parallelize
 
 
 def _baf_single_fit(train, test, baf, estimator, X, y, scorer, random_state):
@@ -149,6 +149,8 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
         self.refit = refit
         self.min_type_feature_to_select = min_type_feature_to_select
         self.cv = cv
+        if isinstance(n_type_feature_to_select, int):
+            assert n_type_feature_to_select >= min_type_feature_to_select, "Max numbers should be large than Min numbers."
 
     @property
     def _estimator_type(self):
@@ -432,7 +434,8 @@ class BackForwardStable(MetaEstimatorMixin, SelectorMixin, BaseEstimator):
     ...
     """
 
-    def __init__(self, estimator: BaseEstimator, n_type_feature_to_select: int = None,min_type_feature_to_select:int=3,
+    def __init__(self, estimator: BaseEstimator, n_type_feature_to_select: int = None,
+                 min_type_feature_to_select: int = 3,
                  primary_feature: int = None, muti_grade: int = 2, muti_index: List = None,
                  must_index: List = None, verbose: int = 0, random_state: int = None,
                  times: int = 5, scoring: str = "r2", n_jobs: int = None, refit=False):
@@ -539,7 +542,7 @@ class BackForwardStable(MetaEstimatorMixin, SelectorMixin, BaseEstimator):
                 warnings.warn(UserWarning(
                     "The self.estimator_ :{} used all the X,y data.".format(self.estimator_.__class__.__name__),
                     "please be careful with the later 'score' and 'predict'."))
-            if hasattr(self.estimator_,"max_features"):
+            if hasattr(self.estimator_, "max_features"):
                 self.estimator_.max_features = np.array(self.support_).shape[0]
             self.estimator_.fit(X[:, self.support_], y)
         self.n_feature_ = np.count_nonzero(support)

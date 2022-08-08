@@ -4,10 +4,10 @@ from collections import abc
 from typing import Tuple, Union, List
 
 import numpy as np
-from mgetool.tool import tt
 from pymatgen.core import Structure
 
 from featurebox.utils.predefined_typing import StructureOrMolecule
+from mgetool.tool import tt
 
 
 def _re_pbc(pbc: Union[bool, List[bool], np.ndarray], return_type="bool"):

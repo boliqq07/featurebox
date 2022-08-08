@@ -7,8 +7,6 @@ from deap import base
 from deap import tools
 from deap.algorithms import varAnd
 from deap.tools import mutShuffleIndexes
-from mgetool.newclass import create
-from mgetool.tool import batch_parallelize, check_random_state, parallelize
 from sklearn.base import BaseEstimator, MetaEstimatorMixin
 from sklearn.datasets import load_boston
 from sklearn.feature_selection import SelectorMixin
@@ -18,6 +16,8 @@ from sklearn.svm import SVR
 from sklearn.utils.validation import check_is_fitted
 
 from featurebox.selection.mutibase import MutiBase
+from mgetool.newclass import create
+from mgetool.tool import check_random_state, parallelize
 
 
 def eaSimple(population, toolbox, cxpb, mutpb, ngen, stats=None, n_jobs=2,
@@ -293,8 +293,8 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
         x = x[:, index]
         if x.shape[1] > 1:
             svr = model
-            if hasattr(svr,"max_features"):
-                svr.max_features=x.shape[1]
+            if hasattr(svr, "max_features"):
+                svr.max_features = x.shape[1]
             svr.fit(x, y)
             if hasattr(svr, "best_score_"):
                 sc = svr.best_score_

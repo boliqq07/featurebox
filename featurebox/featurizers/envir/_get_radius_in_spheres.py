@@ -2,9 +2,9 @@ from collections import abc
 from typing import Tuple, Union, List
 
 import numpy as np
-
 from pymatgen.core import Structure, Molecule
 from pymatgen.optimization.neighbors import find_points_in_spheres
+
 from featurebox.utils.predefined_typing import StructureOrMolecule
 
 
@@ -68,7 +68,7 @@ def get_radius_in_spheres(
     exclude_self = (distances > numerical_tol)
     # exclude_self = (center_indices != neighbor_indices) | (distances > numerical_tol)
 
-    return center_indices[exclude_self], neighbor_indices[exclude_self], distances[exclude_self].reshape(-1,1), \
+    return center_indices[exclude_self], neighbor_indices[exclude_self], distances[exclude_self].reshape(-1, 1), \
            distances[exclude_self], np.array(None)
 
 

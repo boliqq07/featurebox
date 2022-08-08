@@ -6,7 +6,7 @@
 # @License: BSD 3-Clause
 
 from abc import abstractmethod
-from typing import List, Tuple, Union, Dict
+from typing import List, Tuple, Union
 
 import numpy as np
 from pymatgen.core.composition import Composition as PMGComp
