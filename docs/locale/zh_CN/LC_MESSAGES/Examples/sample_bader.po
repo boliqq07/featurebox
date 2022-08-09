@@ -59,7 +59,7 @@ msgstr "下载软件参考: :doc:`../Guide/command_mode`。"
 
 #: ../../Examples/sample_bader.rst:25
 msgid "Get all sub-path by ``findpath`` command::"
-msgstr "使用 ``findpath`` 命令获取所有字路径并输出到文件::"
+msgstr "使用 ``findpath`` 命令获取所有子路径并输出到文件::"
 
 #: ../../Examples/sample_bader.rst:31
 msgid "Run with fbx (featurebox)::"

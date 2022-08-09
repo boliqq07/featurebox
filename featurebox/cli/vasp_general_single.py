@@ -18,7 +18,7 @@ from featurebox.cli._basepathout import _BasePathOut
 class General(_BasePathOut):
     """Get data from paths and return csv file.
 
-    Notes::
+    Default keys Notes::
 
         mod="pymatgen.io.vasp"         # Module to get class.
         cmd="Vasprun"                  # class to get object.

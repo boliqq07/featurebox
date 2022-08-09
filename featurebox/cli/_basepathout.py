@@ -169,7 +169,7 @@ class _BasePathOut:
     
     2.Check the necessary files, and software:
     {self.necessary_files}, {self.software}
-    3.Check the necessary files from key parameter:
+    3.Check the key parameter of Method:
     {self.key_help}
     4.Check the intermediate temporary files are generated in each path:
     {self.inter_temp_files}

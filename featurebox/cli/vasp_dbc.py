@@ -680,7 +680,9 @@ class DBCStartInter(DBCStartZero):
 
 
 class DBCStartSingleResult(DBCStartZero):
-    """Avoid Double Calculation."""
+    """Avoid Double Calculation. Just reproduce the 'results_all' from a 'result_single' files.
+    keeping the 'result_single.csv' files exists.
+    """
 
     def __init__(self, n_jobs: int = 1, tq: bool = True, store_single=False):
         super(DBCStartSingleResult, self).__init__(n_jobs=n_jobs, tq=tq, store_single=store_single)
