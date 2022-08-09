@@ -64,7 +64,7 @@ class GeneralDiff(_BasePathOut2):
 
     def batch_after_treatment(self, paths, res_code):
         """4. Organize batch of data in tabular form, return one or more csv file. (force!!!)."""
-        data_all = {f"{pi[1]}-{pi[0]}": ri for pi, ri in zip(paths, res_code)}
+        data_all = {f"{pi[0]}-{pi[1]}": ri for pi, ri in zip(paths, res_code)}
         result = pd.DataFrame(data_all).T
         result.to_csv(self.out_file)
         print("'{}' are sored in '{}'".format(self.out_file, os.getcwd()))

@@ -515,13 +515,15 @@ def get_ele_pdos_center(dos: CompleteDos = None, mark_orbital=None, mark_element
 
 
 class DBCPy(_BasePathOut):
-    """Get d band center by pymatgen and return csv file."""
+    """Get d band center by pymatgen and return csv file.
+    pymatgen>=2022.5.26
+    """
 
     def __init__(self, n_jobs: int = 1, tq: bool = True, store_single=False, method="ele"):
         super(DBCPy, self).__init__(n_jobs=n_jobs, tq=tq, store_single=store_single)
         self.necessary_files = ["vasprun.xml"]
         self.out_file = "dbc_py_all.csv"
-        self.software = []
+        self.software = ["pymatgen>=2022.5.26"]
         self.method = method
 
     def run(self, path: Path, files: List = None):
@@ -726,7 +728,7 @@ class _CLICommand:
         1: 调用vaspkit软件分析结果运行。（热启动）
         2: 调用单个cohp_single.csv运行。（热启动）
         3: 调用此python代码运行。
-        4: 调用pymatgen运行。
+        4: 调用pymatgen运行。(pymatgen>=2022.5.26)
 
     补充:
 
@@ -747,7 +749,7 @@ class _CLICommand:
     def add_arguments(parser):
         parser.add_argument('-p', '--path_name', type=str, default='.')
         parser.add_argument('-f', '--paths_file', type=str, default='paths.temp')
-        parser.add_argument('-j', '--job_type', type=int, default=3)
+        parser.add_argument('-j', '--job_type', type=int, default=4)
 
     @staticmethod
     def parse_args(parser):
