@@ -26,6 +26,7 @@ class COHPStartZero(_BasePathOut):
         self.necessary_files = ["WAVECAR", "INCAR", "DOSCAR"]
         self.out_file = "COHP_all.csv"
         self.software = ["lobster"]
+        self.key_help = self.__doc__
 
     @staticmethod
     def read(path, store=False):
@@ -166,6 +167,7 @@ class COHPStartInter(COHPStartZero):
         self.necessary_files = ["ICOHPLIST.lobster", "COHPCAR.lobster"]
         self.out_file = "ICOHP_all.csv"
         self.software = []
+        self.key_help = self.__doc__
 
     def run(self, path: Path, files: List = None):
         """3.Run with software and necessary file and get data.

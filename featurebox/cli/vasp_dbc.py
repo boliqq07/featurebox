@@ -672,6 +672,7 @@ class DBCStartInter(DBCStartZero):
         self.necessary_files = ["D_BAND_CANTER"]
         self.out_file = "dbc_all.csv"
         self.software = []
+        self.key_help = self.__doc__
 
     def run(self, path: Path, files: List = None):
         """3.Run with software and necessary file and get data.

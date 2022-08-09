@@ -48,7 +48,6 @@ Sub-Command : Function
 
 Add '-h' after sub-command for more help.
 Website: https://featurebox.readthedocs.io
-Email  : 986798607@qq.com
 -----------------------------------------------------""".format("\n".join([i[1] for i in commands_.values()]))
 
 

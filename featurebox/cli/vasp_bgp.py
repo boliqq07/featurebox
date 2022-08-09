@@ -171,6 +171,7 @@ class BandGapStartInter(BandGapStartZero):
         self.necessary_files = ["BAND_GAP"]
         self.out_file = "bgp_all.csv"
         self.software = []
+        self.key_help = self.__doc__
 
     def run(self, path: Path, files: List = None):
         """3.Run with software and necessary file and get data.
