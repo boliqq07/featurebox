@@ -21,7 +21,7 @@ class COHPStartZero(_BasePathOut):
 
     """
 
-    def __init__(self, n_jobs: int = 1, tq: bool = True, store_single=False):
+    def __init__(self, n_jobs: int = 1, tq: bool = True, store_single=True):
         super(COHPStartZero, self).__init__(n_jobs=n_jobs, tq=tq, store_single=store_single)
         self.necessary_files = ["WAVECAR", "INCAR", "DOSCAR"]
         self.out_file = "COHP_all.csv"
@@ -58,6 +58,7 @@ class COHPStartZero(_BasePathOut):
             data_all2.update({path: None})
 
         result_single1 = pd.DataFrame.from_dict(data_all).T
+        result_single1.columns = ["length", "icohp (up)", "icohp (down)"]
         result_single2 = pd.DataFrame.from_dict(data_all2).T
 
         if store:
@@ -113,9 +114,9 @@ class COHPStartZero(_BasePathOut):
                 print(f"No data for {pi}")
 
         data_all2 = np.concatenate(data_all2, axis=0)
-        result = pd.DataFrame(data_all2, columns=col, index=paths)
+        result2 = pd.DataFrame(data_all2, columns=col, index=paths)
 
-        result.to_csv("COHP_all.csv")
+        result2.to_csv("COHP_all.csv")
         print("'{}' are sored in '{}'".format("COHP_all.csv", os.getcwd()))
 
         return result
@@ -165,7 +166,7 @@ class COHPStartInter(COHPStartZero):
 
     """
 
-    def __init__(self, n_jobs: int = 1, tq: bool = True, store_single=False):
+    def __init__(self, n_jobs: int = 1, tq: bool = True, store_single=True):
         super(COHPStartInter, self).__init__(n_jobs=n_jobs, tq=tq, store_single=store_single)
         self.necessary_files = ["ICOHPLIST.lobster", "COHPCAR.lobster"]
         self.out_file = "ICOHP_all.csv"
