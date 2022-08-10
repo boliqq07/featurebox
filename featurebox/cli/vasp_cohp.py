@@ -148,9 +148,12 @@ class COHPStartInter(COHPStartZero):
 
         echo cohpBetween atom 45 atom 31 >> lobsterin
 
+        sleep 30m
+
         lobster > look
 
         cd $old_path
+
 
         done
 

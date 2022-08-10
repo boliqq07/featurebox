@@ -6,7 +6,7 @@
 # @License: MIT License
 
 import os
-from typing import List
+from typing import List, Callable
 
 import numpy as np
 import pandas as pd
@@ -75,6 +75,24 @@ class BaderStartZero(_BasePathOut):
             return result
         else:
             return None
+
+    @staticmethod
+    def extract(data: pd.DataFrame, atoms, format_path: Callable = None):
+
+        if isinstance(atoms, (list, tuple)):
+            res = []
+            if format_path is not None:
+                data["File"] = [format_path(ci) for ci in data["File"]]
+            for v in atoms:
+                sel = data[data["Atom Number"] == v + 1]
+                sel = sel[["File", "Bader Ele Move"]].set_index("File")
+                n_name = [f"{i}-{v}" for i in sel.columns]
+                sel.columns = n_name
+                res.append(sel)
+            return pd.concat(res, axis=1)
+        else:
+            raise NotImplementedError
+
 
     def run(self, path: Path, files: List = None):
         """3.Run with software and necessary file and get data.

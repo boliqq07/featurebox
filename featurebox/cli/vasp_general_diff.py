@@ -68,6 +68,7 @@ class GeneralDiff(_BasePathOut2):
         result = pd.DataFrame(data_all).T
         result.to_csv(self.out_file)
         print("'{}' are sored in '{}'".format(self.out_file, os.getcwd()))
+        return result
 
 
 class _CLICommand:

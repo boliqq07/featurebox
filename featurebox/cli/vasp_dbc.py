@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-
+import functools
 import os
 import warnings
-from typing import List
+from typing import List, Callable
 
 # @Time  : 2022/7/26 14:30
 # @Author : boliqq07
@@ -446,6 +446,29 @@ class DBCxyzPathOut(_BasePathOut):
         print("'{}' are sored in '{}'".format(self.out_file, os.getcwd()))
         return result
 
+    @staticmethod
+    def extract(data: pd.DataFrame, atoms, ori=None, format_path: Callable = None):
+        """atoms start from 0."""
+        if isinstance(atoms, (list, tuple)):
+            if ori is None:
+                ori = ['p-y', 'p-z', 'p-x', 'd-xy', 'd-yz', 'd-z2-r2', 'd-xz', 'd-x2-y2']
+            if "File" not in ori:
+                ori.append("File")
+            if "Unnamed: 0" in data:
+                del data["Unnamed: 0"]
+            res = []
+            if format_path is not None:
+                data["File"] = [format_path(ci) for ci in data["File"]]
+            for v in atoms:
+                sel = data[data["Atom Number"] == v + 1]
+                sel = sel[ori].set_index("File")
+                n_name = [f"{i}-{v}" for i in sel.columns]
+                sel.columns = n_name
+                res.append(sel)
+            return pd.concat(res, axis=1)
+        else:
+            raise NotImplementedError
+
 
 def get_atom_pdos_center(dos: CompleteDos = None, mark_orbital=None, mark_atom_numbers=None):
     elements = [e.symbol for e in dos.structure.species]
@@ -473,9 +496,9 @@ def get_atom_pdos_center(dos: CompleteDos = None, mark_orbital=None, mark_atom_n
                 dbc = dos.get_band_center(band=oi, sites=[ci])
                 dbw = dos.get_band_width(band=oi, sites=[ci])
                 dbf = dos.get_band_filling(band=oi, sites=[ci])
-                spd_dos_center_all.update({f"{elements[mi]}-{mi}-{oi}-band_center": dbc})
-                spd_dos_center_all.update({f"{elements[mi]}-{mi}-{oi}-band_width": dbw})
-                spd_dos_center_all.update({f"{elements[mi]}-{mi}-{oi}-band_filling": dbf})
+                spd_dos_center_all.update({f"Atom-{mi}-{oi}-band_center": dbc})
+                spd_dos_center_all.update({f"Atom-{mi}-{oi}-band_width": dbw})
+                spd_dos_center_all.update({f"Atom-{mi}-{oi}-band_filling": dbf})
             except BaseException as e:
                 print(e)
                 pass
@@ -523,8 +546,12 @@ class DBCPy(_BasePathOut):
         super(DBCPy, self).__init__(n_jobs=n_jobs, tq=tq, store_single=store_single)
         self.necessary_files = ["vasprun.xml"]
         self.out_file = "dbc_py_all.csv"
-        self.software = ["pymatgen>=2022.5.26"]
+        self.software = []
         self.method = method
+        if self.method =="ele":
+            self.extract=self._extract_ele
+        else:
+            self.extract=self._extract_atom
 
     def run(self, path: Path, files: List = None):
         """3.Run with software and necessary file and get data.
@@ -558,6 +585,79 @@ class DBCPy(_BasePathOut):
         print("'{}' are sored in '{}'".format(self.out_file, os.getcwd()))
         return result
 
+    @staticmethod
+    def _extract_ele(data: pd.DataFrame, ele_and_ori=None, join_ele=None, join_ele_ori =None, format_path = None):
+        import re
+
+        @functools.lru_cache(4)
+        def col_corresponding_index(sel_name, index_all):
+            sel_index = []
+            for i in sel_name:
+                xx = [j for j in index_all if i in re.split(r" |-|/|\\", j)]
+                assert len(xx) == 1, f"Find {len(xx)} index for {i}, can't decide which one. {xx}."
+                sel_index.append(xx[0])
+            return sel_index
+
+        res = []
+        if "Unnamed: 0" in data:
+            data["File"] = data["Unnamed: 0"]
+            del data["Unnamed: 0"]
+            data = data.set_index("File")
+
+        if format_path is not None:
+            data.index = [format_path(ci) for ci in data.index]
+
+        if isinstance(ele_and_ori, (list, tuple)):
+            for v in ele_and_ori:
+                sel = [i for i in data.columns if f"{v}" in i]
+                sel = data[sel]
+                res.append(sel)
+        if isinstance(join_ele, (list, tuple)):
+            if join_ele_ori is None:
+                join_ele_ori = ["s", "p", "d"]
+            builtin_name = [f"{i}-{j}" for i in join_ele_ori for j in ["band_center", "band_filling", "band_width"]]
+
+            for bi in builtin_name:
+                names = [f"{i}-{bi}" for i in join_ele]
+                sel_col = list(set(data.columns) & set(names))
+                sel_col.sort()
+                sel_name = [i.split("-")[0] for i in sel_col]
+                sel_index = col_corresponding_index(tuple(sel_name), tuple(data.index))
+
+                sel = {i:data.loc[i, c] for i,c in zip(sel_index, sel_col)}
+
+                df = pd.DataFrame.from_dict({f"JTM-{bi}": sel})
+
+                res.append(df)
+
+        if len(res) == 0:
+            raise NotImplementedError("'names' and  'join_names' are at least to be set one or more.")
+
+        return pd.concat(res, axis=1)
+
+    @staticmethod
+    def _extract_atom(data: pd.DataFrame, atoms, ori=None, format_path: Callable = None):
+        """atoms start from 0."""
+        if ori is None:
+            ori = ["s", "p", "d"]
+        if isinstance(atoms, (list, tuple)):
+            res = []
+            if "Unnamed: 0" in data:
+                data["File"] = data["Unnamed: 0"]
+                del data["Unnamed: 0"]
+                data = data.set_index("File")
+
+            if format_path is not None:
+                data.index = [format_path(ci) for ci in data.index]
+
+            for v in atoms:
+                sel = [i for i in data.columns for k in ori if f"-{v}-{k}-" in i]
+                sel = data[sel]
+                res.append(sel)
+            return pd.concat(res, axis=1)
+        else:
+            raise NotImplementedError
+
 
 class DBCStartZero(_BasePathOut):
     """Get d band center from paths and return csv file.
@@ -580,6 +680,7 @@ class DBCStartZero(_BasePathOut):
         with open(result_name, mode="r") as f:
             ress = f.readlines()
 
+        n=0
         res = []
         for i in ress:
             if i == "\n":
@@ -588,18 +689,72 @@ class DBCStartZero(_BasePathOut):
                 i = i.split(" ")
                 i = [i for i in i if i != ""]
                 i = [i[:-2] if "\n" in i else i for i in i]
+                i.insert(0, str(n))
                 res.append(i)
+                n+=1
 
         res = np.array(res[1:])
         res = np.concatenate((np.full(res.shape[0], fill_value=str(d)).reshape(-1, 1), res), axis=1)
         result = pd.DataFrame(res,
-                              columns=["File", "Atom", "d-Band-Center (UP)", "d-Band-Center (DOWN)",
+                              columns=["File", "Atom Number", "Atom", "d-Band-Center (UP)", "d-Band-Center (DOWN)",
                                        "d-Band-Center (Average)"])
 
         if store:
             result.to_csv(store_name)
             print("'{}' are sored in '{}'".format(store_name, os.getcwd()))
         return result
+
+    @staticmethod
+    def extract(data: pd.DataFrame, atoms=None, ele=None, join_ele=None, format_path: Callable = None):
+        """atoms start from 1.
+        This atom number are different to the structure atom number.
+        """
+        if format_path is not None:
+            data["File"] = [format_path(ci) for ci in data["File"]]
+        res = []
+        if isinstance(atoms, (list, tuple)):
+            print("This atom numbers in 'atoms' parameter are different to the structure atom numbers,"
+            "rather than the rank of number in bader file 'D_BANF_CENTER' (strat from 1)."
+            "Check you file and make sure the number are correct."
+            "Check you file and make sure the number are correct.")
+            print("We suggest use the 'names' parameter to extarct data such as: ['Mo1','Mo2'].")
+
+            # index = [re.sub("\D", "", i) for i in data["Atom"].values]
+            # data["Atom"] = [int(i) if i!="" else None for i in index]
+            for v in atoms:
+                sel = data[data["Atom Number"] == v]
+                sel = sel[["File", "d-Band-Center (Average)"]].set_index("File")
+                n_name = [f"{i}-{v}" for i in sel.columns]
+                sel.columns = n_name
+                res.append(sel)
+            return pd.concat(res, axis=1)
+        elif isinstance(ele, (list, tuple)):
+
+            data["Atom"] = [i.replace(":", "") for i in data["Atom"].values]
+
+            for v in ele:
+                sel = data[data["Atom"] == v]
+                sel = sel[["File", "d-Band-Center (Average)"]].set_index("File")
+                n_name = [f"{i}-{v}" for i in sel.columns]
+                sel.columns = n_name
+                res.append(sel)
+
+            js = []
+            for je in join_ele:
+                sel1 = data[data["Atom"] == je]
+                sel1 = sel1[["File", "d-Band-Center (Average)"]].set_index("File")
+                assert sel1.values.shape[0]<=1, "join element must be sole."
+                js.append(sel1)
+
+            df = pd.concat(js,axis=0)
+            res.append(df)
+
+            return pd.concat(res, axis=1)
+
+
+        else:
+            raise NotImplementedError
+
 
     def run(self, path: Path, files: List = None):
         """3.Run with software and necessary file and get data.

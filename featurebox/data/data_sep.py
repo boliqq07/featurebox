@@ -18,9 +18,10 @@ class DataSameSep:
     >>> d1 = {"Ta-S1":{"bond1":3.4,"bond2":3.5},"Co-S2":{"bond1":3.2,"bond2":3.1},"Fe-Sall":{"bond1":3.2,"bond2":3.1}}
     >>> dss = DataSameSep(d1)
     >>> dss["Ta-S1"]={"bond1":3.2,"bond2":3.5} # cover the old.
-    >>> dss.update({"Ta-S1":{"bond1":3.4,"bond2":3.5},"Co-S2":{"bond1":3.2,"bond2":3.1}}) # cover the old.
+    >>> dss.replace({"Ta-S1":{"bond1":3.4,"bond2":3.5},"Co-S2":{"bond1":3.2,"bond2":3.1}}) # cover the old.
     >>> dss.replace_entry(label="Ta",site=1,entry={"bond1":3.2,"bond2":3.5}) # cover the old.
 
+    >>> dss.update({"Ta-S1":{"bond1":3.4,"bond2":3.5},"Co-S2":{"bond1":3.2,"bond2":3.1}})
     >>> dss.update_entry(label="Co",site=0,entry={"bond1":3.2}) # add
     >>> dss.update_entry_kv(label="Mg",site="all",key="bond1",value=3.2) # add
     >>> dict_data = dss.settle()
@@ -123,6 +124,21 @@ class DataSameSep:
     def update(self, data: Dict):
         """
         Add dict data.
+
+        Parameters
+        ----------
+        data:dict
+            {entry_key: entry}.
+        """
+        for ki, vi in data.items():
+            if ki not in self.data:
+                self.data[ki] = vi
+            else:
+                self.data[ki].update(vi)
+
+    def replace(self, data: Dict):
+        """
+        Replace dict data.
 
         Parameters
         ----------
@@ -252,3 +268,21 @@ class DataSameSep:
         """
         data = self.settle(sort=sort)
         return pd.DataFrame.from_dict(data).T
+
+    def update_from_pd(self, df:Union[pd.DataFrame,str]):
+        """
+        Read table and update to data.
+        The table must be the formed by self.settle_to_pd function.
+
+        if df is str, try: df = pd.read_csv("df_name", index_col=0).T
+
+        Parameters
+        ----------
+        df:(pd.DataFrame,str)
+
+        """
+        if isinstance(df, str):
+            df = pd.read_csv(df, index_col=0).T
+        df_dict = df.to_dict()
+        self.update(df_dict)
+

@@ -70,6 +70,7 @@ class ConvergeChecker(_BasePathOut):
         self.out_file = "Fail_paths.temp"
         self.software = []
         self.key_help = "Check the outcar."
+        self.extract=None
 
     def run(self, path: Path, files: List = None):
         """3.Run with software and necessary file and get data.
