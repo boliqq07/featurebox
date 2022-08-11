@@ -709,6 +709,7 @@ class DBCStartZero(_BasePathOut):
         """atoms start from 1.
         This atom number are different to the structure atom number.
         """
+        data = data.apply(pd.to_numeric, errors='ignore')
         if format_path is not None:
             data["File"] = [format_path(ci) for ci in data["File"]]
         res = []

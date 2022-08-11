@@ -80,6 +80,7 @@ class BaderStartZero(_BasePathOut):
     def extract(data: pd.DataFrame, atoms, format_path: Callable = None):
 
         if isinstance(atoms, (list, tuple)):
+            data = data.apply(pd.to_numeric, errors='ignore')
             res = []
             if format_path is not None:
                 data["File"] = [format_path(ci) for ci in data["File"]]

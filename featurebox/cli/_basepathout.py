@@ -59,6 +59,19 @@ class _BasePathOut:
         return Path(path).abspath() if not isinstance(path, Path) else path
 
     def convert(self, path: Union[os.PathLike, Path, pathlib.Path, str]):
+        """
+        convert raw data in path.
+
+        Parameters
+        ----------
+        path:path
+            path.
+
+        Returns
+        -------
+        data:optional(pd.Dataframe)
+            data table.
+        """
         self.check_software()
         path = self._to_path(path)
         path_bool = self.check_path_and_file(path)
@@ -68,6 +81,19 @@ class _BasePathOut:
             raise FileNotFoundError
 
     def transform(self, paths: List[Union[os.PathLike, Path, pathlib.Path, str]]):
+        """
+        transform raw data in each path containing in paths.
+
+        Parameters
+        ----------
+        paths:list of path
+            paths
+
+        Returns
+        -------
+        data:pd.Dataframe
+            data table.
+        """
         self.check_software()
         paths = [self._to_path(pi) for pi in paths]
         paths_bool = [self.check_path_and_file(pi) for pi in paths]
@@ -207,9 +233,27 @@ class _BasePathOut:
         return pd.DataFrame.from_dict({"File": paths}).T
 
     @staticmethod
-    def extract(data, *args, format_path: Callable = None,**kwargs):
-        if format_path is None:
+    def extract(data, *args, format_path: Callable = None, **kwargs):
+        """
+        Extract the message in data, and formed it.
+
+        Parameters
+        ----------
+        data:pd.DateFrame
+            transformed data.
+        format_path:Callable
+            function to deal with each path, for better shown.
+
+        Returns
+        -------
+        res_data:pd.DateFrame
+            extracted and formed data.
+
+        """
+        if format_path == "default":
             format_path = lambda x: re.split(r" |-|/|\\", x)[-2]
+        elif format_path is None:
+            format_path = lambda x: x
 
         if "Unnamed: 0" in data:
             if "File" in data:  # File are repetitive

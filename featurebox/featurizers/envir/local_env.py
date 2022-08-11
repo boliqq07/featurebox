@@ -208,7 +208,7 @@ def get_strategy1_in_spheres(structure: StructureOrMolecule, nn_strategy: NearNe
     nn_strategy_.tol = numerical_tol
 
     _ = pbc  # Force True
-    structure.pbc = np.array([True, True, True])
+    structure.lattice._pbc = np.array([True, True, True])
 
     center_indices = []
     neighbor_indices = []

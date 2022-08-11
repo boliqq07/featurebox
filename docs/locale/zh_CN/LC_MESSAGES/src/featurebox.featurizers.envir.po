@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: featurebox \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-07 13:04+0800\n"
+"POT-Creation-Date: 2022-08-11 16:49+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -60,7 +60,7 @@ msgstr ""
 
 #: featurebox.featurizers.envir.local_env.AllAtomPairs:1
 #: featurebox.featurizers.envir.local_env.MinimumDistanceNNAll:1 of
-msgid "基类：:py:class:`pymatgen.analysis.local_env.NearNeighbors`"
+msgid "Bases: :py:class:`pymatgen.analysis.local_env.NearNeighbors`"
 msgstr ""
 
 #: featurebox.featurizers.envir.local_env.AllAtomPairs:1 of
@@ -84,7 +84,7 @@ msgstr ""
 #: featurebox.featurizers.envir.local_env.MinimumDistanceNNAll
 #: featurebox.featurizers.envir.local_env.MinimumDistanceNNAll.get_nn_info
 #: featurebox.featurizers.envir.local_env.UserVoronoiNN of
-msgid "参数"
+msgid "Parameters"
 msgstr ""
 
 #: featurebox.featurizers.envir.local_env.MinimumDistanceNNAll:3 of
@@ -109,7 +109,7 @@ msgid "index of site for which to determine near neighbors."
 msgstr ""
 
 #: featurebox.featurizers.envir.local_env.MinimumDistanceNNAll.get_nn_info of
-msgid "返回"
+msgid "Returns"
 msgstr ""
 
 #: featurebox.featurizers.envir.local_env.MinimumDistanceNNAll.get_nn_info:11
@@ -130,11 +130,11 @@ msgid "and its weight."
 msgstr ""
 
 #: featurebox.featurizers.envir.local_env.MinimumDistanceNNAll.get_nn_info of
-msgid "返回类型"
+msgid "Return type"
 msgstr ""
 
 #: featurebox.featurizers.envir.local_env.UserVoronoiNN:1 of
-msgid "基类：:py:class:`pymatgen.analysis.local_env.VoronoiNN`"
+msgid "Bases: :py:class:`pymatgen.analysis.local_env.VoronoiNN`"
 msgstr ""
 
 #: featurebox.featurizers.envir.local_env.UserVoronoiNN:1 of
@@ -171,4 +171,19 @@ msgstr ""
 #: featurebox.featurizers.envir.local_env.UserVoronoiNN:19 of
 msgid "adjacent. Turn off for faster performance"
 msgstr ""
+
+#~ msgid "基类：:py:class:`pymatgen.analysis.local_env.NearNeighbors`"
+#~ msgstr ""
+
+#~ msgid "参数"
+#~ msgstr ""
+
+#~ msgid "返回"
+#~ msgstr ""
+
+#~ msgid "返回类型"
+#~ msgstr ""
+
+#~ msgid "基类：:py:class:`pymatgen.analysis.local_env.VoronoiNN`"
+#~ msgstr ""
 

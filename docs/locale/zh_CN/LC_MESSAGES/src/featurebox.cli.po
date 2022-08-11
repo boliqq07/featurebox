@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: featurebox \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-07 13:04+0800\n"
+"POT-Creation-Date: 2022-08-11 16:49+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -55,7 +55,7 @@ msgstr ""
 
 #: featurebox.cli.vasp_bader.BaderStartInter:1
 #: featurebox.cli.vasp_bader.BaderStartSingleResult:1 of
-msgid "基类：:py:class:`featurebox.cli.vasp_bader.BaderStartZero`"
+msgid "Bases: :py:class:`featurebox.cli.vasp_bader.BaderStartZero`"
 msgstr ""
 
 #: featurebox.cli.vasp_bader.BaderStartInter:1 of
@@ -82,8 +82,7 @@ msgstr ""
 #: featurebox.cli.vasp_bgp.BandGapStartInter:7
 #: featurebox.cli.vasp_cohp.COHPStartInter:6
 #: featurebox.cli.vasp_dbc.DBCStartInter:8
-#: featurebox.cli.vasp_general_diff.GeneralDiff:3
-#: featurebox.cli.vasp_general_single.General:3 of
+#: featurebox.cli.vasp_general_diff.GeneralDiff:3 of
 msgid "Notes::"
 msgstr ""
 
@@ -93,7 +92,7 @@ msgstr ""
 
 #: featurebox.cli.vasp_bader.BaderStartInter:35
 #: featurebox.cli.vasp_bgp.BandGapStartInter:29
-#: featurebox.cli.vasp_cohp.COHPStartInter:34
+#: featurebox.cli.vasp_cohp.COHPStartInter:37
 #: featurebox.cli.vasp_dbc.DBCStartInter:30 of
 msgid "Move to other system and run  'tar -zxvf data.tar.gz'."
 msgstr ""
@@ -148,7 +147,7 @@ msgstr ""
 #: featurebox.cli.vasp_dbc.DBCxyzPathOut:1 featurebox.cli.vasp_dos.DosPy:1
 #: featurebox.cli.vasp_dos.DosxyzPathOut:1
 #: featurebox.cli.vasp_general_single.General:1 of
-msgid "基类：:py:class:`featurebox.cli._basepathout._BasePathOut`"
+msgid "Bases: :py:class:`featurebox.cli._basepathout._BasePathOut`"
 msgstr ""
 
 #: featurebox.cli.vasp_bader.BaderStartZero:1 of
@@ -182,6 +181,38 @@ msgid ""
 "(force!!!)."
 msgstr ""
 
+#: featurebox.cli.vasp_bader.BaderStartZero.extract:1 of
+msgid "Extract the message in data, and formed it."
+msgstr ""
+
+#: featurebox.cli.vasp_bader.BaderStartZero.extract
+#: featurebox.cli.vasp_converge.check_convergence
+#: featurebox.cli.vasp_dos.Dosxyz of
+msgid "Parameters"
+msgstr ""
+
+#: featurebox.cli.vasp_bader.BaderStartZero.extract:3 of
+msgid "transformed data."
+msgstr ""
+
+#: featurebox.cli.vasp_bader.BaderStartZero.extract:5 of
+msgid "function to deal with each path, for better shown."
+msgstr ""
+
+#: featurebox.cli.vasp_bader.BaderStartZero.extract
+#: featurebox.cli.vasp_converge.check_convergence of
+msgid "Returns"
+msgstr ""
+
+#: featurebox.cli.vasp_bader.BaderStartZero.extract:8 of
+msgid "**res_data** -- extracted and formed data."
+msgstr ""
+
+#: featurebox.cli.vasp_bader.BaderStartZero.extract
+#: featurebox.cli.vasp_converge.check_convergence of
+msgid "Return type"
+msgstr ""
+
 #: ../../src/featurebox.cli.rst:21
 msgid "featurebox.cli.vasp\\_bgp module"
 msgstr ""
@@ -192,7 +223,7 @@ msgstr ""
 
 #: featurebox.cli.vasp_bgp.BandGapStartInter:1
 #: featurebox.cli.vasp_bgp.BandGapStartSingleResult:1 of
-msgid "基类：:py:class:`featurebox.cli.vasp_bgp.BandGapStartZero`"
+msgid "Bases: :py:class:`featurebox.cli.vasp_bgp.BandGapStartZero`"
 msgstr ""
 
 #: featurebox.cli.vasp_bgp.BandGapStartInter:1 of
@@ -210,7 +241,7 @@ msgid "tar -zcvf data.tar.gz BAND_GAP."
 msgstr ""
 
 #: featurebox.cli.vasp_bgp.BandGapStartInter:31
-#: featurebox.cli.vasp_cohp.COHPStartInter:36
+#: featurebox.cli.vasp_cohp.COHPStartInter:39
 #: featurebox.cli.vasp_dbc.DBCStartInter:32 of
 msgid "Run with this class."
 msgstr ""
@@ -218,7 +249,9 @@ msgstr ""
 #: featurebox.cli.vasp_bgp.BandGapStartSingleResult:1
 #: featurebox.cli.vasp_cohp.COHPStartSingleResult:1
 #: featurebox.cli.vasp_dbc.DBCStartSingleResult:1 of
-msgid "Avoid Double Calculation."
+msgid ""
+"Avoid Double Calculation. Just reproduce the 'results_all' from a "
+"'result_single' files. keeping the 'result_single.csv' files exists."
 msgstr ""
 
 #: featurebox.cli.vasp_bgp.BandGapStartZero:1 of
@@ -272,7 +305,7 @@ msgid "featurebox.cli.vasp\\_cohp module"
 msgstr ""
 
 #: featurebox.cli.vasp_cohp.COHPStartInter:1 of
-msgid "基类：:py:class:`featurebox.cli.vasp_cohp.COHPStartZero`"
+msgid "Bases: :py:class:`featurebox.cli.vasp_cohp.COHPStartZero`"
 msgstr ""
 
 #: featurebox.cli.vasp_cohp.COHPStartInter:1 of
@@ -287,12 +320,12 @@ msgid ""
 "atoms couple):"
 msgstr ""
 
-#: featurebox.cli.vasp_cohp.COHPStartInter:32 of
+#: featurebox.cli.vasp_cohp.COHPStartInter:35 of
 msgid "tar -zcvf data.tar.gz \"ICOHPLIST.lobster\", \"COHPCAR.lobster\"."
 msgstr ""
 
 #: featurebox.cli.vasp_cohp.COHPStartSingleResult:1 of
-msgid "基类：:py:class:`featurebox.cli.vasp_cohp.COHPStartInter`"
+msgid "Bases: :py:class:`featurebox.cli.vasp_cohp.COHPStartInter`"
 msgstr ""
 
 #: featurebox.cli.vasp_cohp.COHPStartZero:1 of
@@ -315,11 +348,6 @@ msgstr ""
 msgid "Check final energy."
 msgstr ""
 
-#: featurebox.cli.vasp_converge.check_convergence
-#: featurebox.cli.vasp_dos.Dosxyz of
-msgid "参数"
-msgstr ""
-
 #: featurebox.cli.vasp_converge.check_convergence:3 of
 msgid "(str, path.Path, os.PathLike,pathlib.Path), path"
 msgstr ""
@@ -328,16 +356,8 @@ msgstr ""
 msgid "(list of str), message."
 msgstr ""
 
-#: featurebox.cli.vasp_converge.check_convergence of
-msgid "返回"
-msgstr ""
-
 #: featurebox.cli.vasp_converge.check_convergence:6 of
 msgid "(tuple), bool and msg list"
-msgstr ""
-
-#: featurebox.cli.vasp_converge.check_convergence of
-msgid "返回类型"
 msgstr ""
 
 #: ../../src/featurebox.cli.rst:53
@@ -345,12 +365,12 @@ msgid "featurebox.cli.vasp\\_dbc module"
 msgstr ""
 
 #: featurebox.cli.vasp_dbc.DBCPy:1 of
-msgid "Get d band center by pymatgen and return csv file."
+msgid "Get d band center by pymatgen and return csv file. pymatgen>=2022.5.26"
 msgstr ""
 
 #: featurebox.cli.vasp_dbc.DBCStartInter:1
 #: featurebox.cli.vasp_dbc.DBCStartSingleResult:1 of
-msgid "基类：:py:class:`featurebox.cli.vasp_dbc.DBCStartZero`"
+msgid "Bases: :py:class:`featurebox.cli.vasp_dbc.DBCStartZero`"
 msgstr ""
 
 #: featurebox.cli.vasp_dbc.DBCStartInter:1 of
@@ -381,8 +401,18 @@ msgid ""
 "https://vaspkit.com/installation.html#download"
 msgstr ""
 
+#: featurebox.cli.vasp_dbc.DBCStartZero.extract:1 of
+msgid ""
+"atoms start from 1. This atom number are different to the structure atom "
+"number."
+msgstr ""
+
 #: featurebox.cli.vasp_dbc.DBCxyzPathOut:1 of
 msgid "Get d band center by code and return csv file."
+msgstr ""
+
+#: featurebox.cli.vasp_dbc.DBCxyzPathOut.extract:1 of
+msgid "atoms start from 0."
 msgstr ""
 
 #: ../../src/featurebox.cli.rst:61
@@ -394,7 +424,7 @@ msgid "Get d band center from paths and return csv file."
 msgstr ""
 
 #: featurebox.cli.vasp_dos.Dosxyz:1 of
-msgid "基类：:py:class:`object`"
+msgid "Bases: :py:class:`object`"
 msgstr ""
 
 #: featurebox.cli.vasp_dos.Dosxyz:1 of
@@ -472,7 +502,7 @@ msgid "featurebox.cli.vasp\\_general\\_diff module"
 msgstr ""
 
 #: featurebox.cli.vasp_general_diff.GeneralDiff:1 of
-msgid "基类：:py:class:`featurebox.cli._basepathout._BasePathOut2`"
+msgid "Bases: :py:class:`featurebox.cli._basepathout._BasePathOut2`"
 msgstr ""
 
 #: featurebox.cli.vasp_general_diff.GeneralDiff:1 of
@@ -486,4 +516,47 @@ msgstr ""
 #: featurebox.cli.vasp_general_single.General:1 of
 msgid "Get data from paths and return csv file."
 msgstr ""
+
+#: featurebox.cli.vasp_general_single.General:3 of
+msgid "Default keys Notes::"
+msgstr ""
+
+#~ msgid "基类：:py:class:`featurebox.cli.vasp_bader.BaderStartZero`"
+#~ msgstr ""
+
+#~ msgid "基类：:py:class:`featurebox.cli._basepathout._BasePathOut`"
+#~ msgstr ""
+
+#~ msgid "基类：:py:class:`featurebox.cli.vasp_bgp.BandGapStartZero`"
+#~ msgstr ""
+
+#~ msgid "Avoid Double Calculation."
+#~ msgstr ""
+
+#~ msgid "基类：:py:class:`featurebox.cli.vasp_cohp.COHPStartZero`"
+#~ msgstr ""
+
+#~ msgid "基类：:py:class:`featurebox.cli.vasp_cohp.COHPStartInter`"
+#~ msgstr ""
+
+#~ msgid "参数"
+#~ msgstr ""
+
+#~ msgid "返回"
+#~ msgstr ""
+
+#~ msgid "返回类型"
+#~ msgstr ""
+
+#~ msgid "Get d band center by pymatgen and return csv file."
+#~ msgstr ""
+
+#~ msgid "基类：:py:class:`featurebox.cli.vasp_dbc.DBCStartZero`"
+#~ msgstr ""
+
+#~ msgid "基类：:py:class:`object`"
+#~ msgstr ""
+
+#~ msgid "基类：:py:class:`featurebox.cli._basepathout._BasePathOut2`"
+#~ msgstr ""
 

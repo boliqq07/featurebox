@@ -27,6 +27,9 @@ Use ``fbx -h`` or ``fbx {sub_cmd} -h`` for more details.
 >>> from featurebox.cli.vasp_dos import DosxyzPathOut
 >>> dosxyz = DosxyzPathOut(n_jobs=4, store_single=True)
 >>> result = dosxyz.transfrom(paths_list)
+>>> # More part: The following is not in command model.
+>>> # final treatment to extractor need message and formatting.
+>>> features = dosxyz.extractor(result,atoms=[0, 1, 2, 3], ori=["p-x","d-xy"],format_path=None)
 
 Key
 ---------------

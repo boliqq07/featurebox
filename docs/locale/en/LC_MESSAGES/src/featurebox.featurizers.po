@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: featurebox \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-07 13:04+0800\n"
+"POT-Creation-Date: 2022-08-11 16:49+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,7 +38,7 @@ msgid "Base"
 msgstr ""
 
 #: featurebox.featurizers.base_feature.BaseFeature:1 of
-msgid "基类：:py:class:`object`"
+msgid "Bases: :py:class:`object`"
 msgstr ""
 
 #: featurebox.featurizers.base_feature.BaseFeature:1 of
@@ -123,7 +123,7 @@ msgstr ""
 #: featurebox.featurizers.base_feature.DummyConverter.convert
 #: featurebox.featurizers.batch_feature.BatchFeature
 #: featurebox.featurizers.batch_feature.BatchFeature.convert of
-msgid "参数"
+msgid "Parameters"
 msgstr ""
 
 #: featurebox.featurizers.base_feature.BaseFeature:49
@@ -173,7 +173,7 @@ msgstr ""
 #: featurebox.featurizers.batch_feature.BatchFeature.convert
 #: featurebox.featurizers.batch_feature.BatchFeature.feature_labels
 #: featurebox.featurizers.batch_feature.BatchFeature.set_feature_labels of
-msgid "返回"
+msgid "Returns"
 msgstr ""
 
 #: featurebox.featurizers.base_feature.BaseFeature.authors:3 of
@@ -224,7 +224,7 @@ msgstr ""
 #: featurebox.featurizers.base_feature.BaseFeature.convert:5
 #: featurebox.featurizers.base_feature.ConverterSequence:6
 #: featurebox.featurizers.batch_feature.BatchFeature.convert:5 of
-msgid "提示"
+msgid "Notes"
 msgstr ""
 
 #: featurebox.featurizers.base_feature.BaseFeature.convert:6
@@ -261,7 +261,7 @@ msgstr ""
 #: featurebox.featurizers.base_feature.BaseFeature.transform
 #: featurebox.featurizers.base_feature.BaseFeature.transform_with_zip
 #: featurebox.featurizers.batch_feature.BatchFeature.convert of
-msgid "返回类型"
+msgid "Return type"
 msgstr ""
 
 #: featurebox.featurizers.base_feature.BaseFeature.feature_labels:1
@@ -377,7 +377,7 @@ msgstr ""
 #: featurebox.featurizers.base_feature.ConverterSequence:1
 #: featurebox.featurizers.base_feature.DummyConverter:1
 #: featurebox.featurizers.batch_feature.BatchFeature:1 of
-msgid "基类：:py:class:`featurebox.featurizers.base_feature.BaseFeature`"
+msgid "Bases: :py:class:`featurebox.featurizers.base_feature.BaseFeature`"
 msgstr ""
 
 #: featurebox.featurizers.base_feature.ConverterCat:1 of
@@ -389,7 +389,7 @@ msgstr ""
 
 #: featurebox.featurizers.base_feature.ConverterCat:6
 #: featurebox.featurizers.base_feature.ConverterSequence:12 of
-msgid "实际案例"
+msgid "Examples"
 msgstr ""
 
 #: featurebox.featurizers.base_feature.ConverterCat:14
@@ -456,4 +456,25 @@ msgstr ""
 #: featurebox.featurizers.batch_feature.BatchFeature:5 of
 msgid "which contain `convert` method."
 msgstr ""
+
+#~ msgid "基类：:py:class:`object`"
+#~ msgstr ""
+
+#~ msgid "参数"
+#~ msgstr ""
+
+#~ msgid "返回"
+#~ msgstr ""
+
+#~ msgid "提示"
+#~ msgstr ""
+
+#~ msgid "返回类型"
+#~ msgstr ""
+
+#~ msgid "基类：:py:class:`featurebox.featurizers.base_feature.BaseFeature`"
+#~ msgstr ""
+
+#~ msgid "实际案例"
+#~ msgstr ""
 

@@ -215,14 +215,14 @@ class AtomJsonMap(BinaryMap):
             emb = 0
             for k, v in atom.items():
                 if self.weight:
-                    emb += np.array(self.embedding_dict[k]).astype(np.float32) * v
+                    emb += np.array(self.embedding_dict[k]).astype(np.float64) * v
                 else:
-                    emb += np.array(self.embedding_dict[k]).astype(np.float32)
+                    emb += np.array(self.embedding_dict[k]).astype(np.float64)
             features.append(emb)
         if len(atoms) == 1:
-            return np.array(features).ravel().astype(np.float32)
+            return np.array(features).ravel().astype(np.float64)
         else:
-            return np.array(features).reshape((len(atoms), -1)).astype(np.float32)
+            return np.array(features).reshape((len(atoms), -1)).astype(np.float64)
 
     def convert_number(self, atoms: List[int]) -> np.ndarray:
 
@@ -230,9 +230,9 @@ class AtomJsonMap(BinaryMap):
         features = [self.embedding_dict[i] for i in atoms_name]
 
         if len(atoms) == 1:
-            return np.array(features).astype(np.float32).ravel()
+            return np.array(features).astype(np.float64).ravel()
         else:
-            return np.array(features).astype(np.float32).reshape((len(atoms), -1))
+            return np.array(features).astype(np.float64).reshape((len(atoms), -1))
 
 
 class AtomTableMap(BinaryMap):
@@ -321,7 +321,7 @@ class AtomTableMap(BinaryMap):
 
         elif isinstance(tablename, np.ndarray):
             self.da_columns = None
-            self.dax = tablename.astype(np.float32)
+            self.dax = tablename.astype(np.float64)
 
         elif isinstance(tablename, pd.DataFrame):
             tablename = tablename.apply(pd.to_numeric)
@@ -358,10 +358,21 @@ class AtomTableMap(BinaryMap):
         for atom in atoms:
             emb = 0
             for k, v in atom.items():
-                if self.weight:
-                    emb += self.da.loc[k, :].values * v
-                else:
-                    emb += self.da.loc[k, :].values
+                try:
+                    if self.weight:
+                        emb += self.da.loc[k, :].values * v
+                    else:
+                        emb += self.da.loc[k, :].values
+                except TypeError as e:
+                    emb=np.NaN
+                    print("try add {} and {}".format(emb, self.da.loc[k, :].values),
+                          "with dtype {} and {}".format(np.array(emb).dtype, np.array(self.da.loc[k, :].values).dtype),
+                          "with size {} and {}".format(np.array(emb).shape, np.array(self.da.loc[k, :].values).shape),
+                          "The preprocessing cannot be convert in to float, "
+                          "or the preprocessing after func are with different size.",
+                          "please check you func, which keep the number of results consistent.")
+                    raise e
+
             features.append(emb)
         if len(atoms) == 1:
             return np.array(features).ravel()
@@ -381,7 +392,7 @@ class AtomTableMap(BinaryMap):
                 self.dax = np.concatenate((self.dax, other.dax), axis=1)
                 self.da = None
             else:
-                self.da = pd.concat((self.dax, other.dax), axis=1)
+                self.da = pd.concat((self.da, other.da), axis=1)
                 self.dax = None
         else:
             raise TypeError("only same class can be added.")

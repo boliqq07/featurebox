@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: featurebox \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-07 13:04+0800\n"
+"POT-Creation-Date: 2022-08-11 16:49+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,7 +42,7 @@ msgstr ""
 #: featurebox.data.check_data.CheckElements:1
 #: featurebox.data.data_sep.DataSameSep:1 featurebox.data.mp_access.MpAccess:1
 #: featurebox.data.namesplit.NameSplit:1 of
-msgid "基类：:py:class:`object`"
+msgid "Bases: :py:class:`object`"
 msgstr ""
 
 #: featurebox.data.check_data.CheckElements:1 of
@@ -68,16 +68,18 @@ msgstr ""
 #: featurebox.data.check_data.CheckElements
 #: featurebox.data.check_data.CheckElements.check
 #: featurebox.data.data_sep.DataSameSep
+#: featurebox.data.data_sep.DataSameSep.replace
 #: featurebox.data.data_sep.DataSameSep.replace_entry
 #: featurebox.data.data_sep.DataSameSep.settle
 #: featurebox.data.data_sep.DataSameSep.settle_to_pd
 #: featurebox.data.data_sep.DataSameSep.update
 #: featurebox.data.data_sep.DataSameSep.update_entry
 #: featurebox.data.data_sep.DataSameSep.update_entry_kv
+#: featurebox.data.data_sep.DataSameSep.update_from_pd
 #: featurebox.data.mp_access.MpAccess
 #: featurebox.data.mp_access.MpAccess.data_fetcher
 #: featurebox.data.namesplit.NameSplit.transform of
-msgid "参数"
+msgid "Parameters"
 msgstr ""
 
 #: featurebox.data.check_data.CheckElements:10 of
@@ -99,7 +101,7 @@ msgstr ""
 #: featurebox.data.mp_access.MpAccess:4
 #: featurebox.data.mp_access.MpAccess.get_ids:9
 #: featurebox.data.namesplit.NameSplit:12 of
-msgid "实际案例"
+msgid "Examples"
 msgstr ""
 
 #: featurebox.data.check_data.CheckElements.check:1 of
@@ -111,7 +113,7 @@ msgstr ""
 #: featurebox.data.data_sep.DataSameSep.settle_to_pd
 #: featurebox.data.mp_access.MpAccess.data_fetcher
 #: featurebox.data.namesplit.NameSplit.transform of
-msgid "返回"
+msgid "Returns"
 msgstr ""
 
 #: featurebox.data.check_data.CheckElements.check:4 of
@@ -123,7 +125,7 @@ msgstr ""
 #: featurebox.data.data_sep.DataSameSep.settle_to_pd
 #: featurebox.data.mp_access.MpAccess.data_fetcher
 #: featurebox.data.namesplit.NameSplit.transform of
-msgid "返回类型"
+msgid "Return type"
 msgstr ""
 
 #: featurebox.data.check_data.CheckElements.from_list:1 of
@@ -146,30 +148,39 @@ msgstr ""
 msgid "Settle data, dispatch data with \"all\" mark to each site."
 msgstr ""
 
-#: featurebox.data.data_sep.DataSameSep:27 of
+#: featurebox.data.data_sep.DataSameSep:28 of
 msgid ""
 "Make sure the key of data are formatted by {label}-{Si or Sall} !!! and "
 "all values is dict type. The 'S' is the same with sites_name."
 msgstr ""
 
-#: featurebox.data.data_sep.DataSameSep:30 of
+#: featurebox.data.data_sep.DataSameSep:31 of
 msgid "first key are formated by {label}{sep}{Si or Sall}."
 msgstr ""
 
-#: featurebox.data.data_sep.DataSameSep:32 of
+#: featurebox.data.data_sep.DataSameSep:33 of
 msgid "default \"-\"."
 msgstr ""
 
-#: featurebox.data.data_sep.DataSameSep:34 of
+#: featurebox.data.data_sep.DataSameSep:35 of
 msgid "default \"S\"."
 msgstr ""
 
-#: featurebox.data.data_sep.DataSameSep:36 of
+#: featurebox.data.data_sep.DataSameSep:37 of
 msgid "default 3."
 msgstr ""
 
-#: featurebox.data.data_sep.DataSameSep:38 of
+#: featurebox.data.data_sep.DataSameSep:39 of
 msgid "the class prefix of one batch data."
+msgstr ""
+
+#: featurebox.data.data_sep.DataSameSep.replace:1 of
+msgid "Replace dict data."
+msgstr ""
+
+#: featurebox.data.data_sep.DataSameSep.replace:3
+#: featurebox.data.data_sep.DataSameSep.update:3 of
+msgid "{entry_key: entry}."
 msgstr ""
 
 #: featurebox.data.data_sep.DataSameSep.replace_entry:1 of
@@ -228,10 +239,6 @@ msgstr ""
 msgid "Add dict data."
 msgstr ""
 
-#: featurebox.data.data_sep.DataSameSep.update:3 of
-msgid "{entry_key: entry}."
-msgstr ""
-
 #: featurebox.data.data_sep.DataSameSep.update_entry:1
 #: featurebox.data.data_sep.DataSameSep.update_entry_kv:1 of
 msgid "Add dict data to entry."
@@ -243,6 +250,16 @@ msgstr ""
 
 #: featurebox.data.data_sep.DataSameSep.update_entry_kv:9 of
 msgid "value (float, int, str)"
+msgstr ""
+
+#: featurebox.data.data_sep.DataSameSep.update_from_pd:1 of
+msgid ""
+"Read table and update to data. The table must be the formed by "
+"self.settle_to_pd function."
+msgstr ""
+
+#: featurebox.data.data_sep.DataSameSep.update_from_pd:4 of
+msgid "if df is str, try: df = pd.read_csv(\"df_name\", index_col=0).T"
 msgstr ""
 
 #: ../../src/featurebox.data.rst:29
@@ -352,4 +369,19 @@ msgstr ""
 #: featurebox.data.namesplit.NameSplit.transform:8 of
 msgid "return tables.csv."
 msgstr ""
+
+#~ msgid "基类：:py:class:`object`"
+#~ msgstr ""
+
+#~ msgid "参数"
+#~ msgstr ""
+
+#~ msgid "实际案例"
+#~ msgstr ""
+
+#~ msgid "返回"
+#~ msgstr ""
+
+#~ msgid "返回类型"
+#~ msgstr ""
 

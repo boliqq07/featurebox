@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: featurebox \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-07 13:04+0800\n"
+"POT-Creation-Date: 2022-08-11 16:49+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,7 +42,7 @@ msgstr ""
 #: featurebox.featurizers.atom.mapper.AtomJsonMap:1
 #: featurebox.featurizers.atom.mapper.AtomPymatgenPropMap:1
 #: featurebox.featurizers.atom.mapper.AtomTableMap:1 of
-msgid "基类：:py:class:`featurebox.featurizers.atom.mapper.BinaryMap`"
+msgid "Bases: :py:class:`featurebox.featurizers.atom.mapper.BinaryMap`"
 msgstr ""
 
 #: featurebox.featurizers.atom.mapper.AtomJsonMap:1 of
@@ -52,7 +52,7 @@ msgstr ""
 #: featurebox.featurizers.atom.mapper.AtomJsonMap:4
 #: featurebox.featurizers.atom.mapper.AtomPymatgenPropMap:19
 #: featurebox.featurizers.atom.mapper.AtomTableMap:20 of
-msgid "实际案例"
+msgid "Examples"
 msgstr ""
 
 #: featurebox.featurizers.atom.mapper.AtomJsonMap
@@ -63,7 +63,7 @@ msgstr ""
 #: featurebox.featurizers.atom.mapper.get_atom_fea_name
 #: featurebox.featurizers.atom.mapper.get_atom_fea_number
 #: featurebox.featurizers.atom.mapper.get_ion_fea_name of
-msgid "参数"
+msgid "Parameters"
 msgstr ""
 
 #: featurebox.featurizers.atom.mapper.AtomJsonMap:16 of
@@ -99,7 +99,7 @@ msgid "convert list of number to data"
 msgstr ""
 
 #: featurebox.featurizers.atom.mapper.AtomMap:1 of
-msgid "基类：:py:class:`featurebox.featurizers.base_feature.BaseFeature`"
+msgid "Bases: :py:class:`featurebox.featurizers.base_feature.BaseFeature`"
 msgstr ""
 
 #: featurebox.featurizers.atom.mapper.AtomMap:1 of
@@ -181,7 +181,7 @@ msgstr ""
 #: featurebox.featurizers.atom.mapper.get_atom_fea_name
 #: featurebox.featurizers.atom.mapper.get_atom_fea_number
 #: featurebox.featurizers.atom.mapper.get_ion_fea_name of
-msgid "返回"
+msgid "Returns"
 msgstr ""
 
 #: featurebox.featurizers.atom.mapper.AtomPymatgenPropMap.feature_labels:3
@@ -279,7 +279,7 @@ msgid "get CSV preprocessing"
 msgstr ""
 
 #: featurebox.featurizers.atom.mapper.BinaryMap:1 of
-msgid "基类：:py:class:`featurebox.featurizers.atom.mapper.AtomMap`"
+msgid "Bases: :py:class:`featurebox.featurizers.atom.mapper.AtomMap`"
 msgstr ""
 
 #: featurebox.featurizers.atom.mapper.BinaryMap:1 of
@@ -355,4 +355,22 @@ msgstr ""
 #: featurebox.featurizers.atom.mapper.process_uni:1 of
 msgid "Post-processing for bool preprocessing General properties."
 msgstr ""
+
+#~ msgid "基类：:py:class:`featurebox.featurizers.atom.mapper.BinaryMap`"
+#~ msgstr ""
+
+#~ msgid "实际案例"
+#~ msgstr ""
+
+#~ msgid "参数"
+#~ msgstr ""
+
+#~ msgid "基类：:py:class:`featurebox.featurizers.base_feature.BaseFeature`"
+#~ msgstr ""
+
+#~ msgid "返回"
+#~ msgstr ""
+
+#~ msgid "基类：:py:class:`featurebox.featurizers.atom.mapper.AtomMap`"
+#~ msgstr ""
 

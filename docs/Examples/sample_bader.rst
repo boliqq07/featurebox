@@ -36,6 +36,16 @@ Download: Guide: :doc:`../Guide/command_mode`.
 
 4. Subsequent processing.
 
+    >>> # Ture to python code.
+    >>> # More part: The following is not in command model.
+    >>> # final treatment to extractor need message and formatting.
+    >>> from featurebox.cli.vasp_bader import BaderStartInter, BaderStartSingleResult
+    >>> # use  BaderStartInter or BaderStartSingleResult rather than BaderStartZero to escape repetition calculation.
+    >>> bsi = BaderStartInter()
+    >>> res = pd.read_csv("bader_all.csv")
+    >>> features = bsi.extract(res, atoms=[0,1,2,3], format_path=None)
+    >>> print(type(result))  # return one formed pd.Dataframe with necessary message.
+
 Traditional python
 ----------------------
 
@@ -58,6 +68,11 @@ Traditional python
     >>> print(type(result))  # return pd.Dataframe
 
 4. Subsequent processing.
+
+    >>> # More part: The following is not in command model.
+    >>> # final treatment to extractor need message and formatting.
+    >>> features = bsz.extract(res, atoms=[0,1,2,3],format_path=None)
+    >>> print(type(features))  # return one formed pd.Dataframe with necessary message.
 
 
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: featurebox \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-07 13:04+0800\n"
+"POT-Creation-Date: 2022-08-11 16:49+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,7 +34,7 @@ msgid "General methods for computing property statistics from a list of values"
 msgstr ""
 
 #: featurebox.featurizers.state.extrastats.PropertyStats:1 of
-msgid "基类：:py:class:`object`"
+msgid "Bases: :py:class:`object`"
 msgstr ""
 
 #: featurebox.featurizers.state.extrastats.PropertyStats:1 of
@@ -101,7 +101,7 @@ msgstr ""
 #: featurebox.featurizers.state.union.PolyFeature.set_feature_labels
 #: featurebox.featurizers.state.union.UnionFeature.convert
 #: featurebox.featurizers.state.union.UnionFeature.transform of
-msgid "返回"
+msgid "Returns"
 msgstr ""
 
 #: featurebox.featurizers.state.extrastats.PropertyStats.avg_dev:10 of
@@ -130,7 +130,7 @@ msgstr ""
 #: featurebox.featurizers.state.union.UnionFeature.convert
 #: featurebox.featurizers.state.union.UnionFeature.set_feature_labels
 #: featurebox.featurizers.state.union.UnionFeature.transform of
-msgid "参数"
+msgid "Parameters"
 msgstr ""
 
 #: featurebox.featurizers.state.extrastats.PropertyStats.calc_stat:3 of
@@ -300,7 +300,9 @@ msgid "featurebox.featurizers.state.state\\_mapper module"
 msgstr ""
 
 #: featurebox.featurizers.state.state_mapper.StructurePymatgenPropMap:1 of
-msgid "基类：:py:class:`featurebox.featurizers.atom.mapper._StructurePymatgenPropMap`"
+msgid ""
+"Bases: "
+":py:class:`featurebox.featurizers.atom.mapper._StructurePymatgenPropMap`"
 msgstr ""
 
 #: featurebox.featurizers.state.state_mapper.StructurePymatgenPropMap:1 of
@@ -315,7 +317,7 @@ msgstr ""
 #: featurebox.featurizers.state.statistics.WeightedSum:2
 #: featurebox.featurizers.state.union.PolyFeature:6
 #: featurebox.featurizers.state.union.UnionFeature:4 of
-msgid "实际案例"
+msgid "Examples"
 msgstr ""
 
 #: featurebox.featurizers.state.state_mapper.StructurePymatgenPropMap:9 of
@@ -335,7 +337,7 @@ msgid "featurebox.featurizers.state.statistics module"
 msgstr ""
 
 #: featurebox.featurizers.state.statistics.BaseCompositionFeature:1 of
-msgid "基类：:py:class:`featurebox.featurizers.atom.mapper.BinaryMap`"
+msgid "Bases: :py:class:`featurebox.featurizers.atom.mapper.BinaryMap`"
 msgstr ""
 
 #: featurebox.featurizers.state.statistics.BaseCompositionFeature:1 of
@@ -418,7 +420,7 @@ msgstr ""
 #: featurebox.featurizers.state.union.UnionFeature.convert
 #: featurebox.featurizers.state.union.UnionFeature.set_feature_labels
 #: featurebox.featurizers.state.union.UnionFeature.transform of
-msgid "返回类型"
+msgid "Return type"
 msgstr ""
 
 #: featurebox.featurizers.state.statistics.DepartElementFeature:1
@@ -430,7 +432,9 @@ msgstr ""
 #: featurebox.featurizers.state.statistics.WeightedAverage:1
 #: featurebox.featurizers.state.statistics.WeightedSum:1
 #: featurebox.featurizers.state.statistics.WeightedVariance:1 of
-msgid "基类：:py:class:`featurebox.featurizers.state.statistics.BaseCompositionFeature`"
+msgid ""
+"Bases: "
+":py:class:`featurebox.featurizers.state.statistics.BaseCompositionFeature`"
 msgstr ""
 
 #: featurebox.featurizers.state.statistics.DepartElementFeature:1 of
@@ -463,7 +467,7 @@ msgstr ""
 
 #: featurebox.featurizers.state.union.PolyFeature:1 of
 msgid ""
-"基类：:py:class:`featurebox.featurizers.base_feature.BaseFeature`, "
+"Bases: :py:class:`featurebox.featurizers.base_feature.BaseFeature`, "
 ":py:class:`abc.ABC`"
 msgstr ""
 
@@ -564,7 +568,7 @@ msgid "result data."
 msgstr ""
 
 #: featurebox.featurizers.state.union.UnionFeature:1 of
-msgid "基类：:py:class:`featurebox.featurizers.base_feature.BaseFeature`"
+msgid "Bases: :py:class:`featurebox.featurizers.base_feature.BaseFeature`"
 msgstr ""
 
 #: featurebox.featurizers.state.union.UnionFeature:1 of
@@ -609,4 +613,36 @@ msgstr ""
 #: featurebox.featurizers.state.union.UnionFeature.transform:11 of
 msgid "**result** -- features for each entry."
 msgstr ""
+
+#~ msgid "基类：:py:class:`object`"
+#~ msgstr ""
+
+#~ msgid "返回"
+#~ msgstr ""
+
+#~ msgid "参数"
+#~ msgstr ""
+
+#~ msgid "基类：:py:class:`featurebox.featurizers.atom.mapper._StructurePymatgenPropMap`"
+#~ msgstr ""
+
+#~ msgid "实际案例"
+#~ msgstr ""
+
+#~ msgid "基类：:py:class:`featurebox.featurizers.atom.mapper.BinaryMap`"
+#~ msgstr ""
+
+#~ msgid "返回类型"
+#~ msgstr ""
+
+#~ msgid "基类：:py:class:`featurebox.featurizers.state.statistics.BaseCompositionFeature`"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "基类：:py:class:`featurebox.featurizers.base_feature.BaseFeature`, "
+#~ ":py:class:`abc.ABC`"
+#~ msgstr ""
+
+#~ msgid "基类：:py:class:`featurebox.featurizers.base_feature.BaseFeature`"
+#~ msgstr ""
 
