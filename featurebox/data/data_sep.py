@@ -21,7 +21,7 @@ class DataSameSep:
     >>> dss.replace({"Ta-S1":{"bond1":3.4,"bond2":3.5},"Co-S2":{"bond1":3.2,"bond2":3.1}}) # cover the old.
     >>> dss.replace_entry(label="Ta",site=1,entry={"bond1":3.2,"bond2":3.5}) # cover the old.
 
-    >>> dss.update({"Ta-S1":{"bond1":3.4,"bond2":3.5},"Co-S2":{"bond1":3.2,"bond2":3.1}})
+    >>> dss.update({"Ta-S1":{"bond1":3.4,"bond2":3.5},"Co-S2":{"bond1":3.2,"bond2":3.1}}) # add
     >>> dss.update_entry(label="Co",site=0,entry={"bond1":3.2}) # add
     >>> dss.update_entry_kv(label="Mg",site="all",key="bond1",value=3.2) # add
     >>> dict_data = dss.settle()
