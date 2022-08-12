@@ -6,6 +6,7 @@
 # @License: MIT License
 
 import os
+import warnings
 from typing import List
 
 import numpy as np
@@ -56,13 +57,14 @@ class General(_BasePathOut):
             elif data.shape == 0:
                 data = {self.prop: data[0]}
             else:
-                raise NotImplementedError
+                warnings.warn(f"Get data (type np.ndarray) with shape {data.shape}, we can't settle the data suitably.")
+                data = {self.prop: data}
         elif isinstance(data, dict):
             data = data
         elif isinstance(data, (float, int)):
             data = {self.prop: data}
         else:
-            raise NotImplementedError
+            raise NotImplementedError(f"Unavailable data {type(data)}.")
 
         if self.store_single:
             result = pd.DataFrame.from_dict(data).T

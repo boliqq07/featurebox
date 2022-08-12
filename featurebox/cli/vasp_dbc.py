@@ -447,13 +447,13 @@ class DBCxyzPathOut(_BasePathOut):
         return result
 
     @staticmethod
-    def extract(data: pd.DataFrame, atoms, ori=None, format_path: Callable = None):
+    def extract(data: pd.DataFrame, atoms, orbit=None, format_path: Callable = None):
         """atoms start from 0."""
         if isinstance(atoms, (list, tuple)):
-            if ori is None:
-                ori = ['p-y', 'p-z', 'p-x', 'd-xy', 'd-yz', 'd-z2-r2', 'd-xz', 'd-x2-y2']
-            if "File" not in ori:
-                ori.append("File")
+            if orbit is None:
+                orbit = ['p-y', 'p-z', 'p-x', 'd-xy', 'd-yz', 'd-z2-r2', 'd-xz', 'd-x2-y2']
+            if "File" not in orbit:
+                orbit.append("File")
             if "Unnamed: 0" in data:
                 del data["Unnamed: 0"]
             res = []
@@ -461,13 +461,13 @@ class DBCxyzPathOut(_BasePathOut):
                 data["File"] = [format_path(ci) for ci in data["File"]]
             for v in atoms:
                 sel = data[data["Atom Number"] == v + 1]
-                sel = sel[ori].set_index("File")
+                sel = sel[orbit].set_index("File")
                 n_name = [f"{i}-{v}" for i in sel.columns]
                 sel.columns = n_name
                 res.append(sel)
             return pd.concat(res, axis=1)
         else:
-            raise NotImplementedError
+            raise NotImplementedError("'atoms' just accept list or tuple.")
 
 
 def get_atom_pdos_center(dos: CompleteDos = None, mark_orbital=None, mark_atom_numbers=None):
@@ -548,10 +548,10 @@ class DBCPy(_BasePathOut):
         self.out_file = "dbc_py_all.csv"
         self.software = []
         self.method = method
-        if self.method =="ele":
-            self.extract=self._extract_ele
+        if self.method == "atom":
+            self.extract = self._extract_atom
         else:
-            self.extract=self._extract_atom
+            self.extract = self._extract_ele
 
     def run(self, path: Path, files: List = None):
         """3.Run with software and necessary file and get data.
@@ -566,7 +566,7 @@ class DBCPy(_BasePathOut):
         elif self.method == "ele":
             dbc = get_ele_pdos_center(com_dos)
         else:
-            raise NotImplementedError
+            raise NotImplementedError('method ="atom" or "ele".')
 
         result_single = pd.DataFrame.from_dict({path: dbc}).T
 
@@ -586,7 +586,24 @@ class DBCPy(_BasePathOut):
         return result
 
     @staticmethod
-    def _extract_ele(data: pd.DataFrame, ele_and_ori=None, join_ele=None, join_ele_ori =None, format_path = None):
+    def _extract_ele(data: pd.DataFrame, ele_and_orbit=None, join_ele=None, join_ele_orbit=None, format_path=None):
+        """
+
+        >>> self.extract(res, ele_and_orbit=["C-p", "O-p", "Mo-d", "JTM-d"], join_ele=["Ag","Au",...], )
+
+        Parameters
+        ----------
+        data:pd.Dateframe
+            data.
+        ele_and_orbit:
+            atom_orbit.
+        join_ele:list
+            atom name.
+        join_ele_orbit:
+            orbit for join ele.
+        format_path: Callable
+            function.
+        """
         import re
 
         @functools.lru_cache(4)
@@ -607,15 +624,15 @@ class DBCPy(_BasePathOut):
         if format_path is not None:
             data.index = [format_path(ci) for ci in data.index]
 
-        if isinstance(ele_and_ori, (list, tuple)):
-            for v in ele_and_ori:
+        if isinstance(ele_and_orbit, (list, tuple)):
+            for v in ele_and_orbit:
                 sel = [i for i in data.columns if f"{v}" in i]
                 sel = data[sel]
                 res.append(sel)
         if isinstance(join_ele, (list, tuple)):
-            if join_ele_ori is None:
-                join_ele_ori = ["s", "p", "d"]
-            builtin_name = [f"{i}-{j}" for i in join_ele_ori for j in ["band_center", "band_filling", "band_width"]]
+            if join_ele_orbit is None:
+                join_ele_orbit = ["s", "p", "d"]
+            builtin_name = [f"{i}-{j}" for i in join_ele_orbit for j in ["band_center", "band_filling", "band_width"]]
 
             for bi in builtin_name:
                 names = [f"{i}-{bi}" for i in join_ele]
@@ -624,7 +641,7 @@ class DBCPy(_BasePathOut):
                 sel_name = [i.split("-")[0] for i in sel_col]
                 sel_index = col_corresponding_index(tuple(sel_name), tuple(data.index))
 
-                sel = {i:data.loc[i, c] for i,c in zip(sel_index, sel_col)}
+                sel = {i: data.loc[i, c] for i, c in zip(sel_index, sel_col)}
 
                 df = pd.DataFrame.from_dict({f"JTM-{bi}": sel})
 
@@ -636,10 +653,11 @@ class DBCPy(_BasePathOut):
         return pd.concat(res, axis=1)
 
     @staticmethod
-    def _extract_atom(data: pd.DataFrame, atoms, ori=None, format_path: Callable = None):
+    def _extract_atom(data: pd.DataFrame, atoms, orbit=None, format_path: Callable = None):
         """atoms start from 0."""
-        if ori is None:
-            ori = ["s", "p", "d"]
+        print("The extract_atom function just accept table result from method='atom'.")
+        if orbit is None:
+            orbit = ["s", "p", "d"]
         if isinstance(atoms, (list, tuple)):
             res = []
             if "Unnamed: 0" in data:
@@ -651,12 +669,12 @@ class DBCPy(_BasePathOut):
                 data.index = [format_path(ci) for ci in data.index]
 
             for v in atoms:
-                sel = [i for i in data.columns for k in ori if f"-{v}-{k}-" in i]
+                sel = [i for i in data.columns for k in orbit if f"-{v}-{k}-" in i]
                 sel = data[sel]
                 res.append(sel)
             return pd.concat(res, axis=1)
         else:
-            raise NotImplementedError
+            raise NotImplementedError("'atoms' just accept list or tuple.")
 
 
 class DBCStartZero(_BasePathOut):
@@ -680,7 +698,7 @@ class DBCStartZero(_BasePathOut):
         with open(result_name, mode="r") as f:
             ress = f.readlines()
 
-        n=0
+        n = 0
         res = []
         for i in ress:
             if i == "\n":
@@ -691,7 +709,7 @@ class DBCStartZero(_BasePathOut):
                 i = [i[:-2] if "\n" in i else i for i in i]
                 i.insert(0, str(n))
                 res.append(i)
-                n+=1
+                n += 1
 
         res = np.array(res[1:])
         res = np.concatenate((np.full(res.shape[0], fill_value=str(d)).reshape(-1, 1), res), axis=1)
@@ -708,16 +726,20 @@ class DBCStartZero(_BasePathOut):
     def extract(data: pd.DataFrame, atoms=None, ele=None, join_ele=None, format_path: Callable = None):
         """atoms start from 1.
         This atom number are different to the structure atom number.
+
+        >>> self.extract(res, ele=["O1","C1",...], join_ele=[f'{i}1' if i !='Mo' else 'Mo18' for i in self.doping], )
+
         """
+        ele = [] if join_ele is not None and ele is None else ele
         data = data.apply(pd.to_numeric, errors='ignore')
         if format_path is not None:
             data["File"] = [format_path(ci) for ci in data["File"]]
         res = []
         if isinstance(atoms, (list, tuple)):
             print("This atom numbers in 'atoms' parameter are different to the structure atom numbers,"
-            "rather than the rank of number in bader file 'D_BANF_CENTER' (strat from 1)."
-            "Check you file and make sure the number are correct."
-            "Check you file and make sure the number are correct.")
+                  "rather than the rank of number in bader file 'D_BANF_CENTER' (strat from 1)."
+                  "Check you file and make sure the number are correct."
+                  "Check you file and make sure the number are correct.")
             print("We suggest use the 'names' parameter to extarct data such as: ['Mo1','Mo2'].")
 
             # index = [re.sub("\D", "", i) for i in data["Atom"].values]
@@ -744,18 +766,17 @@ class DBCStartZero(_BasePathOut):
             for je in join_ele:
                 sel1 = data[data["Atom"] == je]
                 sel1 = sel1[["File", "d-Band-Center (Average)"]].set_index("File")
-                assert sel1.values.shape[0]<=1, "join element must be sole."
+                assert sel1.values.shape[0] <= 1, "join element must be sole."
                 js.append(sel1)
 
-            df = pd.concat(js,axis=0)
+            df = pd.concat(js, axis=0)
+            n_name = [f"JTM-{i}" for i in df.columns]
+            df.columns = n_name
             res.append(df)
 
             return pd.concat(res, axis=1)
-
-
         else:
-            raise NotImplementedError
-
+            raise NotImplementedError("'atoms' just accept list or tuple.")
 
     def run(self, path: Path, files: List = None):
         """3.Run with software and necessary file and get data.

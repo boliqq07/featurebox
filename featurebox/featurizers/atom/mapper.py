@@ -364,7 +364,7 @@ class AtomTableMap(BinaryMap):
                     else:
                         emb += self.da.loc[k, :].values
                 except TypeError as e:
-                    emb=np.NaN
+                    emb = np.NaN
                     print("try add {} and {}".format(emb, self.da.loc[k, :].values),
                           "with dtype {} and {}".format(np.array(emb).dtype, np.array(self.da.loc[k, :].values).dtype),
                           "with size {} and {}".format(np.array(emb).shape, np.array(self.da.loc[k, :].values).shape),

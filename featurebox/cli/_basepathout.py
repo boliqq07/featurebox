@@ -259,15 +259,13 @@ class _BasePathOut:
             if "File" in data:  # File are repetitive
                 return data
             else:
-                data["File"] = data["Unnamed: 0"] # File are sole
+                data["File"] = data["Unnamed: 0"]  # File are sole
                 del data["Unnamed: 0"]
                 data = data.set_index("File")
                 data.index = [format_path(ci) for ci in data.index]
         else:
             data.index = [format_path(ci) for ci in data.index]
         return data
-
-
 
 
 class _BasePathOut2(_BasePathOut):

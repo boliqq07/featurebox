@@ -51,7 +51,8 @@ class GeneralDiff(_BasePathOut2):
             if isinstance(data, (float, int)):
                 res.append(data)
             else:
-                raise NotImplementedError
+                raise NotImplementedError("Try to transform to float or int but failed."
+                                          f"This {self.prop} could not be extracted using this script.")
         data = {f"{self.prop}-diff": res[0] - res[1]}
 
         if self.store_single:

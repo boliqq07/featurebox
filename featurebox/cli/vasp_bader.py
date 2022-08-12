@@ -92,8 +92,7 @@ class BaderStartZero(_BasePathOut):
                 res.append(sel)
             return pd.concat(res, axis=1)
         else:
-            raise NotImplementedError
-
+            raise NotImplementedError("'atoms' just accept list or tuple.")
 
     def run(self, path: Path, files: List = None):
         """3.Run with software and necessary file and get data.

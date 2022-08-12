@@ -31,10 +31,10 @@ class MyTestCase(unittest.TestCase):
         from featurebox.cli.vasp_dbc import DBCPy
         method = DBCPy(method="ele")
         res = method.transform(self.wd)
-        data = method.extract(res, ele_and_ori=["C-p","O-p"], join_ele=["Ag","Au"],
+        data = method.extract(res, ele_and_orbit=["C-p","O-p"], join_ele=["Ag","Au"],
                               format_path=self.ff)
         res = pd.read_csv("dbc_py_all.csv")
-        data = method.extract(res, ele_and_ori=["C-p","O-p"], join_ele=["Ag","Au"],)
+        data = method.extract(res, ele_and_orbit=["C-p","O-p"], join_ele=["Ag","Au"],)
         pass
 
     def test_something3(self):
@@ -60,9 +60,9 @@ class MyTestCase(unittest.TestCase):
         from featurebox.cli.vasp_dbc import DBCxyzPathOut
         method = DBCxyzPathOut()
         res = method.transform(self.wd)
-        data = method.extract(res, atoms=[0, 1, 2, 3], ori=None)
+        data = method.extract(res, atoms=[0, 1, 2, 3], orbit=None)
         res = pd.read_csv("dbc_xyz_all.csv")
-        data = method.extract(res, atoms=[0, 1, 2, 3], ori=["p-x","d-xy"],format_path=self.ff)
+        data = method.extract(res, atoms=[0, 1, 2, 3], orbit=["p-x","d-xy"],format_path=self.ff)
         pass
 
     def test_something6(self):

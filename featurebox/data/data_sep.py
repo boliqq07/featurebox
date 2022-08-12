@@ -5,6 +5,7 @@
 # @Software: PyCharm
 # @License: MIT License
 import warnings
+from copy import copy
 from typing import Union, Dict, Any, Tuple
 
 import pandas as pd
@@ -12,6 +13,8 @@ import pandas as pd
 
 class DataSameSep:
     """Settle data, dispatch data with "all" mark to each site.
+    Make sure the values of dict are Immutable type,such as float,init. Otherwise, the stored data would
+    change with the input data, even if later than the call of this class/function.
 
     Examples:
     --------------
@@ -61,7 +64,7 @@ class DataSameSep:
 
         if data is None:
             data = {}
-        self.data = data
+        self.data = copy(data)
         self.sites_name = sites_name
         self.dup = dup
         self.data_settled = {}
@@ -76,14 +79,21 @@ class DataSameSep:
         if len(key) > 0:
             try:
                 labels, marks = list(zip(*[i.split(self.sep) for i in key]))
-            except BaseException:
+            except BaseException as e:
+                print(e)
+                print(f"Split name to labels and marks by failed using {self.sep}")
+                print(key)
+                print("Try to split name to prefixs, labels, marks now.")
                 try:
                     prefixs, labels, marks = list(zip(*[i.split(self.sep) for i in key]))
                     prefix = list(set(prefixs))
                     if len(prefix) >= 1:
                         print(f"There are {len(prefix)} prefix.")
-                except BaseException:
-                    raise ValueError("The key should named '{label}-{Sx}' or '{prefix}-{label}-{Sx}'. ")
+                except BaseException as e:
+                    print(e)
+                    raise ValueError(f"The key force keep naming '{{label}}{self.sep}{{Sx}}' "
+                                     f"or '{{prefix}}{self.sep}{{label}}{self.sep}{{Sx}}, no more '{self.sep}' please.")
+
             self.label = list(set(labels))
 
             assert set(marks) | set(self.mark) == set(self.mark), f"The {set(marks)} are out of range. " \
@@ -119,7 +129,7 @@ class DataSameSep:
             if len(key.split(self.sep)) != 3:
                 raise UserWarning(f"There are {self.prefix} in definition but the key  {key} is with out prefix."
                                   f"Advise use {{prefix}}-{{label}}-{{Sx}}")
-        self.data.update({key: value})
+        self.data.update({key: copy(value)})
 
     def update(self, data: Dict):
         """
@@ -132,7 +142,7 @@ class DataSameSep:
         """
         for ki, vi in data.items():
             if ki not in self.data:
-                self.data[ki] = vi
+                self.data[ki] = copy(vi)
             else:
                 self.data[ki].update(vi)
 
@@ -145,7 +155,7 @@ class DataSameSep:
         data:dict
             {entry_key: entry}.
         """
-        self.data.update(data)
+        self.data.update(copy(data))
 
     def _get_entry_name(self, label, site, prefix):
         if isinstance(site, int):
@@ -177,7 +187,7 @@ class DataSameSep:
         """
         entry_key = self._get_entry_name(label, site, prefix)
         if entry_key not in self.data:
-            self.data[entry_key] = entry
+            self.data[entry_key] = copy(entry)
         else:
             self.data[entry_key].update(entry)
 
@@ -216,7 +226,7 @@ class DataSameSep:
             prefix name for batch of data.
         """
         entry_key = self._get_entry_name(label, site, prefix)
-        self.data.update({entry_key: entry})
+        self.data.update({entry_key: copy(entry)})
 
     def settle(self, sort=False) -> Dict:
         """
@@ -241,12 +251,12 @@ class DataSameSep:
                     if nk in self.data_settled:
                         self.data_settled[nk].update(self.data[entry_key])
                     else:
-                        self.data_settled.update({nk: self.data[entry_key]})
+                        self.data_settled.update({nk: copy(self.data[entry_key])})
             else:
                 if entry_key in self.data_settled:
                     self.data_settled[entry_key].update(self.data[entry_key])
                 else:
-                    self.data_settled.update({entry_key: self.data[entry_key]})
+                    self.data_settled.update({entry_key: copy(self.data[entry_key])})
         if sort:
             self.data_settled = {k[0]: k[1] for k in sorted(self.data_settled.items(), key=lambda x: x[0])}
 
@@ -269,7 +279,7 @@ class DataSameSep:
         data = self.settle(sort=sort)
         return pd.DataFrame.from_dict(data).T
 
-    def update_from_pd(self, df:Union[pd.DataFrame,str]):
+    def update_from_pd(self, df: Union[pd.DataFrame, str]):
         """
         Read table and update to data.
         The table must be the formed by self.settle_to_pd function.
@@ -282,7 +292,6 @@ class DataSameSep:
 
         """
         if isinstance(df, str):
-            df = pd.read_csv(df, index_col=0).T
-        df_dict = df.to_dict()
+            df = pd.read_csv(df, index_col=0)
+        df_dict = df.T.to_dict()
         self.update(df_dict)
-
