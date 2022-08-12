@@ -132,10 +132,8 @@ class Corr(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
         # for nan
         self.nan_index_mark = ~np.array([np.all(np.isnan(cov[i])) for i in range(cov.shape[0])])
         if not np.all(self.nan_index_mark):
-            warnings.warn("There are some NAN values in correlation coefficient matrix, \n"
-                          "which could be constant features. \n"
-                          "and the features would removed later. \n"
-                          "See more in 'nan_index_mark' attribute", UserWarning)
+            print("There are some NAN values in correlation coefficient matrix, which could be constant features.\n"
+                  "The NAN features would removed later. See more in 'nan_index_mark' attribute.")
 
         cov = np.nan_to_num(cov)
         self.cov = cov
