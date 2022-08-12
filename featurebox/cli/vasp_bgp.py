@@ -4,7 +4,8 @@
 # @Software: PyCharm
 # @License: MIT License
 import os
-from typing import List
+import re
+from typing import List, Callable
 
 import numpy as np
 import pandas as pd
@@ -65,13 +66,13 @@ class BandGapStartZero(_BasePathOut):
     def __init__(self, n_jobs: int = 1, tq: bool = True, store_single=False):
         super(BandGapStartZero, self).__init__(n_jobs=n_jobs, tq=tq, store_single=store_single)
         self.necessary_files = ["EIGENVAL", "INCAR", "DOSCAR"]
-        self.out_file = "bgp_all.csv"
+        self.out_file = "bgp_kit_all.csv"
         self.software = ["vaspkit"]
         self.key_help = "Make sure the Vaspkit <= 1.2.1."
 
     @staticmethod
-    def read(path, store=False, store_name="bgp_single.csv"):
-        file_name = "BAND_GAP"
+    def read(path, store=False, store_name="bgp_kit_single.csv"):
+        file_name = path/"BAND_GAP"
         with open(file_name) as f:
             res = f.readlines()
 
@@ -111,7 +112,7 @@ class BandGapStartZero(_BasePathOut):
         for i in cmds:
             os.system(i)
 
-        return self.read(path, store=self.store_single, store_name="bgp_single.csv")
+        return self.read(path, store=self.store_single, store_name="bgp_kit_single.csv")
 
     def batch_after_treatment(self, paths, res_code):
         """4. Organize batch of data in tabular form, return one or more csv file. (force!!!)."""
@@ -129,6 +130,38 @@ class BandGapStartZero(_BasePathOut):
         result.to_csv(self.out_file)
         print("'{}' are sored in '{}'".format(self.out_file, os.getcwd()))
         return result
+
+    @staticmethod
+    def extract(data, *args, format_path: Callable = None, **kwargs):
+        """
+        Extract the message in data, and formed it.
+
+        Parameters
+        ----------
+        data:pd.DateFrame
+            transformed data.
+        format_path:Callable
+            function to deal with each path, for better shown.
+
+        Returns
+        -------
+        res_data:pd.DateFrame
+            extracted and formed data.
+
+        """
+        if format_path == "default":
+            format_path = lambda x: re.split(r" |-|/|\\", x)[-2]
+        elif format_path is None:
+            format_path = lambda x: x
+
+        if "Unnamed: 0" in data:
+            data["File"] = data["Unnamed: 0"]  # File are sole
+            del data["Unnamed: 0"]
+            data = data.set_index("File")
+
+        data = data[["Band Gap (eV)", "Fermi Energy (eV) Center"]]
+        data.index = [format_path(ci) for ci in data.index]
+        return data
 
 
 class BandGapStartInter(BandGapStartZero):
@@ -170,7 +203,7 @@ class BandGapStartInter(BandGapStartZero):
     def __init__(self, n_jobs: int = 1, tq: bool = True, store_single=False):
         super(BandGapStartInter, self).__init__(n_jobs=n_jobs, tq=tq, store_single=store_single)
         self.necessary_files = ["BAND_GAP"]
-        self.out_file = "bgp_all.csv"
+        self.out_file = "bgp_kit_all.csv"
         self.software = []
         self.key_help = self.__doc__
 
@@ -180,7 +213,7 @@ class BandGapStartInter(BandGapStartZero):
         # 可以更简单的直接写命令，而不用此处的文件名 (files), 但是需要保证后续出现的文件、软件与 necessary_file, software 一致
         # 函数强制返回除去None的对象，用于后续检查!!! (若返回None,则认为run转换错误)
 
-        return self.read(path, store=self.store_single, store_name="bgp_single.csv")
+        return self.read(path, store=self.store_single, store_name="bgp_kit_single.csv")
 
 
 class BandGapStartSingleResult(BandGapStartZero):
@@ -190,8 +223,8 @@ class BandGapStartSingleResult(BandGapStartZero):
 
     def __init__(self, n_jobs: int = 1, tq: bool = True, store_single=False):
         super(BandGapStartSingleResult, self).__init__(n_jobs=n_jobs, tq=tq, store_single=store_single)
-        self.necessary_files = ["bgp_single.csv"]
-        self.out_file = "bgp_all.csv"
+        self.necessary_files = ["bgp_kit_single.csv"]
+        self.out_file = "bgp_kit_all.csv"
         self.software = []
 
     def read(self, path, **kwargs):

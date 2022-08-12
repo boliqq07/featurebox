@@ -694,7 +694,7 @@ class DBCStartZero(_BasePathOut):
     @staticmethod
     def read(d, store=False, store_name="dbc_single.csv"):
         """Run linux cmd and return result, make sure the vaspkit is installed."""
-        result_name = "D_BAND_CENTER"
+        result_name = d/"D_BAND_CENTER"
         with open(result_name, mode="r") as f:
             ress = f.readlines()
 

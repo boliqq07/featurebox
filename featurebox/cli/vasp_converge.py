@@ -82,7 +82,7 @@ class ConvergeChecker(_BasePathOut):
             pass
         else:
             if self.store_single:
-                with open("Fail_this_paths_single.temp", "w") as f:
+                with open(path/"Fail_this_paths_single.temp", "w") as f:
                     f.writelines(path)
         return res_bool
 
