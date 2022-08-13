@@ -382,17 +382,17 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
         return score
 
 
-if __name__ == "__main__":
-    from sklearn.svm import SVR
-    from sklearn.datasets import fetch_california_housing
-    data = fetch_california_housing()
-    x = data.data
-    y = data.target
-    x = x[:100]
-    y = y[:100]
-    svr = SVR(gamma="scale", C=100)
-
-    ga = GA(estimator=svr, n_jobs=2, pop_n=100, hof_n=1, cxpb=0.8, mutpb=0.4, ngen=10,
-            max_or_min="max", mut_indpb=0.1, min_=2, muti_index=[0, 5], random_state=0)
-    ga.fit(x, y)
-    ga.score(x, y)
+# if __name__ == "__main__":
+#     from sklearn.svm import SVR
+#     from sklearn.datasets import fetch_california_housing
+#     data = fetch_california_housing()
+#     x = data.data
+#     y = data.target
+#     x = x[:100]
+#     y = y[:100]
+#     svr = SVR(gamma="scale", C=100)
+#
+#     ga = GA(estimator=svr, n_jobs=2, pop_n=100, hof_n=1, cxpb=0.8, mutpb=0.4, ngen=10,
+#             max_or_min="max", mut_indpb=0.1, min_=2, muti_index=[0, 5], random_state=0)
+#     ga.fit(x, y)
+#     ga.score(x, y)

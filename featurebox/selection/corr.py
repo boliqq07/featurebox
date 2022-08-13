@@ -295,15 +295,15 @@ class Corr(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
             pass
 
 
-if __name__ == "__main__":
-    # x, y = fetch_california_housing(return_X_y=True)
-    # co = Corr(threshold=0.7)
-    # c = co.count_cof(np.corrcoef(x, rowvar=False))[1]
-    from sklearn.datasets import fetch_california_housing
-
-    x, y = fetch_california_housing(return_X_y=True)
-    x = x[:100]
-    y = y[:100]
-    co = Corr(threshold=0.5, muti_index=[0, 8], muti_grade=2)
-
-    nx = co.fit_transform(x)
+# if __name__ == "__main__":
+#     # x, y = fetch_california_housing(return_X_y=True)
+#     # co = Corr(threshold=0.7)
+#     # c = co.count_cof(np.corrcoef(x, rowvar=False))[1]
+#     from sklearn.datasets import fetch_california_housing
+#
+#     x, y = fetch_california_housing(return_X_y=True)
+#     x = x[:100]
+#     y = y[:100]
+#     co = Corr(threshold=0.5, muti_index=[0, 8], muti_grade=2)
+#
+#     nx = co.fit_transform(x)
