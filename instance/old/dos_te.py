@@ -17,15 +17,6 @@ structure_1 = structure = structurei = structure_list[0]
 name_single = [{str(i.symbol): 1} for i in structure_1.species]
 number_single = [i.specie.Z for i in structure_1]
 
-# from sklearn.datasets import load_boston
-# from sklearn.svm import SVR
-# from featurebox.selection.backforward import BackForward
-# X,y = load_boston(return_X_y=True)
-# svr= SVR()
-# bf = BackForward(svr, random_state=1, muti_index=[0,8], muti_grade=2)
-# new_x = bf.fit_transform(X,y)
-# bf.support_
-
 from featurebox.featurizers.atom.mapper import AtomTableMap
 
 tmps = AtomTableMap(search_tp="number")
@@ -204,20 +195,24 @@ name = ['(Ti1.24La3)2', "((Ti1.24)2P2)1H0.2", "((Ti1.24)2)1H0.2", "((Ti1.24))1H0
 NSp = NameSplit()
 NSp.transform(name)
 
-from sklearn.datasets import load_boston
+from sklearn.datasets import fetch_california_housing
 from sklearn.svm import SVR
 from featurebox.selection.backforward import BackForward
 
-X, y = load_boston(return_X_y=True)
+X, y = fetch_california_housing(return_X_y=True)
+X = X[:100]
+y = y[:100]
 svr = SVR()
 bf = BackForward(svr, primary_feature=4, random_state=1)
 new_x = bf.fit_transform(X, y)
 bf.support_
 
-from sklearn.datasets import load_boston
+from sklearn.datasets import fetch_california_housing
 from featurebox.selection.corr import Corr
 
-x, y = load_boston(return_X_y=True)
+x, y = fetch_california_housing(return_X_y=True)
+x = x[:100]
+y = y[:100]
 co = Corr(threshold=0.7, muti_index=[0, 8], muti_grade=2)
 newx = co.fit_transform(x)
 print(x.shape)
@@ -225,12 +220,13 @@ print(newx.shape)
 # (506, 13)
 # (506, 9)
 
-from sklearn.datasets import load_boston
+from sklearn.datasets import fetch_california_housing
 from featurebox.selection.corr import Corr
 
-x, y = load_boston(return_X_y=True)
+x, y = fetch_california_housing(return_X_y=True)
 co = Corr(threshold=0.7, muti_index=[0, 8], muti_grade=2)
-
+x = x[:100]
+y = y[:100]
 co.fit(x)
 Corr(muti_index=[0, 8], threshold=0.7)
 group = co.count_cof()

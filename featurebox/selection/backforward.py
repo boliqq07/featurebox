@@ -62,9 +62,11 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
     Examples
     --------
 
-    >>> from sklearn.datasets import load_boston
+    >>> from sklearn.datasets import fetch_california_housing
     >>> from sklearn.svm import SVR
-    >>> X,y = load_boston(return_X_y=True)
+    >>> X,y = fetch_california_housing(return_X_y=True)
+    >>> X = X[:100]
+    >>> y = y[:100]
     >>> svr= SVR()
     >>> bf = BackForward(svr,primary_feature=4, random_state=1)
     >>> new_x = bf.fit_transform(X,y)
@@ -77,9 +79,11 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
     If score and predict is used, the refit could be set True and make sure the data is splited, due to the refit
      used all data in fit() function.
 
-    >>> from sklearn.datasets import load_boston
+    >>> from sklearn.datasets import fetch_california_housing
     >>> from sklearn.svm import SVR
-    >>> X,y = load_boston(return_X_y=True)
+    >>> X,y = fetch_california_housing(return_X_y=True)
+    >>> X = X[:100]
+    >>> y = y[:100]
     >>> svr= SVR()
     >>> bf = BackForward(svr,primary_feature=4, random_state=1, refit=True)
     >>> new_x = bf.fit_transform(X[:50],y[:50])
@@ -90,10 +94,12 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
     --------
     If GridSearchCV, the refit could be set True and return the cv score.
 
-    >>> from sklearn.datasets import load_boston
+    >>> from sklearn.datasets import fetch_california_housing
     >>> from sklearn.svm import SVR
     >>> from sklearn import model_selection
-    >>> X,y = load_boston(return_X_y=True)
+    >>> X,y = fetch_california_housing(return_X_y=True)
+    >>> X = X[:100]
+    >>> y = y[:100]
     >>> svr= SVR()
     >>> gd = model_selection.GridSearchCV(svr,param_grid={"C":[1,10]},n_jobs=1,cv=5)
     >>> bf = BackForward(gd,primary_feature=4, random_state=1, refit=True)
@@ -396,9 +402,11 @@ class BackForwardStable(MetaEstimatorMixin, SelectorMixin, BaseEstimator):
         Number of cores to run in parallel while fitting across folds.
         ``None`` means 1 and ``-1`` means using all processors.
 
-    >>> from sklearn.datasets import load_boston
+    >>> from sklearn.datasets import fetch_california_housing
     >>> from sklearn.svm import SVR
-    >>> X,y = load_boston(return_X_y=True)
+    >>> X,y = fetch_california_housing(return_X_y=True)
+    >>> X = X[:100]
+    >>> y = y[:100]
     >>> svr= SVR()
     >>> bf = BackForwardStable(svr,primary_feature=9,  random_state=1)
     >>> new_x = bf.fit_transform(X,y)
@@ -411,9 +419,11 @@ class BackForwardStable(MetaEstimatorMixin, SelectorMixin, BaseEstimator):
     If score and predict is used, the refit could be set True and make sure the data is splited, due to the refit
     used all data in fit() function.
 
-    >>> from sklearn.datasets import load_boston
+    >>> from sklearn.datasets import fetch_california_housing
     >>> from sklearn.svm import SVR
-    >>> X,y = load_boston(return_X_y=True)
+    >>> X,y = fetch_california_housing(return_X_y=True)
+    >>> X = X[:100]
+    >>> y = y[:100]
     >>> svr= SVR()
     >>> bf = BackForwardStable(svr,primary_feature=4, random_state=1, refit=True)
     >>> new_x = bf.fit_transform(X[:50],y[:50])
@@ -422,10 +432,12 @@ class BackForwardStable(MetaEstimatorMixin, SelectorMixin, BaseEstimator):
 
     If GridSearchCV, the refit could be set True and return the cv score.
 
-    >>> from sklearn.datasets import load_boston
+    >>> from sklearn.datasets import fetch_california_housing
     >>> from sklearn.svm import SVR
     >>> from sklearn import model_selection
-    >>> X,y = load_boston(return_X_y=True)
+    >>> X,y = fetch_california_housing(return_X_y=True)
+    >>> X = X[:100]
+    >>> y = y[:100]
     >>> svr= SVR()
     >>> gd = model_selection.GridSearchCV(svr,param_grid={"C":[1,10]},n_jobs=1,cv=5)
     >>> bf = BackForward(gd,primary_feature=4, random_state=1, refit=True)
@@ -585,11 +597,3 @@ class BackForwardStable(MetaEstimatorMixin, SelectorMixin, BaseEstimator):
     def _get_support_mask(self):
         check_is_fitted(self, 'support_')
         return self.support_
-
-# from sklearn.datasets import load_boston
-# from sklearn.svm import SVR
-# X,y = load_boston(return_X_y=True)
-# svr= SVR()
-# bf = BackForwardCV(svr, primary_feature=9,  random_state=1)
-# new_x = bf.fit_transform(X,y)
-# bf.support_

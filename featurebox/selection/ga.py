@@ -142,9 +142,9 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
 
     Examples
     ---------
-    >>> from sklearn.datasets import load_boston
+    >>> from sklearn.datasets import fetch_california_housing
     >>> from sklearn.svm import SVR
-    >>> data = load_boston()
+    >>> data = fetch_california_housing()
     >>> x = data.data[:50]
     >>> y = data.target[:50]
     >>> svr = SVR(gamma="scale", C=100)
@@ -384,10 +384,12 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
 
 if __name__ == "__main__":
     from sklearn.svm import SVR
-    from sklearn.datasets import load_boston
-    data = load_boston()
+    from sklearn.datasets import fetch_california_housing
+    data = fetch_california_housing()
     x = data.data
     y = data.target
+    x = x[:100]
+    y = y[:100]
     svr = SVR(gamma="scale", C=100)
 
     ga = GA(estimator=svr, n_jobs=2, pop_n=100, hof_n=1, cxpb=0.8, mutpb=0.4, ngen=10,

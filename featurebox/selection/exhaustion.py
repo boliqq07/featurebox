@@ -34,9 +34,11 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
 
     Examples
     ----------
-    >>> from sklearn.datasets import load_boston
+    >>> from sklearn.datasets import fetch_california_housing
     >>> from sklearn.svm import SVR
-    >>> X,y = load_boston(return_X_y=True)
+    >>> X,y = fetch_california_housing(return_X_y=True)
+    >>> X = X[:100]
+    >>> y = y[:100]
     >>> svr= SVR()
     >>> bf = Exhaustion(svr,n_select=(2,),refit=True)
     >>> new_x = bf.fit_transform(X,y)
@@ -46,9 +48,11 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
 
     Examples
     ----------
-    >>> from sklearn.datasets import load_boston
+    >>> from sklearn.datasets import fetch_california_housing
     >>> from sklearn.svm import SVR
-    >>> X,y = load_boston(return_X_y=True)
+    >>> X,y = fetch_california_housing(return_X_y=True)
+    >>> X = X[:100]
+    >>> y = y[:100]
     >>> svr= SVR()
     >>> from sklearn import model_selection
     >>> gd = model_selection.GridSearchCV(svr, param_grid=[{"C": [1, 10]}], n_jobs=1, cv=5)
