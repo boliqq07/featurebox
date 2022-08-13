@@ -8,11 +8,9 @@ from deap import tools
 from deap.algorithms import varAnd
 from deap.tools import mutShuffleIndexes
 from sklearn.base import BaseEstimator, MetaEstimatorMixin
-from sklearn.datasets import load_boston
 from sklearn.feature_selection import SelectorMixin
 from sklearn.metrics import r2_score
 from sklearn.model_selection import cross_val_score
-from sklearn.svm import SVR
 from sklearn.utils.validation import check_is_fitted
 
 from featurebox.selection.mutibase import MutiBase
@@ -385,12 +383,14 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
 
 
 if __name__ == "__main__":
+    from sklearn.svm import SVR
+    from sklearn.datasets import load_boston
     data = load_boston()
     x = data.data
     y = data.target
     svr = SVR(gamma="scale", C=100)
 
-    ga = GA(estimator=svr, n_jobs=1, pop_n=100, hof_n=1, cxpb=0.8, mutpb=0.4, ngen=10,
+    ga = GA(estimator=svr, n_jobs=2, pop_n=100, hof_n=1, cxpb=0.8, mutpb=0.4, ngen=10,
             max_or_min="max", mut_indpb=0.1, min_=2, muti_index=[0, 5], random_state=0)
     ga.fit(x, y)
     ga.score(x, y)

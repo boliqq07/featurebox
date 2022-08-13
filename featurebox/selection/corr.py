@@ -10,7 +10,6 @@
 Calculate the the correction of columns.
 """
 import copy
-import warnings
 from typing import List
 
 import numpy as np
