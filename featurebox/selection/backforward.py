@@ -19,6 +19,7 @@ from sklearn.base import MetaEstimatorMixin
 from sklearn.base import clone
 from sklearn.feature_selection import SelectorMixin
 from sklearn.metrics import check_scoring
+from sklearn.model_selection._search import BaseSearchCV
 from sklearn.model_selection._validation import _score, cross_val_score
 from sklearn.utils.metaestimators import if_delegate_has_method, _safe_split
 from sklearn.utils.validation import check_is_fitted, check_X_y, check_random_state
@@ -267,7 +268,7 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
 
                 estimator_.fit(data_x0, y0)
 
-                if hasattr(estimator_, 'best_score_'):
+                if hasattr(estimator_, 'best_score_') or isinstance(estimator_, BaseSearchCV):
                     score0 = np.mean(estimator_.best_score_)
                 else:
                     score0 = np.mean(cross_val_score(estimator_, data_x0, y0, cv=self.cv))

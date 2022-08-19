@@ -6,6 +6,7 @@
 # @License: MIT License
 
 import os
+import re
 import warnings
 from typing import List
 
@@ -14,6 +15,42 @@ import pandas as pd
 from path import Path
 
 from featurebox.cli._basepathout import _BasePathOut
+
+
+def _getter_arr(obj, pi):
+    """Get prop.
+    """
+    if "." in pi:
+        pis = list(pi.split("."))
+        pis.reverse()
+        while len(pis):
+            s = pis.pop()
+            obj = _getter_arr(obj, s)
+        return obj
+    elif "[" in pi and "]" in pi:
+        pis = re.split(r'[\[\]]', pi)
+        assert len(pis) == 3, f"Can't parse {pi}"
+        try:
+            ii = int(pis[1])
+        except:
+            ii = pis[1]
+        return getattr(obj, pis[0])[ii]
+
+    elif "()" in pi:
+        pis = re.split(r'[()]', pi)
+        assert len(pis) == 3, f"Can't parse {pi}"
+        try:
+            ii = int(pis[1])
+            return getattr(obj, pi[0])(ii)
+        except:
+            try:
+                ii = eval("{{}}".format(pis[1]))
+                return getattr(obj, pi[0])(**ii)
+            except:
+                ii = pis[1]
+                return getattr(obj, pi[0])(ii)
+    else:
+        return getattr(obj, pi)
 
 
 class General(_BasePathOut):
@@ -47,7 +84,7 @@ class General(_BasePathOut):
         except BaseException:
             vasprun = self.cmd.from_file(path / self.necessary_files[0])
 
-        data = getattr(vasprun, self.prop)
+        data = _getter_arr(vasprun, self.prop)
         if isinstance(data, (tuple, list)):
             data = np.array(data)
 
@@ -127,7 +164,9 @@ class _CLICommand:
                             help="which python class to call the necessary file. such as: 'Vasprun'.")
         parser.add_argument('-nec', '--nec', type=str, default='vasprun.xml',
                             help="necessary file. such as: 'vasprun.xml'.")
-        parser.add_argument('-prop', '--prop', type=str, default='final_energy',
+        # parser.add_argument('-prop', '--prop', type=str, default='final_energy',
+        #                     help="property name. such as: 'final_energy'.")
+        parser.add_argument('-prop', '--prop', type=str, default='structures[-1].lattice.c',
                             help="property name. such as: 'final_energy'.")
 
         # mod = "pymatgen.io.vasp", cmd = "Vasprun", necessary_files = "vasprun.xml", prop = "final_energy"
@@ -160,6 +199,7 @@ if __name__ == '__main__':
         $ python this.py -p /home/dir_name
         $ python this.py -f /home/dir_name/path.temp
     """
+
     import argparse
 
     parser = argparse.ArgumentParser(description=f"Get data by {__file__}. Examples:\n"

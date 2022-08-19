@@ -16,7 +16,8 @@ from sklearn.base import BaseEstimator
 from sklearn.base import MetaEstimatorMixin
 from sklearn.base import clone
 from sklearn.feature_selection import SelectorMixin
-from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import cross_val_score, GridSearchCV
+from sklearn.model_selection._search import BaseSearchCV
 from sklearn.utils.metaestimators import if_delegate_has_method
 from sklearn.utils.validation import check_is_fitted, check_X_y
 
@@ -139,7 +140,7 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
                 else:
                     estimator_ = estimator
 
-                if hasattr(estimator_, "best_score_"):
+                if hasattr(estimator_, "best_score_") or isinstance(estimator_, BaseSearchCV):
                     estimator_.fit(data_x0, y0)
                     score0 = np.mean(estimator_.best_score_)  # score_test
                 elif self.cv == 0:

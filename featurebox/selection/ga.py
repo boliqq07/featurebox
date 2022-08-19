@@ -11,6 +11,7 @@ from sklearn.base import BaseEstimator, MetaEstimatorMixin
 from sklearn.feature_selection import SelectorMixin
 from sklearn.metrics import r2_score
 from sklearn.model_selection import cross_val_score
+from sklearn.model_selection._search import BaseSearchCV
 from sklearn.utils.validation import check_is_fitted
 
 from featurebox.selection.mutibase import MutiBase
@@ -294,7 +295,7 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
             if hasattr(svr, "max_features"):
                 svr.max_features = x.shape[1]
             svr.fit(x, y)
-            if hasattr(svr, "best_score_"):
+            if hasattr(svr, "best_score_") or isinstance(svr, BaseSearchCV):
                 sc = svr.best_score_
             else:
                 sc = np.mean(cross_val_score(svr, x, y, cv=cv))

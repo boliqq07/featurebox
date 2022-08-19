@@ -159,7 +159,8 @@ class BandGapStartZero(_BasePathOut):
             del data["Unnamed: 0"]
             data = data.set_index("File")
 
-        data = data[["Band Gap (eV)", "Fermi Energy (eV) Center"]]
+        data = data[["Band Gap (eV)", "Eigenvalue of CBM (eV)",	"Eigenvalue of VBM (eV)", "Fermi Energy (eV)",
+                     "Fermi Energy (eV) Center"]]
         data.index = [format_path(ci) for ci in data.index]
         return data
 
