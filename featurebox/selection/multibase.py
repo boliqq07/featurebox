@@ -3,7 +3,7 @@
 # @Time   : 2019/5/26 0:47
 # @Author : Administrator
 # @Project : feature_preparation
-# @FileName: mutibase.py
+# @FileName: multibase.py
 # @Software: PyCharm
 import itertools
 from typing import List
@@ -11,37 +11,37 @@ from typing import List
 import numpy as np
 
 
-class MutiBase(object):
+class MultiBase(object):
     """Base method for binding"""
 
-    def __init__(self, muti_grade: int = 2, muti_index: List = None, must_index: List = None):
+    def __init__(self, multi_grade: int = 2, multi_index: List = None, must_index: List = None):
         """
 
         Parameters
         ----------
-        muti_grade:
+        multi_grade:
             binding_group size, calculate the correction between binding
-        muti_index:list
-            the range of muti_grade:[min,max)
+        multi_index:list
+            the range of multi_grade:[min,max)
         must_index:list,None
             the columns force to index
         """
-        self.muti_grade = muti_grade
-        self.muti_index = muti_index
+        self.multi_grade = multi_grade
+        self.multi_index = multi_index
         self.must_index = must_index
 
     @property
-    def check_muti(self):
-        muti_index = self.muti_index
-        if muti_index is None:
+    def check_multi(self):
+        multi_index = self.multi_index
+        if multi_index is None:
             return False
-        elif isinstance(muti_index, (list, tuple)):
-            if len(muti_index) == 2 and isinstance(muti_index[0], int) and isinstance(muti_index[1], int):
+        elif isinstance(multi_index, (list, tuple)):
+            if len(multi_index) == 2 and isinstance(multi_index[0], int) and isinstance(multi_index[1], int):
                 return True
             else:
-                raise TypeError("muti_index should be None or iterable type with 2 number")
+                raise TypeError("multi_index should be None or iterable type with 2 number")
         else:
-            raise TypeError("muti_index should be None or iterable type with 2 number")
+            raise TypeError("multi_index should be None or iterable type with 2 number")
 
     @property
     def check_must(self):
@@ -57,13 +57,13 @@ class MutiBase(object):
     def must_fold_add(self):
         if self.check_must:
             must_index = self.must_index
-            if self.check_muti:
+            if self.check_multi:
                 def ff(mi):
-                    data = mi - self.muti_index[0]
-                    data = (data // self.muti_grade) * self.muti_grade + self.muti_index[0]
+                    data = mi - self.multi_index[0]
+                    data = (data // self.multi_grade) * self.multi_grade + self.multi_index[0]
                     return data
 
-                com_mark = [self.muti_index[0] <= mi < self.muti_index[1] for mi in must_index]
+                com_mark = [self.multi_index[0] <= mi < self.multi_index[1] for mi in must_index]
                 must_feature = [ff(mi) if com_mark is True else mi for com_mark_i, mi in zip(com_mark, must_index)]
                 return must_feature
             else:
@@ -75,13 +75,13 @@ class MutiBase(object):
     def must_unfold_add(self):
         if self.check_must:
             must_index = self.must_index
-            if self.check_muti:
+            if self.check_multi:
                 def ff2(mi):
-                    data = mi - self.muti_index[0]
-                    data = (data // self.muti_grade) * self.muti_grade + self.muti_index[0]
-                    return list(range(data, data + self.muti_grade))
+                    data = mi - self.multi_index[0]
+                    data = (data // self.multi_grade) * self.multi_grade + self.multi_index[0]
+                    return list(range(data, data + self.multi_grade))
 
-                com_mark = [self.muti_index[0] <= mi < self.muti_index[1] for mi in must_index]
+                com_mark = [self.multi_index[0] <= mi < self.multi_index[1] for mi in must_index]
                 must_feature = [ff2(mi) if com_mark is True else [mi, ] for com_mark_i, mi in zip(com_mark, must_index)]
                 must_feature = list(itertools.chain(*must_feature))
                 return must_feature
@@ -91,12 +91,12 @@ class MutiBase(object):
             return []
 
     def _feature_fold(self, feature, raw=False):
-        muti_grade, muti_index = self.muti_grade, self.muti_index
-        if self.check_muti:
+        multi_grade, multi_index = self.multi_grade, self.multi_index
+        if self.check_multi:
             feature = np.sort(feature)
-            single = np.array([_ for _ in feature if _ < muti_index[0] or _ >= muti_index[1]])
-            com_com = np.array([_ for _ in feature if muti_index[1] > _ >= muti_index[0]])
-            com_sin = com_com[::muti_grade]
+            single = np.array([_ for _ in feature if _ < multi_index[0] or _ >= multi_index[1]])
+            com_com = np.array([_ for _ in feature if multi_index[1] > _ >= multi_index[0]])
+            com_sin = com_com[::multi_grade]
             res = np.hstack((single, com_sin))
         else:
             res = np.array(feature)
@@ -112,14 +112,14 @@ class MutiBase(object):
         return np.array(list(set(fea2)))
 
     def _feature_unfold(self, feature, raw=False):
-        muti_grade, muti_index = self.muti_grade, self.muti_index
-        if self.check_muti:
-            single = np.array([_ for _ in feature if _ < muti_index[0] or _ >= muti_index[1]])
-            com_sin = np.array([_ for _ in feature if muti_index[1] > _ >= muti_index[0]])
+        multi_grade, multi_index = self.multi_grade, self.multi_index
+        if self.check_multi:
+            single = np.array([_ for _ in feature if _ < multi_index[0] or _ >= multi_index[1]])
+            com_sin = np.array([_ for _ in feature if multi_index[1] > _ >= multi_index[0]])
             com_com = list(com_sin)
-            while muti_grade - 1:
-                com_com.extend(com_sin + (muti_grade - 1))
-                muti_grade -= 1
+            while multi_grade - 1:
+                com_com.extend(com_sin + (multi_grade - 1))
+                multi_grade -= 1
             res = np.array(list(set(np.hstack((single, np.array(com_com))))))
         else:
             res = np.array(feature)

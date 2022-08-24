@@ -40,7 +40,7 @@ msgid ""
 "Bases: :py:class:`sklearn.base.BaseEstimator`, "
 ":py:class:`sklearn.base.MetaEstimatorMixin`, "
 ":py:class:`sklearn.feature_selection._base.SelectorMixin`, "
-":py:class:`featurebox.selection.mutibase.MutiBase`"
+":py:class:`featurebox.selection.multibase.multiBase`"
 msgstr ""
 
 #: featurebox.selection.backforward.BackForward:1 of
@@ -135,7 +135,7 @@ msgstr ""
 #: featurebox.selection.exhaustion.Exhaustion.score featurebox.selection.ga.GA
 #: featurebox.selection.ga.GA.predict featurebox.selection.ga.GA.score
 #: featurebox.selection.ga.GA.score_cv featurebox.selection.ga.eaSimple
-#: featurebox.selection.mutibase.MutiBase of
+#: featurebox.selection.multibase.multiBase of
 msgid "Parameters"
 msgstr ""
 
@@ -453,7 +453,7 @@ msgid "binding_group size, calculate the correction between binding."
 msgstr ""
 
 #: featurebox.selection.corr.Corr:69 of
-msgid "the range of muti_grade:[min,max)."
+msgid "the range of multi_grade:[min,max)."
 msgstr ""
 
 #: featurebox.selection.corr.Corr:71 of
@@ -465,7 +465,7 @@ msgid "Check cof and count the number."
 msgstr ""
 
 #: featurebox.selection.corr.Corr.inverse_transform_index:1
-#: featurebox.selection.mutibase.MutiBase.inverse_transform_index:1 of
+#: featurebox.selection.multibase.multiBase.inverse_transform_index:1 of
 msgid "inverse the selected index to origin index by support."
 msgstr ""
 
@@ -486,7 +486,7 @@ msgid "**X_r** -- The input samples with only the selected features."
 msgstr ""
 
 #: featurebox.selection.corr.Corr.transform_index:1
-#: featurebox.selection.mutibase.MutiBase.transform_index:1 of
+#: featurebox.selection.multibase.multiBase.transform_index:1 of
 msgid "Get support index."
 msgstr ""
 
@@ -513,17 +513,17 @@ msgid "the n_select list,default,n_select=(3, 4)"
 msgstr ""
 
 #: featurebox.selection.exhaustion.Exhaustion:33
-#: featurebox.selection.mutibase.MutiBase:3 of
+#: featurebox.selection.multibase.multiBase:3 of
 msgid "binding_group size, calculate the correction between binding"
 msgstr ""
 
 #: featurebox.selection.exhaustion.Exhaustion:35
-#: featurebox.selection.mutibase.MutiBase:4 of
-msgid "the range of muti_grade:[min,max)"
+#: featurebox.selection.multibase.multiBase:4 of
+msgid "the range of multi_grade:[min,max)"
 msgstr ""
 
 #: featurebox.selection.exhaustion.Exhaustion:37
-#: featurebox.selection.mutibase.MutiBase:6 of
+#: featurebox.selection.multibase.multiBase:6 of
 msgid "the columns force to index"
 msgstr ""
 
@@ -679,14 +679,14 @@ msgid "A class:`~deap.tools.Logbook` with the statistics of the evolution"
 msgstr ""
 
 #: ../../src/featurebox.selection.rst:45
-msgid "featurebox.selection.mutibase module"
+msgid "featurebox.selection.multibase module"
 msgstr ""
 
-#: featurebox.selection.mutibase.MutiBase:1 of
+#: featurebox.selection.multibase.multiBase:1 of
 msgid "Bases: :py:class:`object`"
 msgstr ""
 
-#: featurebox.selection.mutibase.MutiBase:1 of
+#: featurebox.selection.multibase.multiBase:1 of
 msgid "Base method for binding"
 msgstr ""
 
@@ -694,7 +694,7 @@ msgstr ""
 #~ "基类：:py:class:`sklearn.base.BaseEstimator`, "
 #~ ":py:class:`sklearn.base.MetaEstimatorMixin`, "
 #~ ":py:class:`sklearn.feature_selection._base.SelectorMixin`, "
-#~ ":py:class:`featurebox.selection.mutibase.MutiBase`"
+#~ ":py:class:`featurebox.selection.multibase.multiBase`"
 #~ msgstr ""
 
 #~ msgid "实际案例"

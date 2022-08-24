@@ -47,7 +47,7 @@ msgid "Example:"
 msgstr ""
 
 #: ../../Guide/bind_selection.rst:29
-msgid "The ``muti_index`` parameter means the bonded primary feature index."
+msgid "The ``multi_index`` parameter means the bonded primary feature index."
 msgstr ""
 
 #: ../../Guide/bind_selection.rst:31

@@ -22,11 +22,11 @@ Example:
 >>> from featurebox.selection.backforward import BackForward
 >>> X,y = load_boston(return_X_y=True)
 >>> svr= SVR()
->>> bf = BackForward(svr, random_state=1, muti_index=[0,8], muti_grade=2)
+>>> bf = BackForward(svr, random_state=1, multi_index=[0,8], multi_grade=2)
 >>> new_x = bf.fit_transform(X,y)
 >>> bf.support_
 
-The ``muti_index`` parameter means the bonded primary feature index.
+The ``multi_index`` parameter means the bonded primary feature index.
 
 All the selection tools are ``sklearn-type``, with ``fit``, ``fit_transform`` methods .etc.
 

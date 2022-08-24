@@ -13,7 +13,7 @@ _cell_measurement_temperature 213.
 _publ_section_title
 
 ;
-Alkalimetallbismutide A Bi und A Bi2 (A= K, Rb, Cs) - Synthesen,
+Alkalimetallbismultide A Bi und A Bi2 (A= K, Rb, Cs) - Synthesen,
 Kristallstrukturen, Eigenschaften
 ;
 loop_

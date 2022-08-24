@@ -14,7 +14,7 @@ from sklearn.model_selection import cross_val_score
 from sklearn.model_selection._search import BaseSearchCV
 from sklearn.utils.validation import check_is_fitted
 
-from featurebox.selection.mutibase import MutiBase
+from featurebox.selection.multibase import MultiBase
 from mgetool.newclass import create
 from mgetool.tool import check_random_state, parallelize
 
@@ -137,7 +137,7 @@ def filt(ind, min_=2, max_=None):
     return ind
 
 
-class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
+class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
     """
     GA with binding. Please just passing training data.
 
@@ -149,7 +149,7 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
     >>> x = data.data[:50]
     >>> y = data.target[:50]
     >>> svr = SVR(gamma="scale", C=100)
-    >>> ga = GA(estimator=svr, n_jobs=2, pop_n=50, hof_n=1, cxpb=0.8, mutpb=0.4, ngen=3, max_or_min="max", mut_indpb=0.1, min_=2, muti_index=[0, 5],random_state=0)
+    >>> ga = GA(estimator=svr, n_jobs=2, pop_n=50, hof_n=1, cxpb=0.8, mutpb=0.4, ngen=3, max_or_min="max", mut_indpb=0.1, min_=2, multi_index=[0, 5],random_state=0)
     >>> ga.fit(x_test, y_test)
 
     Then
@@ -160,7 +160,8 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
     """
 
     def __init__(self, estimator, n_jobs=2, pop_n=1000, hof_n=1, cxpb=0.6, mutpb=0.3, ngen=40, max_or_min="max",
-                 mut_indpb=0.05, max_=None, min_=2, random_state=None, muti_grade=2, muti_index=None, must_index=None):
+                 mut_indpb=0.05, max_=None, min_=2, random_state=None, multi_grade=2, multi_index=None, must_index=None,
+                 cv: int = 5, scoring=None):
         """
 
         Parameters
@@ -189,12 +190,20 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
             min size
         random_state:float
             randomstate
-        muti_grade:
+        multi_grade:
             binding grade
-        muti_index:
+        multi_index:
             binding range [min,max]
+        scoring:None,str
+            scoring method name.
+        cv:bool
+            if estimator is sklearn model, used cv, else pass.
         """
-        super().__init__(muti_grade=muti_grade, muti_index=muti_index, must_index=must_index)
+        super().__init__(multi_grade=multi_grade, multi_index=multi_index, must_index=must_index)
+        if isinstance(estimator, BaseSearchCV):
+            estimator.scoring = scoring
+            self.cv = cv
+        self.scoring =scoring
         self.estimator = estimator
         self.n_jobs = n_jobs
         self.pop_n = pop_n
@@ -207,6 +216,7 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
         self.min_ = min_
         self.max_or_min = max_or_min
         self.random_state = random_state
+        self.cv = cv
 
         check_random_state(random_state)
         random.seed(random_state)
@@ -227,16 +237,16 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
 
     def feature_fold_length(self, feature):
 
-        muti_grade, muti_index = self.muti_grade, self.muti_index
-        if self.check_muti:
+        multi_grade, multi_index = self.multi_grade, self.multi_index
+        if self.check_multi:
             cc = []
             feature = np.sort(feature)
 
             i = 0
             while i <= feature[-1]:
-                if muti_index[0] <= i < muti_index[1]:
-                    i += self.muti_grade
-                    cc.append(self.muti_grade)
+                if multi_index[0] <= i < multi_index[1]:
+                    i += self.multi_grade
+                    cc.append(self.multi_grade)
                 else:
                     i += 1
                     cc.append(1)
@@ -286,7 +296,7 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
             [sss.__setitem__(i, 1) for i in self.must_index]
         return sss
 
-    def fitness_func(self, ind, model, x, y, return_model=False, cv=5):
+    def fitness_func(self, ind, model, x, y, return_model=False):
         sss = self.unfold(ind)
         index = np.where(np.array(sss) == 1)[0]
         x = x[:, index]
@@ -295,10 +305,10 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
             if hasattr(svr, "max_features"):
                 svr.max_features = x.shape[1]
             svr.fit(x, y)
-            if hasattr(svr, "best_score_") or isinstance(svr, BaseSearchCV):
+            if isinstance(svr, BaseSearchCV):
                 sc = svr.best_score_
             else:
-                sc = np.mean(cross_val_score(svr, x, y, cv=cv))
+                sc = np.mean(cross_val_score(svr, x, y, cv=self.cv, scoring=self.scoring))
             if return_model:
                 return sc, svr
             else:
@@ -375,9 +385,7 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
         ----------
         X : array of shape [n_samples, n_feature]
             The input0 samples.
-
         """
-
         mod = self.fitness_func(self.hof.items[0], self.estimator, self.X, self.y, return_model=True)[1]
         score = self.predict_func(self.hof.items[0], mod, X)
         return score
@@ -394,6 +402,6 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
 #     svr = SVR(gamma="scale", C=100)
 #
 #     ga = GA(estimator=svr, n_jobs=2, pop_n=100, hof_n=1, cxpb=0.8, mutpb=0.4, ngen=10,
-#             max_or_min="max", mut_indpb=0.1, min_=2, muti_index=[0, 5], random_state=0)
+#             max_or_min="max", mut_indpb=0.1, min_=2, multi_index=[0, 5], random_state=0)
 #     ga.fit(x, y)
 #     ga.score(x, y)

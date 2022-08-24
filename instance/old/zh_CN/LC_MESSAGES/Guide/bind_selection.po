@@ -55,8 +55,8 @@ msgid "Example:"
 msgstr "示例："
 
 #: ../../Guide/bind_selection.rst:29
-msgid "The ``muti_index`` parameter means the bonded primary feature index."
-msgstr "参数 ``muti_index`` 表示绑定的特征索引。"
+msgid "The ``multi_index`` parameter means the bonded primary feature index."
+msgstr "参数 ``multi_index`` 表示绑定的特征索引。"
 
 #: ../../Guide/bind_selection.rst:31
 msgid ""
