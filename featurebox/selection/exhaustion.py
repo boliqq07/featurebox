@@ -94,6 +94,12 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
                   "Please change and define 'max_features' (with other parameters fixed) by manual testing after Exhaustion!!!!\n"
                   "Please change and define 'max_features' (with other parameters fixed) by manual testing after Exhaustion!!!!",
                   )
+        elif isinstance(estimator, BaseSearchCV) and hasattr(estimator.estimator, "max_features") and refit:
+            print("For estimator in SearchCV with 'max_features' attribute, the 'max_features' would changed with "
+                  "each sub-data. that is, The 'refit estimator' which with fixed 'max_features' could be with different performance.\n"
+                  "Please change and define 'max_features' (with other parameters fixed) by manual testing after Backforward!!!!\n"
+                  "Please change and define 'max_features' (with other parameters fixed) by manual testing after Backforward!!!!",
+                  )
         self.estimator = estimator
         self.score_ = []
         self.n_jobs = n_jobs
@@ -134,7 +140,12 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
                     if self.estimator.max_features > data_x0.shape[1]:
                         estimator_ = clone(self.estimator)
                         estimator_.max_features = data_x0.shape[1]
-
+                    else:
+                        estimator_ = estimator
+                elif isinstance(self.estimator, BaseSearchCV) and hasattr(self.estimator.estimator, "max_features"):
+                    if self.estimator.estimator.max_features > data_x0.shape[1]:
+                        estimator_ = clone(self.estimator)
+                        estimator_.estimator.max_features = data_x0.shape[1]
                     else:
                         estimator_ = estimator
                 else:
@@ -164,6 +175,7 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
             fold_feature_list = [i for i in fold_feature_list if i not in self.must_unfold_add]
         slice_all = [combinations(fold_feature_list, i) for i in self.n_select]
         slice_all = [list(self.feature_unfold(_)) for i in slice_all for _ in i]
+        [i.sort() for i in slice_all]
 
         scores = parallelize(n_jobs=self.n_jobs, func=score, iterable=slice_all)
 
@@ -229,6 +241,7 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
         """
         check_is_fitted(self, 'estimator_')
         return self.estimator_.score(self.transform(X), y)
+
 
     def _get_support_mask(self):
         check_is_fitted(self, 'support_')

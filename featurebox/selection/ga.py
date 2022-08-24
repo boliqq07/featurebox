@@ -319,7 +319,7 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
             sc = r2_score(y, y2)
             return sc
         else:
-            raise TypeError("only one feature,error")
+            raise TypeError("only one feature, error")
 
     def predict_func(self, ind, model, x):
         sss = self.unfold(ind)

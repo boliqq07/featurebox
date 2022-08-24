@@ -146,6 +146,12 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
                   "Please change and define 'max_features' (with other parameters fixed) by manual testing after Backforward!!!!\n"
                   "Please change and define 'max_features' (with other parameters fixed) by manual testing after Backforward!!!!",
                   )
+        elif isinstance(estimator, BaseSearchCV) and hasattr(estimator.estimator, "max_features") and refit:
+            print("For estimator in SearchCV with 'max_features' attribute, the 'max_features' would changed with "
+                  "each sub-data. that is, The 'refit estimator' which with fixed 'max_features' could be with different performance.\n"
+                  "Please change and define 'max_features' (with other parameters fixed) by manual testing after Backforward!!!!\n"
+                  "Please change and define 'max_features' (with other parameters fixed) by manual testing after Backforward!!!!",
+                  )
         self.estimator = estimator
         self.n_type_feature_to_select = n_type_feature_to_select
         self.primary_feature = primary_feature
@@ -260,7 +266,12 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
                     if self.estimator.max_features > data_x0.shape[1]:
                         estimator_ = clone(self.estimator)
                         estimator_.max_features = data_x0.shape[1]
-
+                    else:
+                        estimator_ = estimator
+                elif isinstance(self.estimator, BaseSearchCV) and hasattr(self.estimator.estimator, "max_features"):
+                    if self.estimator.estimator.max_features > data_x0.shape[1]:
+                        estimator_ = clone(self.estimator)
+                        estimator_.estimator.max_features = data_x0.shape[1]
                     else:
                         estimator_ = estimator
                 else:
@@ -303,6 +314,7 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MutiBase):
         if isinstance(self.n_type_feature_to_select, int) and len(slice1) > self.n_type_feature_to_select:
             slice1, best = sub_slice_force(slice1)
 
+        slice1.sort()
         select_feature = self.feature_unfold(slice1)
         su = np.zeros(x.shape[1], dtype=np.bool)
         su[select_feature] = 1
@@ -484,6 +496,9 @@ class BackForwardStable(MetaEstimatorMixin, SelectorMixin, BaseEstimator):
         refit:
             False, with refit, the model would used all data.
         """
+        if isinstance(estimator, BaseSearchCV):
+            warnings.warn("The 'estimator' of BackForwardStable not suggested BaseSearchCV, "
+                          "because the BackForwardStable is one BaseSearchCV itself.")
 
         self.estimator = estimator
         self.times = times
