@@ -3,6 +3,7 @@ from typing import Tuple, Union, List
 
 import numpy as np
 from pymatgen.core import Structure, Molecule
+
 from pymatgen.optimization.neighbors import find_points_in_spheres
 
 from featurebox.utils.predefined_typing import StructureOrMolecule
