@@ -57,7 +57,7 @@ class DataSameSep:
             default "S".
         dup: (int)
             default 3.
-        prefix:(str)
+        prefix: (str)
             the class prefix of one batch data.
 
         """
