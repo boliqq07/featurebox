@@ -74,6 +74,7 @@ class MinimumDistanceNNAll(NearNeighbors):
             cutoff (float): cutoff radius in Angstrom to look for trial
                 near-neighbor sites (default: 4.0).
         """
+
         self.cutoff = cutoff
 
     def get_nn_info(self, structure: Structure, n: int) -> List[Dict]:

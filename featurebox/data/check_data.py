@@ -1,4 +1,4 @@
-from typing import List, Callable
+from typing import List, Callable, Union
 
 import numpy as np
 
@@ -41,7 +41,7 @@ class CheckElements:
 
     """
 
-    def __init__(self, check_method: str = "name", func: Callable = lambda x: x):
+    def __init__(self, check_method:Union[List[str], str] = "name", func: Callable = lambda x: x):
         """
 
         Parameters
@@ -57,10 +57,10 @@ class CheckElements:
 
         Examples
         ---------
-        >>> ce = CheckElements.from_list(check_method="name",grouped=False)
+        >>> ce = CheckElements.from_list(check_method="name")
         >>> ce.check(["Na","Al","Ta"])
         ['Na', 'Al', 'Ta']
-        >>> ce = CheckElements.from_list(check_method="name",grouped=True)
+        >>> ce = CheckElements.from_list(check_method="name")
         >>> ce.check([["Na","Al"],["Na","Ta"]])
         [['Na', 'Al'], ['Na', 'Ta']]
         >>> ce.check([["Na","Al"],["Na","Ra"],["Zn","H"]])
@@ -82,7 +82,7 @@ class CheckElements:
         elif check_method == "number":
             check_method = AVAILABLE_ELE_NUMBER
         else:
-            raise TypeError("check_method='name' or 'number'")
+            pass
         self.check_method = check_method
         self.func = func
         self.mark = []

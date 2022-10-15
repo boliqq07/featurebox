@@ -7,14 +7,13 @@
 # @License: BSD 3-Clause
 
 """
-Calculate the the correction of columns.
+Calculate the correction of columns.
 """
 import copy
 from typing import List
 
 import numpy as np
 from sklearn.base import BaseEstimator, MetaEstimatorMixin
-
 from sklearn.feature_selection import SelectorMixin
 from sklearn.utils import check_random_state
 from sklearn.utils.validation import check_is_fitted
@@ -110,8 +109,7 @@ class Corr(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
             the range of multi_grade:[min,max).
         must_index:list
             the columns force to index.
-        random_state:int
-            int
+        random_state: int
         """
 
         super().__init__(multi_grade=multi_grade, multi_index=multi_index, must_index=must_index)

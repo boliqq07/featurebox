@@ -1,13 +1,11 @@
 import itertools
-import math
 from collections import abc
 from typing import Tuple, Union, List
 
+import math
 import numpy as np
-from pymatgen.core import Structure
 
 from featurebox.utils.predefined_typing import StructureOrMolecule
-from mgetool.tool import tt
 
 
 def _re_pbc(pbc: Union[bool, List[bool], np.ndarray], return_type="bool"):
@@ -72,7 +70,7 @@ def not_structure_get_xyz_in_spheres(
         pbc: (bool or a list of bool) whether to set periodic boundaries
         numerical_tol: (float) numerical tolerance
         matrix:lattice.matrix
-        inv_matrix；lattice.inv_matrix
+        inv_matrix: lattice.inv_matrix
         reciprocal_lattice_abc:lattice.reciprocal_lattice.abc
     Returns:
         center_indices, neighbor_indices, images, distances,center_prop
@@ -162,14 +160,14 @@ def not_structure_get_xyz_in_spheres(
     exclude_self = (distances[:, 0] > numerical_tol)
 
     return center_indices[exclude_self], neighbor_indices[exclude_self], images[exclude_self], distances[
-        exclude_self], np.array(None)
+        exclude_self], np.array(np.NaN)
 
 
-if __name__ == "__main__":
-    structure = Structure.from_file("../../data/temp_test_structure/W2C.cif")
-    tt.t
-    get_points_ = get_xyz_in_spheres(structure,
-                                     cutoff=5.0, pbc=True,
-                                     )
-    tt.t  #
-    tt.p
+# if __name__ == "__main__":
+#     structure = Structure.from_file("../../data/temp_test_structure/W2C.cif")
+#     tt.t
+#     get_points_ = get_xyz_in_spheres(structure,
+#                                      cutoff=5.0, pbc=True,
+#                                      )
+#     tt.t  #
+#     tt.p

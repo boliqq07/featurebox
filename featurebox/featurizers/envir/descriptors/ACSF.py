@@ -769,7 +769,7 @@ def calculate_G4Prime(Rij, Ri, i, IDs, jks, atomic_numbers, type_set, Rc,
     g43 = np.transpose(g43, (0, 2, 1, 3, 4, 5))
 
     # [n4, n3, n2, n1, layer] * [n4, n3, n2, layer, 3, N1] -> [n4, n3, n2, n1, layer, 3, N1] -> [S, layer, 3, N1]
-    G4ip0 = np.einsum('ijklm, ijkmno->ijklmno', g41, g42 + g43, \
+    G4ip0 = np.einsum('ijklm, ijkmno->ijklmno', g41, g42 + g43,
                       optimize='greedy').reshape([n1 * n2 * n3 * n4, jk, 3, N1])
     # [S, layer, 3, N1] * [layer, 3] -> [S, layer, 3, N1, 3]
     # partition the dxdr to each i, j, k
@@ -917,7 +917,7 @@ def calculate_G5Prime(Rij, Ri, i, IDs, jks, atomic_numbers, type_set, Rc,
     g53 = np.broadcast_to(g53, (n4, n2,) + (n3, jk, 3, N1))
     g53 = np.transpose(g53, (0, 2, 1, 3, 4, 5))
 
-    G5ip0 = np.einsum('ijklm, ijkmno->ijklmno', g51, g52 + g53, \
+    G5ip0 = np.einsum('ijklm, ijkmno->ijklmno', g51, g52 + g53,
                       optimize='greedy').reshape([n1 * n2 * n3 * n4, jk, 3, N1])
 
     # [S, layer, 3, N1] * [layer, 3] -> [S, layer, 3, N1, 3]

@@ -22,9 +22,10 @@ def get_marked_class(nn_strategy, env_dict: Dict = None, instantiation: bool = T
 
     Parameters
     ----------
-    nn_strategy:
+    nn_strategy:Any
+        "find_points_in_spheres", "find_xyz_in_spheres" , or nn_strategy
     env_dict:dict
-        dict of pre-definition, {"classname": class}.
+        pre-definition, {"classname": class}.
     instantiation:bool
         return class of object.
 
@@ -80,7 +81,6 @@ def geo_refine_nn(center_indices, neighbor_indices, vectors, distances,
         center_prop:np.ndarray 2d
         ele_numbers:np.ndarray 1d
         fill_size: float, not use,
-        cutoff:
         dis_sort:bool
             sort neighbors with distance.
 
@@ -112,7 +112,9 @@ def geo_refine_nn(center_indices, neighbor_indices, vectors, distances,
 
     neis = np.vstack((cen_nei, nei_nei))
 
-    cen = np.array(sorted(set((np.concatenate((center_indices, neighbor_indices), axis=0).tolist()))))
+    toge = np.concatenate((center_indices, neighbor_indices), axis=0).tolist()
+
+    cen = np.array(sorted(set(toge)))
 
     cen = np.array(cen).ravel()
 
@@ -133,7 +135,7 @@ def geo_refine_nn(center_indices, neighbor_indices, vectors, distances,
         elif center_prop.ndim == 2 and center_prop.shape[0] == cen.shape[0]:
             center_prop = center_prop[cen]
         else:
-            center_prop = np.array(None)
+            center_prop = np.array(np.NAN)
         return cen, neis, vecs, diss, center_prop
 
 

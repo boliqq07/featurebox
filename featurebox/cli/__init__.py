@@ -26,6 +26,6 @@ Examples::
 
 >>> from featurebox.cli.vasp_dos import DosxyzPathOut
 >>> dosxyz = DosxyzPathOut(n_jobs=4, store_single=True)
->>> result = dosxyz.transfrom(paths_list)
+>>> result = dosxyz.transform(paths_list)
 
 """

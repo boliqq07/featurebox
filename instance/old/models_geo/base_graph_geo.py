@@ -168,7 +168,8 @@ class _BaseStructureGraphGEO(BaseFeature):
         """
         data = self._transform(structures, state_attributes=state_attributes, y=y, **kwargs)
         if self.check:
-            data = np.array(data)[np.array(self.support_)].tolist()
+            # data = np.array(data)[np.array(self.support_)].tolist()
+            data = [di for di, si in zip(data, self.support_) if si]
 
         return data
 

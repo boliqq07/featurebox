@@ -1,4 +1,4 @@
-"""Define several typing for convenient use"""
+"""Define several types for convenient use"""
 
 from typing import Union, Callable, Optional, Any, List, Tuple
 

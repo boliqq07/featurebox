@@ -86,7 +86,6 @@ class _CLICommand:
         >>> # mod="pymatgen.io.vasp", cmd="Vasprun", necessary_files="vasprun.xml", prop="final_energy"
         >>> from pymatgen.io.vasp import Vasprun
         >>> vr= Vasprun("vasprun.xml") # or
-        >>> vr= Vasprun.from_file("vasprun.xml") # or
         >>> result = vr.final_energy
 
     扩展案例:

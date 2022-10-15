@@ -412,7 +412,7 @@ class DummyConverter(BaseFeature):
 
 class ConverterCat(BaseFeature):
     """Pack the converters in to one unified approach.
-    The same type Converter would merged and different would order to run.
+    The same type Converter would merge and different would order to run.
     Thus, keeping the same type is next to each other! such as A(),A(),B(),B().
 
     Examples

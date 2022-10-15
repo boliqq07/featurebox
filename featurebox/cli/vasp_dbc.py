@@ -471,7 +471,7 @@ class DBCxyzPathOut(_BasePathOut):
 
 
 def get_atom_pdos_center(dos: CompleteDos = None, mark_orbital=None, mark_atom_numbers=None):
-    elements = [e.symbol for e in dos.structure.species]
+    # elements = [e.symbol for e in dos.structure.species]
     if mark_orbital is None:
         ns = [i for i in range(dos.structure.num_sites)]
     elif isinstance(mark_atom_numbers, int):
@@ -816,7 +816,7 @@ class DBCStartInter(DBCStartZero):
     Download vaspkit from
     https://vaspkit.com/installation.html#download
 
-    1. Copy follow code to form one ”dbc.sh“ file, and run 'sh dbc.sh':
+    1. Copy follow code to form one 'dbc.sh' file, and run 'sh dbc.sh':
 
     Notes::
 

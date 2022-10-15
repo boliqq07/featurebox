@@ -600,7 +600,7 @@ def add_carraytot(clisttot, clist):
 def compute_pi(nmax, lmax, clisttot, plist):
     '''
     Compute the power spectrum components by p(n1,n2,l) by summing over l
-    There is a symmetry for interchanging n1 and n2 so we only take the unique
+    There is a symmetry for interchanging n1 and n2, we only take the unique
     elements of the power spectrum.
     '''
     i = 0
@@ -622,7 +622,7 @@ def compute_pi(nmax, lmax, clisttot, plist):
 def compute_dpidrj(nmax, lmax, clisttot, dclist, dplist):
     '''
     Compute the power spectrum components by p(n1,n2,l) by summing over l
-    There is a symmetry for interchanging n1 and n2 so we only take the unique
+    There is a symmetry for interchanging n1 and n2, we only take the unique
     elements of the power spectrum.
     '''
     i = 0

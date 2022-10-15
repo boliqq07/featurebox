@@ -288,7 +288,7 @@ class AtomTableMap(BinaryMap):
 
     """
 
-    def __init__(self, tablename: Union[str, np.ndarray, pd.DataFrame] = "oe.csv",
+    def __init__(self, tablename: Union[str, np.ndarray, pd.DataFrame, None] = "oe.csv",
                  search_tp: str = "name", **kwargs):
         """
 
@@ -556,11 +556,11 @@ class AtomPymatgenPropMap(BinaryMap):
         """
 
         Args:
-            prop_name:(str,list of str)
+            prop_name: (str,list of str)
                 prop name or list of prop name
-            func:(callable or list of callable)
+            func: (callable or list of callable)
                 please make sure the size of it is the same with prop_name.
-            search_tp:(str)
+            search_tp: (str)
                 location method.
                 "name" for dict
                 "number" for int.

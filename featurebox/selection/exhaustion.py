@@ -95,7 +95,7 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
         n_jobs:int
             n_jobs.
         refit:bool
-            refit or not, if refit the model would used all data.
+            refit or not, if refit the model would use all data.
         cv:bool
             if estimator is sklearn model, used cv, else pass.
         scoring:None,str

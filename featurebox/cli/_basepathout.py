@@ -19,6 +19,8 @@ from tqdm import tqdm
 
 class _BasePathOut:
     """
+    class for deal with the software and files in batch.
+
     The subclass should fill the follow properties and functions.
 
     self.necessary_files = []  # fill
@@ -33,6 +35,9 @@ class _BasePathOut:
 
     def batch_after_treatment(self, paths, res_code):
         ...  # fill
+
+
+    cls.__dos__ = "This is the doc of class."
 
     """
 
@@ -53,7 +58,8 @@ class _BasePathOut:
     def __repr__(self):
         return f"{self.__class__.__name__} <necessary file: {self.necessary_files}, out file: {self.out_file}>"
 
-    def _to_path(self, path: Union[os.PathLike, Path, pathlib.Path, str]) -> Path:
+    @staticmethod
+    def _to_path(path: Union[os.PathLike, Path, pathlib.Path, str]) -> Path:
         if isinstance(path, str):
             path = path.replace("\n", "")
         return Path(path).abspath() if not isinstance(path, Path) else path
@@ -206,7 +212,7 @@ class _BasePathOut:
 
     @abstractmethod
     def run(self, path: Path, files: List = None) -> Any:  # fill
-        """3.Run with software and necessary file and get data.
+        """3.Run with software and necessary file and get data for one sample.
         (1) Return result in code, or (2) Both return file to each path and in code."""
 
         # 可以更简单的直接写命令，而不用此处的文件名 (files), 但是需要保证后续出现的文件、软件与 necessary_file, software 一致
@@ -270,6 +276,8 @@ class _BasePathOut:
 
 class _BasePathOut2(_BasePathOut):
     """
+    class for deal with the software and files in batch, for couple data.
+
     The subclass should fill the follow properties and functions.
 
     self.necessary_files = []  # fill
@@ -283,6 +291,8 @@ class _BasePathOut2(_BasePathOut):
 
     def batch_after_treatment(self, paths, res_code):
         ...  # fill
+
+    cls.__dos__ = "This is the doc of class."
 
     """
 

@@ -8,14 +8,10 @@
 import copy
 import os
 import re
-import warnings
 from itertools import chain
 from typing import List
 
 import pandas as pd
-
-warnings.warn("This namesplit part is would be delete in future. "
-              "please using: \nfrom featurebox.data.name_split import NameSplit" )
 
 
 class _Ele:

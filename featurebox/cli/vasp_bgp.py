@@ -171,7 +171,7 @@ class BandGapStartInter(BandGapStartZero):
     Download vaspkit from
     https://vaspkit.com/installation.html#download
 
-    1. Copy follow code to form one ”bg.sh“ file, and 'sh bg.sh':
+    1. Copy follow code to form one 'bg.sh' file, and 'sh bg.sh':
 
     Notes::
 

@@ -131,8 +131,7 @@ class _CLICommand:
         >>> # 实际操作步骤如下所示，默认四个关键参数如下。
         >>> # mod="pymatgen.io.vasp", cmd="Vasprun", necessary_files="vasprun.xml", prop="final_energy"
         >>> from pymatgen.io.vasp import Vasprun
-        >>> vr= Vasprun("vasprun.xml") # or
-        >>> vr= Vasprun.from_file("vasprun.xml") # or
+        >>> vr= Vasprun("vasprun.xml")
         >>> result = vr.final_energy
 
     扩展案例:

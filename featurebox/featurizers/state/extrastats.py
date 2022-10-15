@@ -26,8 +26,8 @@ class PropertyStats(object):
     >>> PropertyStats.calc_stat(x, 'mean') # Result is 2
     >>> PropertyStats.calc_stat(x, 'mean', weights=[0, 0, 1]) # Result is 3
 
-    Some of the statistics functions take options (e.g., Holder means). You can
-    pass them to the the statistics functions by adding them after the x_name and
+    Some the statistics functions take options (e.g., Holder means). You can
+    pass them to the  statistics functions by adding them after the x_name and
     two colons. For example, the 0th Holder mean would be:
 
     >>>PropertyStats.calc_stat(x, 'holder_mean::0')
@@ -44,7 +44,7 @@ class PropertyStats(object):
 
         Args:
             data_lst (list of floats): list of values
-            stat (str) - Name of property to be compute. If there are arguments to the statistics function, these
+            stat (str) - Name of property to be computed. If there are arguments to the statistics function, these
             should be added after the x_name and separated by two colons. For example, the 2nd Holder mean would
             be "holder_mean::2"
             weights (list of floats): (Optional) weights for each element in data_lst
@@ -334,6 +334,7 @@ class PropertyStats(object):
         """
         Return a specific quantile.
         Args:
+            weights (float): not used
             data_lst (list or np.ndarray): 1D datamnist list to be used for computing, quantiles
             q (float): The quantile, as a fraction between 0 and 1.
         Returns:

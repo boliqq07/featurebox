@@ -124,7 +124,8 @@ class Bispectrum:
             print(error_msg)
             # raise RuntimeError(error_msg)
 
-    def get_dump(self, structure, elements):
+    @staticmethod
+    def get_dump(structure, elements):
         """Convert Pymatgen structure object to LAMMPS dump file."""
         data = LammpsData.from_structure(structure, elements)
 

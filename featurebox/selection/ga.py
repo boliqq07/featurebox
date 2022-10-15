@@ -24,8 +24,8 @@ def eaSimple(population, toolbox, cxpb, mutpb, ngen, stats=None, n_jobs=2,
     """This algorithm reproduce the simplest evolutionary algorithm.
 
     :param population: A list of individuals.
-    :param toolbox: A :class:`~deap.base.Toolbox` that contains the evolution
-                    operators.
+    :param n_jobs: jobs.
+    :param toolbox: A :class:`~deap.base.Toolbox` that contains the evolution operators.
     :param cxpb: The probability of mating two individuals.
     :param mutpb: The probability of mutating an individual.
     :param ngen: The number of generation.
@@ -33,7 +33,7 @@ def eaSimple(population, toolbox, cxpb, mutpb, ngen, stats=None, n_jobs=2,
                   inplace, optional.
     :param halloffame: A :class:`~deap.tools.HallOfFame` object that will
                        contain the best individuals, optional.
-    :param verbose: Whether or not to log the statistics.
+    :param verbose: Whether to log the statistics.
     :returns: The final population
     :returns: A class:`~deap.tools.Logbook` with the statistics of the
               evolution
@@ -231,7 +231,8 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
         self.toolbox = base.Toolbox()
         # Attribute generator
 
-    def generate_min_max(self, space, min_=2, max_=None):
+    @staticmethod
+    def generate_min_max(space, min_=2, max_=None):
         ind = [generate_xi() for _ in range(space)]
         return filt(ind, min_=min_, max_=max_)
 

@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+
+# @Time     : 2021/10/8 14:27
+# @Software : PyCharm
+# @License  : GNU General Public License v3.0
+# @Author   : xxx
+
 import argparse
 import sys as _sys
 import textwrap
@@ -50,79 +57,6 @@ Add '-h' after sub-command for more help.
 Website: https://featurebox.readthedocs.io
 -----------------------------------------------------""".format("\n".join([i[1] for i in commands_.values()]))
 
-
-# def main(prog='featurebox', description='featurebox command line tool.', args=None):
-#     print(title)
-#     commands = commands_
-#     parser = argparse.ArgumentParser(prog=prog,
-#                                      description=description,
-#                                      formatter_class=Formatter)
-#     parser.add_argument('-T', '--traceback', action='store_true')
-#     subparsers = parser.add_subparsers(title='Sub-commands',
-#                                        dest='command')
-#
-#     subparser = subparsers.add_parser('help',
-#                                       description='Help',
-#                                       help='Help for sub-command.')
-#     subparser.add_argument('helpcommand',
-#                            nargs='?',
-#                            metavar='sub-command',
-#                            help='Provide help for sub-command.')
-#     functions = {}
-#     parsers = {}
-#     for command, module_name in commands:
-#         cmd = import_module(module_name)._CLICommand
-#         docstring = cmd.__doc__
-#         if docstring is None:
-#             short = cmd.short_description
-#             long = getattr(cmd, 'description', short)
-#         else:
-#             parts = docstring.split('\n', 1)
-#             if len(parts) == 1:
-#                 short = docstring
-#                 long = docstring
-#             else:
-#                 short, body = parts
-#                 long = short + '\n' + textwrap.dedent(body)
-#         subparser = subparsers.add_parser(
-#             command,
-#             formatter_class=Formatter,
-#             help=short,
-#             description=long)
-#         cmd.add_arguments(subparser)
-#         functions[command] = cmd.run
-#         parsers[command] = subparser
-#
-#     args = parser.parse_args(args)
-#     if args.command == 'help':
-#
-#         if args.helpcommand is None:
-#             parser.print_help()
-#             print(cmd_help)
-#         else:
-#             parsers[args.helpcommand].print_help()
-#
-#     elif args.command is None:
-#         parser.print_usage()
-#     else:
-#         f = functions[args.command]
-#         try:
-#             if f.__code__.co_argcount == 1:
-#                 f(args)
-#             else:
-#                 f(args, parsers[args.command])
-#         except KeyboardInterrupt:
-#             pass
-#         except CLIError as x:
-#             parser.error(x)
-#         except Exception as x:
-#             if args.traceback:
-#                 raise
-#             else:
-#                 l1 = '{}: {}\n'.format(x.__class__.__name__, x)
-#                 l2 = ('To get a full traceback, use: {} -T {} ...'
-#                       .format(prog, args.command))
-#                 parser.error(l1 + l2)
 
 def main(prog='featurebox', description='featurebox command line tool.', args=None, ):
     print(title)

@@ -164,9 +164,6 @@ class SO3:
         Args:
             atoms: an ASE atoms object corresponding to the desired
                    atomic arrangement
-
-            backend: string, specifies the method to compute the neighborlist
-                     elements, either ASE or pymatgen
         '''
         self._atoms = atoms
 
@@ -332,10 +329,7 @@ def compute_uarray_recursive(x, y, z, r, twol, ulist, idxu_block, rootpqarray):
     magnitude of the vector (x,y,z)
     twol: integer
     order of hyperspherical expansion
-    ulist: 1-D complex array
-    array to populate with D-matrix elements, mathematically
-    this is a 3-D matrix, although we broadcast this to a 1-D
-    matrix
+    ulist: 1-D complex array array to populate with D-matrix elements, mathematically this is a 3-D matrix, although we broadcast this to a 1-D
     idxu_block: 1-D int array
     used to index ulist
     rootpqarray:  2-D float array

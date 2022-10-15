@@ -552,7 +552,7 @@ def calculate_G4Prime(Rij, Ri, i, IDs, m, jks, Z, Rc, parameters):
     g43 = np.transpose(g43, (0, 2, 1, 3, 4, 5))
 
     # [d4, d3, d2, d1, jk] * [d4, d3, d2, jk, 3, layer] -> [d4, d3, d2, d1, jk, 3, layer] -> [S, jk, 3, layer]
-    G4ip0 = np.einsum('ijklm, ijkmno->ijklmno', g41, g42 + g43, \
+    G4ip0 = np.einsum('ijklm, ijkmno->ijklmno', g41, g42 + g43,
                       optimize='greedy').reshape([d1 * d2 * d3 * d4, jk, 3, m])
     # [S, layer, 3, N] * [layer, 3] -> [S, layer, 3, N, 3]
     # partition the dxdr to each i, j, k
@@ -661,7 +661,7 @@ def calculate_G5Prime(Rij, Ri, i, IDs, m, jks, Z, Rc, parameters):
     g53 = np.broadcast_to(g53, (d4, d2,) + (d3, jk, 3, m))
     g53 = np.transpose(g53, (0, 2, 1, 3, 4, 5))
 
-    G5ip0 = np.einsum('ijklm, ijkmno->ijklmno', g51, g52 + g53, \
+    G5ip0 = np.einsum('ijklm, ijkmno->ijklmno', g51, g52 + g53,
                       optimize='greedy').reshape([d1 * d2 * d3 * d4, jk, 3, m])
 
     # [S, layer, 3, N] * [layer, 3] -> [S, layer, 3, N, 3]
@@ -724,7 +724,7 @@ def dcosijk_dRm(Rij, Rik, ijk_list, dRij_dRm, dRik_dRm):
     Returns
     -------
     Derivative of cosine dot product w.r.t. the radius of an atom layer,
-    The atom layer has to be in the an array with 3 indices: i, j, and k.
+    The atom layer has to be in array with 3 indices: i, j, and k.
     """
     m = dRik_dRm.shape[-1]
     Dij = np.linalg.norm(Rij, axis=1)

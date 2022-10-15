@@ -127,7 +127,7 @@ class COHPStartInter(COHPStartZero):
     For some system can't run this COHPStartZero.
     Download lobster from http://www.cohp.de/
 
-    1. Copy follow code to form one ”lob.sh“ file, and 'sh lob.sh' (change the atoms couple):
+    1. Copy follow code to form one 'lob.sh' file, and 'sh lob.sh' (change the atoms couple):
 
     Notes::
 

@@ -97,8 +97,6 @@ class BaderStartZero(_BasePathOut):
     def run(self, path: Path, files: List = None):
         """3.Run with software and necessary file and get data.
         (1) Return result in code, or (2) Both return file to each path and in code."""
-        # 可以更简单的直接写命令，而不用此处的文件名 (files), 但是需要保证后续出现的文件、软件与 necessary_file, software 一致
-        # 函数强制返回除去None的对象，用于后续检查!!! (若返回None,则认为run转换错误)
 
         # 1.外部软件
         cmds = ("chgsum.pl AECCAR0 AECCAR2", "bader CHGCAR -ref CHGCAR_sum")
@@ -134,7 +132,7 @@ class BaderStartInter(BaderStartZero):
     Download chgsum.pl from
     http://theory.cm.utexas.edu/vtsttools/download.html
 
-    1. Copy follow code to form one ”badertoACF.sh“ file, and 'sh badertoACF.sh':
+    1. Copy follow code to form one 'badertoACF.sh' file, and 'sh badertoACF.sh':
 
     Notes::
         
