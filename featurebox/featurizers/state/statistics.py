@@ -207,7 +207,7 @@ class MaxPooling(BaseCompositionFeature):
         super().__init__(data_map, n_jobs=n_jobs, on_errors=on_errors, return_type=return_type)
 
     def mix_function(self, elems, _):
-        return np.max(elems)
+        return np.max(elems, axis=0)
 
 
 class MinPooling(BaseCompositionFeature):
@@ -220,7 +220,7 @@ class MinPooling(BaseCompositionFeature):
         super().__init__(data_map=data_map, n_jobs=n_jobs, on_errors=on_errors, return_type=return_type)
 
     def mix_function(self, elems, _):
-        return np.min(elems)
+        return np.min(elems, axis=0)
 
 
 class ExtraMix(BaseCompositionFeature):
