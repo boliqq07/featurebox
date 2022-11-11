@@ -82,4 +82,4 @@ def get_5_result(d: Dict, **kwargs) -> Tuple[np.ndarray, np.ndarray, np.ndarray,
 
     center_indices = np.array(range(atom_len))
 
-    return center_indices, np.array(None), np.array(None), np.array(None), center
+    return center_indices, np.array(np.NaN), np.array(np.NaN), np.array(np.NaN), center

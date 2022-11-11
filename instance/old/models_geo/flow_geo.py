@@ -302,7 +302,7 @@ class LearningFlow:
             self._train(epochi)
 
             if self.debug is not False:
-                self.weight_log.get_weight(self.model)
+                self.weight_log.record(self.model)
 
             if self.debug == "single":
                 self.weight_log.stats()

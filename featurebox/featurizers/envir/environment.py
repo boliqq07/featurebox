@@ -11,7 +11,7 @@ from featurebox.featurizers.envir._get_xyz_in_spheres import get_xyz_in_spheres
 from featurebox.featurizers.envir.desc_env import DesDict, get_strategy2_in_spheres
 from featurebox.featurizers.envir.local_env import NNDict, get_strategy1_in_spheres
 from featurebox.utils.general import aaa
-from featurebox.utils.predefined_typing import StructureOrMolecule, StructureOrMoleculeOrAtoms
+from featurebox.utils.predefined_typing import StructureOrMolecule
 
 MODULE_DIR = Path(__file__).parent.parent.parent.absolute()
 
@@ -386,9 +386,9 @@ class GEONNGet(_BaseEnvGet):
         else:
             return self.get_strategy1(structure, cutoff + 2)
 
-    def get_strategy2(self, structure: StructureOrMoleculeOrAtoms, cutoff
+    def get_strategy2(self, structure: StructureOrMolecule, cutoff
                       ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-        """For get bond distance with different strategy, for different nn_staagy could be rewrite."""
+        """For get bond distance with different strategy, for different nn_staagy could re-write."""
 
         if cutoff > 15:
             raise ValueError("The cutoff is to large than cutoff.")

@@ -241,12 +241,13 @@ class _BasePathOut:
     @staticmethod
     def extract(data, *args, format_path: Callable = None, **kwargs):
         """
-        Extract the message in data, and formed it.
+        The last process! Extract the message in data, and formed it to
+        be one table or ML or plot.
 
         Parameters
         ----------
         data:pd.DateFrame
-            transformed data.
+            to transform data.
         format_path:Callable
             function to deal with each path, for better shown.
 
