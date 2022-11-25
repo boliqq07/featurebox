@@ -27,7 +27,7 @@ def _re_pbc(pbc: Union[bool, List[bool], Tuple[bool], np.ndarray], return_type="
 def get_radius_in_spheres(
         structure: StructureOrMolecule, nn_strategy=None, cutoff: float = 5.0,
         numerical_tol: float = 1e-6,
-        pbc:Union[bool,Tuple[bool]]=True,
+        pbc: Union[bool, Tuple[bool]] = True,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
     Get graph representations from structure within cutoff.
@@ -71,7 +71,6 @@ def get_radius_in_spheres(
 
     return center_indices[exclude_self], neighbor_indices[exclude_self], \
            distances[exclude_self].reshape(-1, 1), distances[exclude_self], np.array(np.NaN)
-
 
 # if __name__ == "__main__":
 #     from mgetool.tool import tt

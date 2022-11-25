@@ -147,17 +147,26 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
             if isinstance(estimator, BaseSearchCV) and estimator.refit is True:
                 warnings.warn(
                     "\nThe self.estimator_ :{} would used all the X, y data if refit! \n"
-                    "Please be careful with the 'score' and 'predict' if use, which are 'train' score/predict if inputs not changed.\n"
-                    "Check 'self.estomator_' to get CV result, such as 'self.estomator_.best_score_' for evaluation instead.".format(
+                    "Please be careful with the 'score' and 'predict' if use, "
+                    "which are 'train' score/predict if inputs not changed!!!\n"
+                    "Check 'self.estomator_.cv_result' to get CV result,"
+                    " such as 'self.estomator_.best_score_' for evaluation instead.".format(
                         estimator.__class__.__name__), UserWarning)
             else:
                 warnings.warn(
-                    "\nThe self.estimator_ :{} would used all the X, y data if refit! \n"
-                    "Please be careful with the 'score' and 'predict' if use, which are 'train' score/predict if inputs not changed.\n"
-                    "Use 'cross_val_score(self.estimator_,X[:, self.support_],y)' for evaluation instead.".format(
+                    "\nThe self.estimator_ :{} would used all the X, y data with refit! \n"
+                    "Please be careful with the 'score' and 'predict' functions."
+                    "if inputs not changed, the 'score' and 'predict' are training!!!\n"
+                    "Thus:\n"
+                    "Use 'cross_val_score(self.estimator_,X[:, self.support_],y)' for evaluation instead,\n"
+                    "Use 'cross_val_predict(self.estimator_,X[:, self.support_],y)' for plot instead."
+                    "".format(
                         estimator.__class__.__name__), UserWarning)
 
+        assert cv >= 3
+
         if isinstance(estimator, BaseSearchCV):
+            print(f"Using scoring:{scoring},and cv:{cv}")
             estimator.scoring = scoring
             estimator.cv = cv
         self.scoring = scoring
@@ -478,7 +487,7 @@ class BackForwardStable(MetaEstimatorMixin, SelectorMixin, BaseEstimator):
                  min_type_feature_to_select: int = 3,
                  primary_feature: int = None, multi_grade: int = 2, multi_index: List = None,
                  must_index: List = None, verbose: int = 0, random_state: int = None,
-                 tolerant: float = 0.001,
+                 tolerant: float = 0.001, cv: int = 5,
                  times: int = 5, scoring: str = None, n_jobs: int = None, refit=False):
         """
 
@@ -533,6 +542,7 @@ class BackForwardStable(MetaEstimatorMixin, SelectorMixin, BaseEstimator):
         self.random_state = random_state
         self.refit = refit
         self.tolerant = tolerant
+        self.cv = cv
 
     def fit(self, X, y, groups=None):
         """Fit the baf model and automatically tune the number of selected feature.
@@ -561,7 +571,7 @@ class BackForwardStable(MetaEstimatorMixin, SelectorMixin, BaseEstimator):
                           n_type_feature_to_select=self.n_type_feature_to_select,
                           min_type_feature_to_select=self.min_type_feature_to_select,
                           verbose=self.verbose, primary_feature=self.primary_feature,
-                          multi_grade=self.multi_grade, multi_index=self.multi_index,
+                          multi_grade=self.multi_grade, multi_index=self.multi_index, cv=self.cv,
                           must_index=self.must_index, random_state=ran, tolerant=self.tolerant)
         rans = ran.randint(0, 1000, self.times)
 

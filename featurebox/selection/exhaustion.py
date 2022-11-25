@@ -56,6 +56,10 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
     >>> new_x = bf.fit_transform(X,y)
     >>> bf.support_
     array([False, False, False,  True, False,  True, False, False])
+    >>> train_score = bf.score(X[:50],y[:50])  # train score
+    >>> test_score = bf.score(X[-50:],y[-50:]) # test score in more data.
+    >>> np.mean(cross_val_score(bf.estimator_,X[:50,bf.support_],y[:50],cv=5)) # re cv_score in manually.
+    >>> np.mean(cross_val_predict(bf.estimator_,X[:50,bf.support_],y[:50],cv=5)) # re cv_predict for plot.
 
     Examples
     ----------
@@ -77,7 +81,7 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
 
     def __init__(self, estimator: BaseEstimator, n_select: Tuple = (2, 3, 4), multi_grade: int = None,
                  multi_index: List = None, must_index: List = None, n_jobs: int = 1,
-                 refit: bool = False, cv: int = 5,scoring: str = None):
+                 refit: bool = False, cv: int = 5, scoring: str = None):
         """
 
         Parameters
@@ -113,20 +117,36 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
             if isinstance(estimator, BaseSearchCV) and estimator.refit is True:
                 warnings.warn(
                     "\nThe self.estimator_ :{} would used all the X, y data if refit! \n"
-                    "Please be careful with the 'score' and 'predict' if use, which are 'train' score/predict if inputs not changed.\n"
-                    "Check 'self.estomator_' to get CV result, such as 'self.estomator_.best_score_' for evaluation instead.".format(
+                    "Please be careful with the 'score' and 'predict' if use, "
+                    "which are 'train' score/predict if inputs not changed!!!\n"
+                    "Check 'self.estomator_.cv_result' to get CV result,"
+                    " such as 'self.estomator_.best_score_' for evaluation instead.".format(
                         estimator.__class__.__name__), UserWarning)
             else:
                 warnings.warn(
-                    "\nThe self.estimator_ :{} would used all the X, y data if refit! \n"
-                    "Please be careful with the 'score' and 'predict' if use, which are 'train' score/predict if inputs not changed.\n"
-                    "Use 'cross_val_score(self.estimator_,X[:, self.support_],y)' for evaluation instead.".format(
+                    "\nThe self.estimator_ :{} would used all the X, y data with refit! \n"
+                    "Please be careful with the 'score' and 'predict' functions."
+                    "if inputs not changed, the 'score' and 'predict' are training!!!\n"
+                    "Thus:\n"
+                    "Use 'cross_val_score(self.estimator_,X[:, self.support_],y)' for evaluation instead,\n"
+                    "Use 'cross_val_predict(self.estimator_,X[:, self.support_],y)' for plot instead."
+                    "".format(
                         estimator.__class__.__name__), UserWarning)
-                
+
+        if cv <= 1:
+            warnings.warn(
+                "\nThe cv <= 1, the exhaustion would not use cross validate, and treat all data as train data, \n"
+                "the scoring would use the estimator.score function, rather than the 'scoring'."
+                "cv<=1 is just used for debug!!!".format(
+                    estimator.__class__.__name__), UserWarning)
+            scoring = None
+
         if isinstance(estimator, BaseSearchCV):
+            print(f"Using scoring:{scoring},and cv:{cv}")
             estimator.scoring = scoring
             estimator.cv = cv
-        self.scoring =scoring
+
+        self.scoring = scoring
 
         self.estimator = estimator
         self.score_ = []
@@ -177,11 +197,11 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
                 if hasattr(estimator_, "best_score_") or isinstance(estimator_, BaseSearchCV):
                     estimator_.fit(data_x0, y0)
                     score0 = np.mean(estimator_.best_score_)  # score_test
-                elif self.cv == 0:
+                elif self.cv <= 1:
                     estimator_.fit(data_x0, y0)
-                    score0 = estimator_.score(data_x0, y0)
+                    score0 = estimator_.score(data_x0, y0, )
                 else:
-                    score0 = cross_val_score(estimator_, data_x0, y0, cv=self.cv)
+                    score0 = cross_val_score(estimator_, data_x0, y0, cv=self.cv, scoring=self.scoring)
                     score0 = np.mean(score0)
                 # print(slices, score0)
             return score0
@@ -210,7 +230,7 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
         self.best_score_ = max(scores)
         self.score_ = scores
         self.support_ = su
-        self.estimator_= clone(self.estimator)
+        self.estimator_ = clone(self.estimator)
 
         if self.refit:
             if hasattr(self.estimator, "max_features"):

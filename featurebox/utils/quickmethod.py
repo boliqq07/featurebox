@@ -81,7 +81,7 @@ def dict_method_clf():
     me6 = DecisionTreeClassifier(
         criterion='gini', splitter='best', max_depth=None, min_samples_split=2, min_samples_leaf=1,
         min_weight_fraction_leaf=0.0, max_features=None, random_state=None, max_leaf_nodes=None,
-        min_impurity_decrease=0.0,  class_weight="balanced")
+        min_impurity_decrease=0.0, class_weight="balanced")
     cv6 = StratifiedKFold(5, shuffle=False)
     scoring6 = 'accuracy'
     param_grid6 = [{'max_depth': [3, 4, 5, 6, 7, 8, 9, 10], 'min_samples_split': [2, 3, 4]}]
@@ -96,7 +96,7 @@ def dict_method_clf():
         init=None,
         random_state=None, max_features=None, verbose=0,
         max_leaf_nodes=None, warm_start=False,
-        )
+    )
     cv7 = StratifiedKFold(5, shuffle=False)
     scoring7 = 'balanced_accuracy'
     param_grid7 = [{'n_estimators': [50, 100, 200, 500], 'max_depth': [3, 4, 5, 6, 7, 8, 9, 10],
@@ -216,7 +216,7 @@ def dict_method_reg():
                                     subsample=1.0, criterion='friedman_mse', min_samples_split=2,
                                     min_samples_leaf=1, min_weight_fraction_leaf=0.,
                                     max_depth=3, min_impurity_decrease=0.,
-                                     init=None, random_state=None,
+                                    init=None, random_state=None,
                                     max_features=None, alpha=0.9, verbose=0, max_leaf_nodes=None,
                                     warm_start=False, )
     cv8 = 5

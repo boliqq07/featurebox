@@ -1,8 +1,8 @@
 import itertools
+import math
 from collections import abc
 from typing import Tuple, Union, List
 
-import math
 import numpy as np
 
 from featurebox.utils.predefined_typing import StructureOrMolecule
@@ -161,7 +161,6 @@ def not_structure_get_xyz_in_spheres(
 
     return center_indices[exclude_self], neighbor_indices[exclude_self], images[exclude_self], distances[
         exclude_self], np.array(np.NaN)
-
 
 # if __name__ == "__main__":
 #     structure = Structure.from_file("../../data/temp_test_structure/W2C.cif")

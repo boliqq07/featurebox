@@ -72,7 +72,7 @@ class BandGapStartZero(_BasePathOut):
 
     @staticmethod
     def read(path, store=False, store_name="bgp_kit_single.csv"):
-        file_name = path/"BAND_GAP"
+        file_name = path / "BAND_GAP"
         with open(file_name) as f:
             res = f.readlines()
 
@@ -159,7 +159,7 @@ class BandGapStartZero(_BasePathOut):
             del data["Unnamed: 0"]
             data = data.set_index("File")
 
-        data = data[["Band Gap (eV)", "Eigenvalue of CBM (eV)",	"Eigenvalue of VBM (eV)", "Fermi Energy (eV)",
+        data = data[["Band Gap (eV)", "Eigenvalue of CBM (eV)", "Eigenvalue of VBM (eV)", "Fermi Energy (eV)",
                      "Fermi Energy (eV) Center"]]
         data.index = [format_path(ci) for ci in data.index]
         return data

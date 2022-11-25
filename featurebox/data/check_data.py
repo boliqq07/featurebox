@@ -41,7 +41,7 @@ class CheckElements:
 
     """
 
-    def __init__(self, check_method:Union[List[str], str] = "name", func: Callable = lambda x: x):
+    def __init__(self, check_method: Union[List[str], str] = "name", func: Callable = lambda x: x):
         """
 
         Parameters

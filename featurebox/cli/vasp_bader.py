@@ -51,7 +51,7 @@ class BaderStartZero(_BasePathOut):
 
             zval = np.array(zval)
 
-            with open(path/"ACF.dat", mode="r") as f:
+            with open(path / "ACF.dat", mode="r") as f:
                 msg = f.readlines()
 
             msg = [i for i in msg if ":" not in i]

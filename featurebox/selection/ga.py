@@ -150,12 +150,11 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
     >>> y = data.target[:50]
     >>> svr = SVR(gamma="scale", C=100)
     >>> ga = GA(estimator=svr, n_jobs=2, pop_n=50, hof_n=1, cxpb=0.8, mutpb=0.4, ngen=3, max_or_min="max", mut_indpb=0.1, min_=2, multi_index=[0, 5],random_state=0)
-    >>> ga.fit(x_test, y_test)
+    >>> ga.fit(x_rain, y_train)
 
     Then
-    ::
 
-        ga.score_cv(x, y)
+    >>> ga.score(x_test, y_test)
 
     """
 
@@ -200,10 +199,12 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
             if estimator is sklearn model, used cv, else pass.
         """
         super().__init__(multi_grade=multi_grade, multi_index=multi_index, must_index=must_index)
+        assert cv >= 3
         if isinstance(estimator, BaseSearchCV):
+            print(f"Using scoring:{scoring},and cv:{cv}")
             estimator.scoring = scoring
             self.cv = cv
-        self.scoring =scoring
+        self.scoring = scoring
         self.estimator = estimator
         self.n_jobs = n_jobs
         self.pop_n = pop_n
@@ -390,7 +391,6 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
         mod = self.fitness_func(self.hof.items[0], self.estimator, self.X, self.y, return_model=True)[1]
         score = self.predict_func(self.hof.items[0], mod, X)
         return score
-
 
 # if __name__ == "__main__":
 #     from sklearn.svm import SVR
