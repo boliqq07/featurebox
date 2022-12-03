@@ -30,6 +30,13 @@ def getsoftware():
     else:
         return "other"
 
+def run_cmd(cmd):
+    """run command."""
+    q = subprocess.Popen(cmd, stdout=subprocess.PIPE,  stderr=subprocess.STDOUT)
+    stdout, stderr = q.communicate()
+    qsout = stdout.decode()
+    return qsout
+
 def getlogin():
     """Returns os.getlogin(), else os.environ["LOGNAME"], else "?" """
     try:

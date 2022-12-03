@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="wcx@192.168.3.6:22" remoteFilesAllowedToDisappearOnAutoupload="false">
+  <component name="PublishConfigData" autoUpload="Always" serverName="wangchangxin@222.28.39.248:8006 password" remoteFilesAllowedToDisappearOnAutoupload="false">
     <serverData>
-      <paths name="wcx@192.168.3.6:22">
+      <paths name="qian1@112.46.64.22:9003 password">
         <serverdata>
           <mappings>
-            <mapping deploy="/home/wcx/featurebox" local="$PROJECT_DIR$" />
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="wangchangxin@222.28.39.248:8006 password">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/tmp/pycharm_project_233" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="wcx@192.168.3.14:22 password">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>

@@ -137,11 +137,11 @@ def job_rundir(jobid):
     if isinstance(jobid, (list,tuple)):
         for i in jobid:
             stdout = _squeue(jobid=i, full=True)
-            match = re.search("WorkDir=(.*),", stdout)
+            match = re.search("WorkDir=(.*)\n", stdout)
             rundir[i] = match.group(1)
     else:
         stdout = _squeue(jobid=jobid, full=True)
-        match = re.search("WorkDir=(.*),", stdout)
+        match = re.search("WorkDir=(.*)\n", stdout)
         rundir[jobid] = match.group(1)
     return rundir
 
