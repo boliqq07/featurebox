@@ -12,26 +12,6 @@ tl = time.localtime()
 year = tl.tm_year
 
 
-def job_id(username=getlogin()):
-
-    if username is not None:
-
-        qsout = run_cmd(["jjobs", "-u", username])
-
-        lines = qsout.split("\n")
-
-        if len(lines) >= 2:
-
-            jobid = []
-            for line in lines[1:]:
-                ids = line.split(" ")[0]
-                if ids != "":
-                    jobid.append(ids)
-            return jobid
-        else:
-            return []
-
-
 def _jjobs(jobid=None, username=getlogin(), full=False, version=getversion()):
     """Return the stdout of qstat minus the header lines.
 
@@ -72,6 +52,25 @@ def _jjobs(jobid=None, username=getlogin(), full=False, version=getversion()):
     # return the remaining text
     return sout
 
+def job_id(username=getlogin()):
+
+    if username is not None:
+
+        qsout = run_cmd(["jjobs", "-u", username])
+
+        lines = qsout.split("\n")
+
+        if len(lines) >= 2:
+
+            jobid = []
+            for line in lines[1:]:
+                ids = line.split(" ")[0]
+                if ids != "":
+                    jobid.append(ids)
+            return jobid
+        else:
+            return []
+
 def job_rundir(jobid):
     """Return the directory job "id" was run in using qstat.
 
@@ -108,171 +107,7 @@ def job_status(jobid=None):
     """
     status = dict()
 
-    # stdout = _jjobs(jobid=jobid, full=True)
-
-    stdout = """
-
-Job <106823>, Job Name <CX_W>, User <wangchangxin>, Project <default>, Status <
-                     PEND>, Queue <cpu>, Application <default>, APS Priority <5
-                     000>, Command <#!/bin/sh;#JSUB -J CX_W;#JSUB -n 64;#JSUB -
-                     R span[ptile=64];#JSUB -q cpu;#JSUB -o out.%J;#JSUB -e err
-                     .%J;source ~/intel/oneapi/mkl/2022.0.2/env/vars.sh intel64
-                     ;source ~/intel/oneapi/compiler/2022.0.2/env/vars.sh intel
-                     64;source ~/intel/oneapi/mpi/2021.5.1/env/vars.sh intel64;
-                     export PATH=~/app/vasp.5.4.4.fix/bin/:$PATH;ulimit -s 5120
-                     000;source /beegfs/jhinno/unischeduler/conf/unisched;#####
-                     ###################################################;#   $J
-                     H_NCPU:         Number of CPU cores              #;#   $JH
-                     _HOSTFILE:     List of computer hostfiles       #;########
-                     ################################################;mpirun -n
-                     p $JH_NCPU -machinefile $JH_HOSTFILE vasp_std  > vasp.log>
-Wed Nov 30 21:36:23: Submitted from host <mu01>, CWD </beegfs/home/wangchangxin
-                     /yang/capacity/test-cpu>, Output File <out.106823>, Error
-                     File <err.106823>, 64 Processors Requested, Requested Reso
-                     urce <span[ptile=64]>;
- ORDER: 79
- PENDING REASONS:
- Load information unavailable: 4 hosts;
- Job slot limit reached: 26 hosts;
-
- SCHEDULING PARAMETERS:
-              r15s     r1m     r5m    r15m      ut      pg      io      ls
- LoadSched       -       -       -       -       -       -       -       -
- LoadStop        -       -       -       -       -       -       -       -
-
-                it     tmp    swap     mem
- LoadSched       -       -       -       -
- LoadStop        -       -       -       -
-
--------------------------------------------------------------------------------
-
-Job <106979>, Job Name <skk>, User <wangchangxin>, Project <default>, Status <P
-                     END>, Queue <cpu>, Application <default>, APS Priority <50
-                     00>, Command <#!/bin/sh;#JSUB -J skk;#JSUB -n 64;#JSUB -R
-                     span[ptile=64];#JSUB -q cpu;#JSUB -o out.%J;#JSUB -e err.%
-                     J;source ~/intel/oneapi/mkl/2022.0.2/env/vars.sh intel64;s
-                     ource ~/intel/oneapi/compiler/2022.0.2/env/vars.sh intel64
-                     ;source ~/intel/oneapi/mpi/2021.5.1/env/vars.sh intel64;ex
-                     port PATH=~/app/vasp.5.4.4.fix/bin/:$PATH;ulimit -s 512000
-                     0;source /beegfs/jhinno/unischeduler/conf/unisched;#######
-                     #################################################;#   $JH_
-                     NCPU:         Number of CPU cores              #;#   $JH_H
-                     OSTFILE:     List of computer hostfiles       #;##########
-                     ##############################################;mpirun -np
-                     $JH_NCPU -machinefile $JH_HOSTFILE vasp_std  > vasp.log>
-Sat Dec 03 19:26:52: Submitted from host <mu01>, CWD </beegfs/home/wangchangxin
-                     /data/paper2_add/Ti/H_add_relax/S0/00>, Output File <out.1
-                     06971>, Error File <err.106971>, 64 Processors Requested,
-                     Requested Resource <span[ptile=64]>;
- ORDER: 172
- PENDING REASONS:
- Load information unavailable: 4 hosts;
- Job slot limit reached: 26 hosts;
-
- SCHEDULING PARAMETERS:
-              r15s     r1m     r5m    r15m      ut      pg      io      ls
- LoadSched       -       -       -       -       -       -       -       -
- LoadStop        -       -       -       -       -       -       -       -
-
-                it     tmp    swap     mem
- LoadSched       -       -       -       -
- LoadStop        -       -       -       -
-
-
--------------------------------------------------------------------------------
-
-Job <106971>, Job Name <skk>, User <wangchangxin>, Project <default>, Status <E
-                     XIT>, Queue <cpu>, Application <default>, APS Priority <50
-                     00>, Command <#!/bin/sh;#JSUB -J skk;#JSUB -n 64;#JSUB -R
-                     span[ptile=64];#JSUB -q cpu;#JSUB -o out.%J;#JSUB -e err.%
-                     J;source ~/intel/oneapi/mkl/2022.0.2/env/vars.sh intel64;s
-                     ource ~/intel/oneapi/compiler/2022.0.2/env/vars.sh intel64
-                     ;source ~/intel/oneapi/mpi/2021.5.1/env/vars.sh intel64;ex
-                     port PATH=~/app/vasp.5.4.4.fix/bin/:$PATH;ulimit -s 512000
-                     0;source /beegfs/jhinno/unischeduler/conf/unisched;#######
-                     #################################################;#   $JH_
-                     NCPU:         Number of CPU cores              #;#   $JH_H
-                     OSTFILE:     List of computer hostfiles       #;##########
-                     ##############################################;mpirun -np
-                     $JH_NCPU -machinefile $JH_HOSTFILE vasp_std  > vasp.log>
-Sat Dec 03 19:26:52: Submitted from host <mu01>, CWD </beegfs/home/wangchangxin
-                     /data/paper2_add/Ti/H_add_relax/S0/00>, Output File <out.1
-                     06971>, Error File <err.106971>, 64 Processors Requested,
-                     Requested Resource <span[ptile=64]>;
-Sat Dec 03 20:03:52: Exited. Error code 10014. The CPU time used is 0 seconds.
-
- SCHEDULING PARAMETERS:
-              r15s     r1m     r5m    r15m      ut      pg      io      ls
- LoadSched       -       -       -       -       -       -       -       -
- LoadStop        -       -       -       -       -       -       -       -
-
-                it     tmp    swap     mem
- LoadSched       -       -       -       -
- LoadStop        -       -       -       -
-
--------------------------------------------------------------------------------
-
-Job <106949>, Job Name <skk>, User <wangchangxin>, Project <default>, Status <DO
-                     NE>, Queue <cpu>, Application <default>, APS Priority <50
-                     00>, Command <#!/bin/sh;#JSUB -J skk;#JSUB -n 64;#JSUB -R
-                     span[ptile=64];#JSUB -q cpu;#JSUB -o out.%J;#JSUB -e err.%
-                     J;source ~/intel/oneapi/mkl/2022.0.2/env/vars.sh intel64;s
-                     ource ~/intel/oneapi/compiler/2022.0.2/env/vars.sh intel64
-                     ;source ~/intel/oneapi/mpi/2021.5.1/env/vars.sh intel64;ex
-                     port PATH=~/app/vasp.5.4.4.fix/bin/:$PATH;ulimit -s 512000
-                     0;source /beegfs/jhinno/unischeduler/conf/unisched;#######
-                     #################################################;#   $JH_
-                     NCPU:         Number of CPU cores              #;#   $JH_H
-                     OSTFILE:     List of computer hostfiles       #;##########
-                     ##############################################;mpirun -np
-                     $JH_NCPU -machinefile $JH_HOSTFILE vasp_std  > vasp.log>
-Sat Dec 03 19:26:52: Submitted from host <mu01>, CWD </beegfs/home/wangchangxin
-                     /data/paper2_add/Ti/H_add_relax/S0/00>, Output File <out.1
-                     06971>, Error File <err.106971>, 64 Processors Requested,
-                     Requested Resource <span[ptile=64]>;
-Sat Dec 03 20:03:52: Done successfully. The CPU time used is 2.4433e+06 seconds.
-Sat Dec 03 20:02:52: Started on 64. The CPU time used is 2.4433e+06 seconds.
-
- SCHEDULING PARAMETERS:
-              r15s     r1m     r5m    r15m      ut      pg      io      ls
- LoadSched       -       -       -       -       -       -       -       -
- LoadStop        -       -       -       -       -       -       -       -
-
-                it     tmp    swap     mem
- LoadSched       -       -       -       -
- LoadStop        -       -       -       -
-
--------------------------------------------------------------------------------
-
-Job <106559>, Job Name <skk>, User <wangchangxin>, Project <default>, Status <RUN
-                     >, Queue <cpu>, Application <default>, APS Priority <50
-                     00>, Command <#!/bin/sh;#JSUB -J skk;#JSUB -n 64;#JSUB -R
-                     span[ptile=64];#JSUB -q cpu;#JSUB -o out.%J;#JSUB -e err.%
-                     J;source ~/intel/oneapi/mkl/2022.0.2/env/vars.sh intel64;s
-                     ource ~/intel/oneapi/compiler/2022.0.2/env/vars.sh intel64
-                     ;source ~/intel/oneapi/mpi/2021.5.1/env/vars.sh intel64;ex
-                     port PATH=~/app/vasp.5.4.4.fix/bin/:$PATH;ulimit -s 512000
-                     0;source /beegfs/jhinno/unischeduler/conf/unisched;#######
-                     #################################################;#   $JH_
-                     NCPU:         Number of CPU cores              #;#   $JH_H
-                     OSTFILE:     List of computer hostfiles       #;##########
-                     ##############################################;mpirun -np
-                     $JH_NCPU -machinefile $JH_HOSTFILE vasp_std  > vasp.log>
-Sat Dec 03 19:26:52: Submitted from host <mu01>, CWD </beegfs/home/wangchangxin
-                     /data/paper2_add/Ti/H_add_relax/S0/00>, Output File <out.1
-                     06971>, Error File <err.106971>, 64 Processors Requested,
-                     Requested Resource <span[ptile=64]>;
-Sat Dec 03 20:02:52: Started on 64. The CPU time used is 2.4433e+06 seconds.
-
- SCHEDULING PARAMETERS:
-              r15s     r1m     r5m    r15m      ut      pg      io      ls
- LoadSched       -       -       -       -       -       -       -       -
- LoadStop        -       -       -       -       -       -       -       -
-
-                it     tmp    swap     mem
- LoadSched       -       -       -       -
- LoadStop        -       -       -       -
-"""
+    stdout = _jjobs(jobid=jobid, full=True)
 
 
     sout = stdout.split("-------------------------------------------------------------------------------")
@@ -354,6 +189,10 @@ Sat Dec 03 20:02:52: Started on 64. The CPU time used is 2.4433e+06 seconds.
                 jobstatus["subtime"] = int(time.mktime(
                     datetime.datetime.strptime(ti_str, "%a %b %d %H:%M:%S %Y").timetuple()))
 
+            m10 = re.search(r"ORDER: (.*)", line)  # pylint: disable=invalid-name
+            if m10:
+                jobstatus["order"] = m10.group(1)
+
             status[jobstatus["jobid"]] = jobstatus
 
     return status
@@ -374,6 +213,25 @@ def submit(substr):
     p = subprocess.Popen(   #pylint: disable=invalid-name
         "jsub <", stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     stdout, stderr = p.communicate(input=substr)       #pylint: disable=unused-variable
+    stdout = stdout.decode()
+    stderr = stderr.decode()
+    print(stdout[:-1])
+
+    if re.search("error", stdout):
+        raise PBSError(0, "PBS Submission error.\n" + stdout + "\n" + stderr)
+    else:
+        jobid = stdout.split(".")[0]
+        return jobid
+
+def submit_file(file):
+    """Submit a PBS job using qsub.
+
+       substr: The submit script string
+    """
+
+    p = subprocess.Popen(   #pylint: disable=invalid-name
+        ["jsub <",  file], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    stdout, stderr = p.communicate()       #pylint: disable=unused-variable
     stdout = stdout.decode()
     stderr = stderr.decode()
     print(stdout[:-1])
