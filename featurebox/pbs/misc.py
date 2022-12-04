@@ -50,34 +50,16 @@ def getversion(software=None):
         software = getsoftware()
     if software == "torque":
         opt = ["qstat", "--version"]
-
-        # call 'qstat' using subprocess
-        p = subprocess.Popen(opt, stdout=subprocess.PIPE, stderr=subprocess.STDOUT) #pylint: disable=invalid-name
-        stdout, stderr = p.communicate()    #pylint: disable=unused-variable
-        sout = stdout.decode()
-
-        # return the version number
+        sout = run_cmd(opt)
         return sout.split("\n")[0].lower().lstrip("version: ")
     elif software == "slurm":
         opt = ["squeue", "--version"]
-
-        # call 'squeue' using subprocess
-        p = subprocess.Popen(opt, stdout=subprocess.PIPE, stderr=subprocess.STDOUT) #pylint: disable=invalid-name
-        stdout, stderr = p.communicate()    #pylint: disable=unused-variable
-        sout = stdout.decode()
-
-        # return the version number
+        sout = run_cmd(opt)
         return sout.split("\n")[0].lstrip("slurm ")
 
     elif software == "unischeduler":
         opt = ["jctrl", "-V"]
-
-        # call 'squeue' using subprocess
-        p = subprocess.Popen(opt, stdout=subprocess.PIPE, stderr=subprocess.STDOUT) #pylint: disable=invalid-name
-        stdout, stderr = p.communicate()    #pylint: disable=unused-variable
-        sout = stdout.decode()
-
-        # return the version number
+        sout = run_cmd(opt)
         return sout.split(",")[0].lstrip("JH Unischeduler ")
 
     else:

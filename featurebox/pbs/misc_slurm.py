@@ -12,7 +12,8 @@ import time
 # import sys
 
 ### Internal ###
-from misc import getversion, getlogin, seconds, PBSError
+from misc import getversion, getlogin, seconds, PBSError, run_cmd
+
 
 def _squeue(jobid=None, username=getlogin(), full=False, version=getversion(), sformat=None):    #pylint: disable=unused-argument
     """Return the stdout of squeue minus the header lines.
@@ -34,11 +35,7 @@ def _squeue(jobid=None, username=getlogin(), full=False, version=getversion(), s
                 # Clearly we want ALL THE JOBS
                 sopt = ["scontrol", "show", "job"]
 
-                # Submit the command
-                p = subprocess.Popen(sopt, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)     #pylint: disable=invalid-name
-                stdout, stderr = p.communicate()        #pylint: disable=unused-variable
-
-                sout = stdout.decode()
+                sout = run_cmd(sopt)
 
                 # Nothing to strip, as scontrol provides no headers
                 return sout
@@ -48,10 +45,7 @@ def _squeue(jobid=None, username=getlogin(), full=False, version=getversion(), s
                 # squeue (-h strips the header)
                 sopt = ["scontrol", "show", "job", "-u", username]
 
-                p = subprocess.Popen(sopt, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)     #pylint: disable=invalid-name
-                stdout, stderr = p.communicate()        #pylint: disable=unused-variable
-
-                sout = stdout.decode()
+                sout = run_cmd(sopt)
 
                 # Nothing to strip, as scontrol provides no headers
                 return sout
@@ -65,10 +59,9 @@ def _squeue(jobid=None, username=getlogin(), full=False, version=getversion(), s
             for my_id in jobid:
                 sopt = opt + [str(my_id)]
 
-                q = subprocess.Popen(sopt, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)     #pylint: disable=invalid-name
-                stdout, stderr = q.communicate()    #pylint: disable=unused-variable
+                sout = run_cmd(sopt)
 
-                sreturn = sreturn + stdout.decode() + "\n\n"
+                sreturn = sreturn + sout + "\n\n"
 
             return sreturn
 
@@ -90,10 +83,7 @@ def _squeue(jobid=None, username=getlogin(), full=False, version=getversion(), s
             else:
                 sopt += ["-o", "'%i %j %u %M %t %P'"]
 
-        q = subprocess.Popen(sopt, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)     #pylint: disable=invalid-name
-        stdout, stderr = q.communicate()    #pylint: disable=unused-variable
-
-        sout = stdout.decode()
+        sout = run_cmd(sopt)
 
         # return the remaining text
         return sout

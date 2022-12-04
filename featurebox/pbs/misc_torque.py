@@ -6,7 +6,7 @@ import re
 import datetime
 import time
 import sys
-from misc import getversion, getlogin, seconds, PBSError
+from misc import getversion, getlogin, seconds, PBSError, run_cmd
 
 
 def _qstat(jobid=None, username=getlogin(), full=False, version=getversion()):
@@ -26,10 +26,8 @@ def _qstat(jobid=None, username=getlogin(), full=False, version=getversion()):
         qopt += ["-u", username]
 
         # Call 'qselect' using subprocess
-        q = subprocess.Popen(qopt, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)     #pylint: disable=invalid-name
-        stdout, stderr = q.communicate()    #pylint: disable=unused-variable
 
-        qsout = stdout.decode()
+        qsout = run_cmd(qopt)
 
         # Get the jobids
         jobid = []
@@ -58,10 +56,7 @@ def _qstat(jobid=None, username=getlogin(), full=False, version=getversion()):
 
     # call 'qstat' using subprocess
     # print opt
-    p = subprocess.Popen(opt, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)     #pylint: disable=invalid-name
-    stdout, stderr = p.communicate()        #pylint: disable=unused-variable
-
-    sout = stdout.decode()
+    sout = run_cmd(opt)
 
     # strip the header lines
     if full is False:
