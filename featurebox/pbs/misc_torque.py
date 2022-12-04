@@ -220,11 +220,13 @@ def submit(substr):
         jobid = stdout.split(".")[0]
         return jobid
 
-def submit_file(file):
+def submit_file(path, file):
     """Submit a PBS job using qsub.
 
        substr: The submit script string
     """
+    pt = os.getcwd()
+    os.chdir(path)
 
     p = subprocess.Popen(   #pylint: disable=invalid-name
         ["qsub",  file], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -233,15 +235,24 @@ def submit_file(file):
     stderr = stderr.decode()
     print(stdout[:-1])
 
+    os.chdir(pt)
+
     if re.search("error", stdout):
         raise PBSError(0, "PBS Submission error.\n" + stdout + "\n" + stderr)
     else:
-        jobid = stdout.split(".")[0]
+        jobid = stdout
         return jobid
 def delete(jobid):
     """qdel a PBS job."""
     p = subprocess.Popen(   #pylint: disable=invalid-name
         ["qdel", jobid], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    stdout, stderr = p.communicate()        #pylint: disable=unused-variable
+    return p.returncode
+
+def clear(jobid):
+    """qdel a PBS job."""
+    p = subprocess.Popen(   #pylint: disable=invalid-name
+        ["qdel", *jobid], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     stdout, stderr = p.communicate()        #pylint: disable=unused-variable
     return p.returncode
 
