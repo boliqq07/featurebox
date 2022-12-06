@@ -1,118 +1,82 @@
+#!/bin/bash
 """ Misc functions for interfacing between torque and the pbs module """
 
-import subprocess
+import datetime
 import os
 import re
-import datetime
 import time
-import sys
-from misc import getversion, getlogin, seconds, PBSError, run_cmd
+from typing import Union
+
+from featurebox.pbs.misc import getlogin, seconds, run_popen, shell_to_re_compile_pattern_lru
 
 
-def _qstat(jobid=None, username=getlogin(), full=False, version=getversion()):
-    """Return the stdout of qstat minus the header lines.
-
-       By default, 'username' is set to the current user.
-       'full' is the '-f' option
-       'id' is a string or list of strings of job ids
-
-       Returns the text of qstat, minus the header lines
-    """
-
-    # -u and -f contradict in earlier versions of Torque
-    if full and username is not None and int(version.split('.')[0]) < 5 and jobid is None:
-        # First get all jobs by the user
-        qopt = ["qselect"]
-        qopt += ["-u", username]
-
-        # Call 'qselect' using subprocess
-
-        qsout = run_cmd(qopt)
-
-        # Get the jobids
+def job_id(username=getlogin()):
+    if username is not None:
+        qopt = ["qselect", "-u", username]
+    else:
+        qopt = "qselect"
+    qsout = run_popen(qopt, first=False, join=False)
+    if qsout is None or len(qsout) == 0:
+        return []
+    else:
         jobid = []
         for line in qsout:
             jobid += [line.rstrip("\n")]
+        return jobid
 
+
+def _qstat(jobid=None, full=False, username=getlogin()) -> str:
     opt = ["qstat"]
-    # If there are jobid(s), you don't need a username
+
     if username is not None and jobid is None:
+        jobid = job_id(username=getlogin())
         opt += ["-u", username]
-    # But if there are jobid(s) and a username, you need -a to get full output
-    elif username is not None and jobid is not None and not full:
-        opt += ["-a"]
-    # By this point we're guaranteed torque ver >= 5.0, so -u and -f are safe together
+
     if full:
         opt += ["-f"]
+
     if jobid is not None:
         if isinstance(jobid, str):
             jobid = [jobid]
         elif isinstance(jobid, list):
             pass
         else:
-            print("Error in pbs.misc.qstat(). type(jobid):", type(jobid))
-            sys.exit()
+            raise ValueError("jobid must be str or list of str")
         opt += jobid
 
-    # call 'qstat' using subprocess
-    # print opt
-    sout = run_cmd(opt)
+    sout = run_popen(opt, first=False, join=True)
 
-    # strip the header lines
-    if full is False:
-        for line in sout:
-            if line[0] == "-":
-                break
-
-    # return the remaining text
     return sout
 
-def job_id(all=False, name=None):       #pylint: disable=redefined-builtin
-    """If 'name' given, returns a list of all jobs with a particular name using qstat.
-       Else, if all=True, returns a list of all job ids by current user.
-       Else, returns this job id from environment variable PBS_JOBID (split to get just the number).
 
-       Else, returns None
-
-    """
-    if all or name is not None:
-        jobid = []
-        stdout = _qstat()
-        sout = stdout.splitlines()
-        for line in sout:
-            if name is not None:
-                if line.split()[3] == name:
-                    jobid.append((line.split()[0]).split(".")[0])
-            else:
-                jobid.append((line.split()[0]).split(".")[0])
-        return jobid
-    else:
-        if 'PBS_JOBID' in os.environ:
-            return os.environ['PBS_JOBID'].split(".")[0]
-        else:
-            return None
-            #raise PBSError(
-            #    "?",
-            #    "Could not determine jobid. 'PBS_JOBID' environment variable not found.\n"
-            #    + str(os.environ))
-
-def job_rundir(jobid):
+def job_rundir(jobid=None):
     """Return the directory job "id" was run in using qstat.
 
        Returns a dict, with id as key and rundir and value.
     """
     rundir = dict()
 
-    if isinstance(jobid, (list,tuple)):
+    if jobid is None:
+        res = job_status(jobid=jobid)
+        return {k: v["work_dir"] for k, v in res.items()}
+
+    if isinstance(jobid, (list, tuple)):
         for i in jobid:
             stdout = _qstat(jobid=i, full=True)
-            match = re.search("init_work_dir = (.*),", stdout)
-            rundir[i] = match.group(1)
+            if stdout is not None:
+                match = re.search("init_work_dir = (.*)", stdout)
+                if match is not None:
+                    rundir[i] = match.group(1)
     else:
         stdout = _qstat(jobid=jobid, full=True)
-        match = re.search("init_work_dir = (.*),", stdout)
-        rundir[jobid] = match.group(1)
+        if stdout is not None:
+            match = re.search("init_work_dir = (.*)", stdout)
+            if match is not None:
+                res = match.group(1)
+                rundir[jobid] = res.replace("\n", "")
+
     return rundir
+
 
 def job_status(jobid=None):
     """Return job status using qstat
@@ -132,51 +96,53 @@ def job_status(jobid=None):
 
     stdout = _qstat(jobid=jobid, full=True)
 
+    if stdout is None:
+        return {}
+
     # sout = stdout.splitlines()
     sout = stdout.split("\n\n")
 
     for line in sout:
 
-        m = re.search(r"Job Id:\s*(.*)", line)      #pylint: disable=invalid-name
+        m = re.search(r"Job Id:\s*(.*)", line)
         if m:
-            jobstatus = dict()
-            jobstatus["jobid"] = m.group(1).split(".")[0]
-            jobstatus["qstatstr"] = line
+            jobstatus = {"jobid": m.group(1), "nodes": None, "procs": None, "walltime": None, "qstatstr": line,
+                         "elapsedtime": None, "starttime": None, "completiontime": None, "jobstatus": None,
+                         'work_dir': None, 'subtime': None}
 
             m2 = re.search(r"\s*Job_Name\s*=\s*(.*)\s", line)
             if m2:
                 jobstatus["jobname"] = m2.group(1)
 
-            m3 = re.search(r"\s*Resource_List\.nodes\s*=\s*(.*):ppn=(.*)\s", line)  # pylint: disable=invalid-name
+            m3 = re.search(r"\s*Resource_List\.nodes\s*=\s*(.*):ppn=(.*)\s", line)
             if m3:
                 jobstatus["nodes"] = m3.group(1)
                 jobstatus["procs"] = int(m3.group(1)) * int(m3.group(2))
 
-            m4 = re.search(r"\s*Resource_List\.walltime\s*=\s*(.*)\s", line)  # pylint: disable=invalid-name
+            m4 = re.search(r"\s*Resource_List\.walltime\s*=\s*(.*)\s", line)
             if m4:
                 jobstatus["walltime"] = int(seconds(m4.group(1)))
 
-            m5 = re.search(r"\s*start_time\s*=\s*(.*)\s", line)  # pylint: disable=invalid-name
+            m5 = re.search(r"\s*start_time\s*=\s*(.*)\s", line)
             if m5:
                 jobstatus["starttime"] = int(time.mktime(datetime.datetime.strptime(
                     m5.group(1), "%a %b %d %H:%M:%S %Y").timetuple()))
             else:
                 jobstatus["starttime"] = None
 
-            m6 = re.search(r"\s*job_state\s*=\s*(.*)\s", line)  # pylint: disable=invalid-name
+            m6 = re.search(r"\s*job_state\s*=\s*(.*)\s", line)
             if m6:
                 jobstatus["jobstatus"] = m6.group(1)
             else:
                 jobstatus["jobstatus"] = None
 
-            if jobstatus["jobstatus"] == "R" and jobstatus["starttime"] != None:  # pylint: disable=unsubscriptable-object
+            if jobstatus["jobstatus"] == "R" and jobstatus["starttime"] is not None:
                 jobstatus["elapsedtime"] = int(time.time()) - jobstatus[
-                    "starttime"]  # pylint: disable=unsubscriptable-object
+                    "starttime"]
             else:
                 jobstatus["elapsedtime"] = None
 
-
-            m7 = re.search(r"\s*comp_time\s*=\s*(.*)\s", line)  # pylint: disable=invalid-name
+            m7 = re.search(r"\s*comp_time\s*=\s*(.*)\s", line)
             if m7:
                 jobstatus["completiontime"] = int(time.mktime(datetime.datetime.strptime(
                     m7.group(1), "%a %b %d %H:%M:%S %Y").timetuple()))
@@ -185,7 +151,7 @@ def job_status(jobid=None):
             if m8:
                 jobstatus["work_dir"] = m8.group(1)
 
-            m9 = re.search(r"\s*ctime\s*=\s*(.*)\s", line)  # pylint: disable=invalid-name
+            m9 = re.search(r"\s*ctime\s*=\s*(.*)\s", line)
             if m9:
                 jobstatus["subtime"] = int(time.mktime(datetime.datetime.strptime(
                     m9.group(1), "%a %b %d %H:%M:%S %Y").timetuple()))
@@ -194,33 +160,8 @@ def job_status(jobid=None):
 
     return status
 
-def submit(substr):
-    """Submit a PBS job using qsub.
 
-       substr: The submit script string
-    """
-    m = re.search(r"-N\s+(.*)\s", substr)       #pylint: disable=invalid-name
-    if m:
-        jobname = m.group(1)        #pylint: disable=unused-variable
-    else:
-        raise PBSError(
-            None,
-            r"Error in pbs.misc.submit(). Jobname (\"-N\s+(.*)\s\") not found in submit string.")
-
-    p = subprocess.Popen(   #pylint: disable=invalid-name
-        "qsub", stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    stdout, stderr = p.communicate(input=substr)       #pylint: disable=unused-variable
-    stdout = stdout.decode()
-    stderr = stderr.decode()
-    print(stdout[:-1])
-
-    if re.search("error", stdout):
-        raise PBSError(0, "PBS Submission error.\n" + stdout + "\n" + stderr)
-    else:
-        jobid = stdout.split(".")[0]
-        return jobid
-
-def submit_file(path, file):
+def submit_from_path(path: str, file: str):
     """Submit a PBS job using qsub.
 
        substr: The submit script string
@@ -228,59 +169,61 @@ def submit_file(path, file):
     pt = os.getcwd()
     os.chdir(path)
 
-    p = subprocess.Popen(   #pylint: disable=invalid-name
-        ["qsub",  file], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    stdout, stderr = p.communicate()       #pylint: disable=unused-variable
-    stdout = stdout.decode()
-    stderr = stderr.decode()
-    print(stdout[:-1])
+    if any([i in file for i in ["*", "!", "?", "["]]):
+        fs = os.listdir()
+        fss = "\n".join(fs)
+
+        smatch = shell_to_re_compile_pattern_lru(file, trans=True)
+        res = smatch.findall(fss)
+        res = [i for i in res if i in fs]
+        assert len(res) == 1, f"There are 1+ file/No file {res} with patten {file}, " \
+                              f"using more strict/relax condition."
+        file = res[0]
+
+    res = run_popen(["qsub", file])
 
     os.chdir(pt)
 
-    if re.search("error", stdout):
-        raise PBSError(0, "PBS Submission error.\n" + stdout + "\n" + stderr)
+    jobid = res.replace("\n", "")
+    return jobid
+
+
+def delete(jobid: Union[list, str]):
+    """qdel a PBS job."""
+    if isinstance(jobid, str):
+        res = run_popen(["qdel", jobid])
     else:
-        jobid = stdout
-        return jobid
-def delete(jobid):
-    """qdel a PBS job."""
-    p = subprocess.Popen(   #pylint: disable=invalid-name
-        ["qdel", jobid], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    stdout, stderr = p.communicate()        #pylint: disable=unused-variable
-    return p.returncode
+        res = run_popen(f"qdel " + " ".join(jobid))
+    return jobid
 
-def clear(jobid):
-    """qdel a PBS job."""
-    p = subprocess.Popen(   #pylint: disable=invalid-name
-        ["qdel", *jobid], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    stdout, stderr = p.communicate()        #pylint: disable=unused-variable
-    return p.returncode
 
-def hold(jobid):
+def clear(jobids: list = None):
+    """qdel a PBS job."""
+    if jobids is None:
+        res = run_popen("qdel all")
+    else:
+        res = run_popen(f"qdel " + " ".join(jobids))
+    return jobids
+
+
+def hold(jobid: Union[list, str]):
     """qhold a PBS job."""
-    p = subprocess.Popen(   #pylint: disable=invalid-name
-        ["qhold", jobid], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    stdout, stderr = p.communicate()    #pylint: disable=unused-variable
-    return p.returncode
+    if isinstance(jobid, str):
+        res = run_popen(["qhold", jobid])
+    else:
+        res = run_popen(f"qhold " + " ".join(jobid))
+    return jobid
 
-def release(jobid):
+
+def release(jobid: Union[list, str]):
     """qrls a PBS job."""
-    p = subprocess.Popen(   #pylint: disable=invalid-name
-        ["qrls", jobid], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    stdout, stderr = p.communicate()    #pylint: disable=unused-variable
-    return p.returncode
-
-def alter(jobid, arg):
-    """qalter a PBS job.
-
-        'arg' is a pbs command option string. For instance, "-a 201403152300.19"
-    """
-    p = subprocess.Popen(   #pylint: disable=invalid-name
-        ["qalter"] + arg.split() + [jobid], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    stdout, stderr = p.communicate()    #pylint: disable=unused-variable
-    return p.returncode
+    if isinstance(jobid, str):
+        res = run_popen(["qrls", jobid])
+    else:
+        res = run_popen(f"qrls " + " ".join(jobid))
+    return jobid
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     # res21 = find_executable("qsub")
-    res = job_status()
+    res2 = job_status()

@@ -6,7 +6,7 @@
       <paths name="qian1@112.46.64.22:9003 password">
         <serverdata>
           <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/data/home/qian1/wcx/featurebox" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>

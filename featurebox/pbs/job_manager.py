@@ -1,23 +1,32 @@
+#!/bin/bash
 import json
 import os.path
 import time
-from typing import Union, List
+from typing import Union, List, Sequence
 
 import pandas as pd
 
-import misc_slurm
-import misc_torque
-import misc_unischeduler
+from featurebox.pbs.pbs_conf import set_bachrc, reform_log_path
 
 
 class JobManager:
 
-    def __init__(self, manager: str = "torque"):
-        if manager in ("pbs", "torque", "qsub", "qstat"):
-            self.funcs = misc_torque
-        elif manager in ("squeue", "slurm", "sbatch"):
+    def __init__(self, manager: str = "torque",):
+
+        set_bachrc(path="{home}/history_jobs", log_paths_file="paths.temp")
+        reform_log_path(max_size=1000, path="{home}/history_jobs", log_paths_file="paths.temp")
+
+        if manager in ("squeue", "slurm", "sbatch"):
+            from featurebox.pbs import misc_slurm
             self.funcs = misc_slurm
+        elif manager in ("pbs", "torque", "qsub", "qstat"):
+            from featurebox.pbs import misc_torque
+            self.funcs = misc_torque
         elif manager in ("jjobs", "unischeduler", "jctrl", "jsub"):
+            try:
+                from featurebox.pbs import misc_unischeduler
+            except ImportError:
+                import misc_unischeduler
             self.funcs = misc_unischeduler
         else:
             raise NotImplementedError
@@ -77,14 +86,17 @@ class JobManager:
 
     def print_pd(self):
         res = self.sparse()
-        res = pd.from_dict(res).T
+        res = pd.DataFrame.from_dict(res).T
         return res
 
-    def submit_file(self, path:Union[str,list,tuple], file:str="*.run"):
+    def submit_from_path(self, path: Union[str, list, tuple], file: str = "*.run") -> Sequence:
         if isinstance(path, (tuple, list)):
-            jobids = [self.funcs.submit_file(pathi, file) for pathi in path]
+            jobids = [self.funcs.submit_from_path(pathi, file) for pathi in path]
+        elif isinstance(path, str):
+            jobids = [self.funcs.submit_from_path(path, file)]
         else:
-            jobids = [self.funcs.submit_file(path, file)]
+            raise NotImplementedError
+            # return []
 
         jobids = [i for i in jobids if i is not None]
 
@@ -92,35 +104,82 @@ class JobManager:
             msg = self.funcs.job_status(jobids)
             self.msg.update(msg)
         else:
-            msg = self.funcs.job_status(jobids)
+            msg = self.funcs.job_status()
             self.msg.update(msg)
+        return jobids
 
-    def re_submit_file(self, path=None, file="*.run", old_ids: str = None,):
-        if path and file:
-            return self.submit_file(path, file)
+    def re_submit_from_path(self, path=None, file="*.run", old_id: Union[str, list] = None):
+        if path is not None:
+            return self.submit_from_path(path, file)
+        else:
+            if isinstance(old_id, str):
+                old_id = [old_id, ]
 
-        if isinstance(old_ids, str):
-            old_ids = [old_ids, ]
+            new_id = []
 
-        for old_id in old_ids:
-            if old_id is not None:
-                if old_id in self.msg:
-                    path = self.msg[old_id]["work_dir"]
-                    self.delete(old_id)
-                    self.submit_file(path, file)
-                elif old_id in self.deleted_msg:
-                    path = self.deleted_msg[old_id]["work_dir"]
-                    self.submit_file(path, file)
-                else:
-                    print(f"Not find the old jobs, please using job 'path'.")
+            for old_idi in old_id:
+                if old_idi is not None:
+                    if old_idi in self.msg:
+                        path = self.msg[old_idi]["work_dir"]
+                        self.delete(old_idi)
+                        ni = self.submit_from_path(path=path, file=file)
+                        new_id.extend(ni)
+                    elif old_idi in self.deleted_msg:
+                        path = self.deleted_msg[old_idi]["work_dir"]
+                        ni = self.submit_from_path(path=path, file=file)
+                        new_id.extend(ni)
+                    else:
+                        print(f"Not find the old jobs, please using job 'path'.")
+            return new_id
 
     def clear(self):
         sg = [i for i in self.msg.keys()]
         self.funcs.clear(sg)
         self.deleted_msg.update(self.msg)
         self.msg.clear()
+        return sg
 
-    def delete(self, jobid):
-        self.funcs.delete(jobid)
-        v = self.msg.pop(jobid)
-        self.deleted_msg.update({jobid:v})
+    def delete(self, jobid: Union[str, list]):
+        if isinstance(jobid, str):
+            self.funcs.delete(jobid)
+            v = self.msg.pop(jobid)
+            self.deleted_msg.update({jobid: v})
+        else:
+            self.funcs.clear(jobid)
+            v = [self.msg.pop(i) for i in jobid]
+            [self.deleted_msg.update({ji: vi}) for ji, vi in zip(jobid, v)]
+        return jobid
+
+    def hold(self, jobid: Union[str, list]):
+        if isinstance(jobid, (list, tuple)):
+            return [self.hold(i) for i in jobid]
+        else:
+            self.funcs.hold(jobid)
+            msg = self.funcs.job_status(jobid)
+            self.msg.update(msg)
+        return jobid
+
+    def release(self, jobid: Union[str, list]):
+        if isinstance(jobid, (list, tuple)):
+            return [self.release(i) for i in jobid]
+        else:
+            self.funcs.release(jobid)
+            msg = self.funcs.job_status(jobid)
+            self.msg.update(msg)
+        return jobid
+
+    def job_id(self):
+        return self.funcs.job_id()
+
+    def job_dir(self, jobid=None):
+        return self.funcs.job_rundir(jobid)
+
+
+if __name__ == "__main__":
+    jm1 = JobManager()
+    pathh = ["/home/wcx/data/code_test/Ta2CO2/Zn/pure",
+             "/home/wcx/data/code_test/V2CO2/Zn",
+             "/home/wcx/data/code_test/V2CO2/nodoping",
+             "/home/wcx/data/code_test/Zr2CO2/Zn/pure_static"]
+
+    jm1.submit_from_path(pathh, file="p*.run")
