@@ -13,13 +13,13 @@ import copy
 from typing import List
 
 import numpy as np
+from mgetool.tool import name_to_name
 from sklearn.base import BaseEstimator, MetaEstimatorMixin
 from sklearn.feature_selection import SelectorMixin
 from sklearn.utils import check_random_state
 from sklearn.utils.validation import check_is_fitted
 
 from featurebox.selection.multibase import MultiBase
-from mgetool.tool import name_to_name
 
 
 class Corr(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):

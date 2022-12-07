@@ -36,12 +36,13 @@ class MyTestCase(unittest.TestCase):
         self.jm.get_job_msg()
         k = [i for i in self.jm.msg.keys()]
         l = len(self.jm.msg)
-        jobids = self.jm.delete(k[:2])
-        jjobss = self.jm.re_submit_from_path(old_id=k[:2], file="p*.run")
-        self.assertEqual(len(self.jm.msg), l)
+        # jobids = self.jm.delete(k[:2])
+        jobids = self.jm.delete("-".join([k[-3],k[-1]]))
+        jjobss = self.jm.re_submit_from_path(old_id=k[:3], file="p*.run")
+        print(len(self.jm.msg), l)
         self.assertGreater(len(self.jm.deleted_msg), 0)
         self.assertNotEqual(jobids, jjobss)
-        print(jobids,jjobss)
+        print(jobids, jjobss)
 
     def test_d_hold_release(self):
         self.jm.get_job_msg()

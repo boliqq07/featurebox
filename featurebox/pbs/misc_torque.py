@@ -83,12 +83,12 @@ def job_status(jobid=None):
 
        Returns a dict of dict, with jobid as key in outer dict.
        Inner dict contains:
-       "name", "nodes", "procs", "walltime",
-       "jobstatus": status ("Q","C","R", etc.)
+       "name", "nodes", "procs", "wall_time",
+       "job_status": status ("Q","C","R", etc.)
        "qstatstr": result of qstat -f jobid, None if not found
-       "elapsedtime": None if not started, else seconds as int
-       "starttime": None if not started, else seconds since epoch as int
-       "completiontime": None if not completed, else seconds since epoch as int
+       "elapsed_time": None if not started, else seconds as int
+       "start_time": None if not started, else seconds since epoch as int
+       "completion_time": None if not completed, else seconds since epoch as int
 
        *This should be edited to return job_status_dict()'s*
     """
@@ -106,9 +106,9 @@ def job_status(jobid=None):
 
         m = re.search(r"Job Id:\s*(.*)", line)
         if m:
-            jobstatus = {"jobid": m.group(1), "nodes": None, "procs": None, "walltime": None, "qstatstr": line,
-                         "elapsedtime": None, "starttime": None, "completiontime": None, "jobstatus": None,
-                         'work_dir': None, 'subtime': None}
+            jobstatus = {"jobid": m.group(1), "nodes": None, "procs": None, "wall_time": None, "qstatstr": line,
+                         "elapsed_time": None, "start_time": None, "completion_time": None, "job_status": None,
+                         'work_dir': None, 'submit_time': None}
 
             m2 = re.search(r"\s*Job_Name\s*=\s*(.*)\s", line)
             if m2:
@@ -119,32 +119,32 @@ def job_status(jobid=None):
                 jobstatus["nodes"] = m3.group(1)
                 jobstatus["procs"] = int(m3.group(1)) * int(m3.group(2))
 
-            m4 = re.search(r"\s*Resource_List\.walltime\s*=\s*(.*)\s", line)
+            m4 = re.search(r"\s*Resource_List\.wall_time\s*=\s*(.*)\s", line)
             if m4:
-                jobstatus["walltime"] = int(seconds(m4.group(1)))
+                jobstatus["wall_time"] = int(seconds(m4.group(1)))
 
             m5 = re.search(r"\s*start_time\s*=\s*(.*)\s", line)
             if m5:
-                jobstatus["starttime"] = int(time.mktime(datetime.datetime.strptime(
+                jobstatus["start_time"] = int(time.mktime(datetime.datetime.strptime(
                     m5.group(1), "%a %b %d %H:%M:%S %Y").timetuple()))
             else:
-                jobstatus["starttime"] = None
+                jobstatus["start_time"] = None
 
             m6 = re.search(r"\s*job_state\s*=\s*(.*)\s", line)
             if m6:
-                jobstatus["jobstatus"] = m6.group(1)
+                jobstatus["job_status"] = m6.group(1)
             else:
-                jobstatus["jobstatus"] = None
+                jobstatus["job_status"] = None
 
-            if jobstatus["jobstatus"] == "R" and jobstatus["starttime"] is not None:
-                jobstatus["elapsedtime"] = int(time.time()) - jobstatus[
-                    "starttime"]
+            if jobstatus["job_status"] == "R" and jobstatus["start_time"] is not None:
+                jobstatus["elapsed_time"] = int(time.time()) - jobstatus[
+                    "start_time"]
             else:
-                jobstatus["elapsedtime"] = None
+                jobstatus["elapsed_time"] = None
 
             m7 = re.search(r"\s*comp_time\s*=\s*(.*)\s", line)
             if m7:
-                jobstatus["completiontime"] = int(time.mktime(datetime.datetime.strptime(
+                jobstatus["completion_time"] = int(time.mktime(datetime.datetime.strptime(
                     m7.group(1), "%a %b %d %H:%M:%S %Y").timetuple()))
 
             m8 = re.search("init_work_dir = (.*)", line)
@@ -153,7 +153,7 @@ def job_status(jobid=None):
 
             m9 = re.search(r"\s*ctime\s*=\s*(.*)\s", line)
             if m9:
-                jobstatus["subtime"] = int(time.mktime(datetime.datetime.strptime(
+                jobstatus["submit_time"] = int(time.mktime(datetime.datetime.strptime(
                     m9.group(1), "%a %b %d %H:%M:%S %Y").timetuple()))
 
             status[jobstatus["jobid"]] = jobstatus
@@ -166,6 +166,8 @@ def submit_from_path(path: str, file: str):
 
        substr: The submit script string
     """
+    if path is None:
+        return ""
     pt = os.getcwd()
     os.chdir(path)
 
@@ -176,8 +178,11 @@ def submit_from_path(path: str, file: str):
         smatch = shell_to_re_compile_pattern_lru(file, trans=True)
         res = smatch.findall(fss)
         res = [i for i in res if i in fs]
-        assert len(res) == 1, f"There are 1+ file/No file {res} with patten {file}, " \
-                              f"using more strict/relax condition."
+        if len(res) != 1:
+            raise FileNotFoundError(f"There are 1+ file/No file {res} with patten '{file}' "
+                                    f"in path '{path}'."
+                                    f"make sure run file in the path, or using more strict/relax "
+                                    f"condition to filter the run file.", )
         file = res[0]
 
     res = run_popen(["qsub", file])

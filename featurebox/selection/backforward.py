@@ -14,6 +14,7 @@ from functools import partial
 from typing import List
 
 import numpy as np
+from mgetool.tool import parallelize
 from sklearn.base import BaseEstimator
 from sklearn.base import MetaEstimatorMixin
 from sklearn.base import clone
@@ -25,7 +26,6 @@ from sklearn.utils.metaestimators import if_delegate_has_method, _safe_split
 from sklearn.utils.validation import check_is_fitted, check_X_y, check_random_state
 
 from featurebox.selection.multibase import MultiBase
-from mgetool.tool import parallelize
 
 
 class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):

@@ -6,7 +6,6 @@ from typing import List, Tuple, Iterable, Any
 
 import numpy as np
 import pandas as pd
-
 from mgetool.tool import parallelize
 
 

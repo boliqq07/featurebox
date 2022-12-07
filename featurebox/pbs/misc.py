@@ -92,9 +92,9 @@ def getversion(software=None):
         return "0"
 
 
-def seconds(walltime):
+def seconds(wall_time):
     """Convert [[[DD:]HH:]MM:]SS to hours"""
-    wtime = walltime.split(":")
+    wtime = wall_time.split(":")
     if len(wtime) == 1:
         return 0.0
     elif len(wtime) == 2:
@@ -107,13 +107,13 @@ def seconds(walltime):
                 + float(wtime[1]) * 60.0
                 + float(wtime[2]))
     else:
-        print("Error in walltime format:", walltime)
+        print("Error in wall_time format:", wall_time)
         sys.exit()
 
 
-def hours(walltime):
+def hours(wall_time):
     """Convert [[[DD:]HH:]MM:]SS to hours"""
-    wtime = walltime.split(":")
+    wtime = wall_time.split(":")
     if len(wtime) == 1:
         return float(wtime[0]) / 3600.0
     elif len(wtime) == 2:
@@ -126,7 +126,7 @@ def hours(walltime):
                 + float(wtime[1]) / 60.0
                 + float(wtime[2]) / 3600.0)
     else:
-        print("Error in walltime format:", walltime)
+        print("Error in wall_time format:", wall_time)
         sys.exit()
 
 

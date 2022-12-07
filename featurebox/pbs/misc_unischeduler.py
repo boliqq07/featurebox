@@ -95,12 +95,12 @@ def job_status(jobid=None):
 
        Returns a dict of dict, with jobid as key in outer dict.
        Inner dict contains:
-       "name", "nodes", "procs", "walltime",
-       "jobstatus": status ("Q","C","R", etc.)
+       "name", "nodes", "procs", "wall_time",
+       "job_status": status ("Q","C","R", etc.)
        "qstatstr": result of qstat -f jobid, None if not found
-       "elapsedtime": None if not started, else seconds as int
-       "starttime": None if not started, else seconds since epoch as int
-       "completiontime": None if not completed, else seconds since epoch as int
+       "elapsed_time": None if not started, else seconds as int
+       "start_time": None if not started, else seconds since epoch as int
+       "completion_time": None if not completed, else seconds since epoch as int
 
        *This should be edited to return job_status_dict()'s*
     """
@@ -118,9 +118,9 @@ def job_status(jobid=None):
 
         m = re.search(r"Job <([0-9]*)>", line)
         if m:
-            jobstatus = {"jobid": m.group(1), "nodes": None, "procs": None, "walltime": None, "qstatstr": line,
-                         "elapsedtime": None, "starttime": None, "completiontime": None, "jobstatus": None,
-                         'work_dir': None, 'subtime': None}
+            jobstatus = {"jobid": m.group(1), "nodes": None, "procs": None, "wall_time": None, "qstatstr": line,
+                         "elapsed_time": None, "start_time": None, "completion_time": None, "job_status": None,
+                         'work_dir': None, 'submit_time': None}
 
             m2 = re.search(r"\s*Job Name <(\S*)>,", line)
             if m2:
@@ -131,16 +131,16 @@ def job_status(jobid=None):
                 jobstatus["nodes"] = None
                 jobstatus["procs"] = m3.group(1)
 
-            jobstatus["walltime"] = None
+            jobstatus["wall_time"] = None
 
             m5 = re.search(r"(.*): Started on", line)
             if m5:
                 ti_str = m5.group(1)
                 ti_str = ti_str + " %s" % year
-                jobstatus["starttime"] = int(time.mktime(
+                jobstatus["start_time"] = int(time.mktime(
                     datetime.datetime.strptime(ti_str, "%a %b %d %H:%M:%S %Y").timetuple()))
             else:
-                jobstatus["starttime"] = None
+                jobstatus["start_time"] = None
 
             m6 = re.search(r"Status <(\D*\n?\D*)>, Queue", line)
             if m6:
@@ -149,37 +149,37 @@ def job_status(jobid=None):
                 my_status = my_status.replace(" ", "")
 
                 if my_status == "RUN":
-                    jobstatus["jobstatus"] = "R"
+                    jobstatus["job_status"] = "R"
                 elif my_status == "DONE":
-                    jobstatus["jobstatus"] = "C"
+                    jobstatus["job_status"] = "C"
                 elif my_status == "EXIT":
-                    jobstatus["jobstatus"] = "E"
+                    jobstatus["job_status"] = "E"
                 elif my_status == "PEND":
-                    jobstatus["jobstatus"] = "Q"
+                    jobstatus["job_status"] = "Q"
                 elif my_status == "PSUSP":
-                    jobstatus["jobstatus"] = "H"
+                    jobstatus["job_status"] = "H"
                 else:
-                    jobstatus["jobstatus"] = "?"
+                    jobstatus["job_status"] = "?"
             else:
-                jobstatus["jobstatus"] = None
+                jobstatus["job_status"] = None
 
-            if jobstatus["jobstatus"] == "R" and jobstatus["starttime"] is not None:
-                jobstatus["elapsedtime"] = int(time.time()) - jobstatus["starttime"]
+            if jobstatus["job_status"] == "R" and jobstatus["start_time"] is not None:
+                jobstatus["elapsed_time"] = int(time.time()) - jobstatus["start_time"]
             else:
-                jobstatus["elapsedtime"] = None
+                jobstatus["elapsed_time"] = None
 
             m7 = re.search(r"(.*): Done successfully", line)
             if m7:
                 ti_str = m7.group(1)
                 ti_str = ti_str + " %s" % year
-                jobstatus["completiontime"] = int(time.mktime(
+                jobstatus["completion_time"] = int(time.mktime(
                     datetime.datetime.strptime(ti_str, "%a %b %d %H:%M:%S %Y").timetuple()))
 
             m7 = re.search(r"(.*): Exited", line)
             if m7:
                 ti_str = m7.group(1)
                 ti_str = ti_str + " %s" % year
-                jobstatus["completiontime"] = int(time.mktime(
+                jobstatus["completion_time"] = int(time.mktime(
                     datetime.datetime.strptime(ti_str, "%a %b %d %H:%M:%S %Y").timetuple()))
 
             m8 = re.search("CWD <(.*)>, Out", line, )
@@ -190,7 +190,7 @@ def job_status(jobid=None):
             if m9:
                 ti_str = m9.group(1)
                 ti_str = ti_str + " %s" % year
-                jobstatus["subtime"] = int(time.mktime(
+                jobstatus["submit_time"] = int(time.mktime(
                     datetime.datetime.strptime(ti_str, "%a %b %d %H:%M:%S %Y").timetuple()))
 
             m10 = re.search(r"ORDER: (.*)", line)
@@ -207,6 +207,9 @@ def submit_from_path(path: str, file: str):
 
        substr: The submit script string
     """
+    if path is None:
+        return ""
+
     pt = os.getcwd()
     os.chdir(path)
 
@@ -217,8 +220,11 @@ def submit_from_path(path: str, file: str):
         smatch = shell_to_re_compile_pattern_lru(file, trans=True)
         res = smatch.findall(fss)
         res = [i for i in res if i in fs]
-        assert len(res) == 1, f"There are 1+ file/No file {res} with patten {file}, " \
-                              f"using more strict/relax condition."
+        if len(res) != 1:
+            raise FileNotFoundError(f"There are 1+ file/No file {res} with patten '{file}' "
+                                    f"in path '{path}'."
+                                    f"make sure run file in the path, or using more strict/relax "
+                                    f"condition to filter the run file.", )
         file = res[0]
 
     ll = run_popen(f"jsub < {file}")

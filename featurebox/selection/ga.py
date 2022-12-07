@@ -7,6 +7,8 @@ from deap import base
 from deap import tools
 from deap.algorithms import varAnd
 from deap.tools import mutShuffleIndexes
+from mgetool.newclass import create
+from mgetool.tool import check_random_state, parallelize
 from sklearn.base import BaseEstimator, MetaEstimatorMixin
 from sklearn.feature_selection import SelectorMixin
 from sklearn.metrics import r2_score
@@ -15,8 +17,6 @@ from sklearn.model_selection._search import BaseSearchCV
 from sklearn.utils.validation import check_is_fitted
 
 from featurebox.selection.multibase import MultiBase
-from mgetool.newclass import create
-from mgetool.tool import check_random_state, parallelize
 
 
 def eaSimple(population, toolbox, cxpb, mutpb, ngen, stats=None, n_jobs=2,

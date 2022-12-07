@@ -116,12 +116,12 @@ def job_status(jobid=None):
 
        Returns a dict of dict, with jobid as key in outer dict.
        Inner dict contains:
-       "name", "nodes", "procs", "walltime",
-       "jobstatus": status ("Q","C","R", etc.)
+       "name", "nodes", "procs", "wall_time",
+       "job_status": status ("Q","C","R", etc.)
        "qstatstr": result of squeue -f jobid, None if not found
-       "elapsedtime": None if not started, else seconds as int
-       "starttime": None if not started, else seconds since epoch as int
-       "completiontime": None if not completed, else seconds since epoch as int
+       "elapsed_time": None if not started, else seconds as int
+       "start_time": None if not started, else seconds since epoch as int
+       "completion_time": None if not completed, else seconds since epoch as int
 
        *This should be edited to return job_status_dict()'s*
     """
@@ -138,9 +138,9 @@ def job_status(jobid=None):
 
         m = re.search(r"Job\s?Id\s?=\s?(.*)\sJ", line)
         if m:
-            jobstatus = {"jobid": m.group(1), "nodes": None, "procs": None, "walltime": None, "qstatstr": line,
-                         "elapsedtime": None, "starttime": None, "completiontime": None, "jobstatus": None,
-                         'work_dir': None, 'subtime': None}
+            jobstatus = {"jobid": m.group(1), "nodes": None, "procs": None, "wall_time": None, "qstatstr": line,
+                         "elapsed_time": None, "start_time": None, "completion_time": None, "job_status": None,
+                         'work_dir': None, 'submit_time': None}
 
             m2 = re.search(r"JobName=\s?(.*)\n", line)
             if m2:
@@ -155,15 +155,15 @@ def job_status(jobid=None):
                     jobstatus["procs"] = int(m4.group(1))
 
             # Grab the job start time
-            m4 = re.search(r"StartTime=\s?([0-9]*-[0-9]*-[0-9]*T[0-9]*:[0-9]*:[0-9]*)\s",
+            m4 = re.search(r"start_time=\s?([0-9]*-[0-9]*-[0-9]*T[0-9]*:[0-9]*:[0-9]*)\s",
                            line)
             if m4:
                 if m4.group(1) != "Unknown":
                     year, month, day = m4.group(1).split("T")[0].split("-")
                     hrs, mns, scs = m4.group(1).split("T")[1].split(":")
-                    starttime = datetime.datetime(year=int(year), month=int(month), day=int(day), hour=int(hrs),
-                                                  minute=int(mns), second=int(scs))
-                    jobstatus["starttime"] = time.mktime(starttime.timetuple())
+                    start_time = datetime.datetime(year=int(year), month=int(month), day=int(day), hour=int(hrs),
+                                                   minute=int(mns), second=int(scs))
+                    jobstatus["start_time"] = time.mktime(start_time.timetuple())
 
             m8 = re.search(r"WorkDir=\s?(.*)", line)
             if m8:
@@ -175,41 +175,41 @@ def job_status(jobid=None):
                 if m9.group(1) != "Unknown":
                     hrs, mns, scs = m9.group(1).split(":")
                     runtime = datetime.timedelta(hours=int(hrs), minutes=int(mns), seconds=int(scs))
-                    jobstatus["elapsedtime"] = runtime.seconds
+                    jobstatus["elapsed_time"] = runtime.seconds
 
                     m10 = re.search(r"TimeLimit=\s?([0-9]*:[0-9]*:[0-9]*)\s", line)
                     if m10:
-                        walltime = datetime.timedelta(hours=int(hrs), minutes=int(mns), seconds=int(scs))
-                        jobstatus["walltime"] = walltime.seconds
+                        wall_time = datetime.timedelta(hours=int(hrs), minutes=int(mns), seconds=int(scs))
+                        jobstatus["wall_time"] = wall_time.seconds
 
             # Grab the job status
             m11 = re.search(r"JobState=\s?([a-zA-Z]*)\s", line)
             if m11:
                 my_status = m11.group(1)
                 if my_status == "RUNNING" or my_status == "CONFIGURING":
-                    jobstatus["jobstatus"] = "R"
+                    jobstatus["job_status"] = "R"
                 elif my_status == "BOOT_FAIL" or my_status == "FAILED" or my_status == "NODE_FAIL" \
                         or my_status == "CANCELLED" or my_status == "COMPLETED" \
                         or my_status == "PREEMPTED" or my_status == "TIMEOUT":
-                    jobstatus["jobstatus"] = "C"
+                    jobstatus["job_status"] = "C"
                 elif my_status == "COMPLETING" or my_status == "STOPPED":
-                    jobstatus["jobstatus"] = "E"
+                    jobstatus["job_status"] = "E"
                 elif my_status == "PENDING" or my_status == "SPECIAL_EXIT":
-                    jobstatus["jobstatus"] = "Q"
+                    jobstatus["job_status"] = "Q"
                 elif my_status == "SUSPENDED":
-                    jobstatus["jobstatus"] = "S"
+                    jobstatus["job_status"] = "S"
                 else:
-                    jobstatus["jobstatus"] = "?"
+                    jobstatus["job_status"] = "?"
 
-            if jobstatus["jobstatus"] == "C":
+            if jobstatus["job_status"] == "C":
                 m13 = re.search(r"EndTime=\s?([0-9]*-[0-9]*-[0-9]*T[0-9]*:[0-9]*:[0-9]*)\s",
                                 line)
                 if m13:
                     year, month, day = m13.group(1).split("T")[0].split("-")
                     hrs, mns, scs = m13.group(1).split("T")[1].split(":")
-                    starttime = datetime.datetime(year=int(year), month=int(month), day=int(day), hour=int(hrs),
-                                                  minute=int(mns), second=int(scs))
-                    jobstatus["completiontime"] = time.mktime(starttime.timetuple())
+                    start_time = datetime.datetime(year=int(year), month=int(month), day=int(day), hour=int(hrs),
+                                                   minute=int(mns), second=int(scs))
+                    jobstatus["completion_time"] = time.mktime(start_time.timetuple())
 
             # Grab the cluster/allocating node:
             m12 = re.search(r"AllocNode:.*=\s?(.*):.*\s", line)
@@ -223,7 +223,7 @@ def job_status(jobid=None):
 
             m9 = re.search(r"SubmitTime=\s?([0-9]*:[0-9]*:[0-9]*)\s", line)
             if m9:
-                jobstatus["subtime"] = int(time.mktime(datetime.datetime.strptime(
+                jobstatus["submit_time"] = int(time.mktime(datetime.datetime.strptime(
                     m9.group(1), "%a %b %d %H:%M:%S %Y").timetuple()))
 
             status[jobstatus["jobid"]] = jobstatus
@@ -236,6 +236,8 @@ def submit_from_path(path: str, file: str):
 
        substr: The submit script string
     """
+    if path is None:
+        return ""
     pt = os.getcwd()
     os.chdir(path)
 
@@ -246,8 +248,11 @@ def submit_from_path(path: str, file: str):
         smatch = shell_to_re_compile_pattern_lru(file, trans=True)
         res = smatch.findall(fss)
         res = [i for i in res if i in fs]
-        assert len(res) == 1, f"There are 1+ file/No file {res} with patten {file}, " \
-                              f"using more strict/relax condition."
+        if len(res) != 1:
+            raise FileNotFoundError(f"There are 1+ file/No file {res} with patten '{file}' "
+                                    f"in path '{path}'."
+                                    f"make sure run file in the path, or using more strict/relax "
+                                    f"condition to filter the run file.", )
         file = res[0]
 
     res = run_popen(["sbatch", file])
@@ -281,7 +286,7 @@ def hold(jobid: Union[list, str]):
     if isinstance(jobid, (list, tuple)):
         [hold(i) for i in jobid]
         return jobid
-    p = run_popen(["scontrol", "update", "JobId=", jobid, "StartTime=", "now+30days"])
+    p = run_popen(["scontrol", "update", "JobId=", jobid, "start_time=", "now+30days"])
     return jobid
 
 
@@ -291,7 +296,7 @@ def release(jobid: Union[list, str]):
         [release(i) for i in jobid]
         return jobid
     else:
-        res = run_popen(["scontrol", "update", "JobId=", jobid, "StartTime=", "now"])
+        res = run_popen(["scontrol", "update", "JobId=", jobid, "start_time=", "now"])
     return jobid
 
 

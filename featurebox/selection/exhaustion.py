@@ -12,6 +12,7 @@ from itertools import combinations
 from typing import Tuple, List
 
 import numpy as np
+from mgetool.tool import parallelize
 from sklearn.base import BaseEstimator
 from sklearn.base import MetaEstimatorMixin
 from sklearn.base import clone
@@ -23,7 +24,6 @@ from sklearn.utils.metaestimators import if_delegate_has_method
 from sklearn.utils.validation import check_is_fitted, check_X_y
 
 from featurebox.selection.multibase import MultiBase
-from mgetool.tool import parallelize
 
 
 class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):

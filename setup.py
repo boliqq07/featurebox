@@ -16,7 +16,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='featurebox',
-    version='0.0.9991',
+    version='0.0.9992',
     keywords=['features', "combination", "selection"],
     description='This is an box contains tools for machine learning.'
                 'Some of code are non-originality, just copy for use. All the referenced code are marked,'
@@ -54,5 +54,8 @@ setup(
     ),
     long_description=long_description,
     long_description_content_type='text/markdown',
-    entry_points={'console_scripts': ['featurebox = featurebox.cli.main:main', 'fbx = featurebox.cli.main:main', ]}
+    entry_points={'console_scripts': ['featurebox = featurebox.cli.main:main',
+                                      'fbx = featurebox.cli.main:main',
+                                      'jm = featurebox.pbs.cli:main',
+                                      ]}
 )

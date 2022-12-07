@@ -3,6 +3,22 @@ import os
 import re
 
 
+def get_manager():
+    res1 = os.popen("whereis sbatch").readlines()[0]
+    res2 = os.popen("whereis jsub").readlines()[0]
+    # res3 = os.popen("whereis qsub").readlines()[0]
+
+    res11 = re.search("(/\S+)+", res1)
+    res22 = re.search("(/\S+)+", res2)
+    # res33 = re.search("(/\S+)+", res3)
+    if res22:
+        return "jsub"
+    if res11:
+        return "sbatch"
+    else:
+        return "qsub"
+
+
 def _set_bachrc():
     res1 = os.popen("whereis sbatch").readlines()[0]
     res2 = os.popen("whereis jsub").readlines()[0]
@@ -48,7 +64,6 @@ def set_bachrc(path="{home}/history_jobs", log_paths_file="paths.temp"):
 
 
 def reform_log_path(max_size=None, path="{home}/history_jobs", log_paths_file="paths.temp"):
-
     home = os.path.expandvars('$HOME')
     path = path.replace("{home}", home)
 
@@ -75,7 +90,7 @@ def reform_log_path(max_size=None, path="{home}/history_jobs", log_paths_file="p
             cut = False
     if cut:
         with open(f"{path}/{log_paths_file}", "w+") as f:
-            wods = wods[-(max_size-100):]
+            wods = wods[-(max_size - 100):]
             f.writelines(wods)
 
     return wods
