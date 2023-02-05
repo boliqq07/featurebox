@@ -36,7 +36,7 @@ def _set_bachrc():
     if res33:
         return "qsub", res33.group()
     else:
-        raise NotImplemented
+        raise NotImplementedError("No sbatch, jsub, qsub find.")
 
 
 def set_bachrc(path="{home}/history_jobs", log_paths_file="paths.temp"):
