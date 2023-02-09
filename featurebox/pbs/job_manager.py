@@ -82,10 +82,10 @@ class JobManager:
 
         if cwd == hm:
             to_path = str(hm)
-            mark = "~/"
+            mark = "~"
         else:
             to_path = os.getcwd()
-            mark = ".../"
+            mark = "..."
 
         for k, v in self.msg.items():
             pt = str(v["work_dir"]).replace(to_path, mark)
