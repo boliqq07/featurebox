@@ -5,6 +5,7 @@ import time
 from typing import Union, List, Sequence
 
 import pandas as pd
+from pathlib import Path
 
 from featurebox.pbs.pbs_conf import set_bachrc, reform_log_path, get_manager
 
@@ -74,16 +75,27 @@ class JobManager:
         with open(file, "w") as fp:
             json.dump(old_msg, fp)
 
-    def sparse(self):
+    def sparse(self,):
         res = {}
+        cwd = Path.cwd()
+        hm = Path.home()
+
+        if cwd == hm:
+            to_path = str(hm)
+            mark = "~/"
+        else:
+            to_path = os.getcwd()
+            mark = ".../"
+
         for k, v in self.msg.items():
+            pt = str(v["work_dir"]).replace(to_path, mark)
+
             ze = {
-                "job_status": v["job_status"],
-                "work_dir": v["work_dir"],
-                "start_time": time.ctime(v["start_time"]),
-                "elapsed_time": time.ctime(v["elapsed_time"]),
-                "completion_time": time.ctime(v["completion_time"]),
-                "procs": v["procs"],
+                "Stat": v["job_status"],
+                "Core": v["procs"],
+                "Work-Dir": pt,
+                "Start-Time": time.ctime(v["start_time"]),
+
             }
             res.update({k: ze})
         return res
