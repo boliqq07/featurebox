@@ -57,5 +57,6 @@ setup(
     entry_points={'console_scripts': ['featurebox = featurebox.cli.main:main',
                                       'fbx = featurebox.cli.main:main',
                                       'jm = featurebox.pbs.cli:main',
+                                      'jmk = featurebox.pbs.jmk:main',
                                       ]}
 )
