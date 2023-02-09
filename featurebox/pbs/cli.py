@@ -40,6 +40,10 @@ Example:
     jm -s 334
     
     jm -r 334
+    
+7. cd the work path:
+    
+    cd $(jmk 734)
 
 """
 
