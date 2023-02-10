@@ -6,7 +6,7 @@
 # @License: MIT License
 # -*- coding: utf-8 -*-
 
-from featurebox.pbs.job_manager import JobManager
+from featurebox.pbs.job_manager import JobPATH
 
 _dos_help = """
 -------------------------------
@@ -22,25 +22,23 @@ Example:
 2. cd the work path.
     
     cd $(jmk 734)
-
 """
 
 
 def run(args, parser):
-    jm = JobManager(manager=None)
-    jm.get_job_msg()
-    idd = str(args.idd)
+    jm = JobPATH(manager=None)
+    id_ = str(args.id)
+    msg = jm.job_dir(jobid=id_)
 
-    if idd in jm.msg:
+    if id_ in msg:
         try:
-            pt = str(jm.msg[idd]["work_dir"])
+            pt = str(msg[id_])
         except:
             print("Please offer one exist id of job.")
             pt = "."
     else:
         print("Please offer one exist id of job.")
         pt = "."
-    print(pt)
     return pt
 
 
@@ -49,7 +47,7 @@ class CLICommand:
 
     @staticmethod
     def add_arguments(parser):
-        parser.add_argument(dest='idd', help='id of job', type=str, default=None)
+        parser.add_argument(dest='id', help='id of job', type=str, default=None)
 
     @staticmethod
     def parse_args(parser):
@@ -74,7 +72,6 @@ def main():
     CLICommand.add_arguments(parser=parser)
     args = CLICommand.parse_args(parser=parser)
     return CLICommand.run(args=args, parser=parser)
-
 
 
 if __name__ == '__main__':

@@ -92,7 +92,7 @@ def job_rundir(jobid=None):
     rundir = dict()
 
     if jobid is None:
-        res = job_status(jobid=jobid)
+        res = job_status(jobid=jobid, simple=True)
         return {k: v["work_dir"] for k, v in res.items()}
 
     elif isinstance(jobid, (list, tuple)):
@@ -111,7 +111,7 @@ def job_rundir(jobid=None):
     return rundir
 
 
-def job_status(jobid=None):
+def job_status(jobid=None, simple=False):
     """Return job status using squeue
 
        Returns a dict of dict, with jobid as key in outer dict.
@@ -138,49 +138,14 @@ def job_status(jobid=None):
 
         m = re.search(r"Job\s?Id\s?=\s?(.*)\sJ", line)
         if m:
+
             jobstatus = {"jobid": m.group(1), "nodes": None, "procs": None, "wall_time": None, "qstatstr": line,
                          "elapsed_time": None, "start_time": None, "completion_time": None, "job_status": None,
                          'work_dir': None, 'submit_time': None}
 
-            m2 = re.search(r"JobName=\s?(.*)\n", line)
-            if m2:
-                jobstatus["jobname"] = m2.group(1)
-
-            # Look for the Nodes/PPN Info
-            m3 = re.search(r"NumNodes=\s?([0-9]*-[0-9]*)\s", line)
-            if m3:
-                jobstatus["nodes"] = m3.group(1)
-                m4 = re.search(r"NumCPUs=\s?([0-9]*)\s", line)
-                if m4:
-                    jobstatus["procs"] = int(m4.group(1))
-
-            # Grab the job start time
-            m4 = re.search(r"start_time=\s?([0-9]*-[0-9]*-[0-9]*T[0-9]*:[0-9]*:[0-9]*)\s",
-                           line)
-            if m4:
-                if m4.group(1) != "Unknown":
-                    year, month, day = m4.group(1).split("T")[0].split("-")
-                    hrs, mns, scs = m4.group(1).split("T")[1].split(":")
-                    start_time = datetime.datetime(year=int(year), month=int(month), day=int(day), hour=int(hrs),
-                                                   minute=int(mns), second=int(scs))
-                    jobstatus["start_time"] = time.mktime(start_time.timetuple())
-
             m8 = re.search(r"WorkDir=\s?(.*)", line)
             if m8:
                 jobstatus["work_dir"] = m8.group(1)
-
-            # Look for timing info
-            m9 = re.search(r"RunTime=\s?([0-9]*:[0-9]*:[0-9]*)\s", line)
-            if m9:
-                if m9.group(1) != "Unknown":
-                    hrs, mns, scs = m9.group(1).split(":")
-                    runtime = datetime.timedelta(hours=int(hrs), minutes=int(mns), seconds=int(scs))
-                    jobstatus["elapsed_time"] = runtime.seconds
-
-                    m10 = re.search(r"TimeLimit=\s?([0-9]*:[0-9]*:[0-9]*)\s", line)
-                    if m10:
-                        wall_time = datetime.timedelta(hours=int(hrs), minutes=int(mns), seconds=int(scs))
-                        jobstatus["wall_time"] = wall_time.seconds
 
             # Grab the job status
             m11 = re.search(r"JobState=\s?([a-zA-Z]*)\s", line)
@@ -201,30 +166,68 @@ def job_status(jobid=None):
                 else:
                     jobstatus["job_status"] = "?"
 
-            if jobstatus["job_status"] == "C":
-                m13 = re.search(r"EndTime=\s?([0-9]*-[0-9]*-[0-9]*T[0-9]*:[0-9]*:[0-9]*)\s",
-                                line)
-                if m13:
-                    year, month, day = m13.group(1).split("T")[0].split("-")
-                    hrs, mns, scs = m13.group(1).split("T")[1].split(":")
+            # Grab the job start time
+            m4 = re.search(r"start_time=\s?([0-9]*-[0-9]*-[0-9]*T[0-9]*:[0-9]*:[0-9]*)\s",
+                           line)
+            if m4:
+                if m4.group(1) != "Unknown":
+                    year, month, day = m4.group(1).split("T")[0].split("-")
+                    hrs, mns, scs = m4.group(1).split("T")[1].split(":")
                     start_time = datetime.datetime(year=int(year), month=int(month), day=int(day), hour=int(hrs),
                                                    minute=int(mns), second=int(scs))
-                    jobstatus["completion_time"] = time.mktime(start_time.timetuple())
+                    jobstatus["start_time"] = time.mktime(start_time.timetuple())
 
-            # Grab the cluster/allocating node:
-            m12 = re.search(r"AllocNode:.*=\s?(.*):.*\s", line)
-            if m12:
-                raw_str = m12.group(1)
-                m12 = re.search(r"(.*?)(?=[^a-zA-Z0-9]*login.*)\s", raw_str)
+            # others
+            if not simple:
+                if jobstatus["job_status"] == "C":
+                    m13 = re.search(r"EndTime=\s?([0-9]*-[0-9]*-[0-9]*T[0-9]*:[0-9]*:[0-9]*)\s",
+                                    line)
+                    if m13:
+                        year, month, day = m13.group(1).split("T")[0].split("-")
+                        hrs, mns, scs = m13.group(1).split("T")[1].split(":")
+                        start_time = datetime.datetime(year=int(year), month=int(month), day=int(day), hour=int(hrs),
+                                                       minute=int(mns), second=int(scs))
+                        jobstatus["completion_time"] = time.mktime(start_time.timetuple())
+
+                m2 = re.search(r"JobName=\s?(.*)\n", line)
+                if m2:
+                    jobstatus["jobname"] = m2.group(1)
+
+                # Look for the Nodes/PPN Info
+                m3 = re.search(r"NumNodes=\s?([0-9]*-[0-9]*)\s", line)
+                if m3:
+                    jobstatus["nodes"] = m3.group(1)
+                    m4 = re.search(r"NumCPUs=\s?([0-9]*)\s", line)
+                    if m4:
+                        jobstatus["procs"] = int(m4.group(1))
+
+                # Look for timing info
+                m9 = re.search(r"RunTime=\s?([0-9]*:[0-9]*:[0-9]*)\s", line)
+                if m9:
+                    if m9.group(1) != "Unknown":
+                        hrs, mns, scs = m9.group(1).split(":")
+                        runtime = datetime.timedelta(hours=int(hrs), minutes=int(mns), seconds=int(scs))
+                        jobstatus["elapsed_time"] = runtime.seconds
+
+                        m10 = re.search(r"TimeLimit=\s?([0-9]*:[0-9]*:[0-9]*)\s", line)
+                        if m10:
+                            wall_time = datetime.timedelta(hours=int(hrs), minutes=int(mns), seconds=int(scs))
+                            jobstatus["wall_time"] = wall_time.seconds
+
+                # Grab the cluster/allocating node:
+                m12 = re.search(r"AllocNode:.*=\s?(.*):.*\s", line)
                 if m12:
-                    jobstatus["cluster"] = m12.group(1)
-                else:
-                    jobstatus["cluster"] = raw_str
+                    raw_str = m12.group(1)
+                    m12 = re.search(r"(.*?)(?=[^a-zA-Z0-9]*login.*)\s", raw_str)
+                    if m12:
+                        jobstatus["cluster"] = m12.group(1)
+                    else:
+                        jobstatus["cluster"] = raw_str
 
-            m9 = re.search(r"SubmitTime=\s?([0-9]*:[0-9]*:[0-9]*)\s", line)
-            if m9:
-                jobstatus["submit_time"] = int(time.mktime(datetime.datetime.strptime(
-                    m9.group(1), "%a %b %d %H:%M:%S %Y").timetuple()))
+                m9 = re.search(r"SubmitTime=\s?([0-9]*:[0-9]*:[0-9]*)\s", line)
+                if m9:
+                    jobstatus["submit_time"] = int(time.mktime(datetime.datetime.strptime(
+                        m9.group(1), "%a %b %d %H:%M:%S %Y").timetuple()))
 
             status[jobstatus["jobid"]] = jobstatus
 
@@ -260,7 +263,7 @@ def submit_from_path(path: str, file: str):
     os.chdir(pt)
 
     res = res.replace("Submitted batch job ", "")
-    jobid = res.replace("\n", "")
+    jobid = res.rstrip()
     return jobid
 
 

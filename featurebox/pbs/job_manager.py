@@ -10,15 +10,52 @@ from pathlib import Path
 from featurebox.pbs.pbs_conf import set_bachrc, reform_log_path, get_manager
 
 
-class JobManager:
+class JobPATH:
 
-    def __init__(self, manager: Union[str, None] = "torque", ):
+    def __init__(self, manager: Union[str, None] = "torque", simple=True):
 
         if manager is None:
             manager = get_manager()
+        self.manager = manager
+        self.simple = simple
 
-        set_bachrc(path="{home}/history_jobs", log_paths_file="paths.temp")
-        reform_log_path(max_size=1000, path="{home}/history_jobs", log_paths_file="paths.temp")
+        self.home = os.path.expandvars('$HOME')
+
+        set_bachrc(path=f"{self.home}/history_jobs", log_paths_file="paths.temp")
+
+        if manager in ("squeue", "slurm", "sbatch"):
+            from featurebox.pbs import misc_slurm
+            self.funcs = misc_slurm
+        elif manager in ("pbs", "torque", "qsub", "qstat"):
+            from featurebox.pbs import misc_torque
+            self.funcs = misc_torque
+        elif manager in ("jjobs", "unischeduler", "jctrl", "jsub"):
+            try:
+                from featurebox.pbs import misc_unischeduler
+            except ImportError:
+                import misc_unischeduler
+            self.funcs = misc_unischeduler
+        else:
+            raise NotImplementedError
+
+    def job_dir(self, jobid=None):
+        return self.funcs.job_rundir(jobid)
+
+
+class JobManager:
+
+    def __init__(self, manager: Union[str, None] = "torque", simple=False):
+
+        if manager is None:
+            manager = get_manager()
+        self.manager = manager
+        self.simple = simple
+
+        self.home = os.path.expandvars('$HOME')
+
+        set_bachrc(path=f"{self.home}/history_jobs", log_paths_file="paths.temp")
+        if not simple:
+            reform_log_path(max_size=1000, path=f"{self.home}/history_jobs", log_paths_file="paths.temp")
 
         if manager in ("squeue", "slurm", "sbatch"):
             from featurebox.pbs import misc_slurm
@@ -38,14 +75,14 @@ class JobManager:
         self.msg = {}
         tm_year, tm_mon, tm_mday, _, _, _, _, _, _ = time.localtime()
         self.time_tup = tm_year, tm_mon, tm_mday
-        self.home = os.path.expandvars('$HOME')
+
         self.deleted_msg = {}
 
     def change_manager(self, manager: str = "torque"):
         self.__init__(manager=manager)
 
     def get_job_msg(self, jobid: Union[str, List[str]] = None):
-        self.msg = self.funcs.job_status(jobid)
+        self.msg = self.funcs.job_status(jobid, simple=self.simple)
         return self.msg
 
     def load_job_msg(self, file=None, path="{home}/history_jobs"):
@@ -89,14 +126,14 @@ class JobManager:
 
         for k, v in self.msg.items():
             pt = str(v["work_dir"]).replace(to_path, mark)
-
             ze = {
-                "Stat": v["job_status"],
-                "Core": v["procs"],
+                "Stat": v["job_status"], "Core": v["procs"],
                 "Work-Dir": pt,
                 "Start-Time": time.ctime(v["start_time"]),
-
             }
+            if "order" in v:
+                ze.update({"Rank": v["order"]})
+
             res.update({k: ze})
         return res
 
@@ -109,7 +146,7 @@ class JobManager:
         if os.path.isfile(path_file):
             with open(path_file, "r") as f:
                 ws = f.readlines()
-            ws = [i.replace("\n", "") for i in ws]
+            ws = [i.rstrip() for i in ws]
             ws = [i for i in ws if i != ""]
             return self.submit_from_path(path=ws, file=file)
         else:
@@ -129,10 +166,10 @@ class JobManager:
         jobids = [i for i in jobids if i is not None]
 
         if len(jobids) > 0:
-            msg = self.funcs.job_status(jobids)
+            msg = self.funcs.job_status(jobids, simple=self.simple)
             self.msg.update(msg)
         else:
-            msg = self.funcs.job_status()
+            msg = self.funcs.job_status(jobid=None, simple=self.simple)
             self.msg.update(msg)
         return jobids
 
@@ -223,7 +260,7 @@ class JobManager:
             return [self.hold(i) for i in jobid]
         else:
             self.funcs.hold(jobid)
-            msg = self.funcs.job_status(jobid)
+            msg = self.funcs.job_status(jobid, simple=self.simple)
             self.msg.update(msg)
         return jobid
 
@@ -234,7 +271,7 @@ class JobManager:
             return [self.release(i) for i in jobid]
         else:
             self.funcs.release(jobid)
-            msg = self.funcs.job_status(jobid)
+            msg = self.funcs.job_status(jobid, simple=self.simple)
             self.msg.update(msg)
         return jobid
 

@@ -57,7 +57,7 @@ def job_rundir(jobid=None):
     rundir = dict()
 
     if jobid is None:
-        res = job_status(jobid=jobid)
+        res = job_status(jobid=jobid, simple=True)
         return {k: v["work_dir"] for k, v in res.items()}
 
     if isinstance(jobid, (list, tuple)):
@@ -73,12 +73,12 @@ def job_rundir(jobid=None):
             match = re.search("init_work_dir = (.*)", stdout)
             if match is not None:
                 res = match.group(1)
-                rundir[jobid] = res.replace("\n", "")
+                rundir[jobid] = res.rstrip()
 
     return rundir
 
 
-def job_status(jobid=None):
+def job_status(jobid=None, simple=False):
     """Return job status using qstat
 
        Returns a dict of dict, with jobid as key in outer dict.
@@ -110,18 +110,15 @@ def job_status(jobid=None):
                          "elapsed_time": None, "start_time": None, "completion_time": None, "job_status": None,
                          'work_dir': None, 'submit_time': None}
 
-            m2 = re.search(r"\s*Job_Name\s*=\s*(.*)\s", line)
-            if m2:
-                jobstatus["jobname"] = m2.group(1)
+            m8 = re.search("init_work_dir = (.*)", line)
+            if m8:
+                jobstatus["work_dir"] = m8.group(1)
 
-            m3 = re.search(r"\s*Resource_List\.nodes\s*=\s*(.*):ppn=(.*)\s", line)
-            if m3:
-                jobstatus["nodes"] = m3.group(1)
-                jobstatus["procs"] = int(m3.group(1)) * int(m3.group(2))
-
-            m4 = re.search(r"\s*Resource_List\.wall_time\s*=\s*(.*)\s", line)
-            if m4:
-                jobstatus["wall_time"] = int(seconds(m4.group(1)))
+            m6 = re.search(r"\s*job_state\s*=\s*(.*)\s", line)
+            if m6:
+                jobstatus["job_status"] = m6.group(1)
+            else:
+                jobstatus["job_status"] = None
 
             m5 = re.search(r"\s*start_time\s*=\s*(.*)\s", line)
             if m5:
@@ -130,31 +127,36 @@ def job_status(jobid=None):
             else:
                 jobstatus["start_time"] = None
 
-            m6 = re.search(r"\s*job_state\s*=\s*(.*)\s", line)
-            if m6:
-                jobstatus["job_status"] = m6.group(1)
-            else:
-                jobstatus["job_status"] = None
+            if not simple:
 
-            if jobstatus["job_status"] == "R" and jobstatus["start_time"] is not None:
-                jobstatus["elapsed_time"] = int(time.time()) - jobstatus[
-                    "start_time"]
-            else:
-                jobstatus["elapsed_time"] = None
+                m2 = re.search(r"\s*Job_Name\s*=\s*(.*)\s", line)
+                if m2:
+                    jobstatus["jobname"] = m2.group(1)
 
-            m7 = re.search(r"\s*comp_time\s*=\s*(.*)\s", line)
-            if m7:
-                jobstatus["completion_time"] = int(time.mktime(datetime.datetime.strptime(
-                    m7.group(1), "%a %b %d %H:%M:%S %Y").timetuple()))
+                m3 = re.search(r"\s*Resource_List\.nodes\s*=\s*(.*):ppn=(.*)\s", line)
+                if m3:
+                    jobstatus["nodes"] = m3.group(1)
+                    jobstatus["procs"] = int(m3.group(1)) * int(m3.group(2))
 
-            m8 = re.search("init_work_dir = (.*)", line)
-            if m8:
-                jobstatus["work_dir"] = m8.group(1)
+                m4 = re.search(r"\s*Resource_List\.wall_time\s*=\s*(.*)\s", line)
+                if m4:
+                    jobstatus["wall_time"] = int(seconds(m4.group(1)))
 
-            m9 = re.search(r"\s*ctime\s*=\s*(.*)\s", line)
-            if m9:
-                jobstatus["submit_time"] = int(time.mktime(datetime.datetime.strptime(
-                    m9.group(1), "%a %b %d %H:%M:%S %Y").timetuple()))
+                if jobstatus["job_status"] == "R" and jobstatus["start_time"] is not None:
+                    jobstatus["elapsed_time"] = int(time.time()) - jobstatus[
+                        "start_time"]
+                else:
+                    jobstatus["elapsed_time"] = None
+
+                m7 = re.search(r"\s*comp_time\s*=\s*(.*)\s", line)
+                if m7:
+                    jobstatus["completion_time"] = int(time.mktime(datetime.datetime.strptime(
+                        m7.group(1), "%a %b %d %H:%M:%S %Y").timetuple()))
+
+                m9 = re.search(r"\s*ctime\s*=\s*(.*)\s", line)
+                if m9:
+                    jobstatus["submit_time"] = int(time.mktime(datetime.datetime.strptime(
+                        m9.group(1), "%a %b %d %H:%M:%S %Y").timetuple()))
 
             status[jobstatus["jobid"]] = jobstatus
 
@@ -189,7 +191,7 @@ def submit_from_path(path: str, file: str):
 
     os.chdir(pt)
 
-    jobid = res.replace("\n", "")
+    jobid = res.rstrip()
     return jobid
 
 

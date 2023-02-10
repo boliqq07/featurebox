@@ -67,7 +67,7 @@ def job_rundir(jobid=None):
     rundir = dict()
 
     if jobid is None:
-        res = job_status(jobid=jobid)
+        res = job_status(jobid=jobid, simple=True)
         return {k: v["work_dir"] for k, v in res.items()}
 
     elif isinstance(jobid, (list, tuple)):
@@ -90,7 +90,7 @@ def job_rundir(jobid=None):
     return rundir
 
 
-def job_status(jobid=None):
+def job_status(jobid=None, simple=False):
     """Return job status using qstat
 
        Returns a dict of dict, with jobid as key in outer dict.
@@ -122,16 +122,9 @@ def job_status(jobid=None):
                          "elapsed_time": None, "start_time": None, "completion_time": None, "job_status": None,
                          'work_dir': None, 'submit_time': None}
 
-            m2 = re.search(r"\s*Job Name <(\S*)>,", line)
-            if m2:
-                jobstatus["jobname"] = m2.group(1)
-
-            m3 = re.search(r"([0-9]*) Processors Requested", line)
-            if m3:
-                jobstatus["nodes"] = None
-                jobstatus["procs"] = m3.group(1)
-
-            jobstatus["wall_time"] = None
+            m8 = re.search("CWD <(.*)>, Out", line, )
+            if m8:
+                jobstatus["work_dir"] = m8.group(1)
 
             m5 = re.search(r"(.*): Started on", line)
             if m5:
@@ -163,39 +156,48 @@ def job_status(jobid=None):
             else:
                 jobstatus["job_status"] = None
 
-            if jobstatus["job_status"] == "R" and jobstatus["start_time"] is not None:
-                jobstatus["elapsed_time"] = int(time.time()) - jobstatus["start_time"]
-            else:
-                jobstatus["elapsed_time"] = None
-
-            m7 = re.search(r"(.*): Done successfully", line)
-            if m7:
-                ti_str = m7.group(1)
-                ti_str = ti_str + " %s" % year
-                jobstatus["completion_time"] = int(time.mktime(
-                    datetime.datetime.strptime(ti_str, "%a %b %d %H:%M:%S %Y").timetuple()))
-
-            m7 = re.search(r"(.*): Exited", line)
-            if m7:
-                ti_str = m7.group(1)
-                ti_str = ti_str + " %s" % year
-                jobstatus["completion_time"] = int(time.mktime(
-                    datetime.datetime.strptime(ti_str, "%a %b %d %H:%M:%S %Y").timetuple()))
-
-            m8 = re.search("CWD <(.*)>, Out", line, )
-            if m8:
-                jobstatus["work_dir"] = m8.group(1)
-
-            m9 = re.search(r"(.*): Submitted from host", line)
-            if m9:
-                ti_str = m9.group(1)
-                ti_str = ti_str + " %s" % year
-                jobstatus["submit_time"] = int(time.mktime(
-                    datetime.datetime.strptime(ti_str, "%a %b %d %H:%M:%S %Y").timetuple()))
-
             m10 = re.search(r"ORDER: (.*)", line)
             if m10:
                 jobstatus["order"] = m10.group(1)
+
+            m3 = re.search(r"([0-9]*) Processors Requested", line)
+            if m3:
+                jobstatus["nodes"] = None
+                jobstatus["procs"] = m3.group(1)
+
+            if not simple:
+
+                m2 = re.search(r"\s*Job Name <(\S*)>,", line)
+                if m2:
+                    jobstatus["jobname"] = m2.group(1)
+
+                jobstatus["wall_time"] = None
+
+                if jobstatus["job_status"] == "R" and jobstatus["start_time"] is not None:
+                    jobstatus["elapsed_time"] = int(time.time()) - jobstatus["start_time"]
+                else:
+                    jobstatus["elapsed_time"] = None
+
+                m7 = re.search(r"(.*): Done successfully", line)
+                if m7:
+                    ti_str = m7.group(1)
+                    ti_str = ti_str + " %s" % year
+                    jobstatus["completion_time"] = int(time.mktime(
+                        datetime.datetime.strptime(ti_str, "%a %b %d %H:%M:%S %Y").timetuple()))
+
+                m7 = re.search(r"(.*): Exited", line)
+                if m7:
+                    ti_str = m7.group(1)
+                    ti_str = ti_str + " %s" % year
+                    jobstatus["completion_time"] = int(time.mktime(
+                        datetime.datetime.strptime(ti_str, "%a %b %d %H:%M:%S %Y").timetuple()))
+
+                m9 = re.search(r"(.*): Submitted from host", line)
+                if m9:
+                    ti_str = m9.group(1)
+                    ti_str = ti_str + " %s" % year
+                    jobstatus["submit_time"] = int(time.mktime(
+                        datetime.datetime.strptime(ti_str, "%a %b %d %H:%M:%S %Y").timetuple()))
 
             status[jobstatus["jobid"]] = jobstatus
 

@@ -51,7 +51,7 @@ Example:
 def run(args, parser):
     print("-----Start-----")
 
-    jm = JobManager(manager=None)
+    jm = JobManager(manager=None, simple=True)
     jm.get_job_msg()
 
     if args.clear:
@@ -74,7 +74,6 @@ def run(args, parser):
 
     if args.release != ():
         ids = args.release[0] if len(args.release) == 1 else args.release
-
         jm.release(ids)
 
     import pandas as pd
