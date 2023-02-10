@@ -39,6 +39,7 @@ def run(args, parser):
     else:
         print("Please offer one exist id of job.")
         pt = "."
+    print(pt)
     return pt
 
 
@@ -55,7 +56,7 @@ class CLICommand:
 
     @staticmethod
     def run(args, parser):
-        return run(args, parser)
+        run(args, parser)
 
 
 def main():
@@ -71,7 +72,7 @@ def main():
     parser = argparse.ArgumentParser(description=_dos_help, formatter_class=Formatter)
     CLICommand.add_arguments(parser=parser)
     args = CLICommand.parse_args(parser=parser)
-    return CLICommand.run(args=args, parser=parser)
+    CLICommand.run(args=args, parser=parser)
 
 
 if __name__ == '__main__':
