@@ -35,6 +35,8 @@ def _jjobs(jobid=None, full=False, username=getlogin()):
 
     sout = run_popen(opt, first=False, join=True)
 
+    sout = sout.replace("\t", "")
+
     return sout
 
 

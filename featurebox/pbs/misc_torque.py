@@ -46,6 +46,8 @@ def _qstat(jobid=None, full=False, username=getlogin()) -> str:
 
     sout = run_popen(opt, first=False, join=True)
 
+    sout = sout.replace("\t", "")
+
     return sout
 
 
@@ -64,16 +66,18 @@ def job_rundir(jobid=None):
         for i in jobid:
             stdout = _qstat(jobid=i, full=True)
             if stdout is not None:
-                match = re.search("init_work_dir = (.*)", stdout)
+                line2 = stdout.replace("\n", "")
+                match = re.search("PBS_O_WORKDIR=(.*),PBS_O_HOST", line2)
                 if match is not None:
-                    rundir[i] = match.group(1)
+                    rundir[i] = match.group(1).replace("\n", "")
     else:
         stdout = _qstat(jobid=jobid, full=True)
         if stdout is not None:
-            match = re.search("init_work_dir = (.*)", stdout)
+            line2 = stdout.replace("\n", "")
+            match = re.search("PBS_O_WORKDIR=(.*),PBS_O_HOST", line2)
             if match is not None:
                 res = match.group(1)
-                rundir[jobid] = res.rstrip()
+                rundir[jobid] = res.replace("\n", "")
 
     return rundir
 
@@ -106,11 +110,13 @@ def job_status(jobid=None, simple=False):
 
         m = re.search(r"Job Id:\s*(.*)", line)
         if m:
-            jobstatus = {"jobid": m.group(1), "nodes": None, "procs": None, "wall_time": None, "qstatstr": line,
+            jobstatus = {"jobid": m.group(1), "nodes": None, "procs": None, "wall_time": None,
+                         # "qstatstr": line,
                          "elapsed_time": None, "start_time": None, "completion_time": None, "job_status": None,
                          'work_dir': None, 'submit_time': None}
 
-            m8 = re.search("init_work_dir = (.*)", line)
+            line2 = line.replace("\n", "")
+            m8 = re.search("PBS_O_WORKDIR=(.*),PBS_O_HOST", line2)
             if m8:
                 jobstatus["work_dir"] = m8.group(1)
 
@@ -234,3 +240,4 @@ def release(jobid: Union[list, str]):
 if __name__ == "__main__":
     # res21 = find_executable("qsub")
     res2 = job_status()
+    print(res2)
