@@ -46,7 +46,8 @@ def _qstat(jobid=None, full=False, username=getlogin()) -> str:
 
     sout = run_popen(opt, first=False, join=True)
 
-    sout = sout.replace("\t", "")
+    if sout is not None:
+        sout = sout.replace("\t", "")
 
     return sout
 
