@@ -176,12 +176,12 @@ class _BasePathOut:
                 if self.log:
                     print(self.log_txt)
             else:
-                print("Ok for:", path)
+                print("Processing :", path)
             os.chdir(old)
             return result
         except BaseException as e:
-            print(e)
             print("Error for:", path)
+            print("Key help:", e)
             if self.log:
                 print(self.log_txt)
             os.chdir(old)

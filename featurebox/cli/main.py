@@ -45,6 +45,8 @@ commands_ = {
              "fbx diff    : Batching 'Energy difference'."),
     'converge': ('featurebox.cli.vasp_converge',
                  "fbx converge: Batching 'Check vasp converge'."),
+    'empty': ('featurebox.cli.vasp_empty',
+                 "fbx empty: Batching 'Check vasp CONTCAR'."),
 
 }
 
