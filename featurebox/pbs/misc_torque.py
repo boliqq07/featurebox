@@ -197,8 +197,10 @@ def submit_from_path(path: str, file: str):
     res = run_popen(["qsub", file])
 
     os.chdir(pt)
-
-    jobid = res.rstrip()
+    if isinstance(res, str):
+        jobid = res.rstrip()
+    else:
+        jobid = res
     return jobid
 
 

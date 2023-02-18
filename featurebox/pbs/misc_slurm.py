@@ -266,7 +266,12 @@ def submit_from_path(path: str, file: str):
     os.chdir(pt)
 
     res = res.replace("Submitted batch job ", "")
-    jobid = res.rstrip()
+
+    if isinstance(res, str):
+        jobid = res.rstrip()
+    else:
+        jobid = res
+
     return jobid
 
 
