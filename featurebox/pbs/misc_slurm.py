@@ -37,12 +37,13 @@ def _squeue(jobid=None, username=getlogin(), full=False):  # pylint: disable=unu
             souts = run_popen(sopt, first=False, join=True)
             if souts is not None:
                 souts = souts.split("\n\n")
+
                 sout = []
                 for i in souts:
                     if f"UserId={username}" in i:
                         sout.append(i)
                 if len(sout)>0:
-                    sout = "".join(sout)
+                    sout = "\n\n".join(sout)
                 else:
                     sout = None
             else:
@@ -320,7 +321,7 @@ def release(jobid: Union[list, str]):
 
 if __name__ == "__main__":
     # res21 = find_executable("qsub")
-    res1 = job_status()
-    if res1!={}:
-        print(res1[list(res1.keys())[-1]])
+    res1 = job_rundir(jobid=None)
+
+    print(res1)
 
