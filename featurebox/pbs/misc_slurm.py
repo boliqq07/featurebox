@@ -59,8 +59,8 @@ def _squeue(jobid=None, username=getlogin(), full=False):  # pylint: disable=unu
 
         sout = run_popen(sopt, first=False, join=True)
 
-    if sout is not None:
-        sout = sout.replace("\t", "")
+    # if sout is not None:
+    #     sout = sout.replace("\t", "")
 
     return sout
 
