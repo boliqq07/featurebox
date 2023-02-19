@@ -58,7 +58,7 @@ def _squeue(jobid=None, username=getlogin(), full=False):  # pylint: disable=unu
     return sout
 
 
-def job_id(username=None):  # pylint: disable=redefined-builtin
+def job_id(username=getlogin()):  # pylint: disable=redefined-builtin
     """If 'name' given, returns a list of all jobs with a particular name using squeue.
        Else, if all=True, returns a list of all job ids by current user.
        Else, returns this job id from environment variable PBS_JOBID (split to get just the number).

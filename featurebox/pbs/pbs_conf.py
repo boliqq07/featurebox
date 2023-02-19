@@ -46,7 +46,7 @@ def set_bachrc(path="{home}/history_jobs", log_paths_file="paths.temp"):
             with open(f"{path}/{log_paths_file}", "w") as f:
                 f.write("")
 
-        text = f'alias {a}="pwd >> {path}/{log_paths_file} && {b}"\n'
+        text = f'\nalias {a}="pwd >> {path}/{log_paths_file} && {b}"\n'
 
         home = os.path.expandvars('$HOME')
         with open(f"{home}/.bashrc", "r") as f:
