@@ -9,7 +9,9 @@ from pathlib import Path
 
 from featurebox.pbs.pbs_conf import set_bachrc, reform_log_path, get_manager
 
-
+"""
+JUST for LINUX
+"""
 class JobPATH:
 
     def __init__(self, manager: Union[str, None] = "torque", simple=True):

@@ -6,6 +6,10 @@
 # @License: MIT License
 # -*- coding: utf-8 -*-
 
+"""
+JUST for LINUX
+"""
+
 from featurebox.pbs.job_manager import JobPATH
 
 _dos_help = """

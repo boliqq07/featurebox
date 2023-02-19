@@ -4,3 +4,5 @@
 # @Author : boliqq07
 # @Software: PyCharm
 # @License: MIT License
+
+# JUST used for Linux ！！！

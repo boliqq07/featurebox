@@ -108,7 +108,7 @@ class General(_BasePathOut):
             raise NotImplementedError(f"Unavailable data {type(data)}.")
 
         if self.store_single:
-            result = pd.DataFrame.from_dict(data).T
+            result = pd.DataFrame.from_dict({str(path):data}).T
             result.to_csv("general_single.csv")
 
         return data

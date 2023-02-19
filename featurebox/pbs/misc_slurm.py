@@ -27,19 +27,26 @@ def _squeue(jobid=None, username=getlogin(), full=False):  # pylint: disable=unu
 
     # If Full is true, we need to use scontrol:
     if full is True:
-        if jobid is None:
-            if username is None:
-                # Clearly we want ALL THE JOBS
-                sopt = ["scontrol", "show", "job"]
-                sout = run_popen(sopt, first=False, join=True)
-            else:
-                sopt = ["scontrol", "show", "job", "-u", username]
-                sout = run_popen(sopt, first=False, join=True)
+
+        if username is None:
+            # Clearly we want ALL THE JOBS
+            sopt = ["scontrol", "show", "job"]
+            sout = run_popen(sopt, first=False, join=True)
         else:
-            opt = ["scontrol", "show", "job"]
-            if isinstance(jobid, list):
-                opt = opt + jobid
-            sout = run_popen(opt, first=False, join=True)
+            sopt = ["scontrol", "show", "job"]
+            souts = run_popen(sopt, first=False, join=True)
+            if souts is not None:
+                souts = souts.split("\n\n")
+                sout = []
+                for i in souts:
+                    if f"UserId={username}" in i:
+                        sout.append(i)
+                if len(sout)>0:
+                    sout = "".join(sout)
+                else:
+                    sout = None
+            else:
+                sout = None
 
     else:
         sopt = ["squeue", "-h"]  # jump first line
@@ -314,4 +321,6 @@ def release(jobid: Union[list, str]):
 if __name__ == "__main__":
     # res21 = find_executable("qsub")
     res1 = job_status()
-    print(res1[list(res1.keys())[-1]])
+    if res1!={}:
+        print(res1[list(res1.keys())[-1]])
+

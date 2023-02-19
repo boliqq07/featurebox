@@ -41,7 +41,7 @@ def _jjobs(jobid=None, full=False, username=getlogin()):
     return sout
 
 
-def job_id(username=None):
+def job_id(username=getlogin()):
     if username is not None:
         qsout = run_popen(["jjobs", "-u", username], first=False, join=False)
     else:

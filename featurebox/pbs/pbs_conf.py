@@ -53,8 +53,7 @@ def set_bachrc(path="{home}/history_jobs", log_paths_file="paths.temp"):
             wods = f.readlines()
         if text not in wods:
             with open(f"{home}/.bashrc", "a+") as f:
-                wods.append(text)
-                f.writelines(wods)
+                f.writelines(text)
 
 
 def reform_log_path(max_size=None, path="{home}/history_jobs", log_paths_file="paths.temp"):
