@@ -274,7 +274,8 @@ def release(jobid):
         res = run_popen(f"jctrl resume " + " ".join(jobid))
     return jobid
 
-# if __name__ == "__main__":
-#     # res21 = find_executable("qsub")
-#     res = _jjobs(jobid=None)
-#     print(res)
+if __name__ == "__main__":
+    # res21 = find_executable("qsub")
+    print(job_status())
+    # res = _jjobs(jobid=None)
+    # print(res)
