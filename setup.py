@@ -16,13 +16,14 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='featurebox',
-    version='0.0.9993',
+    version='0.0.9994',
     keywords=['features', "combination", "selection"],
     description='This is an box contains tools for machine learning.'
                 'Some of code are non-originality, just copy for use. All the referenced code are marked,'
                 'details can be shown in their sources',
-    install_requires=['path', 'pandas', 'numpy', 'sympy', 'scipy', 'scikit-learn', 'joblib', 'matplotlib', 'deprecated',
-                      'requests', 'tqdm', 'six', "pymatgen", "deap", "numba", "ase", "mgetool>=0.0.58"],
+    install_requires=['path', 'pandas', 'numpy', 'sympy', 'scipy', 'scikit-learn', 'joblib', 'matplotlib',
+                      'deprecated',
+                      'requests', 'tqdm', 'six', "pymatgen", "deap", "numba", "ase", "mgetool>=0.0.62"],
     include_package_data=True,
     author='wangchangxin',
     author_email='986798607@qq.com',
