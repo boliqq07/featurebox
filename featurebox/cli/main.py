@@ -46,7 +46,7 @@ commands_ = {
     'converge': ('featurebox.cli.vasp_converge',
                  "fbx converge: Batching 'Check vasp converge'."),
     'empty': ('featurebox.cli.vasp_empty',
-                 "fbx empty: Batching 'Check vasp CONTCAR'."),
+                 "fbx empty   : Batching 'Check vasp CONTCAR'."),
 
 }
 

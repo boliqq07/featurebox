@@ -161,7 +161,7 @@ def _pre_add(namei):
 
 def _bracket_follow(s):
     """
-    for situation that the number of () before the ()
+    For situation that the number of () before the ().
     if add this function, make sure the first number below ")" have "+" !!!, if not please add by human.
     """
     pre = re.findall(r'\d+\.?\d*\(.+\)\D*', s)
@@ -273,7 +273,7 @@ if __name__ == '__main__':
         '(TiLa3)', '(TiLa)', '(TiLa3)2',
         "((Ti)2P2)1H0.2", "((Ti)2)1H0.2", "((Ti))1H0.2"
     ]
-    os.chdir(r'')
+    os.chdir(r'../../')
 
     NS = NameSplit()
 

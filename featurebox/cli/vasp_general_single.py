@@ -53,6 +53,7 @@ def _getter_arr(obj, pi):
         return getattr(obj, pi)
 
 
+
 class General(_BasePathOut):
     """Get data from paths and return csv file.
 
@@ -80,9 +81,12 @@ class General(_BasePathOut):
         """3.Run with software and necessary file and get data.
         (1) Return result in code, or (2) Both return file to each path and in code."""
         try:
-            vasprun = self.cmd(path / self.necessary_files[0])
-        except BaseException:
-            vasprun = self.cmd.from_file(path / self.necessary_files[0])
+            if hasattr(self.cmd, "from_file"):
+                vasprun = self.cmd.from_file(path / self.necessary_files[0])
+            else:
+                vasprun = self.cmd(path / self.necessary_files[0])
+        except BaseException as e:
+            raise e
 
         data = _getter_arr(vasprun, self.prop)
         if isinstance(data, (tuple, list)):
@@ -163,10 +167,10 @@ class _CLICommand:
                             help="which python class to call the necessary file. such as: 'Vasprun'.")
         parser.add_argument('-nec', '--nec', type=str, default='vasprun.xml',
                             help="necessary file. such as: 'vasprun.xml'.")
-        # parser.add_argument('-prop', '--prop', type=str, default='final_energy',
-        #                     help="property name. such as: 'final_energy'.")
-        parser.add_argument('-prop', '--prop', type=str, default='structures[-1].lattice.c',
+        parser.add_argument('-prop', '--prop', type=str, default='final_energy',
                             help="property name. such as: 'final_energy'.")
+        # parser.add_argument('-prop', '--prop', type=str, default='final_energy',
+        #                     help="property name. such as: 'structures[-1].lattice.c'.")
 
         # mod = "pymatgen.io.vasp", cmd = "Vasprun", necessary_files = "vasprun.xml", prop = "final_energy"
 

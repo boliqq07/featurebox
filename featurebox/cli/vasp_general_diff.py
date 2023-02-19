@@ -42,9 +42,12 @@ class GeneralDiff(_BasePathOut2):
         res = []
         for path in paths:
             try:
-                vasprun = self.cmd(path / self.necessary_files[0])
-            except BaseException:
-                vasprun = self.cmd.from_file(path / self.necessary_files[0])
+                if hasattr(self.cmd, "from_file"):
+                    vasprun = self.cmd.from_file(path / self.necessary_files[0])
+                else:
+                    vasprun = self.cmd(path / self.necessary_files[0])
+            except BaseException as e:
+                raise e
 
             data = getattr(vasprun, self.prop)
 
