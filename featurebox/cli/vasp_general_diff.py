@@ -146,7 +146,8 @@ class _CLICommand:
             assert len(wd2) > 0, f"No path in file {pf[1]}"
             bad.transform([list(i) for i in zip(wd1, wd2)])
         elif pn[0].isdir():
-            bad = GeneralDiff(mod=args.mod, cmd=args.cmd, necessary_files=args.nec, prop=args.prop, store_single=False)
+            bad = GeneralDiff(mod=args.mod, cmd=args.cmd, necessary_files=args.nec, prop=args.prop,
+                              store_single=True)
             bad.convert(pn)
         else:
             raise NotImplementedError("Please set -f or -p parameter.")

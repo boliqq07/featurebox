@@ -136,7 +136,7 @@ class _CLICommand:
             assert len(wd) > 0, f"No path in file {pf}"
             bad.transform(wd)
         elif pn.isdir():
-            bad = methods[args.job_type](n_jobs=1, store_single=False)
+            bad = methods[args.job_type](n_jobs=1, store_single=True)
             bad.convert(pn)
         else:
             raise NotImplementedError("Please set -f or -p parameter.")
