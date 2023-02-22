@@ -41,7 +41,11 @@ def _squeue(jobid=None, username=getlogin(), full=False):  # pylint: disable=unu
                 sout = []
                 for i in souts:
                     if f"UserId={username}" in i:
-                        sout.append(i)
+                        if jobid is not None:
+                            if any([f"JobId={ji}" in i for ji in jobid]):
+                                sout.append(i)
+                        else:
+                            sout.append(i)
                 if len(sout)>0:
                     sout = "\n\n".join(sout)
                 else:
