@@ -9,10 +9,9 @@ from typing import Union, List
 
 import numpy as np
 import pandas as pd
+from featurebox.featurizers.generator_geo import SimpleDataset
 from torch.nn import Module
 from torch_geometric.data import InMemoryDataset, DataLoader, Data
-
-from featurebox.featurizers.generator_geo import SimpleDataset
 
 
 def get_layers_with_weight(model: Module, add_name=""):

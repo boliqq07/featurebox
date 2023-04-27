@@ -15,7 +15,6 @@ import torch
 from sklearn.model_selection import train_test_split
 from torch import Tensor
 from torch.nn import Module
-
 from torch_geometric.nn.conv.utils.helpers import expand_left
 from torch_scatter import gather_csr
 from torch_sparse import SparseTensor

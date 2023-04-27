@@ -1,7 +1,6 @@
 import unittest
 
 import numpy as np
-import pandas as pd
 
 from featurebox.data.check_data import CheckElements
 from featurebox.featurizers.atom.mapper import AtomTableMap, AtomJsonMap, AtomPymatgenPropMap
@@ -30,7 +29,7 @@ class TestGraph(unittest.TestCase):
         print(b.shape)
 
     def test_get67(self):
-        tmps = AtomTableMap(search_tp="name", tablename="ele_table.csv",n_jobs=2)
+        tmps = AtomTableMap(search_tp="name", tablename="ele_table.csv", n_jobs=2)
         s = [[{"H": 2, }, {"Po": 1}], [{"H": 2, }, {"Po": 1}]]
         a = tmps.transform(s)
 
@@ -68,7 +67,7 @@ class TestGraph(unittest.TestCase):
         assert b.shape[1] >= 17
 
     def test_equal(self):
-        tmps = AtomJsonMap("ie.json",n_jobs=2)
+        tmps = AtomJsonMap("ie.json", n_jobs=2)
         s = [{"H": 1, }, {"Pd": 1}]
         b = tmps.convert(s)
         tmps = AtomJsonMap("ie.json", search_tp="number")
@@ -77,16 +76,16 @@ class TestGraph(unittest.TestCase):
         self.assertTrue(np.all(np.equal(b, c)))
 
     def test_equal2(self):
-        tmps = AtomTableMap(search_tp="name",n_jobs=2)
+        tmps = AtomTableMap(search_tp="name", n_jobs=2)
         s = [{"As": 1, }, {"U": 1}]
         b = tmps.convert(s)
-        tmps = AtomTableMap(search_tp="number",n_jobs=2)
+        tmps = AtomTableMap(search_tp="number", n_jobs=2)
         s = [33, 92]
         c = tmps.convert(s)
         self.assertTrue(np.all(np.equal(b, c)))
 
     def test_equal3(self):
-        tmps = AtomPymatgenPropMap("X", search_tp="name",n_jobs=2)
+        tmps = AtomPymatgenPropMap("X", search_tp="name", n_jobs=2)
         s = [{"As": 1, }, {"U": 1}]
         b = tmps.convert(s)
         tmps = AtomPymatgenPropMap("X", search_tp="number")
@@ -95,7 +94,7 @@ class TestGraph(unittest.TestCase):
         self.assertTrue(np.all(np.equal(b, c)))
 
     def test_equal4(self):
-        tmps = AtomPymatgenPropMap("X", search_tp="name",n_jobs=2)
+        tmps = AtomPymatgenPropMap("X", search_tp="name", n_jobs=2)
         s = [{"As": 1, }, {"U": 1}]
         b = tmps.convert(s)
         tmps = AtomPymatgenPropMap("X", search_tp="number")

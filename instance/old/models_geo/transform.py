@@ -56,5 +56,5 @@ class DistributeEdgeAttr:
         x[r_m1] = 1 / x[r_m1]
         x[r_m2] = 1 / x[r_m2] * (0.5 * torch.cos(torch.pi * (x[r_m2] - self.r_cs) / (self.r_c - self.r_cs)) + 0.5)
         x[r_m3] = 0
-        data.edge_attr=x
+        data.edge_attr = x
         return data

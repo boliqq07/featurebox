@@ -2,6 +2,7 @@ import unittest
 
 try:
     import numba
+
     nb = True
     from featurebox.featurizers.envir.environment import GEONNGet
     from featurebox.featurizers.envir.local_env import UserVoronoiNN
@@ -9,11 +10,10 @@ except ImportError:
     nb = False
 
 
-
 class TestGraph(unittest.TestCase):
     def setUp(self) -> None:
         from featurebox.data.check_data import CheckElements
-        from test.structure_data.get_dataset import data02, data01
+        from test.structure_data.get_dataset import data01
         ce = CheckElements.from_pymatgen_structures()
         self.data = data01
         self.data0 = self.data[0]

@@ -70,7 +70,7 @@ def get_radius_in_spheres(
     # exclude_self = (center_indices != neighbor_indices) | (distances > numerical_tol)
 
     return center_indices[exclude_self], neighbor_indices[exclude_self], \
-           distances[exclude_self].reshape(-1, 1), distances[exclude_self], np.array(np.NaN)
+        distances[exclude_self].reshape(-1, 1), distances[exclude_self], np.array(np.NaN)
 
 # if __name__ == "__main__":
 #     from mgetool.tool import tt

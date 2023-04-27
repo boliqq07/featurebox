@@ -14,7 +14,6 @@ from functools import partial
 from typing import List
 
 import numpy as np
-from mgetool.tool import parallelize
 from sklearn.base import BaseEstimator
 from sklearn.base import MetaEstimatorMixin
 from sklearn.base import clone
@@ -26,6 +25,7 @@ from sklearn.utils.metaestimators import if_delegate_has_method, _safe_split
 from sklearn.utils.validation import check_is_fitted, check_X_y, check_random_state
 
 from featurebox.selection.multibase import MultiBase
+from mgetool.tool import parallelize
 
 
 class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
@@ -161,7 +161,7 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
         if refit and note:
             if isinstance(estimator, BaseSearchCV) and estimator.refit is True:
                 print(
-f"""Note:
+                    f"""Note:
     If refit, the self.estimator_ :{estimator.__class__.__name__} would use all the data in ``fit`` function,
     1. Be careful with the 'score' and 'predict' functions,
     Those are **training** score/predict if data in ``predict`` function not changed!
@@ -172,7 +172,7 @@ f"""Note:
     Use 'cross_val_predict(self.estimator_,X[:, self.support_],y)' for plotting.""")
             else:
                 print(
-f"""Note:
+                    f"""Note:
     If refit, the self.estimator_ :{estimator.__class__.__name__} would use all the data in ``fit`` function,
     1. Be careful with the 'score' and 'predict' functions:
     Those are **training** score/predict, if data in ``predict`` function not changed!
@@ -574,7 +574,6 @@ class BackForwardStable(MetaEstimatorMixin, SelectorMixin, BaseEstimator):
         self.tolerant = tolerant
         self.cv = cv
         self.note = note
-
 
     def fit(self, X, y, groups=None):
         """Fit the baf model and automatically tune the number of selected feature.

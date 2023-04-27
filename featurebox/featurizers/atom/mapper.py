@@ -71,8 +71,8 @@ class AtomMap(BaseFeature):
     Base class for atom converter. Map the element type and weight to element data.
     """
 
-    def __init__(self, n_jobs: int = 1, on_errors: str = 'raise', return_type: str = 'any'):
-        super(AtomMap, self).__init__(n_jobs=n_jobs, on_errors=on_errors, return_type=return_type)
+    def __init__(self, n_jobs: int = 1, on_errors: str = 'raise', return_type: str = 'any', **kwargs):
+        super(AtomMap, self).__init__(n_jobs=n_jobs, on_errors=on_errors, return_type=return_type, **kwargs)
 
     @staticmethod
     def get_json_embeddings(file_name: str = "ele_megnet.json") -> Dict:
@@ -95,7 +95,7 @@ class BinaryMap(AtomMap):
 
     """
 
-    def __init__(self, search_tp: str = "number", weight: bool = False, **kwargs):
+    def __init__(self, search_tp: str = "auto", weight: bool = False, **kwargs):
         """
 
         Args:
@@ -109,13 +109,27 @@ class BinaryMap(AtomMap):
         self.ndim = 1
 
     def _convert(self, d: Any) -> Any:
-        if self.search_tp in ["name", "name_dict"]:
+        if self.search_tp == 'auto':
+            if isinstance(d, Structure):
+                d = get_atom_fea_number(d)
+            if isinstance(d, dict):
+                d = [{k: v} for k, v in d.items()]
+            if isinstance(d[0], dict):
+                return self.convert_dict(d)
+            else:
+                return self.convert_number(d)
+
+        elif self.search_tp in ["name", "name_dict", "dict"]:
             if isinstance(d, Structure):
                 d = get_atom_fea_name(d)
+            if isinstance(d, dict):
+                d = [{k: v} for k, v in d.items()]
             return self.convert_dict(d)
         elif self.search_tp == "ion_name":
             if isinstance(d, Structure):
                 d = get_ion_fea_name(d)
+            if isinstance(d, dict):
+                d = [{k: v} for k, v in d.items()]
             return self.convert_dict(d)
         else:
             if isinstance(d, Structure):
@@ -162,7 +176,8 @@ class AtomJsonMap(BinaryMap):
 
     """
 
-    def __init__(self, embedding_dict: Union[str, Dict] = None, search_tp: str = "name", **kwargs):
+    def __init__(self, embedding_dict: Union[str, Dict] = None, search_tp: str = "auto",
+                 feature_labels=None, **kwargs):
         """
 
         Args:
@@ -176,6 +191,8 @@ class AtomJsonMap(BinaryMap):
         """
 
         super(AtomJsonMap, self).__init__(**kwargs)
+        if feature_labels is None:
+            self._feature_labels = []
         if embedding_dict is None:
             embedding_dict = self.get_json_embeddings()
         elif isinstance(embedding_dict, str):
@@ -289,7 +306,7 @@ class AtomTableMap(BinaryMap):
     """
 
     def __init__(self, tablename: Union[str, np.ndarray, pd.DataFrame, None] = "oe.csv",
-                 search_tp: str = "name", **kwargs):
+                 search_tp: str = "auto", **kwargs):
         """
 
         Parameters
@@ -391,6 +408,8 @@ class AtomTableMap(BinaryMap):
             if self.search_tp == "number":
                 self.dax = np.concatenate((self.dax, other.dax), axis=1)
                 self.da = None
+                if self.da_columns is not None and other.da_columns is not None:
+                    self.da_columns = self.da_columns + other.da_columns
             else:
                 self.da = pd.concat((self.da, other.da), axis=1)
                 self.dax = None
@@ -740,6 +759,7 @@ class _StructurePymatgenPropMap(BaseFeature):
         for pi in self.prop_name:
             datai.append(_getter_arr(structure, pi))
         datai = [self.func[i](j) for i, j in enumerate(datai)]
+
         if not self.lengths:
             self.lengths = [len(i) if isinstance(i, (np.ndarray, tuple, list)) else 1 for i in datai]
         [data_all.extend(i) for i in datai]

@@ -1,7 +1,5 @@
 import unittest
 
-import pandas as pd
-
 from featurebox.featurizers.batch_feature import BatchFeature
 from test.structure_data.get_dataset import data01
 

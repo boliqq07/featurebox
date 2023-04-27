@@ -8,7 +8,6 @@ def get_manager():
 
 
 def _get_manager():
-
     res2 = os.popen("whereis jsub").readlines()[0]
     res22 = re.search("(/\S+)+", res2)
     if res22:

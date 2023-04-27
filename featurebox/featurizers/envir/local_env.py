@@ -240,5 +240,5 @@ def get_strategy1_in_spheres(structure: StructureOrMolecule, nn_strategy: NearNe
     # exclude_self = (center_indices != neighbor_indices) | (distances > numerical_tol)
 
     return np.array(center_indices)[exclude_self], np.array(neighbor_indices)[exclude_self], \
-           np.array(images)[exclude_self], np.array(distances)[exclude_self], \
-           np.array(center_prop)
+        np.array(images)[exclude_self], np.array(distances)[exclude_self], \
+        np.array(center_prop)

@@ -2,6 +2,7 @@ import unittest
 
 try:
     import numba
+
     nb = True
     from featurebox.featurizers.envir.environment import GEONNGet
 except ImportError:
@@ -19,7 +20,6 @@ class TestGraph(unittest.TestCase):
         self.data0 = self.data[0]
         self.data0_3 = ce.check(self.data)[:10]
         self.data0_checked = ce.check(self.data)[:10]
-
 
     @unittest.skipUnless(nb, "")
     def test_get(self):

@@ -29,19 +29,21 @@ class BaseCompositionFeature(BinaryMap):
 
     """
 
-    def __init__(self, data_map: BinaryMap, n_jobs: int = 1, on_errors: str = 'raise', return_type: str = 'df'):
+    def __init__(self, data_map: BinaryMap, n_jobs: int = 1, on_errors: str = 'raise',
+                 return_type: str = 'df', feature_labels_mark: str = None):
         """
         Base class for composition feature.
         """
-        super().__init__(n_jobs=n_jobs, on_errors=on_errors, return_type=return_type)
+        super().__init__(n_jobs=n_jobs, on_errors=on_errors, return_type=return_type,
+                         feature_labels_mark=feature_labels_mark)
         if data_map is None:
-            data_map = AtomTableMap(tablename="oe.csv", search_tp="name")
+            data_map = AtomTableMap(tablename="oe.csv", search_tp="auto")
         self.data_map = data_map
         # change
         self.data_map.weight = False
         self.data_map.n_jobs = 1
-
         self.search_tp = self.data_map.search_tp
+        self._feature_labels = self.data_map.feature_labels
 
     def convert_dict(self, atoms: dict) -> np.ndarray:
         """
@@ -68,6 +70,15 @@ class BaseCompositionFeature(BinaryMap):
             ele = np.array(ele).reshape((len(atoms), -1))
         return self.mix_function(ele, numbers)
 
+    def fit(self, *args, x_labels=None, **kwargs):
+        """fit function in :class:`BaseFeature` are weakened and just pass parameter."""
+        _ = args
+        if x_labels is not None:
+            assert len(args[0]) == x_labels
+        self._kwargs.update({"x_labels": x_labels})
+        self._kwargs.update(kwargs)
+        return self
+
     @abstractmethod
     def mix_function(self, elems: List, nums: Union[List, np.ndarray]):
         """
@@ -87,9 +98,10 @@ class BaseCompositionFeature(BinaryMap):
 
 class WeightedAverage(BaseCompositionFeature):
     """
+
     Examples
     ---------
-    >>> from featurebox.featurizers.atom import AtomTableMap, AtomJsonMap
+    >>> from featurebox.featurizers.atom.mapper import AtomTableMap, AtomJsonMap
     >>> data_map = AtomJsonMap(search_tp="name", n_jobs=1)
     >>> wa = WeightedAverage(data_map, n_jobs=1,return_type="df")
     >>> x3 = [{"H": 2, "Pd": 1},{"He":1,"Al":4}]
@@ -102,16 +114,17 @@ class WeightedAverage(BaseCompositionFeature):
 
     >>> wa.set_feature_labels(["fea_{}".format(_) for _ in range(16)])
     >>> wa.fit_transform(x3)
-          fea_0     fea_1     fea_2  ...    fea_13    fea_14    fea_15
-    0  0.422068  0.360958  0.201433  ... -0.459164 -0.064783 -0.250939
-    1  0.007163 -0.471498 -0.072860  ...  0.206306 -0.041006  0.055843
+       wt_ave_fea_0  wt_ave_fea_1  ...  wt_ave_fea_14  wt_ave_fea_15
+    0      0.422068      0.360958  ...      -0.064783      -0.250939
+    1      0.007163     -0.471498  ...      -0.041006       0.055843
     <BLANKLINE>
     [2 rows x 16 columns]
 
     """
 
     def __init__(self, data_map: BinaryMap, n_jobs: int = 1, on_errors: str = 'raise', return_type: str = 'df'):
-        super().__init__(data_map, n_jobs=n_jobs, on_errors=on_errors, return_type=return_type)
+        super().__init__(data_map, n_jobs=n_jobs, on_errors=on_errors, return_type=return_type,
+                         feature_labels_mark="wt_ave")
 
     def mix_function(self, elems, nums):
         w_ = nums / np.sum(nums)
@@ -122,29 +135,22 @@ class WeightedSum(BaseCompositionFeature):
     """
     Examples
     --------
-    >>> from featurebox.featurizers.atom import AtomTableMap, AtomJsonMap
-    >>> data_map = AtomJsonMap(search_tp="name", n_jobs=1)
+    >>> from featurebox.featurizers.atom.mapper import AtomTableMap, AtomJsonMap
+    >>> data_map = AtomTableMap(search_tp="name", n_jobs=1)
     >>> wa = WeightedSum(data_map, n_jobs=1,return_type="df")
     >>> x3 = [{"H": 2, "Pd": 1},{"He":1,"Al":4}]
     >>> wa.fit_transform(x3)
-             0         1         2   ...        13        14        15
-    0  1.266204  1.082873  0.604300  ... -1.377492 -0.194350 -0.752816
-    1  0.035813 -2.357490 -0.364302  ...  1.031530 -0.205029  0.279215
+       wt_sum_1s  wt_sum_2s  wt_sum_2p  ...  wt_sum_6d  wt_sum_6f  wt_sum_7s
+    0    8320.18   11837.27      11.80  ...        0.0        0.0        0.0
+    1    2188.73    1513.40     986.16  ...        0.0        0.0        0.0
     <BLANKLINE>
-    [2 rows x 16 columns]
-
-    >>> wa.set_feature_labels(["fea_{}".format(_) for _ in range(16)])
-    >>> wa.fit_transform(x3)
-          fea_0     fea_1     fea_2  ...    fea_13    fea_14    fea_15
-    0  1.266204  1.082873  0.604300  ... -1.377492 -0.194350 -0.752816
-    1  0.035813 -2.357490 -0.364302  ...  1.031530 -0.205029  0.279215
-    <BLANKLINE>
-    [2 rows x 16 columns]
+    [2 rows x 19 columns]
 
     """
 
     def __init__(self, data_map: BinaryMap, n_jobs: int = 1, on_errors: str = 'raise', return_type: str = 'df'):
-        super().__init__(data_map, n_jobs=n_jobs, on_errors=on_errors, return_type=return_type)
+        super().__init__(data_map, n_jobs=n_jobs, on_errors=on_errors, return_type=return_type,
+                         feature_labels_mark="wt_sum")
 
     def mix_function(self, elems, nums):
         w_ = np.array(nums)
@@ -158,7 +164,8 @@ class GeometricMean(BaseCompositionFeature):
     """
 
     def __init__(self, data_map: BinaryMap, n_jobs: int = 1, on_errors: str = 'raise', return_type: str = 'df'):
-        super().__init__(data_map, n_jobs=n_jobs, on_errors=on_errors, return_type=return_type)
+        super().__init__(data_map, n_jobs=n_jobs, on_errors=on_errors, return_type=return_type,
+                         feature_labels_mark="geo_mean")
 
     def mix_function(self, elems: np.ndarray, nums):
         w_ = np.array(nums).reshape(-1, 1)
@@ -173,7 +180,8 @@ class HarmonicMean(BaseCompositionFeature):
     """
 
     def __init__(self, data_map: BinaryMap, n_jobs: int = 1, on_errors: str = 'raise', return_type: str = 'df'):
-        super().__init__(data_map, n_jobs=n_jobs, on_errors=on_errors, return_type=return_type)
+        super().__init__(data_map, n_jobs=n_jobs, on_errors=on_errors, return_type=return_type,
+                         feature_labels_mark="Harm_mean")
 
     def mix_function(self, elems, nums):
         w_ = np.array(nums)
@@ -188,7 +196,8 @@ class WeightedVariance(BaseCompositionFeature):
     """
 
     def __init__(self, data_map: BinaryMap, n_jobs: int = 1, on_errors: str = 'raise', return_type: str = 'df'):
-        super().__init__(data_map, n_jobs=n_jobs, on_errors=on_errors, return_type=return_type)
+        super().__init__(data_map, n_jobs=n_jobs, on_errors=on_errors, return_type=return_type,
+                         feature_labels_mark="wt_var")
 
     def mix_function(self, elems: np.ndarray, nums):
         w_ = nums / np.sum(nums)
@@ -204,7 +213,8 @@ class MaxPooling(BaseCompositionFeature):
     """
 
     def __init__(self, data_map: BinaryMap, n_jobs: int = 1, on_errors: str = 'raise', return_type: str = 'df'):
-        super().__init__(data_map, n_jobs=n_jobs, on_errors=on_errors, return_type=return_type)
+        super().__init__(data_map, n_jobs=n_jobs, on_errors=on_errors, return_type=return_type,
+                         feature_labels_mark="max")
 
     def mix_function(self, elems, _):
         return np.max(elems, axis=0)
@@ -217,7 +227,8 @@ class MinPooling(BaseCompositionFeature):
     """
 
     def __init__(self, data_map: BinaryMap, n_jobs: int = 1, on_errors: str = 'raise', return_type: str = 'df'):
-        super().__init__(data_map=data_map, n_jobs=n_jobs, on_errors=on_errors, return_type=return_type)
+        super().__init__(data_map=data_map, n_jobs=n_jobs, on_errors=on_errors, return_type=return_type,
+                         feature_labels_mark="min")
 
     def mix_function(self, elems, _):
         return np.min(elems, axis=0)
@@ -231,7 +242,8 @@ class ExtraMix(BaseCompositionFeature):
 
     def __init__(self, data_map: BinaryMap, stats: Tuple[str] = ("mean",), n_jobs: int = 1,
                  on_errors: str = 'raise', return_type: str = 'df'):
-        super().__init__(data_map=data_map, n_jobs=n_jobs, on_errors=on_errors, return_type=return_type)
+        super().__init__(data_map=data_map, n_jobs=n_jobs, on_errors=on_errors, return_type=return_type,
+                         feature_labels_mark="extra")
         self.stats = stats
 
     def mix_function(self, elems, nums):
@@ -255,10 +267,10 @@ class DepartElementFeature(BaseCompositionFeature):
     >>> wa = DepartElementFeature(data_map,n_composition=2, n_jobs=1, return_type="pd")
     >>> comp = [{"H": 2, "Pd": 1},{"He":1, "Al":4}]
     >>> wa.set_feature_labels(["fea_{}".format(_) for _ in range(16)]) # 16 this the feature number of built-in "ele_megnet.json"
-    >>> couple_data = wa.fit_transform(comp)
-        fea_0_0   fea_0_1   fea_1_0  ...  fea_14_1  fea_15_0  fea_15_1
-    0  0.352363  0.561478  0.635952  ... -0.236541 -0.270104 -0.212607
-    1 -0.067220  0.025758  0.141113  ... -0.092577 -0.042185  0.080350
+    >>> wa.fit_transform(comp)
+       depart_fea_0_0  depart_fea_0_1  ...  depart_fea_15_0  depart_fea_15_1
+    0        0.352363        0.561478  ...        -0.270104        -0.212607
+    1       -0.067220        0.025758  ...        -0.042185         0.080350
     <BLANKLINE>
     [2 rows x 32 columns]
 
@@ -267,8 +279,11 @@ class DepartElementFeature(BaseCompositionFeature):
     def __init__(self, data_map: BinaryMap, n_composition: int, n_jobs: int = 1, on_errors: str = 'raise',
                  return_type: str = 'df'):
 
-        super().__init__(data_map=data_map, n_jobs=n_jobs, on_errors=on_errors, return_type=return_type)
+        super().__init__(data_map=data_map, n_jobs=n_jobs, on_errors=on_errors, return_type=return_type,
+                         feature_labels_mark="depart")
         self.n_composition = n_composition
+        self._feature_labels = ["_".join((s, n)) for s in self.data_map.feature_labels
+                                for n in range(self.n_composition)]
 
     def mix_function(self, elems: np.ndarray, nums=None):
 

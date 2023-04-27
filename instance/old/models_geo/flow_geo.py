@@ -6,13 +6,12 @@ from typing import Union
 
 import numpy as np
 import torch
+from featurebox.models_geo.general import getter_arr
+from featurebox.models_geo.log_model import LogModule, make_dot_, HookGradientModule, get_layers_with_weight
 from sklearn import metrics
 from torch.nn import Module
 from torch.optim.lr_scheduler import MultiStepLR
 from torch.utils.data import DataLoader
-
-from featurebox.models_geo.log_model import LogModule, make_dot_, HookGradientModule, get_layers_with_weight
-from featurebox.models_geo.general import getter_arr
 
 
 def class_eval(prediction, target):
@@ -136,7 +135,7 @@ class LearningFlow:
     def __init__(self, model: Module, train_loader: DataLoader, validate_loader: DataLoader, device: str = "cpu",
                  optimizer=None, clf: bool = False, loss_method=None, learning_rate: float = 1e-3, milestones=None,
                  weight_decay: float = 0.0, checkpoint=False, scheduler=None, debug="", target_layers=(),
-                 loss_threshold: float = 0.1, print_freq: Union[int,str] = 10, print_what="all", process_label=None):
+                 loss_threshold: float = 0.1, print_freq: Union[int, str] = 10, print_what="all", process_label=None):
         """
 
         Parameters

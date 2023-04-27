@@ -32,11 +32,11 @@ from typing import Dict, List
 import numpy as np
 import torch
 import torch_geometric
-from mgetool.tool import parallelize, batch_parallelize
 from pymatgen.core import Structure
 
 from featurebox.featurizers.base_feature import DummyConverter, BaseFeature, ConverterCat
 from featurebox.featurizers.envir.environment import GEONNGet
+from mgetool.tool import parallelize, batch_parallelize
 
 
 class _BaseStructureGraphGEO(BaseFeature):

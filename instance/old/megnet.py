@@ -6,15 +6,13 @@ import warnings
 from math import pi as PI
 
 import torch
-import torch.nn.functional as F
+from featurebox.models_geo.basemodel import BaseCrystalModel, ShiftedSoftplus
+from featurebox.models_geo.general import get_ptr, collect_edge_attr_jump, lift_jump_index_select
 from torch.nn import Linear, ModuleList
 from torch.nn import Sequential
 from torch_geometric.nn import MessagePassing
 from torch_scatter import segment_csr
 from torch_sparse import SparseTensor
-
-from featurebox.models_geo.basemodel import BaseCrystalModel, ShiftedSoftplus
-from featurebox.models_geo.general import get_ptr, collect_edge_attr_jump, lift_jump_index_select
 
 
 class MEGNet(BaseCrystalModel):

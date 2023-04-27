@@ -6,8 +6,6 @@
 # @Author   : xxx
 import os
 
-from mgetool.imports import batchfile
-
 
 def run(args, parser):
     # args = args.parse_args()
@@ -17,7 +15,7 @@ def run(args, parser):
     if " " in args.layer:
         layer = str(args.layer).split(" ")
         layer = [int(i) for i in layer]
-        if len(layer)==1:
+        if len(layer) == 1:
             layer = layer[0]
     else:
         layer = int(args.layer)
@@ -35,16 +33,16 @@ def run(args, parser):
     if isinstance(layer, int):
         bf.filter_dir_name(include=dir_include, exclude=dir_exclude, layer=layer)
     else:
-        if dir_include is not None and len(dir_include)==len(layer):
-            for di,la in zip(dir_include, layer):
-                if di !="-":
+        if dir_include is not None and len(dir_include) == len(layer):
+            for di, la in zip(dir_include, layer):
+                if di != "-":
                     bf.filter_dir_name(include=di, layer=la)
         else:
             bf.filter_dir_name(include=dir_include, layer=layer)
 
-        if dir_exclude is not None and len(dir_exclude)==len(layer):
-            for di,la in zip(dir_exclude, layer):
-                if di !="-":
+        if dir_exclude is not None and len(dir_exclude) == len(layer):
+            for di, la in zip(dir_exclude, layer):
+                if di != "-":
                     bf.filter_dir_name(exclude=di, layer=la)
         else:
             bf.filter_dir_name(exclude=dir_exclude, layer=layer)

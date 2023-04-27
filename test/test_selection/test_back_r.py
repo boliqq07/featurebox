@@ -3,6 +3,7 @@ import unittest
 from sklearn.datasets import load_iris
 from sklearn.model_selection import GridSearchCV
 from sklearn.svm import SVC
+
 from featurebox.selection.ga import GA
 
 

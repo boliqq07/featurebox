@@ -8,7 +8,7 @@ class MyTestCase(unittest.TestCase):
         if not hasattr(self, "jm"):
             self.jm = JobManager("slurm")
             self.path = ["/data/home/qian1/wcx/MXenes/Ti2CO2/no_add/Au/Al/test_z_16/relax_o_0",
-                        "/data/home/qian1/wcx/MXenes/Ti2CO2/no_add/Au/Al/test_z_16/relax_o_10"]
+                         "/data/home/qian1/wcx/MXenes/Ti2CO2/no_add/Au/Al/test_z_16/relax_o_10"]
 
     def test_a_submit_from_path(self):
         jobids = self.jm.submit_from_path(path=self.path, file="*wcx.run")
@@ -39,7 +39,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(len(self.jm.msg), l)
         self.assertGreater(len(self.jm.deleted_msg), 0)
         self.assertNotEqual(jobids, jjobss)
-        print(jobids,jjobss)
+        print(jobids, jjobss)
 
     def test_d_hold_release(self):
         self.jm.get_job_msg()
@@ -62,6 +62,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_k_dir(self):
         print(self.jm.job_dir())
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -5,24 +5,24 @@ following features: atom and atoms objects, some of ase.io and some of
 ase.constraints.
 '''
 
-
-import pickle
-import threading
-from math import cos, sin, sqrt
-import warnings
-from shutil import copyfile
-import numpy as np
-import os
-import copy
-import sys
-import time
-from os.path import isfile
 import collections
+import copy
+import os
+import pickle
+import sys
+import threading
+import time
+import warnings
+from math import cos, sin, sqrt
+from os.path import isfile
+from shutil import copyfile
+
+import numpy as np
+
 # from ase.io import Trajectory
 # from ase.parallel import barrier
 
 np.seterr(all='raise')
-
 
 
 def read_any(filename):
@@ -2502,10 +2502,10 @@ class Atoms(object):
             return -stress * 1e-5 / units.Pascal
         elif stress.shape == (3, 3):
             return (-(stress[0, 0] + stress[1, 1] + stress[2, 2]) / 3.0) * \
-                   1e-5 / units.Pascal
+                1e-5 / units.Pascal
         elif stress.shape == (6,):
             return (-(stress[0] + stress[1] + stress[2]) / 3.0) * \
-                   1e-5 / units.Pascal
+                1e-5 / units.Pascal
         else:
             raise ValueError('The external stress has the wrong shape.')
 
@@ -4379,7 +4379,7 @@ class LBFGS(Optimizer):
     def read(self):
         """Load saved arrays to reconstruct the Hessian"""
         self.iteration, self.s, self.y, self.rho, \
-        self.r0, self.f0, self.e0, self.task = self.load()
+            self.r0, self.f0, self.e0, self.task = self.load()
         self.load_restart = True
 
     def step(self, f):
@@ -5030,7 +5030,6 @@ def cal_all(f_dir, *args, **kwargs):
 
 
 def run(args, parser):
-    from mgetool.imports import batchfile
     if args.job_type in ["S", "s"]:
         cal(args.path_name, args.pos1, args.pos2, args.n, args.noidpp, pr=True, method=args.method)
         print(args.path_name)
@@ -5151,6 +5150,7 @@ if __name__ == '__main__':
     """
     import argparse
     import pathlib
+
     parser = argparse.ArgumentParser(description="Get neb files. Example:\n"
                                                  "python nebmake.py -t s -pos1 POSCAR1 -pos2 POSCAR2 -n 3")
     parser.add_argument('-p', '--path_name', type=str, default='.')

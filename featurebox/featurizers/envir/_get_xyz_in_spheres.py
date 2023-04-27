@@ -1,8 +1,8 @@
 import itertools
+import math
 from collections import abc
 from typing import Tuple, Union, List
 
-import math
 import numpy as np
 
 from featurebox.utils.predefined_typing import StructureOrMolecule

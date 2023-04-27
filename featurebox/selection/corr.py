@@ -14,13 +14,13 @@ import warnings
 from typing import List
 
 import numpy as np
-from mgetool.tool import name_to_name
 from sklearn.base import BaseEstimator, MetaEstimatorMixin
 from sklearn.feature_selection import SelectorMixin
 from sklearn.utils import check_random_state
 from sklearn.utils.validation import check_is_fitted
 
 from featurebox.selection.multibase import MultiBase
+from mgetool.tool import name_to_name
 
 
 class Corr(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
@@ -116,8 +116,9 @@ class Corr(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
         # for nan
         self.nan_index_mark = ~np.array([np.all(np.isnan(cov[i])) for i in range(cov.shape[0])])
         if not np.all(self.nan_index_mark):
-            warnings.warn("There are some NAN values in correlation coefficient matrix, which could be constant features.\n"
-                  "The NAN features would removed later. See more in 'nan_index_mark' attribute.",UserWarning)
+            warnings.warn(
+                "There are some NAN values in correlation coefficient matrix, which could be constant features.\n"
+                "The NAN features would removed later. See more in 'nan_index_mark' attribute.", UserWarning)
 
         cov = np.nan_to_num(cov)
         self.cov = cov

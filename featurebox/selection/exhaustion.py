@@ -12,7 +12,6 @@ from itertools import combinations
 from typing import Tuple, List
 
 import numpy as np
-from mgetool.tool import parallelize
 from sklearn.base import BaseEstimator
 from sklearn.base import MetaEstimatorMixin
 from sklearn.base import clone
@@ -24,6 +23,7 @@ from sklearn.utils.metaestimators import if_delegate_has_method
 from sklearn.utils.validation import check_is_fitted, check_X_y
 
 from featurebox.selection.multibase import MultiBase
+from mgetool.tool import parallelize
 
 
 class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
@@ -118,13 +118,14 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
         super().__init__(multi_grade=multi_grade, multi_index=multi_index, must_index=must_index)
         if any((hasattr(estimator, "max_features") and refit,
                 isinstance(estimator, BaseSearchCV) and hasattr(estimator.estimator, "max_features") and refit)):
-            warnings.warn("For estimator with 'max_features' attribute, the 'max_features' would changed with each sub-data. \n"
-                  "Please change and define 'max_features' by SearchCV testing after Exhaustion.\n",UserWarning)
+            warnings.warn(
+                "For estimator with 'max_features' attribute, the 'max_features' would changed with each sub-data. \n"
+                "Please change and define 'max_features' by SearchCV testing after Exhaustion.\n", UserWarning)
 
         if refit and note:
             if isinstance(estimator, BaseSearchCV) and estimator.refit is True:
                 print(
-f"""Note:
+                    f"""Note:
     If refit, the self.estimator_ :{estimator.__class__.__name__} would use all the data in ``fit`` function,
     1. Be careful with the 'score' and 'predict' functions,
     Those are **training** score/predict if data in ``predict`` function not changed!
@@ -135,7 +136,7 @@ f"""Note:
     Use 'cross_val_predict(self.estimator_,X[:, self.support_],y)' for plotting.""")
             else:
                 print(
-f"""Note:
+                    f"""Note:
     If refit, the self.estimator_ :{estimator.__class__.__name__} would use all the data in ``fit`` function,
     1. Be careful with the 'score' and 'predict' functions:
     Those are **training** score/predict, if data in ``predict`` function not changed!

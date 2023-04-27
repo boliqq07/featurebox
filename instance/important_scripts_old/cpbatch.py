@@ -18,7 +18,7 @@ def trans_str(string):
 def cp_batch_from_file(path_file, addfile="", cmd="", out_file_name="movebatch.sh", enter=False):
     if addfile == "":
         from makebatch import make_batch_from_file
-        make_batch_from_file(path_file, cmd=cmd, out_file_name=out_file_name,enter=enter)
+        make_batch_from_file(path_file, cmd=cmd, out_file_name=out_file_name, enter=enter)
     else:
 
         assert os.path.isfile(addfile), f"Can't find the {addfile}."
@@ -119,4 +119,3 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     cp_batch_from_file(args.path_file, args.addfile, args.commands, args.store_name, args.enter)
-

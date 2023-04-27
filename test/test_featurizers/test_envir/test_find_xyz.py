@@ -2,6 +2,7 @@ import unittest
 
 try:
     import numba
+
     nb = True
     from featurebox.featurizers.envir.environment import GEONNGet
     from featurebox.featurizers.envir.local_env import UserVoronoiNN

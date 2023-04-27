@@ -5,14 +5,14 @@ from typing import Union, Tuple
 
 import torch
 import torch.nn.functional as F
+from featurebox.models_geo.basemodel import BaseCrystalModel
+from featurebox.models_geo.general import collect_edge_attr_jump, lift_jump_index_select
 from torch import Tensor
 from torch.nn import Linear, BatchNorm1d
 from torch.nn import Module, ModuleList
 from torch_geometric.nn import MessagePassing
 from torch_geometric.typing import PairTensor, OptTensor, Adj, Size
 
-from featurebox.models_geo.basemodel import BaseCrystalModel
-from featurebox.models_geo.general import collect_edge_attr_jump, lift_jump_index_select
 
 class CGConv(MessagePassing):
     r"""The crystal graph convolutional operator from the
@@ -56,6 +56,7 @@ class CGConv(MessagePassing):
         - **output:** node features :math:`(|\mathcal{V}|, F)` or
           :math:`(|\mathcal{V_t}|, F_{t})` if bipartite
     """
+
     def __init__(self, channels: Union[int, Tuple[int, int]], dim: int = 0,
                  aggr: str = 'add', batch_norm: bool = False,
                  bias: bool = True, **kwargs):
@@ -123,8 +124,8 @@ class _Interactions(Module):
 
         for _ in range(n_conv):
             cg = CGConv(channels=num_node_interaction_channels, dim=num_edge_features,
-                           aggr='add', batch_norm=True,
-                           bias=True, )
+                        aggr='add', batch_norm=True,
+                        bias=True, )
             self.conv.append(cg)
 
         self.n_conv = n_conv

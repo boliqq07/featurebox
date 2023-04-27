@@ -2,12 +2,11 @@
 from __future__ import print_function, division
 
 import torch.nn.functional as F
+from featurebox.models_geo.basemodel import BaseCrystalModel
+from featurebox.models_geo.general import collect_edge_attr_jump, lift_jump_index_select
 from torch.nn import Linear
 from torch.nn import Module, ModuleList
 from torch_geometric.nn import GATConv
-
-from featurebox.models_geo.basemodel import BaseCrystalModel
-from featurebox.models_geo.general import collect_edge_attr_jump, lift_jump_index_select
 
 
 class GATConvNew(GATConv):

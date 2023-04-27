@@ -46,7 +46,7 @@ def _squeue(jobid=None, username=getlogin(), full=False):  # pylint: disable=unu
                                 sout.append(i)
                         else:
                             sout.append(i)
-                if len(sout)>0:
+                if len(sout) > 0:
                     sout = "\n\n".join(sout)
                 else:
                     sout = None
@@ -328,4 +328,3 @@ if __name__ == "__main__":
     res1 = job_rundir(jobid=None)
 
     print(res1)
-

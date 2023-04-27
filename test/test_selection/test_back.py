@@ -19,7 +19,7 @@ class MyTestCase(unittest.TestCase):
         from sklearn.svm import SVR
         X, y = fetch_california_housing(return_X_y=True)
         X = X[:100, :6]
-        y=y[:100]
+        y = y[:100]
         svr = SVR()
         bf = BackForward(svr, primary_feature=4, random_state=1, refit=True)
         new_x = bf.fit_transform(X[:50], y[:50])
@@ -31,7 +31,7 @@ class MyTestCase(unittest.TestCase):
         from sklearn.svm import SVR
         X, y = fetch_california_housing(return_X_y=True)
         X = X[:100, :3]
-        y=y[:100]
+        y = y[:100]
         svr = SVR()
 
         bf = BackForwardStable(svr, primary_feature=2, random_state=1, refit=True, n_jobs=4, times=4)
@@ -44,7 +44,7 @@ class MyTestCase(unittest.TestCase):
         from sklearn.svm import SVR
         X, y = fetch_california_housing(return_X_y=True)
         X = X[:100, :4]
-        y=y[:100]
+        y = y[:100]
         svr = SVR()
         bf = BackForward(svr, primary_feature=2, random_state=1, refit=True)
         new_x = bf.fit_transform(X, y)

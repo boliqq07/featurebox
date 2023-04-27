@@ -2,9 +2,6 @@
 from __future__ import print_function, division
 
 import torch.nn.functional as F
-from torch.nn import Module, Linear, ModuleList
-from torch_geometric.nn import GCN2Conv
-
 from featurebox.models_geo.basemodel import BaseCrystalModel
 # class GCN2ConvJump(GCN2Conv):
 #     """# torch.geometric scatter is unstable especially for small data in cuda device.!!!"""
@@ -21,6 +18,8 @@ from featurebox.models_geo.basemodel import BaseCrystalModel
 #     def message(self, x_j: Tensor, edge_weight: OptTensor) -> Tensor:
 #         return super().message(x_j, edge_weight)
 from featurebox.models_geo.general import collect_edge_attr_jump, lift_jump_index_select
+from torch.nn import Module, Linear, ModuleList
+from torch_geometric.nn import GCN2Conv
 
 
 class GCNConv2New(GCN2Conv):

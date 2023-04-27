@@ -31,27 +31,27 @@ class UnionFeature(BaseFeature):
     >>> x3 = [{"H": 2, "Pd": 1},{"He":1,"Al":4}]
     >>> wa.set_feature_labels(["fea_{}".format(_) for _ in range(16)])
     >>> wa.fit_transform(x3)
-        fea_0_0   fea_0_1   fea_1_0  ...  fea_14_1  fea_15_0  fea_15_1
-    0  0.352363  0.561478  0.635952  ... -0.236541 -0.270104 -0.212607
-    1 -0.067220  0.025758  0.141113  ... -0.092577 -0.042185  0.080350
+       depart_fea_0_0  depart_fea_0_1  ...  depart_fea_15_0  depart_fea_15_1
+    0        0.352363        0.561478  ...        -0.270104        -0.212607
+    1       -0.067220        0.025758  ...        -0.042185         0.080350
     <BLANKLINE>
     [2 rows x 32 columns]
 
     >>> couple_data = wa.fit_transform(x3)
     >>> uf = UnionFeature(x3,couple_data,couple=2,stats=("mean","maximum"))
     >>> uf.fit_transform()
-        feamean  feamaximum   feamean  ...  feamaximum   feamean  feamaximum
-    0  0.422068    0.360958  0.201433  ...   -0.113506  0.021095   -0.212607
-    1  0.007163   -0.471498 -0.072860  ...    0.312183  0.165278    0.080350
+       mean_fea_0  maximum_fea_0  ...  mean_fea_15  maximum_fea_15
+    0    0.422068       0.360958  ...     0.021095       -0.212607
+    1    0.007163      -0.471498  ...     0.165278        0.080350
     <BLANKLINE>
     [2 rows x 32 columns]
 
     >>> couple_data = wa.fit_transform(x3)
     >>> uf = UnionFeature(x3,couple_data,couple=2,stats=("std_dev",))
     >>> uf.fit_transform()
-       feastd_dev  feastd_dev  feastd_dev  ...  feastd_dev  feastd_dev  feastd_dev
-    0    0.147867    0.583352    0.033739  ...    0.366625    0.182177    0.040657
-    1    0.065745    0.541477    0.209795  ...    0.374331    0.182331    0.086646
+       std_dev_fea_0  std_dev_fea_1  ...  std_dev_fea_14  std_dev_fea_15
+    0       0.147867       0.583352  ...        0.182177        0.040657
+    1       0.065745       0.541477  ...        0.182331        0.086646
     <BLANKLINE>
     [2 rows x 16 columns]
 
@@ -111,7 +111,8 @@ class UnionFeature(BaseFeature):
             ([str]) attribute labels.
         """
         name = np.array(self_elem_data_columns_values)[::self.couple]
-        name = [i.split("_")[0] + "%s" % j for i in name for j in self.stats]
+        name = ["%s" % j + "_" + "_".join(i.split("_")[:-1]) for i in name for j in self.stats]
+        name = [j.replace("depart_", "") for j in name if "depart_" in j]
         self._feature_labels = name
         return name
 
@@ -130,8 +131,7 @@ class PolyFeature(BaseFeature, ABC):
     >>> ps = pd.DataFrame(n,columns=["f1","f2"],index= ["x0","x1","x2","x3","x4","x5"])
     >>> pf = PolyFeature(degree=[1,2])
     >>> pf.fit_transform(n)
-
-    n   f0^1     f1^1  f0^2  f0^1*f1^1      f1^2
+       f0^1      f1^1  f0^2  f0^1*f1^1      f1^2
     0   0.0  0.422068   0.0   0.000000  0.178141
     1   1.0  0.360958   1.0   0.360958  0.130291
     2   2.0  0.201433   4.0   0.402866  0.040575
@@ -216,7 +216,21 @@ class PolyFeature(BaseFeature, ABC):
             feature_names.append(names)
         self._feature_labels = feature_names
 
+
 # n = np.array([[0, 1, 2, 3, 4, 5], [0.422068, 0.360958, 0.201433, -0.459164, -0.064783, -0.250939]]).T
 # ps = pd.DataFrame(n, columns=["f1", "f2"], index=["x0", "x1", "x2", "x3", "x4", "x5"])
 # pf = PolyFeature(degree=[2, 3])
 # a = pf.fit_transform(n)
+
+
+if __name__ == "__main__":
+    from featurebox.featurizers.atom.mapper import AtomJsonMap
+
+    data_map = AtomJsonMap(search_tp="name", n_jobs=1)
+    wa = DepartElementFeature(data_map, n_composition=2, n_jobs=1, return_type="df")
+    x3 = [{"H": 2, "Pd": 1}, {"He": 1, "Al": 4}]
+    wa.set_feature_labels(["fea_{}".format(_) for _ in range(16)])
+
+    couple_data = wa.fit_transform(x3)
+    uf = UnionFeature(x3, couple_data, couple=2, stats=("mean", "maximum"))
+    res2 = uf.fit_transform()

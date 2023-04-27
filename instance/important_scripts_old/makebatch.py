@@ -15,7 +15,7 @@ def trans_str(string):
     return lines
 
 
-def make_batch_from_file(path_file, cmd="", out_file_name="batch.sh",enter=True):
+def make_batch_from_file(path_file, cmd="", out_file_name="batch.sh", enter=True):
     if not enter:
         batch_str = """#!/bin/bash
 
@@ -111,4 +111,3 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     make_batch_from_file(args.path_file, args.commands, args.store_name, args.enter)
-

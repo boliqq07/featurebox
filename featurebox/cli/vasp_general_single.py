@@ -53,7 +53,6 @@ def _getter_arr(obj, pi):
         return getattr(obj, pi)
 
 
-
 class General(_BasePathOut):
     """Get data from paths and return csv file.
 
@@ -108,7 +107,7 @@ class General(_BasePathOut):
             raise NotImplementedError(f"Unavailable data {type(data)}.")
 
         if self.store_single:
-            result = pd.DataFrame.from_dict({str(path):data}).T
+            result = pd.DataFrame.from_dict({str(path): data}).T
             result.to_csv("general_single.csv")
 
         return data

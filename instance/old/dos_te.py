@@ -6,7 +6,6 @@ This is a temporary script file.
 """
 
 import pandas as pd
-from pymatgen.core import Structure
 
 structures = structure_list = pd.read_pickle(r"./structure_data/sample_data.pkl_pd")
 
@@ -38,8 +37,6 @@ a = tmps.convert(single_sample2)
 b = tmps.transform(multi_sample)
 b = tmps.transform(multi_sample2)
 
-from pymatgen.core.structure import Structure
-
 structurei = structure_list[0]
 
 from featurebox.featurizers.state.state_mapper import StructurePymatgenPropMap
@@ -47,8 +44,6 @@ from featurebox.featurizers.state.state_mapper import StructurePymatgenPropMap
 tmps = StructurePymatgenPropMap(prop_name=["density", "volume", "ntypesp"])
 a = tmps.convert(structurei)
 b = tmps.transform([structurei] * 10)
-
-from pymatgen.core.structure import Structure
 
 from featurebox.featurizers.atom.mapper import AtomTableMap
 from featurebox.featurizers.state.statistics import WeightedAverage
@@ -158,7 +153,7 @@ ps = pd.DataFrame(n, columns=["f1", "f2"], index=["x0", "x1", "x2", "x3", "x4", 
 pf = PolyFeature(degree=[1, 2])
 pf.fit_transform(n)
 
-from featurebox.featurizers.atom.mapper import AtomTableMap, AtomJsonMap
+from featurebox.featurizers.atom.mapper import AtomJsonMap
 
 data_map = AtomJsonMap(search_tp="name", n_jobs=1)
 wa = WeightedAverage(data_map, n_jobs=1, return_type="df")

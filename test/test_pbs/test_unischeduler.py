@@ -9,9 +9,9 @@ class MyTestCase(unittest.TestCase):
         if not hasattr(self, "jm"):
             self.jm = JobManager(manager="unischeduler")
             self.path = ["/beegfs/home/wangchangxin/data/code_test/Mo2CO2_add_zero/Mo/H/S0/ini_static",
-            "/beegfs/home/wangchangxin/data/code_test/Mo2CO2_add_zero/Ru/H/S0/ini_static",
-            "/beegfs/home/wangchangxin/data/code_test/Mo2CO2_add_zero/Ru/H/S1/ini_static",
-            "/beegfs/home/wangchangxin/data/code_test/Mo2CO2_add_zero/Ru/H/S2/ini_static"]
+                         "/beegfs/home/wangchangxin/data/code_test/Mo2CO2_add_zero/Ru/H/S0/ini_static",
+                         "/beegfs/home/wangchangxin/data/code_test/Mo2CO2_add_zero/Ru/H/S1/ini_static",
+                         "/beegfs/home/wangchangxin/data/code_test/Mo2CO2_add_zero/Ru/H/S2/ini_static"]
 
     def test_a_submit_from_path(self):
         jobids = self.jm.submit_from_path(path=self.path, file="gjj_wang_cpu.run")
@@ -38,7 +38,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(len(self.jm.msg), l)
         self.assertGreater(len(self.jm.deleted_msg), 0)
         self.assertNotEqual(jobids, jjobss)
-        print(jobids,jjobss)
+        print(jobids, jjobss)
 
     def test_d_hold_release(self):
         self.jm.get_job_msg()
@@ -66,6 +66,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_i_dir(self):
         print(self.jm.job_dir())
+
 
 if __name__ == '__main__':
     unittest.main()

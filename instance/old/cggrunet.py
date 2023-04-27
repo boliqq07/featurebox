@@ -3,14 +3,13 @@ from __future__ import print_function, division
 
 import torch
 import torch.nn.functional as F
+from featurebox.models_geo.basemodel import BaseCrystalModel
+from featurebox.models_geo.general import collect_edge_attr_jump, get_ptr, lift_jump_index_select
 from torch.nn import Module, Linear
 from torch.nn import ReLU, Sequential, GRU
 from torch_geometric.nn import NNConv, Set2Set
 from torch_geometric.utils import softmax
 from torch_scatter import segment_csr
-
-from featurebox.models_geo.basemodel import BaseCrystalModel
-from featurebox.models_geo.general import collect_edge_attr_jump, get_ptr, lift_jump_index_select
 
 
 # class NNConvJump(NNConv):

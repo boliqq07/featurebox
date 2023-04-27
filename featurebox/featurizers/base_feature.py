@@ -6,6 +6,7 @@ from typing import List, Tuple, Iterable, Any
 
 import numpy as np
 import pandas as pd
+
 from mgetool.tool import parallelize
 
 
@@ -67,7 +68,7 @@ class BaseFeature:
 
     def __init__(self, n_jobs: int = 1, *, on_errors: str = 'raise', return_type: str = 'any',
                  batch_calculate: bool = False,
-                 batch_size: int = 30):
+                 batch_size: int = 30, feature_labels_mark: str = None, **kwargs):
         """
         Parameters
         ----------
@@ -92,14 +93,28 @@ class BaseFeature:
         self.return_type = return_type
         self.n_jobs = n_jobs
         self.on_errors = on_errors
-        self._kwargs = {"x_labels": None, "feature_labels_mark": None}
         self.support_ = []
         self.ndim = None
-        self._feature_labels = []
         self.batch_calculate = batch_calculate
         self.batch_size = batch_size
         # import inspect
         # inspect.getfullargspec(self.convert)
+        self._kwargs = {"x_labels": None, "feature_labels_mark": feature_labels_mark}
+        self._feature_labels = []
+
+    @staticmethod
+    def nonetoempty(d):
+        if d is None:
+            return []
+        else:
+            return d
+
+    @staticmethod
+    def emptytonone(d):
+        if not d:
+            return None
+        else:
+            return d
 
     @property
     def n_jobs(self):
@@ -120,10 +135,7 @@ class BaseFeature:
     def fit(self, *args, **kwargs):
         """fit function in :class:`BaseFeature` are weakened and just pass parameter."""
         _ = args
-        if kwargs is {}:
-            pass
-        else:
-            self._kwargs.update(kwargs)
+        self._kwargs.update(kwargs)
         return self
 
     def fit_transform(self, X: List, y=None, **kwargs) -> Any:
@@ -219,19 +231,27 @@ class BaseFeature:
             return ret
 
         if self.return_type == 'array' or self.return_type == 'np':
-            return np.array(ret)
+            try:
+                return np.array(ret)
+            except (NotImplementedError, TypeError):
+                warnings.warn(f"Try to convert result from {type(ret)} to ndarray failed.")
+                return ret
 
         if self.return_type == 'df' or self.return_type == 'pd':
             try:
+                ret = np.vstack(ret)
+
                 labels_len = len(self.feature_labels)
-                if labels_len > 0:
+                if ret.shape[1] == labels_len:
                     labels = self.feature_labels
                 else:
+                    warnings.warn("The feature name must be the same size with shape[1] for result (np.ndarray).")
                     labels = None
-            except (NotImplementedError, TypeError):
-                labels = None
-
-            return pd.DataFrame(ret, columns=labels, index=self._kwargs["x_labels"])
+                return pd.DataFrame(ret, columns=labels, index=self._kwargs["x_labels"])
+            except (NotImplementedError, TypeError, ValueError):
+                warnings.warn(f"Try to convert result from {type(ret)} to DataFrame failed."
+                              f"To build pd.Dataframe, The each result must be np.ndarray.")
+                return ret
 
     def _wrapper(self, *args, **kwargs):
         """
@@ -292,7 +312,7 @@ class BaseFeature:
 
         Notes
         -----
-        It cannot be passed np.array in default unless:
+        It cannot be passed np.ndarray in default unless:
 
         1. useful for bond_converter.
         For np.array we check the ndim and for ndim 2, or 3.
@@ -345,7 +365,7 @@ class BaseFeature:
         if mark is None:
             return self._feature_labels
         else:
-            return ["{}_{}".format(i, mark) for i in self._feature_labels]
+            return ["{}_{}".format(mark, i) for i in self._feature_labels]
 
     def set_feature_labels(self, values: List[str]):
         """Generate attribute names.

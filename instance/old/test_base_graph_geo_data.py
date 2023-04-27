@@ -1,11 +1,10 @@
 import unittest
 
-import pandas as pd
-from mgetool.tool import def_pwd
+from featurebox.featurizers.base_graph_geo import BaseStructureGraphGEO, StructureGraphGEO
 from torch_geometric.data import DataLoader
 
 from featurebox.data.check_data import CheckElements
-from featurebox.featurizers.base_graph_geo import BaseStructureGraphGEO, StructureGraphGEO
+from mgetool.tool import def_pwd
 from test.structure_data.get_dataset import data01
 
 

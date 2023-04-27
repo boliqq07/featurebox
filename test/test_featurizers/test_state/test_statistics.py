@@ -1,7 +1,5 @@
 import unittest
 
-import pandas as pd
-
 from featurebox.data.check_data import CheckElements
 from featurebox.featurizers.atom.mapper import AtomTableMap, AtomJsonMap
 from featurebox.featurizers.state.statistics import WeightedAverage, WeightedSum

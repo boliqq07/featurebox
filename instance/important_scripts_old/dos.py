@@ -5,7 +5,6 @@
 # @Software: PyCharm
 # @License: MIT License
 import os.path
-import pathlib
 
 import numpy as np
 import pandas as pd
@@ -48,7 +47,7 @@ class Doscar:
     number_of_header_lines = 6
 
     def __init__(self, doscar="DOSCAR", poscar="POSCAR", vasprun="vasprun.xml", ispin=2, lmax=2,
-                 lorbit=11, spin_orbit_coupling=False, read_pdos=True,max=8,min=-8):
+                 lorbit=11, spin_orbit_coupling=False, read_pdos=True, max=8, min=-8):
         """
         Create a Doscar object from a VASP DOSCAR file.
         Args:
@@ -60,8 +59,8 @@ class Doscar:
             read_pdos (optional:bool): Set to True to read the atom-projected density of states (Default=True).
         """
         self.filename = doscar
-        self.min=min
-        self.max=max
+        self.min = min
+        self.max = max
 
         self.ispin = ispin
         self.lmax = lmax
@@ -82,15 +81,15 @@ class Doscar:
         if os.path.isfile(vasprun):
             vasprun = Vasprun(vasprun)
             self.efermi = vasprun.efermi
-            df["energy"] = df["energy"]-self.efermi
-            self.energy =  df.energy.values
+            df["energy"] = df["energy"] - self.efermi
+            self.energy = df.energy.values
             self.energy_name = "E-E_fermi"
         else:
             self.energy = df.energy.values
             self.energy_name = "E"
 
         df.drop('energy', axis=1)
-        df.rename(columns={"energy":self.energy_name}, inplace=True)
+        df.rename(columns={"energy": self.energy_name}, inplace=True)
 
         self.tdos = self.scale(df)
 
@@ -98,22 +97,21 @@ class Doscar:
             try:
                 self.pdos_raw = self.read_projected_dos()
             except:
-                self.pdos_raw=None
+                self.pdos_raw = None
         # if species is set, should check that this is consistent with the number of entries in the
         # projected_dos dataset
 
         self.structure = Poscar.from_file(poscar, check_for_POTCAR=False).structure
         self.atoms_list = [i.name for i in self.structure.species]
         self.starts = [0, ]
-        mark= self.atoms_list[0]
-        for n,i in enumerate(self.atoms_list):
-            if i==mark:
+        mark = self.atoms_list[0]
+        for n, i in enumerate(self.atoms_list):
+            if i == mark:
                 pass
             else:
                 self.starts.append(n)
-            mark =i
+            mark = i
         self.starts.append(len(self.atoms_list))
-
 
     @property
     def number_of_channels(self):
@@ -145,12 +143,12 @@ class Doscar:
                          index_col=False)
         return df.drop('energy', axis=1)
 
-    def scale(self,data):
-        e = data.iloc[:,0].values
-        mark1 = e>=self.min
-        mark2 = e<=self.max
-        mark = mark1*mark2
-        data = data.iloc[mark,:]
+    def scale(self, data):
+        e = data.iloc[:, 0].values
+        mark1 = e >= self.min
+        mark2 = e <= self.max
+        mark = mark1 * mark2
+        data = data.iloc[mark, :]
         return data
 
     def read_projected_dos(self):
@@ -217,11 +215,11 @@ class Doscar:
         return np.sum(self.pdos_select(atoms=atoms, spin=spin, l=l, m=m), axis=(0, 2, 3))
 
     def pdos_by_spdf_atom_num(self, spin=None, m=None):
-        data = {self.energy_name:self.energy}
-        if self.lmax==3:
+        data = {self.energy_name: self.energy}
+        if self.lmax == 3:
             ls = ["s", "p", "d", "f"]
         else:
-            ls= ["s", "p", "d"]
+            ls = ["s", "p", "d"]
 
         atom_idx = list(range(self.number_of_atoms))
         for atoms in atom_idx:
@@ -231,42 +229,43 @@ class Doscar:
         return self.scale(pd.DataFrame.from_dict(data))
 
     def pdos_by_spdf_atom_type(self, spin=None, m=None):
-        data = {self.energy_name:self.energy}
-        if self.lmax==3:
+        data = {self.energy_name: self.energy}
+        if self.lmax == 3:
             ls = ["s", "p", "d", "f"]
         else:
-            ls= ["s", "p", "d"]
+            ls = ["s", "p", "d"]
 
-        atom_num = len(self.starts)-1
+        atom_num = len(self.starts) - 1
 
         for ai in range(atom_num):
-            atoms = list(range(self.starts[ai],self.starts[ai+1]))
+            atoms = list(range(self.starts[ai], self.starts[ai + 1]))
             name_atoms = self.atoms_list[self.starts[ai]]
             for l in ls:
-                datai = {f"{name_atoms}-{l}": np.sum(self.pdos_select(atoms=atoms, spin=spin, l=l, m=m), axis=(0, 2, 3))}
+                datai = {
+                    f"{name_atoms}-{l}": np.sum(self.pdos_select(atoms=atoms, spin=spin, l=l, m=m), axis=(0, 2, 3))}
                 data.update(datai)
         return self.scale(pd.DataFrame.from_dict(data))
 
     def pdos_by_atom_type(self, spin=None, l=None, m=None):
-        data = {self.energy_name:self.energy}
+        data = {self.energy_name: self.energy}
 
-        atom_num = len(self.starts)-1
+        atom_num = len(self.starts) - 1
 
         for ai in range(atom_num):
-            atoms = list(range(self.starts[ai],self.starts[ai+1]))
+            atoms = list(range(self.starts[ai], self.starts[ai + 1]))
             name_atoms = self.atoms_list[self.starts[ai]]
 
             datai = {f"{name_atoms}-{l}": np.sum(self.pdos_select(atoms=atoms, spin=spin, l=l, m=m), axis=(0, 2, 3))}
             data.update(datai)
         return self.scale(pd.DataFrame.from_dict(data))
 
-    def pdos_by_atom_num(self, spin=None,l=None, m=None):
-        data = {self.energy_name:self.energy}
+    def pdos_by_atom_num(self, spin=None, l=None, m=None):
+        data = {self.energy_name: self.energy}
 
-        atom_num = len(self.starts)-1
+        atom_num = len(self.starts) - 1
 
         for ai in range(atom_num):
-            atoms = list(range(self.starts[ai],self.starts[ai+1]))
+            atoms = list(range(self.starts[ai], self.starts[ai + 1]))
             name_atoms = self.atoms_list[self.starts[ai]]
 
             datai = {f"{name_atoms}-{l}": np.sum(self.pdos_select(atoms=atoms, spin=spin, l=l, m=m), axis=(0, 2, 3))}
@@ -274,13 +273,12 @@ class Doscar:
         return self.scale(pd.DataFrame.from_dict(data))
 
     def pdos_by_spdf(self, atoms=None, spin=None, m=None):
-        data = {self.energy_name:self.energy}
-        if self.lmax==3:
+        data = {self.energy_name: self.energy}
+        if self.lmax == 3:
             ls = ["s", "p", "d", "f"]
         else:
-            ls= ["s", "p", "d"]
+            ls = ["s", "p", "d"]
         for l in ls:
-            datai={l:np.sum(self.pdos_select(atoms=atoms, spin=spin, l=l, m=m), axis=(0, 2, 3))}
+            datai = {l: np.sum(self.pdos_select(atoms=atoms, spin=spin, l=l, m=m), axis=(0, 2, 3))}
             data.update(datai)
         return self.scale(pd.DataFrame.from_dict(data))
-

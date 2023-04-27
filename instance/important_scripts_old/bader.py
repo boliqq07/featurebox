@@ -1,20 +1,19 @@
-
 # Due to the pymatgen is incorrect of band gap with 2 spin. we use vaspkit for extract data.
-import pandas as pd
 import os
+
 import numpy as np
+import pandas as pd
+from pymatgen.io.vasp import Potcar, Poscar
+
 
 # 1
 # LAECHG=.TRUE.
 # LCHARG = .TRUE.
 # NSW = 0
 # IBRION = -1 (前面有了NSW = 0, 这个也可以不设置)
-
 # 2
 # chmod u+x ~/bin/chgsum.pl
 # chmod u+x ~/bin/bader
-
-from pymatgen.io.vasp import Potcar, Poscar
 
 
 def cal(d, store=False, store_name="temp.csv", run_cmd=True, cmds=None):
@@ -114,7 +113,6 @@ def cmd_sys(cmds=None):
 
 
 def run(args, parser):
-    from mgetool.imports import batchfile
     if args.job_type in ["S", "s"]:
         res = cal(args.path_name, store=True, store_name=args.out_name)
 
@@ -210,6 +208,7 @@ if __name__ == '__main__':
         $ python bader.py -p /home/dir_name -if AECCAR0
     """
     import argparse
+
     parser = argparse.ArgumentParser(description="Get d band centor.Examples:\n"
                                                  "python bader.py -p /home/dir_name -if AECCAR0")
     parser.add_argument('-p', '--path_name', type=str, default='.')

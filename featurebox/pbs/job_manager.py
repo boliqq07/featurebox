@@ -2,16 +2,18 @@
 import json
 import os.path
 import time
+from pathlib import Path
 from typing import Union, List, Sequence
 
 import pandas as pd
-from pathlib import Path
 
 from featurebox.pbs.pbs_conf import set_bachrc, reform_log_path, get_manager
 
 """
 JUST for LINUX
 """
+
+
 class JobPATH:
 
     def __init__(self, manager: Union[str, None] = "torque", simple=True):
@@ -114,7 +116,7 @@ class JobManager:
         with open(file, "w") as fp:
             json.dump(old_msg, fp)
 
-    def sparse(self,):
+    def sparse(self, ):
         res = {}
         cwd = Path.cwd()
         hm = Path.home()

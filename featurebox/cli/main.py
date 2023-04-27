@@ -42,13 +42,13 @@ commands_ = {
     'general': ('featurebox.cli.vasp_general_single',
                 "fbx general : Batching 'Vasprun.xml property'."),
     'energy': ('featurebox.cli.vasp_general_single',
-                "fbx energy  : Batching 'free energy property'."),
+               "fbx energy  : Batching 'free energy property'."),
     'diff': ('featurebox.cli.vasp_general_diff',
              "fbx diff    : Batching 'Energy difference'."),
     'converge': ('featurebox.cli.vasp_converge',
                  "fbx converge: Batching 'Check vasp converge'."),
     'empty': ('featurebox.cli.vasp_empty',
-                 "fbx empty   : Batching 'Check vasp CONTCAR'."),
+              "fbx empty   : Batching 'Check vasp CONTCAR'."),
 
 }
 

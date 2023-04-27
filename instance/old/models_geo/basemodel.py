@@ -1,17 +1,15 @@
 """This part contains base model for crystal problem and tools."""
-import warnings
 from abc import abstractmethod
 
 import ase.data as ase_data
 import numpy as np
 import torch
 import torch.nn.functional as F
+from featurebox.models_geo.general import get_ptr
 from torch import Tensor
 from torch.nn import Embedding, Linear, LayerNorm, ModuleList, Softplus, ReLU, Sequential, BatchNorm1d
 from torch.nn import Module
 from torch_scatter import segment_csr
-
-from featurebox.models_geo.general import get_ptr
 
 
 class BaseCrystalModel(Module):
@@ -124,10 +122,10 @@ class BaseCrystalModel(Module):
                 print("node_data=='z' just accept num_node_features == 0, and don't use your self-defined 'x' data, "
                       "but element number Z.")
             self.embedding_e = Embedding(num_node_embeddings, num_node_hidden_channels)
-        elif self.node_data  == "x":
+        elif self.node_data == "x":
             self.embedding_l = Linear(num_node_features, num_node_hidden_channels)
             self.embedding_l2 = Linear(num_node_hidden_channels, num_node_hidden_channels)
-        elif self.node_data  == "xz":
+        elif self.node_data == "xz":
             self.embedding_e = Embedding(num_node_embeddings, num_node_hidden_channels)
             self.embedding_l = Linear(num_node_features, num_node_hidden_channels)
             self.embedding_l2 = Linear(num_node_hidden_channels, num_node_hidden_channels)
@@ -168,8 +166,6 @@ class BaseCrystalModel(Module):
         self.reset_parameters()
 
     def forward_weight_attr(self, data):
-
-
 
         if not hasattr(data, "edge_weight") or data.edge_weight is None:
             if not hasattr(data, "edge_attr") or data.edge_attr is None:

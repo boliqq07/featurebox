@@ -5,15 +5,13 @@ from typing import Union
 
 import torch
 import torch.nn.functional as F
-from torch import Tensor, nn
-from torch.nn import Linear, Parameter
-from torch.nn import Module, ModuleList
-from torch_geometric.nn import CGConv, MessagePassing
-from torch_geometric.typing import PairTensor, OptTensor, Adj, Size
-from torch_sparse import SparseTensor
-
 from featurebox.models_geo.basemodel import BaseCrystalModel
 from featurebox.models_geo.general import collect_edge_attr_jump, lift_jump_index_select
+from torch import Tensor, nn
+from torch.nn import Linear, Parameter
+from torch.nn import Module
+from torch_geometric.nn import MessagePassing
+from torch_geometric.typing import PairTensor, OptTensor, Adj, Size
 
 
 class SLayer(nn.Module):
@@ -122,7 +120,7 @@ class RotateNet(BaseCrystalModel):
     CrystalGraph.
     """
 
-    def __init__(self, *args, num_edge_features=3,num_node_interaction_channels=16, num_node_hidden_channels=8,
+    def __init__(self, *args, num_edge_features=3, num_node_interaction_channels=16, num_node_hidden_channels=8,
                  **kwargs):
         super(RotateNet, self).__init__(*args,
                                         num_edge_features=num_edge_features,
