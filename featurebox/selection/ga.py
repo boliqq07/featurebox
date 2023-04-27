@@ -11,7 +11,7 @@ from mgetool.newclass import create
 from mgetool.tool import check_random_state, parallelize
 from sklearn.base import BaseEstimator, MetaEstimatorMixin
 from sklearn.feature_selection import SelectorMixin
-from sklearn.metrics import r2_score
+from sklearn.metrics import r2_score, check_scoring
 from sklearn.model_selection import cross_val_score
 from sklearn.model_selection._search import BaseSearchCV
 from sklearn.utils.validation import check_is_fitted
@@ -146,15 +146,22 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
     >>> from sklearn.datasets import fetch_california_housing
     >>> from sklearn.svm import SVR
     >>> data = fetch_california_housing()
-    >>> x = data.data[:50]
-    >>> y = data.target[:50]
+    >>> X = data.data
+    >>> y = data.target
+    >>> X_train,y_train,X_test,y_test = X[:50],y[:50],X[-50:],y[-50:]
     >>> svr = SVR(gamma="scale", C=100)
-    >>> ga = GA(estimator=svr, n_jobs=2, pop_n=50, hof_n=1, cxpb=0.8, mutpb=0.4, ngen=3, max_or_min="max", mut_indpb=0.1, min_=2, multi_index=[0, 5],random_state=0)
-    >>> ga.fit(x_rain, y_train)
-
-    Then
-
-    >>> ga.score(x_test, y_test)
+    >>> ga = GA(estimator=svr, n_jobs=2, pop_n=50, hof_n=1, cxpb=0.8, mutpb=0.4, ngen=3,
+    ... max_or_min="max", mut_indpb=0.1, min_=2, multi_index=[0, 5],random_state=0)
+    >>> ga.fit(X_train, y_train)
+    gen	nevals	min    	max
+    1  	50    	-4.9231	-1.09124
+    2  	43    	-3.83152  -1.09124
+    3  	46    	-4.9231   -1.09124
+    [1, 1, 1, 1, 0, 0, 1, 0] (-1.039237326973499,)
+    GA(cxpb=0.8, estimator=SVR(C=100), multi_index=(0, 5), mut_indpb=0.1, mutpb=0.4,
+       ngen=3, pop_n=50, random_state=0)
+    >>> ga.score(X_test, y_test)
+    -28.542309712899435
 
     """
 
@@ -203,7 +210,9 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
         if isinstance(estimator, BaseSearchCV):
             print(f"Using scoring:{scoring},and cv:{cv}")
             estimator.scoring = scoring
-            self.cv = cv
+            estimator.cv = cv
+            estimator.n_jobs = 1
+
         self.scoring = scoring
         self.estimator = estimator
         self.n_jobs = n_jobs
@@ -221,7 +230,7 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
 
         check_random_state(random_state)
         random.seed(random_state)
-        np.random.seed(0)
+        np.random.seed(random_state)
 
         self.toolbox = base.Toolbox()
         if max_or_min == "max":
@@ -283,8 +292,8 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
         pop = toolbox.population(n=self.pop_n)
         self.hof = tools.HallOfFame(self.hof_n)
 
-        eaSimple(pop, self.toolbox, cxpb=self.cxpb, mutpb=self.mutpb, ngen=self.ngen, n_jobs=self.n_jobs,
-                 stats=stats, halloffame=self.hof, verbose=True)
+        eaSimple(pop, self.toolbox, cxpb=self.cxpb, mutpb=self.mutpb, ngen=self.ngen,
+                 n_jobs=self.n_jobs, stats=stats, halloffame=self.hof, verbose=True)
         for i in self.hof.items:
             print(self.unfold(i), i.fitness)
         support_ = self.unfold(self.hof.items[0])
@@ -321,15 +330,14 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
             else:
                 return 0,
 
-    def socre_func(self, ind, model, x, y):
+    def socre_func(self, ind, model, x, y, scoring=None):
         sss = self.unfold(ind)
         index = np.where(np.array(sss) == 1)[0]
         x = x[:, index]
+        scoring = scoring if scoring is not None else self.scoring
+        scorer = check_scoring(model, scoring=scoring, allow_none=False)
         if x.shape[1] > 1:
-            svr = model
-            y2 = svr.predict(x)
-            sc = r2_score(y, y2)
-            return sc
+            return scorer(model, x, y)
         else:
             raise TypeError("only one feature, error")
 
@@ -360,7 +368,8 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
             The target values.
         """
 
-        mod = self.fitness_func(self.hof.items[0], self.estimator, self.X, self.y, return_model=True)[1]
+        mod = self.fitness_func(self.hof.items[0], self.estimator, self.X, self.y,
+                                return_model=True)[1]
         score = self.fitness_func(self.hof.items[0], mod, X, y, return_model=False)
         return score
 
@@ -376,7 +385,8 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
             The target values.
         """
 
-        mod = self.fitness_func(self.hof.items[0], self.estimator, self.X, self.y, return_model=True)[1]
+        mod = self.fitness_func(self.hof.items[0], self.estimator, self.X, self.y,
+                                return_model=True)[1]
         score = self.socre_func(self.hof.items[0], mod, X, y)
         return score
 
@@ -388,7 +398,8 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
         X : array of shape [n_samples, n_feature]
             The input0 samples.
         """
-        mod = self.fitness_func(self.hof.items[0], self.estimator, self.X, self.y, return_model=True)[1]
+        mod = self.fitness_func(self.hof.items[0], self.estimator, self.X, self.y,
+                                return_model=True)[1]
         score = self.predict_func(self.hof.items[0], mod, X)
         return score
 

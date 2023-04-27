@@ -47,31 +47,39 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
     Examples
     ----------
     >>> from sklearn.datasets import fetch_california_housing
+    >>> from sklearn.model_selection import cross_val_predict
     >>> from sklearn.svm import SVR
     >>> X,y = fetch_california_housing(return_X_y=True)
     >>> X = X[:100]
     >>> y = y[:100]
-    >>> svr= SVR()
-    >>> bf = Exhaustion(svr,n_select=(2,),refit=True)
+    >>> X_train,y_train,X_test,y_test = X[:50],y[:50],X[-50:],y[-50:]
+
+    >>> svr = SVR()
+    >>> bf = Exhaustion(svr,n_select=(2,),refit=True,note=False)
     >>> new_x = bf.fit_transform(X,y)
     >>> bf.support_
     array([False, False, False,  True, False,  True, False, False])
-    >>> train_score = bf.score(X[:50],y[:50])  # train score
-    >>> test_score = bf.score(X[-50:],y[-50:]) # test score in more data.
-    >>> np.mean(cross_val_score(bf.estimator_,X[:50,bf.support_],y[:50],cv=5)) # re cv_score in manually.
-    >>> np.mean(cross_val_predict(bf.estimator_,X[:50,bf.support_],y[:50],cv=5)) # re cv_predict for plot.
+    >>> train_score = bf.score(X_train,y_train)  # train score
+    >>> test_score = bf.score(X_test,y_test) # test score in more data.
+    >>> np.mean(cross_val_score(bf.estimator_,X_train[:,bf.support_],y_train,cv=5)) # re cv_score in manually.
+    -2.888471220974372
+    >>> np.mean(cross_val_predict(bf.estimator_,X_train[:,bf.support_],y_train,cv=5)) # re cv_predict for plot.
+    1.6001222987265382
 
     Examples
     ----------
     >>> from sklearn.datasets import fetch_california_housing
     >>> from sklearn.svm import SVR
+    >>> from sklearn import model_selection
     >>> X,y = fetch_california_housing(return_X_y=True)
     >>> X = X[:100]
     >>> y = y[:100]
     >>> svr= SVR()
-    >>> from sklearn import model_selection
-    >>> gd = model_selection.GridSearchCV(svr, param_grid=[{"C": [1, 10]}], n_jobs=1, cv=5)
-    >>> bf = Exhaustion(gd,n_select=(2,),refit=True)
+
+    >>> gd = model_selection.GridSearchCV(svr, param_grid=[{"C": [1, 10]}], n_jobs=1, cv=3)
+    >>> bf = Exhaustion(gd,n_select=(2,),refit=True,note=False,cv=5)
+    Uniform parameter in SearchCV and Exhaustion:
+    (scoring=None, cv=5, refit=True)
     >>> new_x = bf.fit_transform(X,y)
     >>> bf.support_
     array([False, False, False,  True, False,  True, False, False])
@@ -79,9 +87,9 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
     -0.7336740728050252
     """
 
-    def __init__(self, estimator: BaseEstimator, n_select: Tuple = (2, 3, 4), multi_grade: int = None,
-                 multi_index: List = None, must_index: List = None, n_jobs: int = 1,
-                 refit: bool = False, cv: int = 5, scoring: str = None):
+    def __init__(self, estimator: BaseEstimator, n_select: Tuple = (2, 3, 4),
+                 multi_grade: int = None, multi_index: List = None, must_index: List = None,
+                 n_jobs: int = 1, refit: bool = False, cv: int = 5, scoring: str = None, note=True):
         """
 
         Parameters
@@ -104,50 +112,53 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
             if estimator is sklearn model, used cv, else pass.
         scoring:None,str
             scoring method name.
+        note:bool
+            print note or not.
         """
         super().__init__(multi_grade=multi_grade, multi_index=multi_index, must_index=must_index)
         if any((hasattr(estimator, "max_features") and refit,
                 isinstance(estimator, BaseSearchCV) and hasattr(estimator.estimator, "max_features") and refit)):
-            print("For estimator with 'max_features' attribute, the 'max_features' would changed with each sub-data. \n"
-                  "Please change and define 'max_features' by SearchCV testing after Exhaustion.\n")
-        if isinstance(estimator, BaseSearchCV) and isinstance(estimator.n_jobs, int) and estimator.n_jobs > 1:
-            print(f"The 'n_jobs' for SearchCV should keep 1 or None and please pass the 'n_jobs' to {self.__class__}"
-                  f" for parallelization!")
-        if refit:
+            warnings.warn("For estimator with 'max_features' attribute, the 'max_features' would changed with each sub-data. \n"
+                  "Please change and define 'max_features' by SearchCV testing after Exhaustion.\n",UserWarning)
+
+        if refit and note:
             if isinstance(estimator, BaseSearchCV) and estimator.refit is True:
-                warnings.warn(
-                    "\nThe self.estimator_ :{} would used all the X, y data if refit! \n"
-                    "Please be careful with the 'score' and 'predict' if use, "
-                    "which are 'train' score/predict if inputs not changed!!!\n"
-                    "Check 'self.estomator_.cv_result' to get CV result,"
-                    " such as 'self.estomator_.best_score_' for evaluation instead.".format(
-                        estimator.__class__.__name__), UserWarning)
+                print(
+f"""Note:
+    If refit, the self.estimator_ :{estimator.__class__.__name__} would use all the data in ``fit`` function,
+    1. Be careful with the 'score' and 'predict' functions,
+    Those are **training** score/predict if data in ``predict`` function not changed!
+    Those are **testing** score/predict if data in ``predict`` function changed!
+    2. To get CV result for evaluation:
+    self.estimator_ is the SearchCV object, check 'self.estimator_.cv_result' to get CV result.
+    Using 'self.best_score_' or 'self.estimator_.best_score_' for evaluation,
+    Use 'cross_val_predict(self.estimator_,X[:, self.support_],y)' for plotting.""")
             else:
-                warnings.warn(
-                    "\nThe self.estimator_ :{} would used all the X, y data with refit! \n"
-                    "Please be careful with the 'score' and 'predict' functions."
-                    "if inputs not changed, the 'score' and 'predict' are training!!!\n"
-                    "Thus:\n"
-                    "Use 'cross_val_score(self.estimator_,X[:, self.support_],y)' for evaluation instead,\n"
-                    "Use 'cross_val_predict(self.estimator_,X[:, self.support_],y)' for plot instead."
-                    "".format(
-                        estimator.__class__.__name__), UserWarning)
+                print(
+f"""Note:
+    If refit, the self.estimator_ :{estimator.__class__.__name__} would use all the data in ``fit`` function,
+    1. Be careful with the 'score' and 'predict' functions:
+    Those are **training** score/predict, if data in ``predict`` function not changed!
+    Those are **testing** score/predict, if data in ``predict`` function changed!
+    2. To get CV result for evaluation:
+    Use 'self.best_score_' or 'cross_val_score(self.estimator_,X[:, self.support_],y)' for evaluation,
+    Use 'cross_val_predict(self.estimator_,X[:, self.support_],y)' for plotting.""")
 
         if cv <= 1:
             warnings.warn(
                 "\nThe cv <= 1, the exhaustion would not use cross validate, and treat all data as train data, \n"
-                "the scoring would use the estimator.score function, rather than the 'scoring'."
                 "cv<=1 is just used for debug!!!".format(
                     estimator.__class__.__name__), UserWarning)
-            scoring = None
 
         if isinstance(estimator, BaseSearchCV):
-            print(f"Using scoring:{scoring},and cv:{cv}")
+            print(f"Uniform parameter in SearchCV and Exhaustion:\n"
+                  f"(scoring={scoring}, cv={cv}, refit={refit})")
             estimator.scoring = scoring
             estimator.cv = cv
+            estimator.n_jobs = 1
+            estimator.refit = refit
 
         self.scoring = scoring
-
         self.estimator = estimator
         self.score_ = []
         self.n_jobs = n_jobs
@@ -225,7 +236,7 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
         feature_combination = slice_all
         index = np.argmax(scores)
         select_feature = np.array(feature_combination[int(index)])
-        su = np.zeros(x.shape[1], dtype=np.bool)
+        su = np.zeros(x.shape[1], dtype=bool)
         su[select_feature] = 1
         self.best_score_ = max(scores)
         self.score_ = scores
@@ -236,6 +247,7 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
             if hasattr(self.estimator, "max_features"):
                 self.estimator_.max_features = select_feature.shape[0]
             elif isinstance(self.estimator, BaseSearchCV) and hasattr(self.estimator.estimator, "max_features"):
+                self.estimator_.refit = self.refit
                 self.estimator_.estimator.max_features = select_feature.shape[0]
             self.estimator_.fit(x[:, select_feature], y)
         self.n_feature_ = len(select_feature)
