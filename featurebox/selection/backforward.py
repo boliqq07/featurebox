@@ -169,7 +169,7 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
     2. To get CV result for evaluation:
     self.estimator_ is the SearchCV object, check 'self.estimator_.cv_result' to get CV result.
     Using 'self.best_score_' or 'self.estimator_.best_score_' for evaluation,
-    Use 'cross_val_predict(self.estimator_,X[:, self.support_],y)' for plotting.""")
+    Use 'cross_val_predict(self.estimator_.best_estimator_,X[:, self.support_],y)' for plotting.""")
             else:
                 print(
                     f"""Note:
