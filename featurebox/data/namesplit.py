@@ -9,4 +9,3 @@ import warnings
 
 warnings.warn("This namesplit part is would be delete in future. "
               "please using: \nfrom featurebox.data.name_split import NameSplit", DeprecationWarning)
-

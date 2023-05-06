@@ -254,7 +254,7 @@ def dict_method_reg():
     dict_method.update({'DTR-em': [me10, cv10, scoring10, param_grid10]})
 
     'ElasticNet'
-    me11 = ElasticNet(alpha=1.0, l1_ratio=0.7, fit_intercept=True, normalize=False, precompute=False, max_iter=1000,
+    me11 = ElasticNet(alpha=1.0, l1_ratio=0.7, fit_intercept=True, precompute=False, max_iter=1000,
                       copy_X=True, tol=0.0001, warm_start=False, positive=False, random_state=None)
 
     cv11 = 5
@@ -263,7 +263,7 @@ def dict_method_reg():
     dict_method.update({"EN-L1": [me11, cv11, scoring11, param_grid11]})
 
     'Lasso'
-    me12 = Lasso(alpha=1.0, fit_intercept=True, normalize=True, precompute=False, copy_X=True, max_iter=3000,
+    me12 = Lasso(alpha=1.0, fit_intercept=True,  precompute=False, copy_X=True, max_iter=3000,
                  tol=0.001,
                  warm_start=False, positive=False, random_state=None, )
 
@@ -276,7 +276,7 @@ def dict_method_reg():
     """2BayesianRidge"""
     me2 = BayesianRidge(alpha_1=1e-06, alpha_2=1e-06, compute_score=False,
                         copy_X=True, fit_intercept=True, lambda_1=1e-06, lambda_2=1e-06,
-                        n_iter=300, normalize=False, tol=0.01, verbose=False)
+                        n_iter=300, tol=0.01, verbose=False)
     cv2 = 5
     scoring2 = 'r2'
     param_grid2 = [{'alpha_1': [1e-07, 1e-06, 1e-05], 'alpha_2': [1e-07, 1e-06, 1e-05]}]

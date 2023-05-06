@@ -6,7 +6,7 @@
 # @License: BSD 3-Clause
 
 from abc import abstractmethod
-from typing import List, Tuple, Union
+from typing import List, Tuple, Union, Type
 
 import numpy as np
 from pymatgen.core.composition import Composition as PMGComp
@@ -59,7 +59,7 @@ class BaseCompositionFeature(BinaryMap):
             ele = np.array(ele).reshape((len(atoms), -1))
         return self.mix_function(ele, numbers)
 
-    def convert_number(self, atoms: List) -> np.ndarray:
+    def convert_number(self, atoms: List):
         """
         Convert atom {symbol: fraction} list to numeric features
         """

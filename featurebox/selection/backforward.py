@@ -118,7 +118,7 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
     def __init__(self, estimator: BaseEstimator, n_type_feature_to_select: int = None, primary_feature: int = None,
                  multi_grade: int = 2, multi_index: List = None, refit=True, cv=5, min_type_feature_to_select: int = 3,
                  must_index: List = None, tolerant: float = 0.01, verbose: int = 1, random_state: int = None,
-                 scoring: str = None, note=True):
+                 scoring: str = None, note: bool = True, filter_warn: bool = False):
         """
 
         Parameters
@@ -150,6 +150,8 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
             scoring method name.
         note:bool
             print note or not.
+        filter_warn: bool
+            warnings.filterwarnings or not.
         """
         super().__init__(multi_grade=multi_grade, multi_index=multi_index, must_index=must_index)
         if any((hasattr(estimator, "max_features") and refit,
@@ -184,7 +186,7 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
         assert cv >= 3
 
         if isinstance(estimator, BaseSearchCV):
-            print(f"Uniform parameter in SearchCV and Exhaustion:\n"
+            print(f"Uniform parameters in SearchCV and Exhaustion:\n"
                   f"(scoring={scoring}, cv={cv}, refit={refit})")
             estimator.scoring = scoring
             estimator.cv = cv
@@ -205,6 +207,8 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
         self.min_type_feature_to_select = min_type_feature_to_select
         self.cv = cv
         self.note = note
+        self.filter_warn = filter_warn
+
         if isinstance(n_type_feature_to_select, int):
             assert n_type_feature_to_select >= min_type_feature_to_select, "Max numbers should be large than Min numbers."
 
@@ -246,7 +250,7 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
                 else:
                     slice10.remove(add1)
                 if self.verbose > 0:
-                    print("Fitting estimator with {} feature {}".format(len(slice10), best0))
+                    print("Fitting estimator with {} features {}".format(len(slice10), best0))
                 self.score_.append((tuple(slice10), best0))
             return slice10, best0
 
@@ -293,11 +297,15 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
                 slice0 = slice_all[index]
                 # print(slice0, best0)
                 if self.verbose > 0:
-                    print("Fitting estimator with {} feature {}".format(len(slice0), best0))
+                    print("Fitting estimator with {} features {}".format(len(slice0), best0))
                 self.score_.append((tuple(slice0), best0))
             return slice0, best0
 
         def score_pri(slices, x0, y0):
+
+            if self.filter_warn:
+                warnings.filterwarnings("ignore")
+
             slices = list(slices)
             if len(slices) <= 1:
                 score0 = - np.inf
@@ -338,7 +346,7 @@ class BackForward(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
             primary_feature = n_feature // 2
         else:
             primary_feature = self.primary_feature
-        assert primary_feature < n_feature, "Too large for primary_feature."
+        assert primary_feature < n_feature, "Too large for primary_features."
 
         feature_list = list(range(n_feature))
         fold_feature_list = self.feature_fold(feature_list)

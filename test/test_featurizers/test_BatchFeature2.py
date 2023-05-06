@@ -13,6 +13,7 @@ class MyTestCase(unittest.TestCase):
     def test_something2(self):
         sppm = BatchFeature(data_type="compositions", return_type="df")
         data = sppm.fit_transform([i.composition.to_reduced_dict for i in self.data0_3])
+        print(data)
 
     def test_something3(self):
         sppm = BatchFeature(data_type="elements")

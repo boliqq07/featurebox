@@ -1,4 +1,5 @@
 import random
+import warnings
 from collections import deque
 from functools import partial
 
@@ -167,7 +168,7 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
 
     def __init__(self, estimator, n_jobs=2, pop_n=1000, hof_n=1, cxpb=0.6, mutpb=0.3, ngen=40, max_or_min="max",
                  mut_indpb=0.05, max_=None, min_=2, random_state=None, multi_grade=2, multi_index=None, must_index=None,
-                 cv: int = 5, scoring=None):
+                 cv: int = 5, scoring=None, filter_warn=False):
         """
 
         Parameters
@@ -204,6 +205,8 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
             scoring method name.
         cv:bool
             if estimator is sklearn model, used cv, else pass.
+        filter_warn: bool
+            warnings.filterwarnings or not.
         """
         super().__init__(multi_grade=multi_grade, multi_index=multi_index, must_index=must_index)
         assert cv >= 3
@@ -227,6 +230,7 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
         self.max_or_min = max_or_min
         self.random_state = random_state
         self.cv = cv
+        self.filter_warn = filter_warn
 
         check_random_state(random_state)
         random.seed(random_state)
@@ -308,6 +312,9 @@ class GA(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
         return sss
 
     def fitness_func(self, ind, model, x, y, return_model=False):
+        if self.filter_warn:
+            warnings.filterwarnings("ignore")
+
         sss = self.unfold(ind)
         index = np.where(np.array(sss) == 1)[0]
         x = x[:, index]

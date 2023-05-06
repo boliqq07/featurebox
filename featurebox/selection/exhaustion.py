@@ -89,7 +89,8 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
 
     def __init__(self, estimator: BaseEstimator, n_select: Tuple = (2, 3, 4),
                  multi_grade: int = None, multi_index: List = None, must_index: List = None,
-                 n_jobs: int = 1, refit: bool = False, cv: int = 5, scoring: str = None, note=True):
+                 n_jobs: int = 1, refit: bool = False, cv: int = 5, scoring: str = None, note=True,
+                 filter_warn=False):
         """
 
         Parameters
@@ -114,6 +115,8 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
             scoring method name.
         note:bool
             print note or not.
+        filter_warn: bool
+            warnings.filterwarnings or not.
         """
         super().__init__(multi_grade=multi_grade, multi_index=multi_index, must_index=must_index)
         if any((hasattr(estimator, "max_features") and refit,
@@ -152,7 +155,7 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
                     estimator.__class__.__name__), UserWarning)
 
         if isinstance(estimator, BaseSearchCV):
-            print(f"Uniform parameter in SearchCV and Exhaustion:\n"
+            print(f"Uniform parameters in SearchCV and Exhaustion:\n"
                   f"(scoring={scoring}, cv={cv}, refit={refit})")
             estimator.scoring = scoring
             estimator.cv = cv
@@ -166,6 +169,7 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
         self.n_select = [n_select, ] if isinstance(n_select, int) else n_select
         self.refit = refit
         self.cv = cv
+        self.filter_warn = filter_warn
 
     @property
     def _estimator_type(self):
@@ -182,6 +186,7 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
         y : array-like, shape = [n_samples]
             The target values.
         """
+
         return self._fit(X, y)
 
     def _fit(self, x, y):
@@ -189,6 +194,10 @@ class Exhaustion(BaseEstimator, MetaEstimatorMixin, SelectorMixin, MultiBase):
         estimator = clone(self.estimator)
 
         def score_pri(slices, x0, y0):
+
+            if self.filter_warn:
+                warnings.filterwarnings("ignore")
+
             slices = list(slices)
             if len(slices) < 1:
                 score0 = - np.inf
